@@ -389,7 +389,7 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
     {
         default:
             bug( "Affect_modify: unknown location %d.", paf->location );
-            snprintf( buf, MSL, "Affect_modify: called for %s - unknown location %d.", ch->name.c_str(), paf->location );
+            snprintf( buf, MSL, "Affect_modify: called for %s - unknown location %d.", ch->GetName_(), paf->location );
             monitor_chan( buf, MONITOR_OBJ );
             return;
 
@@ -515,7 +515,7 @@ void affect_to_room( ROOM_INDEX_DATA * room, ROOM_AFFECT_DATA * raf )
     SET_BIT( room->affected_by, raf->bitvector );
 
     snprintf( buf, MSL, "@@e%s@@N has cast @@d%s@@N in @@Narea: @@r%s@@N, @@Nroom: @@r%d@@N.",
-              raf->caster->name.c_str(), raffect_bit_name( raf->bitvector ), room->area->name, room->vnum );
+              raf->caster->GetName_(), raffect_bit_name( raf->bitvector ), room->area->name, room->vnum );
     monitor_chan( buf, MONITOR_GEN_MORT );
 
 
@@ -989,11 +989,11 @@ void obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch )
             }
             if ( armor != NULL )
             {
-                do_wear( ch, armor->name );
+                ch->EquipThing(armor);
             }
             else
             {
-                do_drop( ch, obj->name );
+                ch->DropThing(obj);
             }
         }
 // else if light
@@ -1675,7 +1675,7 @@ void extract_char( CHAR_DATA * ch, bool fPull )
              */
             if ( IS_NPC( wch ) )
             {
-                wch->searching = ch->name;
+                wch->searching = ch->GetName();
             }
             else
                 send_to_char("@@RYou seem to have lost your prey.@@N\r\n", wch);
@@ -1685,12 +1685,12 @@ void extract_char( CHAR_DATA * ch, bool fPull )
             do_return(wch, "");
             wch->old_body = NULL;
         }
-        if ( wch->target.find(ch->name) != string::npos )
+        if ( wch->target.find(ch->GetName()) != string::npos )
         {
             int first = 0, last = 0;
 
-            first = static_cast<int>(wch->target.find(ch->name));
-            last = (strlen(ch->name.c_str()) + 1);
+            first = static_cast<int>(wch->target.find(ch->GetName()));
+            last = (strlen(ch->GetName_()) + 1);
             wch->target.erase(first, last);
         }
         if ( wch->riding == ch )
@@ -1850,7 +1850,7 @@ CHAR_DATA *get_char_room( CHAR_DATA * ch, char *argument )
 
     for ( rch = ch->in_room->first_person; rch != NULL; rch = rch->next_in_room )
     {
-        if ( !can_see( ch, rch ) || !is_name( arg, const_cast<char *>(rch->name.c_str()) ) )
+        if ( !can_see( ch, rch ) || !is_name( arg, const_cast<char *>(rch->GetName_()) ) )
             continue;
         if ( ++count == number )
             return rch;
@@ -1870,7 +1870,7 @@ bool char_exists_world( const char *who )
     {
         pers = *li;
 
-        if ( is_name( who, const_cast<char *>(pers->name.c_str()) ) )
+        if ( is_name( who, const_cast<char *>(pers->GetName_()) ) )
             return true;
     }
 
@@ -1896,7 +1896,7 @@ CHAR_DATA *get_char_world( CHAR_DATA * ch, char *argument )
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         wch = *li;
-        if ( !can_see( ch, wch ) || !is_name( arg, const_cast<char *>(wch->name.c_str()) ) )
+        if ( !can_see( ch, wch ) || !is_name( arg, const_cast<char *>(wch->GetName_()) ) )
             continue;
         if ( ++count == number )
             return wch;
@@ -1921,7 +1921,7 @@ CHAR_DATA *get_char_area( CHAR_DATA * ch, char *argument )
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         ach = *li;
-        if ( ach->in_room->area != ch->in_room->area || !can_see( ch, ach ) || !is_name( arg, const_cast<char *>(ach->name.c_str()) ) )
+        if ( ach->in_room->area != ch->in_room->area || !can_see( ch, ach ) || !is_name( arg, const_cast<char *>(ach->GetName_()) ) )
             continue;
         if ( ++count == number )
             return ach;
@@ -1974,7 +1974,7 @@ OBJ_DATA *get_obj_room( CHAR_DATA * ch, char *argument, OBJ_DATA * list )
     count = 0;
     for ( obj = list; obj != NULL; obj = obj->next_in_room )
     {
-        if ( can_see_obj( ch, obj ) && is_name( arg, obj->name ) )
+        if ( can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -1998,7 +1998,7 @@ OBJ_DATA *get_obj_list( CHAR_DATA * ch, char *argument, OBJ_DATA * list )
     count = 0;
     for ( obj = list; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( can_see_obj( ch, obj ) && is_name( arg, obj->name ) )
+        if ( can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2025,7 +2025,7 @@ OBJ_DATA *get_obj_carry( CHAR_DATA * ch, char *argument )
     count = 0;
     for ( obj = ch->first_carry; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( obj->wear_loc == WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->name ) )
+        if ( obj->wear_loc == WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2051,7 +2051,7 @@ OBJ_DATA *get_obj_wear( CHAR_DATA * ch, char *argument )
     count = 0;
     for ( obj = ch->first_carry; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( obj->wear_loc != WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->name ) )
+        if ( obj->wear_loc != WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2104,7 +2104,7 @@ OBJ_DATA *get_obj_world( CHAR_DATA * ch, char *argument )
     for ( li = obj_list.begin(); li != obj_list.end(); li++ )
     {
         obj = *li;
-        if ( can_see_obj( ch, obj ) && is_name( arg, obj->name ) )
+        if ( can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
         {
             if ( ++count == number )
                 return obj;

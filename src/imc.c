@@ -7757,7 +7757,7 @@ CHAR_DATA *imc_make_skeleton( char *name )
 
     IMCCREATE( skeleton, CHAR_DATA, 1 );
 
-    skeleton->name = name;
+    skeleton->SetName( name );
     skeleton->in_room = get_room_index( ROOM_VNUM_LIMBO );
 
     return skeleton;

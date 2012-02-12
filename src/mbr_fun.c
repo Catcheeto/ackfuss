@@ -170,7 +170,7 @@ const char *char_data::get_name( CHAR_DATA *looker )
                 if ( IS_WOLF(this) && (IS_SHIFTED(this) || IS_RAGED(this)) )
                     return "A Large @@bWolf@@N";
                 else
-                    return name.c_str();
+                    return GetName_();
             }
         }
         else
@@ -186,7 +186,7 @@ const char *char_data::get_name( CHAR_DATA *looker )
         if ( IS_NPC(this) )
             return npcdata->short_descr;
         else
-            return name.c_str();
+            return GetName_();
     }
 
     return "Unknown!";

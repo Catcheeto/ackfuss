@@ -382,7 +382,7 @@ DO_FUN(do_qstat)
         return;
     }
 
-    snprintf(buf, MSL, "@@y%s@@b's current quest status:@@N\r\n", victim->name.c_str());
+    snprintf(buf, MSL, "@@y%s@@b's current quest status:@@N\r\n", victim->GetName_());
     send_to_char(buf, ch);
 
     switch ( victim->pcdata->quest_info->quest_type )

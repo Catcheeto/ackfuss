@@ -57,6 +57,10 @@ using namespace std;
 #include "strfuns.h"
 #endif
 
+#ifndef DEC_THING_H
+#include "thing.h"
+#endif
+
 #ifndef DEC_TYPEDEFS_H
 #include "typedefs.h"
 #endif
@@ -90,7 +94,7 @@ class disabled_data
         disabled_data();
         ~disabled_data();
         struct cmd_type const *command;
-        char                  *disabled_by;
+        string disabled_by;
         short                 level;
 };
 
@@ -104,7 +108,7 @@ class message_data
         MESSAGE_DATA *prev;  /* Only used in save_board */
         BOARD_DATA *board;
         time_t datetime;
-        char *author;
+        string author;
         char *title;
         char *message;
 };
@@ -406,7 +410,7 @@ class note_data
         ~note_data();
         char *date;
         time_t date_stamp;
-        char *sender;
+        string sender;
         char *subject;
         char *text;
         char *to_list;
@@ -532,8 +536,7 @@ class mob_index_data
 /*
  * One character (PC or NPC).
  */
-class char_data
-{
+class char_data : public Thing {
     public:
         char_data();
         ~char_data();
@@ -596,7 +599,6 @@ class char_data
         int max_move;
         MONEY_TYPE *money;
         int move;
-        string name;
         CHAR_DATA *next_in_room;
         bool npc; /* For NPC's, no more flag */
         NPC_DATA *npcdata;
@@ -758,8 +760,7 @@ struct liq_type
 /*
  * Extra description data for a room or object.
  */
-class extra_descr_data
-{
+class extra_descr_data : public Thing {
     public:
         extra_descr_data();
         ~extra_descr_data();
@@ -812,7 +813,6 @@ class obj_index_data
         char *name;
         OBJ_INDEX_DATA *next;
         OBJ_FUN *obj_fun;
-        char *owner;
         char *short_descr;
         float speed;
         int value[MAX_OBJ_VALUE];
@@ -824,8 +824,7 @@ class obj_index_data
 /*
  * One object.
  */
-class obj_data
-{
+class obj_data : public Thing {
     public:
         obj_data();
         ~obj_data();
@@ -851,8 +850,6 @@ class obj_data
         AFFECT_DATA *last_apply;
         OBJ_INDEX_DATA *pIndexData;
         ROOM_INDEX_DATA *in_room;
-        char *owner;
-        char *name;
         char *short_descr;
         char *long_descr;
         int item_type;
@@ -876,8 +873,7 @@ class obj_data
 /*
  * Exit data.
  */
-class exit_data
-{
+class exit_data : public Thing {
     public:
         exit_data();
         ~exit_data();
