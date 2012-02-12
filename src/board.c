@@ -173,7 +173,7 @@ void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
     for ( msg = board->first_message; msg != NULL; msg = msg->next )
     {
         cnt++;
-        snprintf( buf, MSL, "[%3d] %12s : %s", cnt, msg->author, msg->title );
+        snprintf( buf, MSL, "[%3d] %12s : %s", cnt, msg->author.c_str(), msg->title );
         send_to_char( buf, ch );
 
     }
@@ -341,7 +341,7 @@ void save_board( BOARD_DATA * board, CHAR_DATA * ch )
     {
         fprintf( board_file, "M%i\n", ( int )( message->datetime ) );
 
-        strcpy( buf, message->author );  /* Must do copy, not allowed to change string directly */
+        strcpy( buf, message->author.c_str() );  /* Must do copy, not allowed to change string directly */
         smash_tilde( buf );
         fprintf( board_file, "%s~\n", buf );
 
@@ -446,8 +446,8 @@ DO_FUN(do_delete)
     /*
      * See if person is writer or is recipient
      */
-    if ( str_cmp( ch->name, msg->author ) && !is_name( ch->name.c_str(), msg->title )
-            && get_trust( ch ) < MAX_LEVEL && str_cmp( ch->name, clan_table[board->clan].leader ) )
+    if ( ( ch->GetName() == msg->author ) && !is_name( ch->GetName_(), msg->title )
+            && get_trust( ch ) < MAX_LEVEL && str_cmp( ch->GetName(), clan_table[board->clan].leader ) )
     {
         send_to_char( "Not your message.\r\n", ch );
         return;
@@ -525,12 +525,12 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
 
             to_person = one_argument( msg->title, to_check );
             to_person = one_argument( to_person, private_name );
-            if ( !str_cmp( to_check, "to:" ) && str_prefix( private_name, ch->name.c_str() ) && str_cmp( msg->author, ch->name ) )
+            if ( !str_cmp( to_check, "to:" ) && str_prefix( private_name, ch->GetName_() ) && ( msg->author == ch->GetName() ) )
             {
                 send_to_char( "This is a private message.\r\n", ch );
                 break;
             }
-            snprintf( buf, MSL, "** [%d] %12s : %s ** \r\n\r\n%s\r\n", cnt, msg->author, msg->title, msg->message );
+            snprintf( buf, MSL, "** [%d] %12s : %s ** \r\n\r\n%s\r\n", cnt, msg->author.c_str(), msg->title, msg->message );
             send_to_char( buf, ch );
             break;
         }
@@ -617,9 +617,7 @@ DO_FUN(do_write)
     if ( msg->title != NULL )
         free_string( msg->title );
     msg->title = str_dup( buf );
-    if ( msg->author != NULL )
-        free_string( msg->author );
-    msg->author = str_dup( ch->name.c_str() );
+    msg->author = ch->GetName();
     msg->message = NULL;
     msg->board = board;
 
@@ -765,7 +763,7 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
         {
             mfound = TRUE;
 
-            if ( str_cmp( msg->author, ch->name ) )
+            if ( msg->author == ch->GetName() )
             {
                 send_to_char( "Not your message to edit!\r\n", ch );
                 return;

@@ -2053,7 +2053,7 @@ void save_disabled( void )
     for ( li = disabled_list.begin(); li != disabled_list.end(); li++ )
     {
         p = *li;
-        fprintf(fp, "%s %d %s\n", p->command->name, p->level, p->disabled_by);
+        fprintf(fp, "%s %d %s\n", p->command->name, p->level, p->disabled_by.c_str());
     }
 
     fprintf(fp, "End\n\n");
@@ -2528,7 +2528,8 @@ void reset_area( AREA_DATA * pArea )
                 if ( pReset->command == 'E' )
                 {
                     char objname[MSL];
-                    one_argument( obj->name, objname );
+                    char fixme[MSL]; strcpy(fixme,obj->GetName_());
+                    one_argument( fixme, objname );
                     if ( obj->level > mob->get_level() )
                         obj->level = mob->get_level();
                     do_wear( mob, objname );
@@ -2673,9 +2674,9 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
         aggro_list.push_back(mob);
 
     if ( pMobIndex->act.test(ACT_INTELLIGENT) )
-        mob->name = str_dup( buf );
+        mob->SetName( buf );
     else
-        mob->name = str_dup( pMobIndex->player_name );
+        mob->SetName( pMobIndex->player_name );
 
     mob->npcdata->short_descr = str_dup( pMobIndex->short_descr );
     mob->long_descr = str_dup( pMobIndex->long_descr );
@@ -2815,7 +2816,7 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
 
     obj->wear_loc = -1;
 
-    obj->name = str_dup( pObjIndex->name );
+    obj->SetName( pObjIndex->name );
     obj->short_descr = str_dup( pObjIndex->short_descr );
     obj->long_descr = str_dup( pObjIndex->long_descr );
     obj->item_type = pObjIndex->item_type;
@@ -3420,7 +3421,7 @@ DO_FUN(do_memory)
     if ( !str_cmp( argument, "defrag" ) )
     {
         send_to_char( "Defragmenting SSM heap.", ch );
-        log_f( "SSM: %s called defrag_heap.", ch->name.c_str() );
+        log_f( "SSM: %s called defrag_heap.", ch->GetName_() );
         defrag_heap(  );
         return;
     }
@@ -3437,14 +3438,14 @@ DO_FUN(do_memory)
         {
             mem_log = FALSE;
             send_to_char( "Memory logging is now OFF.\r\n", ch );
-            log_f( "%s turned off memory logging", ch->name.c_str() );
+            log_f( "%s turned off memory logging", ch->GetName_() );
             return;
         }
         else
         {
             mem_log = TRUE;
             send_to_char( "Memory logging is now ON.. remember to turn it off!\r\n", ch );
-            log_f( "%s turned on memory logging", ch->name.c_str() );
+            log_f( "%s turned on memory logging", ch->GetName_() );
             return;
         }
     }
@@ -3734,7 +3735,7 @@ void append_file( CHAR_DATA * ch, char *file, char *str )
     }
     else
     {
-        snprintf( buf, MSL, "%s :: [%5d] %s: %s\n", current_time_str(), ch->in_room ? ch->in_room->vnum : 0, ch->name.c_str(), str );
+        snprintf( buf, MSL, "%s :: [%5d] %s: %s\n", current_time_str(), ch->in_room ? ch->in_room->vnum : 0, ch->GetName_(), str );
         fprintf(fp, "%s", buf);
 
         buf[strlen(buf)-1] = '\0'; /* Strip newline */

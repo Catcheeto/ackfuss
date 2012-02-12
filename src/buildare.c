@@ -88,7 +88,7 @@ bool build_canread( AREA_DATA * Area, CHAR_DATA * ch, int showerror )
 
     if ( Area->can_read != NULL )
         if ( is_name( "all", Area->can_read )
-                || is_name( ch->name.c_str(), Area->can_read ) || ( is_name( "gods", Area->can_read ) && IS_IMMORTAL( ch ) ) )
+                || is_name( ch->GetName_(), Area->can_read ) || ( is_name( "gods", Area->can_read ) && IS_IMMORTAL( ch ) ) )
             return true;
 
     if ( showerror == AREA_SHOWERROR )
@@ -104,7 +104,7 @@ bool build_canwrite( AREA_DATA * Area, CHAR_DATA * ch, int showerror )
 
     if ( Area->can_write != NULL )
         if ( is_name( "all", Area->can_write )
-                || is_name( ch->name.c_str(), Area->can_write ) || ( is_name( "gods", Area->can_write ) && IS_IMMORTAL( ch ) ) )
+                || is_name( ch->GetName_(), Area->can_write ) || ( is_name( "gods", Area->can_write ) && IS_IMMORTAL( ch ) ) )
             return true;
 
     if ( showerror == AREA_SHOWERROR )
@@ -276,9 +276,9 @@ DO_FUN(build_makearea)
     pArea->filename = str_dup( arg1 );
     pArea->min_vnum = vnum;
     pArea->max_vnum = mvnum;
-    pArea->owner = str_dup( ch->name.c_str() );
-    pArea->can_read = str_dup( ch->name.c_str() );
-    pArea->can_write = str_dup( ch->name.c_str() );
+    pArea->owner = str_dup( ch->GetName_() );
+    pArea->can_read = str_dup( ch->GetName_() );
+    pArea->can_write = str_dup( ch->GetName_() );
     pArea->flags.set(AFLAG_NO_SHOW);   /* don't list on 'areas' -S- */
 
     area_used[pArea->area_num] = pArea;

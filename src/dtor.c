@@ -128,7 +128,6 @@ descriptor_data::~descriptor_data()
 
 disabled_data::~disabled_data()
 {
-    free_string(disabled_by);
 }
 
 email_data::~email_data()
@@ -182,7 +181,6 @@ mark_data::~mark_data()
 
 message_data::~message_data()
 {
-    free_string(author);
     free_string(title);
     free_string(message);
 }
@@ -203,7 +201,6 @@ money_type::~money_type()
 note_data::~note_data()
 {
     free_string(date);
-    free_string(sender);
     free_string(subject);
     free_string(text);
     free_string(to_list);
@@ -234,8 +231,6 @@ obj_data::~obj_data()
         delete a;
     }
 
-    free_string(name);
-    free_string(owner);
     free_string(short_descr);
     free_string(long_descr);
     delete money;

@@ -316,7 +316,7 @@ DO_FUN(build_interpret)
 
     if ( ( !IS_NPC( ch ) && ch->act.test(ACT_LOG) ) || fLogAll || build_cmd_table[cmd].log == LOG_ALWAYS )
     {
-        snprintf( log_buf, (2 * MIL),  "Log %s: %s", ch->name.c_str(), logline );
+        snprintf( log_buf, (2 * MIL),  "Log %s: %s", ch->GetName_(), logline );
         log_string( log_buf );
         monitor_chan( log_buf, MONITOR_BUILD );
     }

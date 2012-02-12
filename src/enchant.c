@@ -149,7 +149,7 @@ DO_FUN(do_enchant)
             bad_enchant_mix = TRUE;
             if ( !str_cmp( arg2, "debug" ) )
             {
-                snprintf( debug, MSL, "Non-enchantment item in matrix..%s\r\n", this_obj->name );
+                snprintf( debug, MSL, "Non-enchantment item in matrix..%s\r\n", this_obj->GetName_() );
                 send_to_char( debug, ch );
             }
             break;
@@ -177,7 +177,7 @@ DO_FUN(do_enchant)
                 default:
                     if ( !str_cmp( arg2, "debug" ) )
                     {
-                        snprintf( debug, MSL, "Bad location in v0 of enchantment %s\r\n", this_obj->name );
+                        snprintf( debug, MSL, "Bad location in v0 of enchantment %s\r\n", this_obj->GetName_() );
                         send_to_char( debug, ch );
                     }
                     break;
@@ -284,7 +284,7 @@ DO_FUN(do_enchant)
             default:
                 if ( !str_cmp( arg2, "debug" ) )
                 {
-                    snprintf( debug, MSL, "Unknown aff on %s\r\n", unique->name );
+                    snprintf( debug, MSL, "Unknown aff on %s\r\n", unique->GetName_() );
                     send_to_char( debug, ch );
                 }
                 break;
@@ -857,7 +857,7 @@ DO_FUN(do_enchant)
             this_obj_next = this_obj->next_in_carry_list;
             if ( this_obj->item_type == ITEM_ENCHANTMENT )
             {
-                snprintf( enchant_catbuf, MSL, "%s (%d) ", this_obj->name, this_obj->pIndexData->vnum );
+                snprintf( enchant_catbuf, MSL, "%s (%d) ", this_obj->GetName_(), this_obj->pIndexData->vnum );
                 strncat( enchant_buf, enchant_catbuf, MSL - 1 );
                 extract_obj( this_obj );
             }
@@ -877,7 +877,7 @@ DO_FUN(do_enchant)
             AFFECT_DATA *one_aff;
 
             snprintf( brandbuf, MSL, "UNIQUE ITEM: keyword: %s, Name: %s, flags: %s \r\n level: %d, affects:\r\n",
-                      unique->name, unique->short_descr, extra_bit_name( unique->extra_flags ), unique->level );
+                      unique->GetName_(), unique->short_descr, extra_bit_name( unique->extra_flags ), unique->level );
             for ( one_aff = unique->first_apply; one_aff != NULL; one_aff = one_aff->next )
             {
                 if ( one_aff->location != APPLY_NONE && one_aff->modifier != 0 )
@@ -892,7 +892,7 @@ DO_FUN(do_enchant)
             strncat( brandbuf, enchant_buf, MSL - 1 );
             brand = new BRAND_DATA;
             GET_FREE( brand_member, dl_list_free );
-            brand->branded = str_dup( ch->name.c_str() );
+            brand->branded = str_dup( ch->GetName_() );
             brand->branded_by = str_dup( "@@rSystem@@N" );
             brand->priority = str_dup( "unique" );
             brand->message = str_dup( brandbuf );

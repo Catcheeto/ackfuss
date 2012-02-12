@@ -61,8 +61,8 @@ DO_FUN(do_email)
     argument = one_argument( argument, who );
     argument = one_argument( argument, subj1 );
 
-    snprintf( subj2, MSL, "Message from %s on %s: %s", ch->name.c_str(), mudnamenocolor, subj1 );
-    snprintf( body, MSL, "<html>%s from %s has sent you the following message via the MUD.<br><br>%s</html>", ch->name.c_str(), mudnamenocolor, argument );
+    snprintf( subj2, MSL, "Message from %s on %s: %s", ch->GetName_(), mudnamenocolor, subj1 );
+    snprintf( body, MSL, "<html>%s from %s has sent you the following message via the MUD.<br><br>%s</html>", ch->GetName_(), mudnamenocolor, argument );
 
     /* Imms can attempt to mail a non-validated address */
     if ( IS_IMMORTAL(ch) )

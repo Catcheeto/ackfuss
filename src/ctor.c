@@ -185,7 +185,6 @@ char_data::char_data()
     max_move = 50;
     money = new MONEY_TYPE;
     move = 50;
-    name = &str_empty[0];
     next_in_room = NULL;
     npc = false;
     npcdata = NULL;
@@ -235,7 +234,7 @@ descriptor_data::descriptor_data()
 disabled_data::disabled_data()
 {
     command = NULL;
-    disabled_by = &str_empty[0];
+    disabled_by.clear();
     level = 0;
 
     disabled_list.push_back(this);
@@ -288,7 +287,7 @@ help_data::help_data()
     imm = false;
     name.clear();
     description.clear();
-    
+
     help_list.push_back(this);
 }
 
@@ -333,7 +332,7 @@ message_data::message_data()
     prev = NULL;
     board = NULL;
     datetime = 0;
-    author = &str_empty[0];
+    author.clear();
     title = &str_empty[0];
     message = &str_empty[0];
 }
@@ -390,7 +389,7 @@ note_data::note_data()
 {
     date = &str_empty[0];
     date_stamp = 0;
-    sender = &str_empty[0];
+    sender.clear();
     subject = &str_empty[0];
     text = &str_empty[0];
     to_list = &str_empty[0];
@@ -463,8 +462,6 @@ obj_data::obj_data()
     last_apply = NULL;
     pIndexData = NULL;
     in_room = NULL;
-    owner = &str_empty[0];
-    name = &str_empty[0];
     short_descr = &str_empty[0];
     long_descr = &str_empty[0];
     item_type = 0;
@@ -506,7 +503,6 @@ obj_index_data::obj_index_data()
     name = &str_empty[0];
     next = NULL;
     obj_fun = NULL;
-    owner = &str_empty[0];
     short_descr = &str_empty[0];
     speed = number_speed();
     for ( short i = 0; i < MAX_OBJ_VALUE; i++ )
@@ -736,7 +732,7 @@ social_data::social_data()
     other_found.clear();
     other_no_arg.clear();
     vict_found.clear();
-    
+
     social_list.push_back(this);
 }
 
