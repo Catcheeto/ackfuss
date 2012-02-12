@@ -190,7 +190,7 @@ void mob_group_follow( CHAR_DATA * ch, CHAR_DATA * target )
                 else
                     snprintf( buf, MSL, "I hate big groups." );
                 do_say( vch, buf );
-                do_follow( vch, const_cast<char *>(vch->name.c_str()) );
+                do_follow( vch, const_cast<char *>(vch->GetName_()) );
                 do_say( vch, "I'm outta here." );
                 do_recall( vch, "" );
                 continue;
@@ -203,7 +203,7 @@ void mob_group_follow( CHAR_DATA * ch, CHAR_DATA * target )
             }
             else
             {
-                do_follow( vch, const_cast<char *>(target->name.c_str()) );
+                do_follow( vch, const_cast<char *>(target->GetName_()) );
             }
             do_group( target, "all" );
 
@@ -317,8 +317,8 @@ void get_mob_group( CHAR_DATA * ch, CHAR_DATA * target )
         {
             mob_group_follow( target, ch );
         }
-        do_follow( target, const_cast<char *>(ch->name.c_str()) );
-        do_group( ch, const_cast<char *>(target->name.c_str()) );
+        do_follow( target, const_cast<char *>(ch->GetName_()) );
+        do_group( ch, const_cast<char *>(target->GetName_()) );
     }
     else
     {
@@ -332,8 +332,8 @@ void get_mob_group( CHAR_DATA * ch, CHAR_DATA * target )
         {
             mob_group_follow( ch, target );
         }
-        do_follow( ch, const_cast<char *>(target->name.c_str()) );
-        do_group( target, const_cast<char *>(target->name.c_str()) );
+        do_follow( ch, const_cast<char *>(target->GetName_()) );
+        do_group( target, const_cast<char *>(target->GetName_()) );
     }
     return;
 }
@@ -467,11 +467,11 @@ void mob_regen_check( CHAR_DATA * ch, CHAR_DATA * target, bool need_flee )
         target = ch;
 
     if ( ch->mana >= mana_cost( ch, skill_lookup( "heal" ) ) )
-        snprintf( buf, MSL, "'heal' %s", target->name.c_str() );
+        snprintf( buf, MSL, "'heal' %s", target->GetName_() );
     else if ( ch->mana >= mana_cost( ch, skill_lookup( "cure critical" ) ) )
-        snprintf( buf, MSL, "'cure critical' %s", target->name.c_str() );
+        snprintf( buf, MSL, "'cure critical' %s", target->GetName_() );
     else if ( ch->mana >= mana_cost( ch, skill_lookup( "cure serious" ) ) )
-        snprintf( buf, MSL, "'cure serious' %s", target->name.c_str() );
+        snprintf( buf, MSL, "'cure serious' %s", target->GetName_() );
     else if ( need_flee == TRUE )
     {
         do_flee( ch, "" );
@@ -515,7 +515,7 @@ void mob_is_fighting( CHAR_DATA * ch )
 
         if ( is_being_attacked == TRUE && target != ch )
         {
-            do_rescue( target, const_cast<char *>(ch->name.c_str()) );
+            do_rescue( target, const_cast<char *>(ch->GetName_()) );
         }
         else if ( target->hit < target->max_hit * 50 / 100 )
             mob_regen_check( ch, target, need_flee );
@@ -1051,12 +1051,12 @@ void select_target( CHAR_DATA * ch )
                         }
                         if ( alone == FALSE )
                         {
-                            snprintf( buf, MSL, "%s We're coming for you!", victim->name.c_str() );
+                            snprintf( buf, MSL, "%s We're coming for you!", victim->GetName_() );
                             do_tell( ch, buf );
                         }
                         else
                         {
-                            snprintf( buf, MSL, "%s I'm coming for you!", victim->name.c_str() );
+                            snprintf( buf, MSL, "%s I'm coming for you!", victim->GetName_() );
                             do_tell( ch, buf );
                         }
                     }
@@ -1142,7 +1142,7 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
     {
         leader_wants = GRP_STATE_LEVELING;
     }
-    snprintf( monbuf, MSL, "NPC Group Handler, Leader is %s, state is %s", ngroup->leader->name.c_str(), group_state_table[ngroup->state] );
+    snprintf( monbuf, MSL, "NPC Group Handler, Leader is %s, state is %s", ngroup->leader->GetName_(), group_state_table[ngroup->state] );
     monitor_chan( monbuf, MONITOR_MOB );
 
     switch ( ngroup->state )
@@ -1406,7 +1406,7 @@ void int_combat_handler( CHAR_DATA * ch, CHAR_DATA * victim )
     {
         if ( vch == victim )
         {
-            snprintf( buf, MSL, "%d.%s", counter, vch->name.c_str() );
+            snprintf( buf, MSL, "%d.%s", counter, vch->GetName_() );
             break;
         }
 

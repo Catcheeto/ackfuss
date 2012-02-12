@@ -100,7 +100,6 @@ void move_char( CHAR_DATA * ch, int door, bool look )
     char buf[MSL];
     char move_buf[MSL];
     char tmp[MSL];
-    int need_movement;
     char door_name_leave[MSL];
     char door_name_enter[MSL];
 
@@ -231,12 +230,9 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         ch->using_named_door = FALSE;
         return;
     }
-    /*
-     * need 1 move if riding - Celestian
-     */
+
     if ( ch->position == POS_RIDING )
     {
-        need_movement = 1;
         if ( IS_RIDING( ch ) )
         {
             if ( !IS_AWAKE( ch->riding ) )
@@ -433,7 +429,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         move = movement_loss[UMIN( SECT_MAX - 1, in_room->sector_type )]
                + movement_loss[UMIN( SECT_MAX - 1, to_room->sector_type )];
 
-        if ( IS_AFFECTED( ch, AFF_FLYING ) || item_has_apply( ch, ITEM_APPLY_FLY ) || ch->get_level() <= 5 )
+        if ( IS_AFFECTED( ch, AFF_FLYING ) || item_has_apply( ch, ITEM_APPLY_FLY ) || ch->get_level() <= 5 || IS_RIDING(ch) )
             move = 1;
         if ( IS_GHOST(ch) || IS_IMMORTAL(ch) )
             move = 0;
@@ -550,7 +546,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
     ch->using_named_door = FALSE;
 
     for ( fch = ch->in_room->first_person; fch != NULL; fch = fch->next_in_room )
-        if ( IS_NPC(fch) && fch->act.test(ACT_REMEMBER) && fch->target.find(ch->name) != string::npos )
+        if ( IS_NPC(fch) && fch->act.test(ACT_REMEMBER) && fch->target.find(ch->GetName()) != string::npos )
             remember_attack(fch, ch);
 
     return;

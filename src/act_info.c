@@ -159,7 +159,7 @@ char *format_obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch, bool fShort, bool iNam
 
     if ( iName ) /* Display the name of items, in case you don't know or forgot them. --Kline */
     {
-        snprintf(buf2, MSL, " [%s]", obj->name);
+        snprintf(buf2, MSL, " [%s]", obj->GetName_());
         strncat(buf, buf2, MSL - 1);
     }
 
@@ -1053,7 +1053,7 @@ DO_FUN(do_look)
             }
         }
 
-        if ( is_name( arg1, obj->name ) )
+        if ( is_name( arg1, obj->GetName() ) )
         {
             send_to_char( tagline_format(obj->long_descr, ch), ch );
             return;
@@ -1082,7 +1082,7 @@ DO_FUN(do_look)
             }
         }
 
-        if ( is_name( arg1, obj->name ) )
+        if ( is_name( arg1, obj->GetName() ) )
         {
             snprintf( pdesc, MSL, "%s\r\n", obj->long_descr );
             send_to_char( pdesc, ch );
@@ -2000,7 +2000,7 @@ DO_FUN(do_where)
                     && can_see( ch, victim ) && ( !IS_WOLF( victim ) || ( !IS_SHIFTED( victim ) && !IS_RAGED( victim ) ) ) )
             {
                 found = TRUE;
-                snprintf( buf, MSL, "%-28s %s\r\n", victim->name.c_str(), victim->in_room->name );
+                snprintf( buf, MSL, "%-28s %s\r\n", victim->GetName_(), victim->in_room->name );
                 send_to_char( buf, ch );
             }
         }
@@ -2024,7 +2024,7 @@ DO_FUN(do_where)
                     && ( !IS_AFFECTED( victim, AFF_HIDE ) && !item_has_apply( victim, ITEM_APPLY_HIDE ) )
                     && ( victim->in_room->area == ch->in_room->area )
                     && ( !IS_AFFECTED( victim, AFF_SNEAK ) && !item_has_apply( victim, ITEM_APPLY_SNEAK ) )
-                    && can_see( ch, victim ) && is_name( arg, const_cast<char *>(victim->name.c_str()) ) )
+                    && can_see( ch, victim ) && is_name( arg, victim->GetName() ) )
             {
                 found = TRUE;
                 snprintf( buf, MSL, "%-28s %s\r\n", victim->get_name(ch), victim->in_room->name );
@@ -2280,7 +2280,7 @@ DO_FUN(do_title)
 
     smash_tilde( argument );
     ch->set_title(argument);
-    snprintf( buf, MSL, "You are now: %s%s.\r\n", ch->name.c_str(), ch->get_title() );
+    snprintf( buf, MSL, "You are now: %s%s.\r\n", ch->GetName_(), ch->get_title() );
     send_to_char( buf, ch );
 }
 
@@ -2685,7 +2685,7 @@ DO_FUN(do_password)
     /*
      * No tilde allowed because of player file format.
      */
-    pwdnew = crypt( arg2, ch->name.c_str() );
+    pwdnew = crypt( arg2, ch->GetName_() );
     for ( p = pwdnew; *p != '\0'; p++ )
     {
         if ( *p == '~' )
@@ -3815,7 +3815,7 @@ DO_FUN(do_heal)
             spell_sanctuary( skill_lookup( "sanc" ), mult, ch, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 100 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3831,7 +3831,7 @@ DO_FUN(do_heal)
             give = take_best_coins( ch->money, 1000 );
             ch->mana = UMIN( ch->max_mana, ch->mana + 50 );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3848,7 +3848,7 @@ DO_FUN(do_heal)
             spell_heal( skill_lookup( "heal" ), mult, mob, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 50 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3864,7 +3864,7 @@ DO_FUN(do_heal)
             spell_invis( skill_lookup( "invis" ), mult, mob, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 20 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3880,7 +3880,7 @@ DO_FUN(do_heal)
             spell_detect_invis( skill_lookup( "detect invis" ), mult, mob, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 10 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3896,7 +3896,7 @@ DO_FUN(do_heal)
             spell_refresh( skill_lookup( "refresh" ), mult, mob, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 10 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3912,7 +3912,7 @@ DO_FUN(do_heal)
             spell_infravision( skill_lookup( "infra" ), mult, ch, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 20 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -3929,7 +3929,7 @@ DO_FUN(do_heal)
             spell_dispel_magic( skill_lookup( "dispel magic" ), mult * 5, mob, ch, NULL );
             give = take_best_coins( ch->money, ( mult * 200 ) );
             give = one_argument( give, changebuf );
-            snprintf( givebuf, MSL, "%s to %s", give, mob->name.c_str() );
+            snprintf( givebuf, MSL, "%s to %s", give, mob->GetName_() );
             do_give( ch, givebuf );
             join_money( round_money( atoi( changebuf ), TRUE ), ch->money );
             send_to_char( "The healer hands you some change.\r\n", ch );
@@ -4231,7 +4231,7 @@ DO_FUN(do_gain)
         ch->exp -= cost;
         advance_level( ch, c, TRUE, FALSE );
         ch->pcdata->adept_level = UMAX( 1, ch->pcdata->adept_level + 1 );
-        snprintf( buf, MSL, "%s @@W advances in the way of the Adept!!\r\n", ch->name.c_str() );
+        snprintf( buf, MSL, "%s @@W advances in the way of the Adept!!\r\n", ch->GetName_() );
         info( buf, 1 );
         free_string( ch->pcdata->who_name );
         ch->pcdata->who_name = str_dup( ch->get_whoname() );
@@ -4290,9 +4290,9 @@ DO_FUN(do_gain)
      */
 
     if ( remort )
-        snprintf( buf, MSL, "%s advances in the way of the %s.", ch->name.c_str(), remort_table[c].class_name );
+        snprintf( buf, MSL, "%s advances in the way of the %s.", ch->GetName_(), remort_table[c].class_name );
     else
-        snprintf( buf, MSL, "%s advances in the way of the %s.", ch->name.c_str(), class_table[c].class_name );
+        snprintf( buf, MSL, "%s advances in the way of the %s.", ch->GetName_(), class_table[c].class_name );
     info( buf, 1 );
 
     ch->exp -= cost;
@@ -4404,7 +4404,7 @@ DO_FUN(do_assassinate)
     cost_string = take_best_coins( ch->money, cost );
     cost_string = one_argument( cost_string, changebuf );
     change = is_number( changebuf ) ? atoi( changebuf ) : 0;
-    snprintf( givebuf, MSL, "%s to %s", cost_string, mob->name.c_str() );
+    snprintf( givebuf, MSL, "%s to %s", cost_string, mob->GetName_() );
     do_give( ch, givebuf );
 
     if ( change > 0 )
@@ -4416,7 +4416,7 @@ DO_FUN(do_assassinate)
 
     act( "$n gives $N some gold coins.", ch, NULL, mob, TO_NOTVICT );
     act( "$n says '$N shall die by my hand!`", mob, NULL, victim, TO_ROOM );
-    snprintf( buf, MSL, "%s employs the services of %s to assassinate %s!!", ch->name.c_str(), mob->get_name(), victim->name.c_str() );
+    snprintf( buf, MSL, "%s employs the services of %s to assassinate %s!!", ch->GetName_(), mob->get_name(), victim->GetName_() );
     info( buf, 1 );
     return;
 }
@@ -4801,7 +4801,7 @@ DO_FUN(do_whois)
     /*
      * Ok, so now show the details!
      */
-    snprintf( buf, MSL, "-=-=-=-=-=-=-=-=-=-=- %9s -=-=-=-=-=-=-=-=-=-=-\r\n", victim->name.c_str() );
+    snprintf( buf, MSL, "-=-=-=-=-=-=-=-=-=-=- %9s -=-=-=-=-=-=-=-=-=-=-\r\n", victim->GetName_() );
     if ( IS_IMMORTAL( victim ) )
     {
         snprintf( buf + strlen( buf ), MSL, " [ %3s ]\r\n", victim->pcdata->who_name );
@@ -4848,7 +4848,7 @@ DO_FUN(do_whois)
 
     if ( IS_IMMORTAL( victim ) )
     {
-        snprintf( buf + strlen( buf ), MSL, "%s is an Immortal.\r\n", victim->name.c_str() );
+        snprintf( buf + strlen( buf ), MSL, "%s is an Immortal.\r\n", victim->GetName_() );
     }
     /*
      * Description here, or email address?
