@@ -143,7 +143,7 @@ void save_char_obj( CHAR_DATA * ch )
      */
     if ( IS_NPC( ch ) )  /* convert spaces to . */
     {
-        for ( nmptr = const_cast<char *>(ch->name.c_str()), bufptr = buf; *nmptr != 0; nmptr++ )
+        for ( nmptr = const_cast<char *>(ch->GetName_()), bufptr = buf; *nmptr != 0; nmptr++ )
         {
             if ( *nmptr == ' ' )
                 *( bufptr++ ) = '.';
@@ -153,7 +153,7 @@ void save_char_obj( CHAR_DATA * ch )
         *( bufptr ) = *nmptr;
     }
     else
-        strcpy( buf, ch->name.c_str() );
+        strcpy( buf, ch->GetName_() );
     snprintf( strsave, MIL, "%s%s%s%s", PLAYER_DIR, initial( buf ), "/", cap_nocol( buf ) );
 
     /*
@@ -209,7 +209,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "#%s\n", IS_NPC( ch ) ? "MOB" : "PLAYER" );
 
     fprintf( fp, "Revision       %d\n", SAVE_REVISION );
-    fprintf( fp, "Name           %s~\n", ch->name.c_str() );
+    fprintf( fp, "Name           %s~\n", ch->GetName_() );
 
     outstr.clear();
     fprintf( fp, "Act            " );
@@ -510,7 +510,7 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
 
     fprintf( fp, "#OBJECT\n" );
     fprintf( fp, "Nest         %d\n", iNest );
-    fprintf( fp, "Name         %s~\n", obj->name );
+    fprintf( fp, "Name         %s~\n", obj->GetName_() );
     fprintf( fp, "ShortDescr   %s~\n", obj->short_descr );
     fprintf( fp, "LongDescr    %s~\n", obj->long_descr );
     fprintf( fp, "Durability   %d %d\n", obj->durability, obj->max_durability );
@@ -678,7 +678,7 @@ bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
     }
 
     ch->desc = d;
-    ch->name = name;
+    ch->SetName( name );
     ch->prompt = DEFAULT_PROMPT;
     if ( is_npc )
         ch->npc = true;
@@ -781,8 +781,9 @@ bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
 #undef KEY
 #endif
 
-#define KEY( literal, field, value )  if ( !str_cmp( word, literal ) ) { field  = value; fMatch = TRUE;  break;}
-#define SKEY( literal, field, value )  if ( !str_cmp( word, literal ) ) { if (field!=NULL) free_string(field);field  = value; fMatch = TRUE;  break;}
+#define KEY( literal, field, value )  if ( !str_cmp( word, literal ) ) { field  = value; fMatch = true;  break; }
+#define KEY_( literal, field, value ) if ( !str_cmp( word, literal ) ) { field( value ); fMatch = true; break; }
+#define SKEY( literal, field, value )  if ( !str_cmp( word, literal ) ) { if (field!=NULL) free_string(field);field  = value; fMatch = true;  break;}
 
 void fread_char( CHAR_DATA * ch, FILE * fp )
 {
@@ -1299,7 +1300,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     sn = skill_lookup( skill_word );
                     if ( sn < 0 )
                     {
-                        snprintf( log_buf, (2 * MIL), "Loading pfile %s, unknown skill %s.", ch->name.c_str(), skill_word );
+                        snprintf( log_buf, (2 * MIL), "Loading pfile %s, unknown skill %s.", ch->GetName_(), skill_word );
                         monitor_chan( log_buf, MONITOR_BAD );
                     }
                     else
@@ -1388,7 +1389,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
         ch->long_descr_orig = ch->long_descr;
         if ( !fMatch )
         {
-            snprintf( log_buf, (2 * MIL), "Loading in pfile :%s, no match for ( %s ).", ch->name.c_str(), word );
+            snprintf( log_buf, (2 * MIL), "Loading in pfile :%s, no match for ( %s ).", ch->GetName_(), word );
             monitor_chan( log_buf, MONITOR_BAD );
             fread_to_eol( fp );
         }
@@ -1595,7 +1596,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                     break;
                 }
             case 'N':
-                SKEY( "Name", obj->name, fread_string( fp ) );
+                KEY_( "Name", obj->SetName, fread_string( fp ) );
 
                 if ( !str_cmp( word, "Nest" ) )
                 {
@@ -1907,7 +1908,7 @@ void fread_corpse( FILE * fp )
                     break;
                 }
             case 'N':
-                KEY( "Name", obj->name, fread_string( fp ) );
+                KEY_( "Name", obj->SetName, fread_string( fp ) );
 
                 if ( !str_cmp( word, "Nest" ) )
                 {
@@ -2060,7 +2061,7 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
     fprintf( fp, "WhereVnum    %d\n", where_vnum );
 
     fprintf( fp, "Nest         %d\n", iNest );
-    fprintf( fp, "Name         %s~\n", obj->name );
+    fprintf( fp, "Name         %s~\n", obj->GetName_() );
     fprintf( fp, "ShortDescr   %s~\n", obj->short_descr );
     fprintf( fp, "LongDescr    %s~\n", obj->long_descr );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );

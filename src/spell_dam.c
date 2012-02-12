@@ -1060,7 +1060,7 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
         else
         {
             char name_buf[MAX_STRING_LENGTH];
-            snprintf( name_buf, MSL, "%s", ch->name.c_str() );
+            snprintf( name_buf, MSL, "%s", ch->GetName_() );
             raw_kill( victim, name_buf );
         }
 

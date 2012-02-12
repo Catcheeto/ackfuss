@@ -126,8 +126,6 @@ bool is_number( char *arg )
     return TRUE;
 }
 
-
-
 bool is_name( const char *str, char *namelist )
 {
     char name[MAX_INPUT_LENGTH];
@@ -1706,7 +1704,7 @@ char *tagline_format( const char *txt, CHAR_DATA *ch )
                     continue;
                 }
 
-                snprintf(p_name, 128, "%s", ch->name.c_str());
+                snprintf(p_name, 128, "%s", ch->GetName_());
                 n = p_name;
 
                 while ( *n != '\0' )
@@ -1786,7 +1784,7 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
         case 'I':
             if ( !str_cmp(arg1, "immortal") && IS_IMMORTAL(ch) )                                 { retval = true; break; }
             if ( !str_cmp(arg1, "int") && evaluate_tag(arg2, get_curr_int(ch), value) )            { retval = true; break; }
-            if ( !str_cmp(arg1, "isname") && !str_cmp(arg2, ch->name) )                           { retval = true; break; }
+            if ( !str_cmp(arg1, "isname") && !str_cmp(arg2, ch->GetName()) )                           { retval = true; break; }
             if ( !str_cmp(arg1, "istitle") && !str_cmp(arg2, strip_color(ch->get_title(), "@@")) ) { retval = true; break; }
             break;
 
@@ -2128,7 +2126,7 @@ const char *who_pers( CHAR_DATA *pers )
      snprintf( flags2, 10, "IDLE:%2d", pers->timer );
 
  /* Sort out name + title length */
- nlen = nocol_strlen( pers->name.c_str() );
+ nlen = nocol_strlen( pers->GetName_() );
  tlen = 3 + strlen( pers->get_title() ) + nlen; /* Add 3 for space padded on either end of the total string, and terminating NUL */
  snprintf( buf2, MSL, "%s%s", pers->get_name(), pers->get_title() );
  snprintf( ntbuf, MSL, "%s", color_format(buf2,33,true) );

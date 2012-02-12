@@ -372,7 +372,7 @@ void do_qpspend( CHAR_DATA * ch, char *argument )
 
                     brand = new BRAND_DATA;
                     GET_FREE( brand_member, dl_list_free );
-                    brand->branded = str_dup( ch->name.c_str() );
+                    brand->branded = str_dup( ch->GetName_() );
                     brand->branded_by = str_dup( "@@rSystem@@N" );
                     brand->priority = str_dup( "normal" );
                     brand->message = str_dup( brandbuf );
@@ -444,7 +444,7 @@ void do_qpspend( CHAR_DATA * ch, char *argument )
                 DL_LIST *brand_member;
                 brand = new BRAND_DATA;
                 GET_FREE( brand_member, dl_list_free );
-                brand->branded = str_dup( ch->name.c_str() );
+                brand->branded = str_dup( ch->GetName_() );
                 brand->branded_by = str_dup( "@@rSystem@@N" );
                 brand->priority = str_dup( "normal" );
                 snprintf( brandbuf, MSL, "Assist message changed to %s\r\n", ch->pcdata->assist_msg );
@@ -542,7 +542,7 @@ void do_qpspend( CHAR_DATA * ch, char *argument )
             for ( li = obj_list.begin(); li != obj_list.end(); li++ )
             {
                 obj = *li;
-                if ( ( ( obj->pIndexData->vnum ) == OBJ_VNUM_CORPSE_PC ) && ( !str_cmp( ch->name, obj->owner ) ) && ( !( obj->in_room == ch->in_room ) ) ) /*don't work! */
+                if ( ( ( obj->pIndexData->vnum ) == OBJ_VNUM_CORPSE_PC ) && ( ( ch == obj->GetOwner() ) ) && ( !( obj->in_room == ch->in_room ) ) ) /*don't work! */
                 {
                     found = TRUE;
                     obj_from_room( obj );
@@ -765,7 +765,7 @@ void do_immbrand( CHAR_DATA * ch, char *argument )
         free_string( ch->pcdata->current_brand->dt_stamp );
         ch->pcdata->current_brand->dt_stamp = str_dup( current_time_str() );
         free_string( ch->pcdata->current_brand->branded_by );
-        ch->pcdata->current_brand->branded_by = str_dup( ch->name.c_str() );
+        ch->pcdata->current_brand->branded_by = str_dup( ch->GetName_() );
         GET_FREE( this_brand, dl_list_free );
         this_brand->next = NULL;
         this_brand->prev = NULL;

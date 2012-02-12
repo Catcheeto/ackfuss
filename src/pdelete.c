@@ -57,7 +57,7 @@ DO_FUN(do_sdelete)
 
     if ( IS_NPC( ch ) )
         return;
-    strcpy( buf, ch->name.c_str() );
+    strcpy( buf, ch->GetName_() );
     snprintf( strsave, MIL, "%s%s%s%s", PLAYER_DIR, initial( buf ), "/", capitalize( buf ) );
 
     pArg = arg1;

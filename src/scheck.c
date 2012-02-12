@@ -171,7 +171,6 @@ static void walk_note_data( NOTE_DATA * note )
     if ( !note )
         return;
 
-    touch( note->sender );
     touch( note->date );
     touch( note->to_list );
     touch( note->subject );
@@ -297,7 +296,6 @@ static void walk_obj_index_data( OBJ_INDEX_DATA * o )
     touch( o->name );
     touch( o->short_descr );
     touch( o->long_descr );
-    touch( o->owner );
 }
 
 
@@ -311,8 +309,6 @@ static void walk_obj_data( OBJ_DATA * o )
     for ( ed = o->first_exdesc; ed; ed = ed->next )
         walk_extra_descr_data( ed );
 
-    touch( o->owner );
-    touch( o->name );
     touch( o->short_descr );
     touch( o->long_descr );
 }
@@ -528,7 +524,6 @@ static void walk_message_data( MESSAGE_DATA * m )
         return;
 
     touch( m->message );
-    touch( m->author );
     touch( m->title );
 }
 
