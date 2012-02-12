@@ -112,7 +112,7 @@ void write_interpret( CHAR_DATA * ch, char *argument )
 
     if ( buf_data == NULL )
     {
-        bugf( "Call to write_interpret when not writing (char=%s)\r\n", ch->name.c_str() );
+        bugf( "Call to write_interpret when not writing (char=%s)\r\n", ch->GetName_() );
         ch->position = POS_STANDING;
         return;
     }

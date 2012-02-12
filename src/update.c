@@ -1334,7 +1334,7 @@ void char_update( void )
                 char_to_room(ch, get_room_index(ROOM_VNUM_ALTAR));
                 send_to_char("The gods have taken pity upon your ghostly plight...\r\n", ch);
                 resurrect(ch);
-                do_mpcr(ch, const_cast<char *>(ch->name.c_str()));
+                do_mpcr(ch, const_cast<char *>(ch->GetName_()));
                 do_look(ch, "auto");
             }
         }
@@ -1400,7 +1400,7 @@ void char_update( void )
                         {
                             snprintf( bug_buf, (2 * MIL),
                                       "ERROR in expiring item %s(%s %d): item has a replace vnum set (%d), but that is not a valid item.",
-                                      obj->name, obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
+                                      obj->GetName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
                             monitor_chan( bug_buf, MONITOR_OBJ );
                             log_f( "%s", bug_buf );
                         }
@@ -1552,7 +1552,7 @@ void char_update( void )
                         this_master = ch->master;
                         do_say( ch, "Whaa?? Where am I? How did I get here?" );
                         do_scan( ch, "" );
-                        check_social( ch, "growl", const_cast<char *>(ch->master->name.c_str()) );
+                        check_social( ch, "growl", const_cast<char *>(ch->master->GetName_()) );
                         do_say( ch, "How dare you order me around!!!" );
                         stop_follower( ch );
                         one_hit( ch, this_master, TYPE_UNDEFINED );
@@ -1708,7 +1708,7 @@ void obj_update( void )
 
         obj = *li;
 
-        monitor_chan(obj->name, MONITOR_OBJ);
+        monitor_chan(obj->GetName_(), MONITOR_OBJ);
 
         if ( obj == auction_item )
             continue;
@@ -1775,7 +1775,7 @@ void obj_update( void )
             {
                 snprintf( bug_buf, (2 * MIL),
                           "ERROR in expiring item %s(%s %d): item has a replace vnum set (%d), but that is not a valid item.",
-                          obj->name, obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
+                          obj->GetName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
                 monitor_chan( bug_buf, MONITOR_OBJ );
                 log_f( "%s", bug_buf );
             }
@@ -2112,7 +2112,7 @@ bool check_rewield( CHAR_DATA * ch )
             if ( pickup )
                 get_obj( ch, weapon, NULL );
 
-            do_wear( ch, weapon->name );
+            ch->EquipThing( weapon );
 
             /*
              * Check is mob wielded weapon ok...
@@ -2272,7 +2272,7 @@ bool check_reequip( CHAR_DATA * ch )
                 get_obj( ch, armor, NULL );
         }
 
-        do_wear( ch, armor->name );
+        ch->EquipThing( armor );
 
         /*
          * Check is mob wielded weapon ok...
@@ -2306,7 +2306,7 @@ bool check_reequip( CHAR_DATA * ch )
                 get_obj( ch, light, NULL );
         }
 
-        do_wear( ch, light->name );
+        ch->EquipThing( light );
 
         /*
          * Check is mob wielded weapon ok...
@@ -2352,7 +2352,7 @@ void auction_update( void )
             }
             else
             {
-                snprintf( buf, MSL, "%s has bid %s for %s.", auction_bidder->name.c_str(),
+                snprintf( buf, MSL, "%s has bid %s for %s.", auction_bidder->GetName_(),
                           cost_to_money( auction_bid ), auction_item->short_descr );
             }
             break;
@@ -2447,7 +2447,7 @@ void auction_update( void )
 
                 if ( good_buyer )
                 {
-                    snprintf( buf, MSL, "%s - SOLD! to %s.", auction_item->short_descr, auction_bidder->name.c_str() );
+                    snprintf( buf, MSL, "%s - SOLD! to %s.", auction_item->short_descr, auction_bidder->GetName_() );
 
                     obj_to_char( auction_item, auction_bidder );
                 }
