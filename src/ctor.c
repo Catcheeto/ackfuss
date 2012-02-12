@@ -392,7 +392,7 @@ note_data::note_data()
     sender.clear();
     subject = &str_empty[0];
     text = &str_empty[0];
-    to_list = &str_empty[0];
+    to_list.clear();
 
     note_list.push_back(this);
 }

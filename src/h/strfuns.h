@@ -18,6 +18,7 @@
 void pre_parse P_((char *list, char *victimname, char *containername, char *things));
 bool is_number P_((char *arg));
 bool is_name P_((const char *str, char *namelist));
+bool is_name P_((const char *str, string namelist));
 bool is_name_pfx P_((const char *str, char *namelist));
 char *space_pad P_((const char *str, short final_size));
 void smash_tilde P_((char *str));

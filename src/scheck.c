@@ -172,7 +172,6 @@ static void walk_note_data( NOTE_DATA * note )
         return;
 
     touch( note->date );
-    touch( note->to_list );
     touch( note->subject );
     touch( note->text );
 }

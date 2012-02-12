@@ -203,7 +203,6 @@ note_data::~note_data()
     free_string(date);
     free_string(subject);
     free_string(text);
-    free_string(to_list);
 }
 
 npc_data::~npc_data()

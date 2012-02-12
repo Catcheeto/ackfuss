@@ -81,10 +81,13 @@
 /* Added back-in the note code, but made more like PO system */
 bool is_note_to( CHAR_DATA * ch, NOTE_DATA * pnote )
 {
-    if ( is_name( ch->GetName(), pnote->to_list ) )
-        return TRUE;
+    list<string>::iterator li;
 
-    return FALSE;
+    for ( li = pnote->to_list.begin(); li != pnote->to_list.end(); li++ )
+        if ( *li == ch->GetName() )
+            return true;
+
+    return false;
 }
 
 void note_attach( CHAR_DATA * ch )
@@ -106,38 +109,21 @@ void note_attach( CHAR_DATA * ch )
 void note_remove( CHAR_DATA * ch, NOTE_DATA * pnote )
 {
     FILE *fp;
-    char *to_list;
-    char to_new[MSL];
-    char to_one[MSL];
     list<NOTE_DATA *>::iterator li;
+    list<string>::iterator it;
+    string to_list;
 
     /*
      * Build a new to_list.
      * Strip out this recipient.
      */
-    to_one[0] = '\0';
-
-    to_new[0] = '\0';
-    to_list = pnote->to_list;
-    while ( *to_list != '\0' )
-    {
-        to_list = one_argument( to_list, to_one );
-        if ( to_one[0] != '\0' && str_cmp( ch->GetName(), to_one ) )
-        {
-            strncat( to_new, " ", MSL );
-            strncat( to_new, to_one, MSL - 1 );
-        }
-    }
+    pnote->to_list.remove( ch->GetName() );
 
     /*
      * Just a simple recipient removal?
      */
-    if ( ( ch->GetName() == pnote->sender ) && to_new[0] != '\0' )
-    {
-        free_string( pnote->to_list );
-        pnote->to_list = str_dup( to_new + 1 );
+    if ( ( ch->GetName() == pnote->sender ) && !pnote->to_list.empty() )
         return;
-    }
 
     /*
      * Remove note from linked list.
@@ -160,7 +146,9 @@ void note_remove( CHAR_DATA * ch, NOTE_DATA * pnote )
             fprintf( fp, "Sender  %s~\n", pnote->sender.c_str() );
             fprintf( fp, "Date    %s~\n", pnote->date );
             fprintf( fp, "Stamp   %ld\n", pnote->date_stamp );
-            fprintf( fp, "To      %s~\n", pnote->to_list );
+            for ( it = pnote->to_list.begin(); it != pnote->to_list.end(); it++ )
+                to_list.append(*it+" ");
+            fprintf( fp, "To      %s~\n", to_list.c_str() );
             fprintf( fp, "Subject %s~\n", pnote->subject );
             fprintf( fp, "Text\n%s~\n\n", pnote->text );
         }
@@ -370,8 +358,8 @@ DO_FUN(do_note)
     if ( !str_cmp( arg, "to" ) )
     {
         note_attach( ch );
-        free_string( ch->pcdata->pnote->to_list );
-        ch->pcdata->pnote->to_list = str_dup( argument );
+        string fixme = argument;
+        ch->pcdata->pnote->to_list.push_back( fixme );
         send_to_char( "Ok.\r\n", ch );
         return;
     }
@@ -396,7 +384,13 @@ DO_FUN(do_note)
             return;
         }
 
-        snprintf( buf, MSL, "%s: %s\r\nTo: %s\r\n", ch->pcdata->pnote->sender.c_str(), ch->pcdata->pnote->subject, ch->pcdata->pnote->to_list );
+        list<string>::iterator fm;
+        string fixme;
+
+        for ( fm = ch->pcdata->pnote->to_list.begin(); fm != ch->pcdata->pnote->to_list.end(); fm++ )
+            fixme.append(*fm+" ");
+
+        snprintf( buf, MSL, "%s: %s\r\nTo: %s\r\n", ch->pcdata->pnote->sender.c_str(), ch->pcdata->pnote->subject, fixme.c_str() );
         send_to_char( buf, ch );
         send_to_char( ch->pcdata->pnote->text, ch );
         return;
@@ -412,7 +406,7 @@ DO_FUN(do_note)
             return;
         }
 
-        if ( !str_cmp( ch->pcdata->pnote->to_list, "" ) )
+        if ( ch->pcdata->pnote->to_list.empty() )
         {
             send_to_char( "You need to provide recipient name(s).\r\n", ch );
             return;
@@ -437,10 +431,16 @@ DO_FUN(do_note)
         }
         else
         {
+            list<string>::iterator fm;
+            string fixme;
+
+            for ( fm = pnote->to_list.begin(); fm != pnote->to_list.end(); fm++ )
+                fixme.append(*fm+" ");
+
             fprintf( fp, "Sender  %s~\n", pnote->sender.c_str() );
             fprintf( fp, "Date    %s~\n", pnote->date );
             fprintf( fp, "Stamp   %ld\n", pnote->date_stamp );
-            fprintf( fp, "To      %s~\n", pnote->to_list );
+            fprintf( fp, "To      %s~\n", fixme.c_str() );
             fprintf( fp, "Subject %s~\n", pnote->subject );
             fprintf( fp, "Text\n%s~\n\n", pnote->text );
         }

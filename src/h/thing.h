@@ -31,8 +31,8 @@ class Thing {
         virtual void AppendName( const string name ) { m_name.append( name ); };
         virtual const char* GetName_( Thing* looker = NULL ) const { return m_name.c_str(); };
         virtual string GetName( Thing* looker = NULL ) const { return m_name; };
-        bool IsWithinName( const char* word );
-        bool IsWithinName( const string word );
+/*        bool IsWithinName( const char* word );
+        bool IsWithinName( const string word );*/
         virtual void PrefixName( const char* name ) { m_name.insert( 0, name ); };
         virtual void PrefixName( const string name ) { m_name.insert( 0, name ); };
         virtual void SetName( const char* name ) { m_name = name; };

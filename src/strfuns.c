@@ -140,6 +140,11 @@ bool is_name( const char *str, char *namelist )
     }
 }
 
+bool is_name( const char *str, string namelist )
+{
+    return is_name( str, const_cast<char*>(namelist.c_str()) );
+}
+
 bool is_name_pfx( const char *str, char *namelist )
 {
     char name[MAX_INPUT_LENGTH];

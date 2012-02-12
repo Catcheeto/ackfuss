@@ -413,7 +413,7 @@ class note_data
         string sender;
         char *subject;
         char *text;
-        char *to_list;
+        list<string> to_list;
 };
 
 /*

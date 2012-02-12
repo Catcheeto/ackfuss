@@ -46,7 +46,7 @@ bool Thing::RemoveThing( const Thing* what )
 /*
  * Name Handling
  */
-
+/*
 bool Thing::IsWithinName( const char* word );
 {
     string holder;
@@ -86,7 +86,7 @@ bool Thing::IsWithinName( const string word );
 
     return false;
 }
-
+*/
 Thing::Thing()
 {
     m_name.clear();

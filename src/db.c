@@ -1908,7 +1908,8 @@ void load_notes( void )
 
         if ( str_cmp( fread_word( fp ), "to" ) )
             break;
-        pnote->to_list = fread_string( fp );
+        string fixme = fread_string( fp );
+        pnote->to_list.push_back( fixme );
 
         if ( str_cmp( fread_word( fp ), "subject" ) )
             break;
