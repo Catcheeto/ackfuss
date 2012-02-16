@@ -1046,11 +1046,10 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
              * * Fixed my bug here too, hehe!
              */
 
-            if ( victim->exp > 0 )
+            if ( victim->GetExperience() > 0 )
             {
-                int lose = (victim->exp / 2);
-                lose *= -1;
-                victim->gain_exp(lose);
+                int lose = (victim->GetExperience() / 2);
+                victim->DecrExperience( lose );
             }
 
         }

@@ -12,11 +12,55 @@
 #include "h/act_obj.h"
 #endif
 
+#ifndef DEC_THING_H
+#include "h/thing.h"
+#endif
+
+/*
+ * Level Handling
+ */
+
+const bool Thing::DecrExperience( const uint_t amount )
+{
+    if ( amount <= 0 || amount >= uintmax_t )
+        return false;
+
+    if ( ( m_experience - amount ) <= 0 )
+        m_experience = 0;
+    else
+        m_experience -= amount;
+
+    return true;
+}
+
+const bool Thing::IncrExperience( const uint_t amount )
+{
+    if ( amount <= 0 || amount >= uintmax_t )
+        return false;
+
+    if ( ( m_experience + amount ) >= uintmax_t )
+        m_experience = uintmax_t;
+    else
+        m_experience += amount;
+
+    return true;
+}
+
+const bool Thing::SetExperience( const uint_t amount )
+{
+    if ( amount <= 0 || amount >= uintmax_t )
+        return false;
+
+    m_experience = amount;
+
+    return true;
+}
+
 /*
  * 'Object' Manipulation
  */
 
-bool Thing::DropThing( const Thing* what )
+const bool Thing::DropThing( const Thing* what )
 {
     char name[MSL];
 
@@ -25,7 +69,7 @@ bool Thing::DropThing( const Thing* what )
     return true;
 }
 
-bool Thing::EquipThing( const Thing* what )
+const bool Thing::EquipThing( const Thing* what )
 {
     char name[MSL];
 
@@ -34,7 +78,7 @@ bool Thing::EquipThing( const Thing* what )
     return true;
 }
 
-bool Thing::RemoveThing( const Thing* what )
+const bool Thing::RemoveThing( const Thing* what )
 {
     char name[MSL];
 
@@ -89,7 +133,9 @@ bool Thing::IsWithinName( const string word );
 */
 Thing::Thing()
 {
+    m_experience = 0;
     m_name.clear();
+    m_owner = NULL;
 }
 
 Thing::~Thing()

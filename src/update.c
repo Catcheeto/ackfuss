@@ -1216,52 +1216,46 @@ void gain_update( void )
 {
     CHAR_DATA *ch;
     list<CHAR_DATA *>::iterator li;
+    Thing* pers;
+    list<Thing*>::iterator ti;
     /* Update super_councils info  */
 
     {
 
-        MEMBER_DATA *imember;
         short count = 0;
         short council_index;
 
         for ( council_index = 1; council_index < MAX_SUPER; council_index++ )
         {
-            if ( super_councils[council_index].council_time > 0 )
+            if ( super_councils[council_index].time > 0 )
             {
-                super_councils[council_index].council_time--;
+                super_councils[council_index].time--;
 
 
-                if ( super_councils[council_index].council_time == 1 )
+                if ( super_councils[council_index].time == 1 )
                 {
-                    MEMBER_DATA *imember_next;
-                    for ( imember = super_councils[council_index].first_member; imember != NULL; imember = imember_next )
+                    for ( ti = super_councils[council_index].members.begin(); ti != super_councils[council_index].members.end(); ti++ )
                     {
-                        imember_next = imember->next;
-                        send_to_char( "The current council is disbanded.\r\n", imember->this_member );
-                        UNLINK( imember, super_councils[council_index].first_member, super_councils[council_index].last_member,
-                                next, prev );
-                        imember->this_member = NULL;
-                        imember->next = NULL;
-                        imember->prev = NULL;
-                        PUT_FREE( imember, member_free );
+                        pers = *ti;
+                        send_to_char( "The current council is disbanded.\r\n", (CHAR_DATA*)pers );
+                        super_councils[council_index].members.remove( pers );
                     }
-                    super_councils[council_index].council_time = 0;
-                    super_councils[council_index].quorum = FALSE;
+                    super_councils[council_index].time = 0;
+                    super_councils[council_index].quorum = false;
                 }
             }
             if ( !super_councils[council_index].quorum )
             {
-                super_councils[council_index].quorum = FALSE;
-                for ( imember = super_councils[council_index].first_member; imember != NULL; imember = imember->next )
+                super_councils[council_index].quorum = false;
+                if ( super_councils[council_index].members.size() >= QUORUM_NUMBER )
                 {
-                    count++;
-                }
-                if ( count >= QUORUM_NUMBER )
-                {
-                    super_councils[council_index].quorum = TRUE;
-                    super_councils[council_index].council_time = 10;
-                    for ( imember = super_councils[council_index].first_member; imember != NULL; imember = imember->next )
-                        send_to_char( "The Council is in Session!\r\n", imember->this_member );
+                    super_councils[council_index].quorum = true;
+                    super_councils[council_index].time = 10;
+                    for ( ti = super_councils[council_index].members.begin(); ti != super_councils[council_index].members.end(); ti++ )
+                    {
+                        pers = *ti;
+                        send_to_char( "The Council is in Session!\r\n", (CHAR_DATA*)pers );
+                    }
                 }
             }
         }

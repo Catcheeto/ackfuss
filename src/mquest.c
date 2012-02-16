@@ -151,7 +151,7 @@ DO_FUN(do_mquest)
             send_to_char("You do not have enough gold to give up on this quest!\r\n", ch);
             return;
         }
-        if ( (ch->exp - pexp) < 0 )
+        if ( (ch->GetExperience() - pexp) < 0 )
         {
             send_to_char("You do not have enough experience to give up on this quest!\r\n", ch);
             return;
@@ -172,7 +172,7 @@ DO_FUN(do_mquest)
             if ( m_number > 0 )
                 snprintf(mbuf, MSL, "%s %s", m_number, m_name);
         }
-        ch->exp -= pexp;
+        ch->DecrExperience( pexp );
 
         snprintf(buf, MSL, "Giving up on this quest has cost you %d qp, %d exp, %s.\r\n", pqp, pexp, cost_to_money(money_to_value(ch, mbuf)));
         send_to_char(buf, ch);
@@ -663,7 +663,7 @@ void mquest_complete_message( CHAR_DATA *ch )
 
         ch->pcdata->quest_points += ch->pcdata->quest_info->quest_reward[QUEST_REWARD_QP];
         join_money(round_money(ch->pcdata->quest_info->quest_reward[QUEST_REWARD_GOLD], TRUE), ch->money);
-        ch->exp += ch->pcdata->quest_info->quest_reward[QUEST_REWARD_EXP];
+        ch->IncrExperience( ch->pcdata->quest_info->quest_reward[QUEST_REWARD_EXP] );
 
         ch->pcdata->records->mquest_c++;
         ch->pcdata->records->qp_tot += ch->pcdata->quest_info->quest_reward[QUEST_REWARD_QP];

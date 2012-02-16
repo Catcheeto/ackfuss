@@ -304,7 +304,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "\n" );
     }
 
-    fprintf( fp, "Exp            %d\n", ch->exp );
+    fprintf( fp, "Exp            %ld\n", ch->GetExperience() );
 
     fprintf( fp, "AffectedBy     %d\n", ch->affected_by );
     /*
@@ -987,7 +987,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                         ch->pcdata->login_sex = ch->sex;
                     return;
                 }
-                KEY( "Exp", ch->exp, fread_number( fp ) );
+                KEY_( "Exp", ch->SetExperience, fread_number( fp ) );
                 if ( !IS_NPC( ch ) )
                 {
                     KEY( "Email", ch->pcdata->email->address, fread_string( fp ) );

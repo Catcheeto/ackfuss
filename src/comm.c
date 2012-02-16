@@ -125,13 +125,17 @@
 #include "h/telopt.h"
 #endif
 
+#ifndef DEC_THING_H
+#include "h/thing.h"
+#endif
+
 #ifndef DEC_UPDATE_H
 #include "h/update.h"
 #endif
 
-const char echo_off_str[] = { IAC, WILL, TELOPT_ECHO, '\0' };
-const char echo_on_str[] = { IAC, WONT, TELOPT_ECHO, '\0' };
-const char go_ahead_str[] = { IAC, GA, '\0' };
+const char echo_off_str[] = { char(IAC), char(WILL), char(TELOPT_ECHO), char('\0') };
+const char echo_on_str[] = { char(IAC), char(WONT), char(TELOPT_ECHO), char('\0') };
+const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
 
 /*
  * Global variables.
@@ -169,10 +173,6 @@ OBJ_DATA *quest_object; /* Object to recover    */
 int quest_timer;  /* Time left to get object */
 int quest_wait = 0;  /* Min time until next quest  */
 short quest_personality;  /* mob's crusade personality :) */
-
-/* Some debug globals --Kline */
-int free_get = 0;
-int free_put = 0;
 
 /* Zen mod: Diplomatics globals */
 
@@ -329,7 +329,7 @@ int init_socket( int sock_port )
      */
     /* sa.sin_addr.s_addr = inet_addr("127.0.0.1"); */
 
-    if ( bind( fd, ( struct sockaddr * )&sa, sizeof( sa ) ) < 0 )
+    if ( ::bind( fd, ( struct sockaddr * )&sa, sizeof( sa ) ) < 0 )
     {
         perror( "Init_socket: bind" );
         close( fd );
@@ -1308,7 +1308,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                         cost = exp_to_level( ch, cl_index, 5 );
                     else
                         cost = exp_to_level( ch, cl_index, ch->pcdata->order[cl_index] );
-                    snprintf( buf2, MSL, "%d", UMAX( 0, cost - ch->exp ) );
+                    snprintf( buf2, MSL, "%ld", UMAX( 0, cost - ch->GetExperience() ) );
                     i = buf2;
                     break;
                 }
@@ -1361,11 +1361,11 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case 'x':
-                snprintf( buf2, MSL, "%d", ch->exp );
+                snprintf( buf2, MSL, "%ld", ch->GetExperience() );
                 i = buf2;
                 break;
             case 'X':
-                snprintf( buf2, MSL, "%s", comma_print(ch->exp) );
+                snprintf( buf2, MSL, "%s", comma_print(ch->GetExperience()) );
                 i = buf2;
                 break;
             case 'g':
@@ -2266,16 +2266,10 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
         if ( IS_HERO( ch ) )
         {
-            DL_LIST *brands;
-            short numbrands;
+            uint_t numbrands = brand_list.size();
             char msgbuf[MSL];
-            for ( brands = first_brand, numbrands = 0; brands; brands = brands->next, numbrands++ );
             do_help( ch, "imotd" );
-            snprintf( msgbuf, MSL, "There are currently %d outstanding brands.\r\n%s",
-                      numbrands,
-                      ( ( numbrands < 50 ) ?
-                        "" :
-                        "@@eWarning: Process these brands immediately using immbrand list, immbrand read, and immbrand remove to avoid disk overflow!!@@N\r\n" ) );
+            snprintf( msgbuf, MSL, "There are currently %ld outstanding brands.\r\n", numbrands );
             send_to_char( msgbuf, ch );
 
         }
@@ -2841,7 +2835,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 save_mudinfo();                /* if we crash that no one else logs in first to */
             }                               /* steal power. --Kline                          */
 
-            ch->exp = 0;
+            ch->SetExperience( 0 );
             ch->hit = ch->max_hit;
             ch->mana = ch->max_mana;
             ch->move = ch->max_move;

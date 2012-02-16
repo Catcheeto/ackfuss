@@ -1602,19 +1602,15 @@ DO_FUN(do_recall)
         {
             ch->set_cooldown(COOLDOWN_DEF, 2.75);
             lose = ( ch->level / 4 ) + 1;
-            lose = UMIN( lose, ch->exp );
-            lose *= -1;
-            ch->gain_exp(lose);
-            snprintf( buf, MSL, "You failed!  You lose %d exps.\r\n", lose );
+            ch->DecrExperience( lose );
+            snprintf( buf, MSL, "You failed!  You lose %d exps.\r\n", ( lose * -1 ) );
             send_to_char( buf, ch );
             return;
         }
 
         lose = ( ch->level / 4 ) + 25;
-        lose = UMIN( lose, ch->exp );
-        lose *= -1;
-        ch->gain_exp(lose);
-        snprintf( buf, MSL, "You recall from combat!  You lose %d exps.\r\n", lose );
+        ch->DecrExperience( lose );
+        snprintf( buf, MSL, "You recall from combat!  You lose %d exps.\r\n", ( lose * -1 ) );
         send_to_char( buf, ch );
         stop_fighting( ch );
     }

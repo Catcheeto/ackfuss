@@ -926,10 +926,11 @@ DO_FUN(do_council)
     char buf2[MAX_STRING_LENGTH];
     char arg1[MAX_STRING_LENGTH];
     char arg2[MAX_STRING_LENGTH];
-    MEMBER_DATA *imember;
-    MEMBER_DATA *member;
     short this_council = SUPER_NONE;
     CHAR_DATA *victim;
+    Thing* pers;
+    list<Thing*> members;
+    list<Thing*>::iterator li;
 
 
     if ( ( IS_NPC( ch ) ) || ( !ch->act.test(ACT_COUNCIL) ) )
@@ -940,12 +941,6 @@ DO_FUN(do_council)
 
     if ( IS_VAMP( ch ) ) /* add other super checks here later */
         this_council = SUPER_VAMP;
-    GET_FREE( member, member_free );
-
-    member->this_member = ch;
-    member->next = NULL;
-    member->prev = NULL;
-
 
     argument = one_argument( argument, arg1 );
     argument = one_argument( argument, arg2 );
@@ -954,11 +949,12 @@ DO_FUN(do_council)
     {
         snprintf( buf, MSL, "%s", "" );
         snprintf( buf2, MSL, "%s", "" );
-        snprintf( buf, MSL, "Members of the Council of %s\r\n\r\n", super_councils[this_council].council_name );
+        snprintf( buf, MSL, "Members of the Council of %s\r\n\r\n", super_councils[this_council].name.c_str() );
 
-        for ( imember = super_councils[this_council].first_member; imember != NULL; imember = imember->next )
+        for ( li = super_councils[this_council].members.begin(); li != super_councils[this_council].members.end(); li++ )
         {
-            snprintf( buf2, MSL, "%s\r\n", imember->this_member->GetName_() );
+            pers = *li;
+            snprintf( buf2, MSL, "%s\r\n", pers->GetName_() );
             strncat( buf, buf2, MSL - 1 );
         }
         send_to_char( buf, ch );
@@ -968,43 +964,41 @@ DO_FUN(do_council)
 
     if ( !str_prefix( arg1, "join" ) )
     {
-        for ( imember = super_councils[this_council].first_member; imember != NULL; imember = imember->next )
+        for ( li = super_councils[this_council].members.begin(); li != super_councils[this_council].members.end(); li++ )
         {
-            if ( imember->this_member == ch )
+            pers = *li;
+            if ( pers == ch )
             {
                 send_to_char( "You have already joined the current Council!\r\n", ch );
                 return;
             }
         }
 
-        LINK( member, super_councils[this_council].first_member, super_councils[this_council].last_member, next, prev );
-        snprintf( buf, MSL, "You have joined the Current Council of %s\r\n", super_councils[this_council].council_name );
+        super_councils[this_council].members.push_back( ch);
+        snprintf( buf, MSL, "You have joined the Current Council of %s\r\n", super_councils[this_council].name.c_str() );
         send_to_char( buf, ch );
-        super_councils[this_council].council_time = 10;
+        super_councils[this_council].time = 10;
         do_council( ch, "" );
         return;
     }
 
     if ( !str_prefix( arg1, "leave" ) )
     {
-        bool in_council = FALSE;
+        bool in_council = false;
 
-        for ( imember = super_councils[this_council].first_member; imember != NULL; imember = imember->next )
+        for ( li = super_councils[this_council].members.begin(); li != super_councils[this_council].members.end(); li++ )
         {
-            if ( imember->this_member == ch )
+            pers = *li;
+            if ( pers == ch )
             {
-                in_council = TRUE;
+                in_council = true;
                 break;
             }
         }
 
         if ( in_council )
         {
-            UNLINK( imember, super_councils[this_council].first_member, super_councils[this_council].last_member, next, prev );
-            imember->this_member = NULL;
-            imember->next = NULL;
-            imember->prev = NULL;
-            PUT_FREE( imember, member_free );
+            super_councils[this_council].members.remove( ch );
             send_to_char( "You have removed yourself from the current Council in Session!\r\n", ch );
 
         }
@@ -1038,9 +1032,9 @@ DO_FUN(do_council)
                 else
                 {
                     snprintf( buf, MSL, "%s is now a member of the Council of %s!\r\n", victim->GetName_(),
-                              super_councils[this_council].council_name );
+                              super_councils[this_council].name.c_str() );
                     send_to_char( buf, ch );
-                    snprintf( buf, MSL, "You are now a member of the Council of %s!\r\n", super_councils[this_council].council_name );
+                    snprintf( buf, MSL, "You are now a member of the Council of %s!\r\n", super_councils[this_council].name.c_str() );
                     victim->act.set(ACT_COUNCIL);
                 }
             }
@@ -1077,11 +1071,11 @@ DO_FUN(do_council)
                 else
                 {
                     snprintf( buf, MSL, "%s has been outcast from the @@eKindred@@N by the %s, and is now a @@dRENEGADE@@N!!!!\r\n",
-                              victim->GetName_(), super_councils[this_council].council_name );
+                              victim->GetName_(), super_councils[this_council].name.c_str() );
                     send_to_char( buf, ch );
                     snprintf( buf, MSL,
                               "You have been @@ROUTCAST@@N from the @@eKindred@@N by the %s, and are now a @@dRenegade@@N!!!!!\r\n",
-                              super_councils[this_council].council_name );
+                              super_councils[this_council].name.c_str() );
                     send_to_char( buf, victim );
                     victim->pcdata->super->bloodline = 0;
                     do_save( victim, "auto" );

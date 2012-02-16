@@ -97,11 +97,13 @@ board_data::board_data()
 
 brand_data::brand_data()
 {
-    branded = &str_empty[0];
-    branded_by = &str_empty[0];
-    dt_stamp = &str_empty[0];
-    message = &str_empty[0];
-    priority = &str_empty[0];
+    branded.clear();
+    branded_by.clear();
+    dt_stamp.clear();
+    message.clear();
+    priority.clear();
+
+    brand_list.push_back(this);
 }
 
 buf_data_struct::buf_data_struct()
@@ -151,7 +153,6 @@ char_data::char_data()
     deaf.reset();
     desc = NULL;
     description.clear();
-    exp = 0;
     fighting = NULL;
     first_affect = NULL;
     first_carry = NULL;
@@ -225,6 +226,14 @@ char_data::char_data()
     wizbit = false;
 
     char_list.push_back(this);
+}
+
+council_data::council_data()
+{
+    name.clear();
+    members.clear();
+    quorum = false;
+    time = 0;
 }
 
 descriptor_data::descriptor_data()
@@ -421,18 +430,14 @@ npc_data::npc_data()
 
 npc_group_data::npc_group_data()
 {
-    enemies = &str_empty[0];
-    first_follower = NULL;
-    is_free = false;
-    last_fighting = NULL;
-    last_follower = NULL;
+    enemies.clear();
+    followers.clear();
+    last_fighting.clear();
     leader = NULL;
-    needs = &str_empty[0];
-    next = NULL;
-    prev = NULL;
+    needs.clear();
     seek_room = NULL;
     state = 0;
-    wants = &str_empty[0];
+    wants.clear();
 }
 
 obj_data::obj_data()

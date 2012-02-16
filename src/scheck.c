@@ -145,27 +145,6 @@ static void walk_mob_index_data( MOB_INDEX_DATA * m )
 
 }
 
-static void walk_ngroup_data( NPC_GROUP_DATA * ngrp )
-{
-    if ( !ngrp )
-        return;
-
-    touch( ngrp->enemies );
-    touch( ngrp->last_fighting );
-    touch( ngrp->wants );
-    touch( ngrp->needs );
-}
-
-static void walk_ngroups( void )
-{
-    NPC_GROUP_DATA *ngroup;
-
-    for ( ngroup = first_npc_group; ngroup; ngroup = ngroup->next )
-    {
-        walk_ngroup_data( ngroup );
-    }
-}
-
 static void walk_note_data( NOTE_DATA * note )
 {
     if ( !note )
@@ -233,28 +212,6 @@ static void walk_shield_data( MAGIC_SHIELD * shield )
     touch( shield->wearoff_room );
     touch( shield->wearoff_self );
 
-}
-
-static void walk_brand_data( BRAND_DATA * brand )
-{
-    if ( !brand )
-        return;
-
-    touch( brand->branded );
-    touch( brand->branded_by );
-    touch( brand->dt_stamp );
-    touch( brand->message );
-    touch( brand->priority );
-}
-static void walk_brands( void )
-{
-    BRAND_DATA *this_brand;
-    DL_LIST *brands;
-    for ( brands = first_brand; brands; brands = brands->next )
-    {
-        this_brand = (BRAND_DATA *)brands->this_one;
-        walk_brand_data( this_brand );
-    }
 }
 
 static void walk_shieldlist( MAGIC_SHIELD * shield )
@@ -543,15 +500,6 @@ void walk_boards( void )
     }
 }
 
-
-void walk_councils( void )
-{
-    short index;
-    extern COUNCIL_DATA super_councils[MAX_SUPER];
-
-    for ( index = 0; index < MAX_SUPER; index++ )
-        touch( super_councils[index].council_name );
-}
 void walk_sysdata( void )
 {
     touch( sysdata.playtesters );
@@ -574,12 +522,9 @@ DO_FUN(do_scheck)
     walk_obj_indexes(  );
     walk_room_indexes(  );
     walk_notes(  );
-    walk_councils(  );
     walk_boards(  );
     walk_rulers(  );
-    walk_brands(  );
     walk_sysdata(  );
-    walk_ngroups(  );
 
     snprintf( buf, MSL, "%ld leaks dumped to leaks.dmp\r\n", dump(  ) );
     send_to_char( buf, ch );

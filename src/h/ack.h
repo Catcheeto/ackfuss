@@ -133,14 +133,6 @@ struct ansi_type
 
 #define color_NORMAL "\033[0m"
 
-struct dl_list
-{
-    bool is_free;
-    DL_LIST *next;
-    DL_LIST *prev;
-    void *this_one;
-};
-
 /*
  * Site ban structure.
  */
@@ -159,11 +151,11 @@ class brand_data
     public:
         brand_data();
         ~brand_data();
-        char *branded;
-        char *branded_by;
-        char *dt_stamp;
-        char *message;
-        char *priority;
+        string branded;
+        string branded_by;
+        string dt_stamp;
+        string message;
+        string priority;
 };
 
 class buf_data_struct
@@ -202,14 +194,6 @@ struct weather_data
     bool phase_changed;
 };
 
-struct member_data
-{
-    bool is_free;  /* Ramias:for run-time checks of LINK/UNLINK */
-    CHAR_DATA *this_member;
-    MEMBER_DATA *next;
-    MEMBER_DATA *prev;
-};
-
 class mark_data
 {
     public:
@@ -222,13 +206,15 @@ class mark_data
         short type;   /* VAMP, WOLF */
 };
 
-struct council_data
+class council_data
 {
-    char *council_name;
-    MEMBER_DATA *first_member;
-    MEMBER_DATA *last_member;
-    bool quorum;
-    short council_time;
+    public:
+        council_data();
+        ~council_data();
+        string name;
+        list<Thing*> members;
+        bool quorum;
+        uint_t time;
 };
 
 /*
@@ -542,7 +528,6 @@ class char_data : public Thing {
         ~char_data();
         bool check_cooldown( const char *skill );
         bool check_cooldown( int pos );
-        void gain_exp( int gain );
         short get_level( const char *what = '\0' );
         const char *get_name( CHAR_DATA *looker = NULL );
         const char *get_title( void );
@@ -567,7 +552,6 @@ class char_data : public Thing {
         bitset<MAX_BITSET> deaf;
         DESCRIPTOR_DATA *desc;
         string description;
-        int exp;
         CHAR_DATA *fighting;
         AFFECT_DATA *first_affect;
         OBJ_DATA *first_carry;
@@ -1058,18 +1042,14 @@ class npc_group_data
     public:
         npc_group_data();
         ~npc_group_data();
-        char *enemies;
-        DL_LIST *first_follower;
-        bool is_free;
-        char *last_fighting;
-        DL_LIST *last_follower;
-        CHAR_DATA *leader;
-        char *needs;
-        NPC_GROUP_DATA *next;
-        NPC_GROUP_DATA *prev;
+        string enemies;
+        list<CHAR_DATA*> followers;
+        string last_fighting;
+        CHAR_DATA* leader;
+        string needs;
         ROOM_INDEX_DATA *seek_room;
         short state;
-        char *wants;
+        string wants;
 };
 
 /*

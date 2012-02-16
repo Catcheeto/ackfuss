@@ -123,7 +123,6 @@
 #define MAX_HISTORY                 20   /* History per channel */
 #define MAX_PEDIT                    5
 #define MAX_COND                     3
-#define MAX_EXP                      2000000000 /* signed int is 2147483647, safely below this limit */
 /*
  * total number of supernatural types in the game
  */

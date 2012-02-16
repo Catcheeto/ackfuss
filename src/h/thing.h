@@ -18,11 +18,12 @@ class Thing {
         ~Thing();
 
         /*
-         * 'Object' Manipulation
+         * Level Handling
          */
-        virtual bool DropThing( const Thing* what );
-        virtual bool EquipThing( const Thing* what );
-        virtual bool RemoveThing( const Thing* what );
+         const uint_t GetExperience() const { return m_experience; };
+         const bool DecrExperience(  uint_t amount );
+         const bool IncrExperience( const uint_t amount );
+         const bool SetExperience( const uint_t amount );
 
         /*
          * Name Handling
@@ -39,12 +40,20 @@ class Thing {
         virtual void SetName( const string name ) { m_name = name; };
 
         /*
+         * 'Object' Manipulation
+         */
+        virtual const bool DropThing( const Thing* what );
+        virtual const bool EquipThing( const Thing* what );
+        virtual const bool RemoveThing( const Thing* what );
+
+        /*
          * Owner Handling
          */
         Thing* GetOwner() const { return m_owner; };
         void SetOwner( Thing* owner ) { m_owner = owner; };
 
     protected:
+        uint_t m_experience;
         string m_name;
         Thing* m_owner;
 };

@@ -870,8 +870,7 @@ DO_FUN(do_enchant)
         act( "You enchant $p with additional powers!", ch, unique, NULL, TO_CHAR );
         do_save( ch, "auto" );
         {
-            BRAND_DATA *brand;
-            DL_LIST *brand_member;
+            BRAND_DATA *brand = NULL;
             char brandbuf[MSL];
             char cat2_buf[MSL];
             AFFECT_DATA *one_aff;
@@ -891,16 +890,11 @@ DO_FUN(do_enchant)
             strncat( brandbuf, cat2_buf, MSL - 1 );
             strncat( brandbuf, enchant_buf, MSL - 1 );
             brand = new BRAND_DATA;
-            GET_FREE( brand_member, dl_list_free );
-            brand->branded = str_dup( ch->GetName_() );
-            brand->branded_by = str_dup( "@@rSystem@@N" );
-            brand->priority = str_dup( "unique" );
-            brand->message = str_dup( brandbuf );
-            brand->dt_stamp = str_dup( current_time_str() );
-            brand_member->next = NULL;
-            brand_member->prev = NULL;
-            brand_member->this_one = brand;
-            LINK( brand_member, first_brand, last_brand, next, prev );
+            brand->branded = ch->GetName();
+            brand->branded_by = "@@rSystem@@N";
+            brand->priority = "unique";
+            brand->message = brandbuf;
+            brand->dt_stamp = current_time_str();
             save_brands(  );
             send_to_char( "Your messages have been updated, and logged for inspection by an Immortal.\r\n", ch );
         }

@@ -1358,11 +1358,10 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
              * * Fixed my bug here too, hehe!
              */
 
-            if ( victim->exp > 0 )
+            if ( victim->GetExperience() > 0 )
             {
-                int lose = victim->exp / 2;
-                lose *= -1;
-                victim->gain_exp(lose);
+                int lose = victim->GetExperience() / 2;
+                victim->DecrExperience( lose );
             }
 
         }
@@ -1904,9 +1903,8 @@ void update_pos( CHAR_DATA * victim )
 
         if ( !IS_NPC( victim ) )
         {
-            int lose = victim->exp / 4;
-            lose *= -1;
-            victim->gain_exp(lose);
+            int lose = victim->GetExperience() / 4;
+            victim->DecrExperience( lose );
         }
 
         snprintf( buf, MSL, "%s (vampire) has been misted!", victim->GetName_() );
@@ -2513,7 +2511,6 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
 {
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *gch;
-    CHAR_DATA *lch;
     int members = 0, tot_level = 0, xp = 0;
     float old_gain = 0, gain = 0, percent = 0;
 
@@ -2529,7 +2526,7 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
                  && ( ch->rider == NULL ) ) ) || ( !IS_NPC( victim ) ) || ( victim == ch ) )
         return;
 
-    gain = victim->exp;  /* Now share this out... */
+    gain = victim->GetExperience();  /* Now share this out... */
     if ( victim->act.test(ACT_INTELLIGENT ) )
         gain = exp_for_mobile( victim->level, victim );
 
@@ -2558,7 +2555,6 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
      *
      */
 
-    lch = ( ch->leader != NULL ) ? ch->leader : ch;
     old_gain = gain;
 
     for ( gch = ch->in_room->first_person; gch != NULL; gch = gch->next_in_room )
@@ -2594,7 +2590,7 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
 
         snprintf( buf, MSL, "You Receive %d Experience Points.\r\n", xp );
         send_to_char( buf, gch );
-        gch->gain_exp(xp);
+        gch->IncrExperience( xp );
 
         if ( !IS_NPC(gch) && (IS_VAMP( gch ) || IS_WOLF( gch )) )
 
@@ -3536,14 +3532,13 @@ DO_FUN(do_flee)
 
         if ( !IS_NPC( ch ) )
         {
-            cost = number_range( ch->exp / 15, ch->exp / 10 );
+            cost = number_range( ch->GetExperience() / 15, ch->GetExperience() / 10 );
             if ( IS_ADEPT(ch) )
                 cost /= 1000;
-            cost = UMIN( cost, ch->exp );
+            cost = UMIN( cost, ch->GetExperience() );
             snprintf( buf, MSL, "You flee from combat!  You lose %d exps.\r\n", cost );
             send_to_char( buf, ch );
-            cost *= -1;
-            ch->gain_exp(cost);
+            ch->DecrExperience( cost );
         }
         if ( ( ch->fighting != NULL ) && ( AI_MOB( ch->fighting ) ) )
         {
@@ -3562,11 +3557,10 @@ DO_FUN(do_flee)
     cost = ch->get_level("psuedo") * 3;
     if ( IS_ADEPT(ch) )
         cost = 0;
-    cost = UMIN( cost, ch->exp );
+    cost = UMIN( cost, ch->GetExperience() );
     snprintf( buf, MSL, "You failed!  You lose %d exps.\r\n", cost );
     send_to_char( buf, ch );
-    cost *= -1;
-    ch->gain_exp(cost);
+    ch->DecrExperience( cost );
     return;
 }
 
@@ -4469,14 +4463,10 @@ DO_FUN(do_charge)
 
     CHAR_DATA *victim;
     float dam;
-    bool prime;
     int chance;
 
     if ( ch->check_cooldown("charge") )
         return;
-
-    prime = FALSE;
-
 
     if ( !IS_NPC( ch ) && ch->pcdata->learned[gsn_charge] == 0 )
     {
@@ -4503,10 +4493,6 @@ DO_FUN(do_charge)
         return;
     }
 
-    if ( !IS_NPC( ch ) && ch->pcdata->order[0] == 3 )
-        prime = TRUE;
-
-
     dam = number_range( ch->get_level("psuedo"), ch->get_level("psuedo") * 3 );
 
     if ( !IS_NPC( ch ) )
@@ -4515,7 +4501,10 @@ DO_FUN(do_charge)
         chance = 50;
 
     chance += ( ( ch->get_level("psuedo") - ( victim->get_level("psuedo") - 30 ) ) / 2 );
+    if ( !IS_NPC( ch ) && ch->pcdata->order[0] == 3 )
+        chance += 10;
 
+    
     ch->set_cooldown("charge");
 
     check_killer( ch, victim );
@@ -4834,11 +4823,10 @@ void obj_damage( OBJ_DATA * obj, CHAR_DATA * victim, float dam )
              * * Fixed my bug here too, hehe!
              */
 
-            if ( victim->exp > 0 )
+            if ( victim->GetExperience() > 0 )
             {
-                int lose = victim->exp / 2;
-                lose *= -1;
-                victim->gain_exp(lose);
+                int lose = victim->GetExperience() / 2;
+                victim->DecrExperience( lose );
             }
 
         }
@@ -5383,9 +5371,8 @@ DO_FUN(do_stake)
 
         if ( !IS_NPC( victim ) )
         {
-            int lose = 3 * victim->exp / 4;
-            lose *= -1;
-            victim->gain_exp(lose);
+            int lose = 3 * victim->GetExperience() / 4;
+            victim->DecrExperience( lose );
         }
 
         raw_kill( victim, "" );

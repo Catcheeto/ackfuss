@@ -90,7 +90,7 @@ bool able_to_level( CHAR_DATA * ch )
 {
     bool in_need = FALSE;
 
-    if ( ch->exp > ( 5 * exp_for_mobile( ch->level, ch ) ) )
+    if ( ch->GetExperience() > ( 5 * exp_for_mobile( ch->level, ch ) ) )
         in_need = TRUE;
 
     return in_need;
@@ -102,10 +102,10 @@ void gain_level( CHAR_DATA * ch )
     char buf[MAX_STRING_LENGTH];
 
     cost = 5 * exp_for_mobile( ch->level, ch );
-    if ( ch->exp < cost )
+    if ( ch->GetExperience() < cost )
         return;
 
-    ch->exp -= cost;
+    ch->DecrExperience( cost );
     ch->level = UMIN( 140, ch->level++ );
 
     snprintf( buf, MSL, "%s gains a level!", ch->get_name() );
@@ -1097,9 +1097,9 @@ static const char *group_state_table[] =
  * will call it's appropriate function. */
 void int_group_handler( NPC_GROUP_DATA * ngroup )
 {
-    CHAR_DATA *follower = NULL;
+    CHAR_DATA* follower = NULL;
+    list<CHAR_DATA*>::iterator gi;
     CHAR_DATA *leader = ngroup->leader;
-    DL_LIST *follower_ptr;
 //  short followers_want = GRP_STATE_NO_CHANGE;
     short leader_wants = GRP_STATE_NO_CHANGE;
     short group_count = 1; // start with leader
@@ -1112,10 +1112,10 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
     }
 
 // check for followers needs
-    for ( follower_ptr = ngroup->first_follower; follower_ptr; follower_ptr = follower_ptr->next )
+    for ( gi = ngroup->followers.begin(); gi != ngroup->followers.end(); gi++ )
     {
-        // check for needing healing, levelling
-        follower = (CHAR_DATA *)follower_ptr->this_one;
+        // check for needing healing, leveling
+        follower = *gi;
         group_count++;
         continue;
     }
@@ -1169,9 +1169,9 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
                 {
                     do_stand( leader, "" );
                 }
-                for ( follower_ptr = ngroup->first_follower; follower_ptr; follower_ptr = follower_ptr->next )
+                for ( gi = ngroup->followers.begin(); gi != ngroup->followers.end(); gi++ )
                 {
-                    follower = (CHAR_DATA *)follower_ptr->this_one;
+                    follower = *gi;
                     if ( ( follower->mana < follower->max_mana * 75 / 100 ) || ( follower->hit < follower->max_hit * 75 / 100 ) )
                     {
                         everyone_ready = FALSE;
@@ -1195,9 +1195,9 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
                     bool someone_still_fighting = FALSE;
 
                     ngroup->state = GRP_STATE_FLEE;
-                    for ( follower_ptr = ngroup->first_follower; follower_ptr; follower_ptr = follower_ptr->next )
+                    for ( gi = ngroup->followers.begin(); gi != ngroup->followers.end(); gi++ )
                     {
-                        follower = (CHAR_DATA *)follower_ptr->this_one;
+                        follower = *gi;
                         if ( follower->fighting != NULL )
                         {
                             do_flee( follower, "" );
@@ -1220,9 +1220,9 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
         case GRP_STATE_FLEE:
             {
                 bool someone_still_fighting = FALSE;
-                for ( follower_ptr = ngroup->first_follower; follower_ptr; follower_ptr = follower_ptr->next )
+                for ( gi = ngroup->followers.begin(); gi != ngroup->followers.end(); gi++ )
                 {
-                    follower = (CHAR_DATA *)follower_ptr->this_one;
+                    follower = *gi;
                     if ( follower->fighting != NULL )
                     {
                         do_flee( follower, "" );
@@ -1298,9 +1298,9 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
                 {
                     gain_level( leader );
                 }
-                for ( follower_ptr = ngroup->first_follower; follower_ptr; follower_ptr = follower_ptr->next )
+                for ( gi = ngroup->followers.begin(); gi != ngroup->followers.end(); gi++ )
                 {
-                    follower = (CHAR_DATA *)follower_ptr->this_one;
+                    follower = *gi;
                     if ( able_to_level( follower ) )
                     {
                         gain_level( follower );
@@ -1312,9 +1312,9 @@ void int_group_handler( NPC_GROUP_DATA * ngroup )
         case GRP_STATE_REFORM:
             {
                 bool all_are_here = TRUE;
-                for ( follower_ptr = ngroup->first_follower; follower_ptr; follower_ptr = follower_ptr->next )
+                for ( gi = ngroup->followers.begin(); gi != ngroup->followers.end(); gi++ )
                 {
-                    follower = (CHAR_DATA *)follower_ptr->this_one;
+                    follower = *gi;
                     if ( follower->in_room != leader->in_room )
                     {
                         short move_dir;

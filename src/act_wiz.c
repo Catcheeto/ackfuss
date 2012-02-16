@@ -987,8 +987,8 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL,
-              "Lv: %d.  Class: %d.  Align: %d.  AC: %d.  Exp: %d.\r\n",
-              victim->get_level(), victim->p_class, victim->alignment, GET_AC( victim ), victim->exp );
+              "Lv: %d.  Class: %d.  Align: %d.  AC: %d.  Exp: %ld.\r\n",
+              victim->get_level(), victim->p_class, victim->alignment, GET_AC( victim ), victim->GetExperience() );
     strncat( buf1, buf, MSL - 1 );
 
     if ( !IS_NPC( victim ) )
@@ -3304,7 +3304,7 @@ DO_FUN(do_mset)
 
     if ( !str_cmp( arg2, "exp" ) )
     {
-        victim->exp = value;
+        victim->SetExperience( 0 );
         send_to_char("Done.\r\n", ch);
         return;
     }
@@ -4358,7 +4358,7 @@ DO_FUN(do_setclass)
             victim->pcdata->adept_level = 1;
             snprintf( buf, MSL, " %s %s", victim->GetName_(), victim->get_whoname() );
             do_whoname( ch, buf );
-            victim->exp = 0;
+            victim->SetExperience( 0 );
             do_save( victim, "auto" );
             return;
         }
@@ -4442,7 +4442,7 @@ DO_FUN(do_setclass)
         }
         else
             victim->lvl[p_class] = 1;
-        victim->exp = 0;
+        victim->SetExperience( 0 );
         if ( vamp )
         {
             victim->pcdata->super->energy_max = 10;
@@ -4516,7 +4516,7 @@ DO_FUN(do_setclass)
     }
 
 
-    victim->exp = 0;
+    victim->SetExperience( 0 );
     victim->trust = 0;
 
     /*

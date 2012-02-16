@@ -72,11 +72,6 @@ board_data::~board_data()
 
 brand_data::~brand_data()
 {
-    free_string(branded);
-    free_string(branded_by);
-    free_string(dt_stamp);
-    free_string(message);
-    free_string(priority);
 }
 
 buf_data_struct::~buf_data_struct()
@@ -119,6 +114,10 @@ char_data::~char_data()
     delete casting;
 
     aggro_list.remove(this);
+}
+
+council_data::~council_data()
+{
 }
 
 descriptor_data::~descriptor_data()
@@ -212,10 +211,6 @@ npc_data::~npc_data()
 
 npc_group_data::~npc_group_data()
 {
-    free_string(enemies);
-    is_free = true;
-    free_string(needs);
-    free_string(wants);
 }
 
 obj_data::~obj_data()

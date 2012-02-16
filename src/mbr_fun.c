@@ -73,24 +73,6 @@ bool char_data::check_cooldown( int pos )
     return false;
 }
 
-void char_data::gain_exp( int gain )
-{
-    if ( IS_NPC(this) && !act.test(ACT_INTELLIGENT) )
-        return;
-    if ( IS_IMMORTAL(this) )
-        return;
-
-    if ( (exp + gain) >= MAX_EXP )
-        exp = MAX_EXP;
-    else
-        exp += gain;
-
-    if ( exp < 0 )
-        exp = 0;
-
-    return;
-}
-
 short char_data::get_level( const char *what )
 {
     short i = 0, max = 0;;

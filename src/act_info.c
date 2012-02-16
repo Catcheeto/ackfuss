@@ -110,6 +110,10 @@
 #include "h/ssm.h"
 #endif
 
+#ifndef DEC_THING_H
+#include "h/thing.h"
+#endif
+
 #ifndef DEC_TRIGGER_H
 #include "h/trigger.h"
 #endif
@@ -1408,7 +1412,7 @@ DO_FUN(do_score)
     send_to_char( buf, ch );
 
     snprintf( buf, MSL,
-              "X========= @@WExps: @@y%9d @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->exp, IS_NPC(ch) ? 0 : ch->pcdata->quest_points );
+              "X========= @@WExps: @@y%9ld @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->GetExperience(), IS_NPC(ch) ? 0 : ch->pcdata->quest_points );
     send_to_char( buf, ch );
 
     if ( get_trust( ch ) != ch->level )
@@ -2336,13 +2340,13 @@ DO_FUN(do_report)
     char buf[MSL];
 
     snprintf( buf, MSL,
-              "You report: %d/%d hp %d/%d mana %d/%d mv %d xp.\r\n",
-              ch->hit, ch->max_hit, ch->mana, ch->max_mana, ch->move, ch->max_move, ch->exp );
+              "You report: %d/%d hp %d/%d mana %d/%d mv %ld xp.\r\n",
+              ch->hit, ch->max_hit, ch->mana, ch->max_mana, ch->move, ch->max_move, ch->GetExperience() );
 
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, "$n reports: %d/%d hp %d/%d mana %d/%d mv %d xp.",
-              ch->hit, ch->max_hit, ch->mana, ch->max_mana, ch->move, ch->max_move, ch->exp );
+    snprintf( buf, MSL, "$n reports: %d/%d hp %d/%d mana %d/%d mv %ld xp.",
+              ch->hit, ch->max_hit, ch->mana, ch->max_mana, ch->move, ch->max_move, ch->GetExperience() );
 
     act( buf, ch, NULL, NULL, TO_ROOM );
 
@@ -3951,7 +3955,7 @@ DO_FUN(do_gain)
 
     CHAR_DATA *mob;
     char buf[MSL];
-    int cost = 0;
+    uint_t cost = 0;
     int cnt;
     int subpop;
     bool any;
@@ -4050,7 +4054,7 @@ DO_FUN(do_gain)
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-                snprintf( buf, MSL, "%s : %d Exp.\r\n", class_table[cnt].who_name, cost );
+                snprintf( buf, MSL, "%s : %ld Exp.\r\n", class_table[cnt].who_name, cost );
                 send_to_char( buf, ch );
             }
 
@@ -4059,14 +4063,14 @@ DO_FUN(do_gain)
             {
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, 5 );  /* 5 means remort */
-                snprintf( buf, MSL, "%s : %d Exp.\r\n", remort_table[cnt].who_name, cost );
+                snprintf( buf, MSL, "%s : %ld Exp.\r\n", remort_table[cnt].who_name, cost );
                 send_to_char( buf, ch );
             }
         if ( IS_ADEPT(ch) && ch->get_level("adept") < 20 )
         {
             any = TRUE;
             cost = exp_to_level_adept( ch );
-            snprintf( buf, MSL, "@@WAdept@@N: %d Exp.\r\n", cost );
+            snprintf( buf, MSL, "@@WAdept@@N: %ld Exp.\r\n", cost );
             send_to_char( buf, ch );
         }
         if ( allow_remort )
@@ -4185,9 +4189,9 @@ DO_FUN(do_gain)
         }
     }
 
-    else if ( ch->exp < cost )
+    else if ( ch->GetExperience() < cost )
     {
-        snprintf( buf, MSL, "Cost is %d Exp.  You only have %d (%d short).\r\n", cost, ch->exp, ( cost - ch->exp ) );
+        snprintf( buf, MSL, "Cost is %ld Exp.  You only have %ld (%ld short).\r\n", cost, ch->GetExperience(), ( cost - ch->GetExperience() ) );
         send_to_char( buf, ch );
         return;
     }
@@ -4228,7 +4232,7 @@ DO_FUN(do_gain)
     {
         c = ADVANCE_ADEPT;
         send_to_char( "@@WYou have reached another step on the stairway to Wisdom!!!@@N\r\n", ch );
-        ch->exp -= cost;
+        ch->DecrExperience( cost );
         advance_level( ch, c, TRUE, FALSE );
         ch->pcdata->adept_level = UMAX( 1, ch->pcdata->adept_level + 1 );
         snprintf( buf, MSL, "%s @@W advances in the way of the Adept!!\r\n", ch->GetName_() );
@@ -4237,7 +4241,7 @@ DO_FUN(do_gain)
         ch->pcdata->who_name = str_dup( ch->get_whoname() );
         do_save( ch, "auto" );
         if ( ch->get_level("adept") == 1 )
-            ch->exp /= 1000;
+            ch->SetExperience( ch->GetExperience() / 1000 );
         return;
     }
     else if ( adept )
@@ -4295,7 +4299,7 @@ DO_FUN(do_gain)
         snprintf( buf, MSL, "%s advances in the way of the %s.", ch->GetName_(), class_table[c].class_name );
     info( buf, 1 );
 
-    ch->exp -= cost;
+    ch->DecrExperience( cost );
 
     advance_level( ch, c, TRUE, remort );
     if ( remort )
@@ -4720,7 +4724,7 @@ DO_FUN(do_worth)
     {
 
         cost = exp_to_level_adept( ch );
-        snprintf( buf, MSL, " %-14s  %9d %9d.\r\n", ch->get_whoname(), cost, UMAX( 0, cost - ch->exp ) );
+        snprintf( buf, MSL, " %-14s  %9d %9ld.\r\n", ch->get_whoname(), cost, UMAX( 0, cost - ch->GetExperience() ) );
         send_to_char( buf, ch );
         return;
     }
@@ -4737,7 +4741,7 @@ DO_FUN(do_worth)
             any = TRUE;
             cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-            snprintf( buf, MSL, "%-14s  %9d %9d.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->exp ) );
+            snprintf( buf, MSL, "%-14s  %9d %9ld.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
             send_to_char( buf, ch );
         }
         else if ( numclasses < race_table[ch->race].classes && ch->lvl[cnt] != -1 && ch->lvl[cnt] < ( LEVEL_HERO - 1 ) )
@@ -4745,7 +4749,7 @@ DO_FUN(do_worth)
             any = TRUE;
             cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-            snprintf( buf, MSL, "%-14s  %9d %9d.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->exp ) );
+            snprintf( buf, MSL, "%-14s  %9d %9ld.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
             send_to_char( buf, ch );
         }
 
@@ -4757,7 +4761,7 @@ DO_FUN(do_worth)
         {
             any = TRUE;
             cost = exp_to_level( ch, cnt, 5 );  /* Pass 5 for remort */
-            snprintf( buf, MSL, "%-14s  %9d %9d.\r\n", remort_table[cnt].who_name, cost, UMAX( 0, cost - ch->exp ) );
+            snprintf( buf, MSL, "%-14s  %9d %9ld.\r\n", remort_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
             send_to_char( buf, ch );
         }
 

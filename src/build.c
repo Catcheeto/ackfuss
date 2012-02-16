@@ -4637,6 +4637,11 @@ void build_strdup( string dest, char *src, bool newline, CHAR_DATA *ch )
 
 /* spec- rewritten to work correctly with SSM */
 
+void build_strdup( string dest, char *src, bool freesrc, bool newline, CHAR_DATA * ch )
+{
+ return;
+}
+
 void build_strdup( char **dest, char *src, bool freesrc, bool newline, CHAR_DATA * ch )
 {
     /*

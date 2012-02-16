@@ -2115,18 +2115,18 @@ DO_FUN(do_group)
                 if ( ch->act.test(ACT_BLIND_PLAYER) )
                 {
                     snprintf( buf, MSL,
-                              "%-16s %4d of %4d hp %4d of %4d mana %4d of %4d move %5d xp %0.2f%% split\r\n",
+                              "%-16s %4d of %4d hp %4d of %4d mana %4d of %4d move %5ld xp %0.2f%% split\r\n",
                               capitalize( victim->get_name(ch) ),
-                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->exp, percent );
+                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->GetExperience(), percent );
                 }
                 else
                 {
                     snprintf( buf, MSL,
-                              "[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5d xp [%0.2f%%]\r\n",
+                              "[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5ld xp [%0.2f%%]\r\n",
                               victim->level,
                               IS_NPC( victim ) ? "Mob" : class_table[victim->p_class].who_name,
                               capitalize( victim->get_name(ch) ),
-                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->exp, percent );
+                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->GetExperience(), percent );
                 }
 
                 send_to_char( buf, ch );

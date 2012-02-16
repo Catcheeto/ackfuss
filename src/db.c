@@ -325,10 +325,8 @@ void boot_db( void )
         log_f( "Initializing supernatural councils..." );
         for ( index = SUPER_NONE; index < MAX_SUPER; index++ )
         {
-            super_councils[index].first_member = NULL;
-            super_councils[index].last_member = NULL;
-            super_councils[index].quorum = FALSE;
-            super_councils[index].council_time = 0;
+            super_councils[index].quorum = false;
+            super_councils[index].time = 0;
             switch ( index )
             {
                 case SUPER_NONE:
@@ -342,7 +340,7 @@ void boot_db( void )
                     snprintf( buf, MSL, "%s", "NONE" );
                     break;
             }
-            super_councils[index].council_name = str_dup( buf );
+            super_councils[index].name = buf;
 
         }
         log_f("Done.");
@@ -2713,7 +2711,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->max_hit = (int)hold;
     mob->hit = mob->max_hit;
 
-    mob->exp = exp_for_mobile( mob->level, mob );
+    mob->SetExperience( exp_for_mobile( mob->level, mob ) );
 
     /*
      * mana for mobs...
@@ -2756,19 +2754,15 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     {
         NPC_GROUP_DATA *ngroup;
         ngroup = new NPC_GROUP_DATA;
-        ngroup->next = NULL;
-        ngroup->prev = NULL;
         ngroup->state = GRP_STATE_IDLE;
-        ngroup->first_follower = NULL;
-        ngroup->last_follower = NULL;
         ngroup->leader = mob;
         ngroup->seek_room = NULL;
         ngroup->enemies = str_dup( "none" );
         ngroup->last_fighting = str_dup( "none" );
         ngroup->wants = str_dup( "none" );
         ngroup->needs = str_dup( "none" );
+        ngroup->followers.push_back( mob );
         mob->npcdata->ngroup = ngroup;
-        LINK( ngroup, first_npc_group, last_npc_group, next, prev );
     }
     return mob;
 }
@@ -3495,9 +3489,6 @@ DO_FUN(do_memory)
     snprintf( buf, MSL, "Perms             %5d blocks  of %7d bytes.\r\n", nAllocPerm, sAllocPerm );
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, "Freelist Info: Gets: %5d Puts:   %5d\r\n", free_get, free_put);
-    send_to_char( buf, ch );
-
     snprintf( buf, MSL, "File Streams: Opens: %5d Closes: %5d\r\n", fp_open, fp_close);
     send_to_char( buf, ch );
 
@@ -4198,6 +4189,7 @@ void clear_lists( void )
     for_each( area_list.begin(),       area_list.end(),       DeleteObject() );
     for_each( ban_list.begin(),        ban_list.end(),        DeleteObject() );
     for_each( board_list.begin(),      board_list.end(),      DeleteObject() );
+    for_each( brand_list.begin(),      brand_list.end(),      DeleteObject() );
     for_each( build_dat_list.begin(),  build_dat_list.end(),  DeleteObject() );
     for_each( char_list.begin(),       char_list.end(),       DeleteObject() );
     for_each( disabled_list.begin(),   disabled_list.end(),   DeleteObject() );

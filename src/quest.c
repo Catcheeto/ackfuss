@@ -821,7 +821,7 @@ void crusade_reward( CHAR_DATA *ch )
     reward = number_range(static_cast<int>(reward * 0.02), static_cast<int>(reward * 0.04));
     snprintf( buf, MSL, "You receive %d experience points!\r\n", reward );
     send_to_char( buf, ch );
-    ch->exp += reward;
+    ch->IncrExperience( reward );
 
     reward = quest_object->value[2];
     snprintf( buf, MSL, "You receive %s!\r\n", cost_to_money( reward ) );

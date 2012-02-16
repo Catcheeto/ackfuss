@@ -2255,8 +2255,7 @@ bool spell_energy_drain( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     else
     {
         int lose = number_range(level / 2, 3 * level / 2);
-        lose *= -1;
-        victim->gain_exp(lose);
+        victim->DecrExperience( lose );
         victim->mana /= 4;
         victim->move /= 4;
         dam = dice( level / 15, level );
@@ -4644,7 +4643,7 @@ bool spell_stalker( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
     stalker->level = victim->level;
     stalker->max_hit = victim->max_hit;
     stalker->hit = stalker->max_hit;
-    stalker->exp = victim->level * 10;  /* not much exp :P */
+    stalker->SetExperience( victim->level * 10 );  /* not much exp :P */
 
     if ( set_hunt( stalker, ch, victim, NULL, HUNT_MERC, HUNT_CR ) )
         act( "$n sniffs the air in search of $s prey.", stalker, NULL, NULL, TO_ROOM );
@@ -4867,7 +4866,6 @@ bool spell_beacon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
      * * -S-
      */
 
-    char buf[MAX_STRING_LENGTH];
     char arg[MAX_STRING_LENGTH];
     OBJ_DATA *ob;
 
@@ -7195,7 +7193,7 @@ bool spell_redemption( int sn, int level, CHAR_DATA *ch, void *vo, OBJ_DATA *obj
     victim->hit += number_range(level * 2, level * 6);
     victim->mana += number_range(level * 2, level * 6);
     victim->move += number_range(level * 2, level * 6);
-    victim->gain_exp(victim->exp > 0 ? victim->exp / 4 : 1);
+    victim->IncrExperience( (victim->GetExperience() > 0 ? victim->GetExperience() / 4 : 1 ) );
     send_to_char("You have gained insight from your death, and regaiend some of your lost experience!\r\n", victim);
     update_pos(victim);
 

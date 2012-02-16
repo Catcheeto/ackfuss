@@ -42,6 +42,20 @@
 #define DECLARE_SPEC_FUN( fun )         SPEC_FUN  fun
 #define DECLARE_TRIG_FUN( fun )         TRIG_FUN  fun
 
+#if __WORDSIZE == 64
+ #ifndef UINT_64
+ #define UINT_64
+ #endif
+ typedef unsigned long int uint_t;
+ #define uintmax_t numeric_limits<unsigned long int>::max()
+#else
+ #ifndef UINT_32
+ #define UINT_32
+ #endif
+ typedef unsigned int uint_t;
+ #define uintmax_t numeric_limits<unsigned int>::max()
+#endif
+
 /*
  * Short scalar types.
  */
@@ -79,6 +93,7 @@ typedef struct affect_data AFFECT_DATA;
 typedef struct area_data AREA_DATA;
 typedef struct ban_data BAN_DATA;
 typedef struct char_data CHAR_DATA;
+typedef struct council_data COUNCIL_DATA;
 typedef struct descriptor_data DESCRIPTOR_DATA;
 typedef struct exit_data EXIT_DATA;
 typedef struct extra_descr_data EXTRA_DESCR_DATA;
@@ -101,8 +116,6 @@ typedef struct build_data_list BUILD_DATA_LIST; /* Online Building */
 typedef struct vamp_exp_table VAMP_EXP_TABLE;
 typedef struct magic_shield MAGIC_SHIELD;
 typedef struct politics_data_type POL_DATA;
-typedef struct council_data COUNCIL_DATA;
-typedef struct member_data MEMBER_DATA;
 typedef struct trigger_data TRIGGER_DATA;
 typedef struct mark_data MARK_DATA;
 typedef struct lookup_type LOOKUP_TYPE;
@@ -112,7 +125,6 @@ typedef struct board_data BOARD_DATA;
 typedef struct ruler_data RULER_DATA;
 typedef struct influence_data INFLUENCE_DATA;
 typedef struct influence_list INFLUENCE_LIST;
-typedef struct dl_list DL_LIST;
 typedef struct brand_data BRAND_DATA;
 typedef struct sysdata_type SYS_DATA_TYPE;
 typedef struct money_type MONEY_TYPE;

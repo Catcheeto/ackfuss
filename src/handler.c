@@ -700,9 +700,7 @@ bool is_affected( CHAR_DATA * ch, int sn )
 void affect_join( CHAR_DATA * ch, AFFECT_DATA * paf )
 {
     AFFECT_DATA *paf_old;
-    bool found;
 
-    found = FALSE;
     for ( paf_old = ch->first_affect; paf_old != NULL; paf_old = paf_old->next )
     {
         if ( ( paf_old->type == paf->type )
@@ -1728,49 +1726,46 @@ void extract_char( CHAR_DATA * ch, bool fPull )
     if ( ch->act.test(ACT_COUNCIL) )
     {
         short this_council;
-        MEMBER_DATA *imember;
-        MEMBER_DATA *imember_next;
+        list<Thing*>::iterator ti;
+        Thing* pers;
 
         if ( IS_VAMP( ch ) )
             this_council = SUPER_VAMP;
         else
             this_council = SUPER_NONE;
-        if ( this_council != SUPER_NONE && super_councils[this_council].council_time > 0 )
-            for ( imember = super_councils[this_council].first_member; imember != NULL; imember = imember_next )
+        if ( this_council != SUPER_NONE && super_councils[this_council].time > 0 )
+            for ( ti = super_councils[this_council].members.begin(); ti != super_councils[this_council].members.end(); ti++ )
             {
-                imember_next = imember->next;
-                if ( imember->this_member == ch )
+                pers = *ti;
+                if ( pers == ch )
                 {
-                    UNLINK( imember, super_councils[this_council].first_member, super_councils[this_council].last_member, next,
-                            prev );
-                    imember->this_member = NULL;
-                    imember->next = NULL;
-                    imember->prev = NULL;
-                    PUT_FREE( imember, member_free );
+                    super_councils[this_council].members.remove( ch );
                     continue;
                 }
             }
     }
     if ( IS_NPC(ch) && ch->npcdata->ngroup != NULL )
     {
-        NPC_GROUP_DATA *kill_group = NULL;
-        DL_LIST *kill_member = NULL;
-        for ( kill_group = first_npc_group; kill_group; kill_group = kill_group->next )
+        list<NPC_GROUP_DATA*>::iterator gi;
+        list<CHAR_DATA*>::iterator ti;
+        CHAR_DATA* pers = NULL;
+        NPC_GROUP_DATA *grp;
+        
+        for ( gi = npc_group_list.begin(); gi != npc_group_list.end(); gi++ )
         {
-            if ( kill_group->leader == ch )
+            grp = *gi;
+            if ( grp->leader == ch )
             {
-                UNLINK( kill_group, first_npc_group, last_npc_group, next, prev );
-                delete kill_group;
+                npc_group_list.remove( grp );
+                delete grp;
             }
             else
             {
-                for ( kill_member = kill_group->first_follower; kill_member; kill_member = kill_member->next )
+                for ( ti = grp->followers.begin(); ti != grp->followers.end(); ti++ )
                 {
-                    if ( ( CHAR_DATA * ) kill_member->this_one == ch )
-                    {
-                        UNLINK( kill_member, kill_group->first_follower, kill_group->last_follower, next, prev );
-                        PUT_FREE( kill_member, dl_list_free );
-                    }
+                    pers = *ti;
+                    if ( pers == ch )
+                        grp->followers.remove( ch );
                 }
             }
         }
@@ -2518,7 +2513,7 @@ CHAR_DATA *switch_char( CHAR_DATA * victim, int mvnum, int poly_level )
         case 3: /* Level 3 */
             mob->level = victim->level;
             mob->money = victim->money;
-            mob->exp = victim->exp;
+            mob->SetExperience( victim->GetExperience() );
             for ( foo = 0; foo < MAX_CLASS; foo++ )
                 mob->lvl[foo] = victim->lvl[foo];
 
@@ -2592,7 +2587,7 @@ CHAR_DATA *unswitch_char( CHAR_DATA * victim )
 
         case 3:
             original->level = victim->level;
-            original->exp = victim->exp;
+            original->SetExperience( victim->GetExperience() );
             original->money = victim->money;
             for ( foo = 0; foo < MAX_CLASS; foo++ )
                 original->lvl[foo] = victim->lvl[foo];
