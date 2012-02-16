@@ -23,6 +23,7 @@
 #include <arpa/telnet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 #include <memory.h>
 #include <netdb.h>
 #include <netinet/in.h>

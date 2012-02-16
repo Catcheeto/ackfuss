@@ -8,19 +8,6 @@
  * License terms are available in the imc2freedom.license file.
  */
 
-#ifdef WIN32
-#include <io.h>
-#undef EINTR
-#undef EMFILE
-#define EINTR WSAEINTR
-#define EMFILE WSAEMFILE
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#define EINPROGRESS WSAEINPROGRESS
-#define MAXHOSTNAMELEN 32
-#else
-#include <fnmatch.h>
-#endif
-
 #include "h/globals.h"
 
 #ifndef DEC_ACT_WIZ_H
@@ -706,11 +693,7 @@ bool imc_isignoring( CHAR_DATA * ch, const char *ignore )
      */
     for ( temp = FIRST_IMCIGNORE( ch ); temp; temp = temp->next )
     {
-#ifndef WIN32
         if ( !fnmatch( temp->name, ignore, 0 ) )
-#else
-        if ( !str_prefix( temp->name, ignore ) )
-#endif
             return TRUE;
     }
     return FALSE;
@@ -4875,17 +4858,12 @@ int ipv4_connect( void )
 {
     struct sockaddr_in sa;
     struct hostent *hostp;
-#ifdef WIN32
-    ULONG r;
-#else
     int r;
-#endif
     int desc = -1;
 
     memset( &sa, 0, sizeof( sa ) );
     sa.sin_family = AF_INET;
 
-#ifndef WIN32
     /*
      * warning: this blocks. It would be better to farm the query out to
      * * another process, but that is difficult to do without lots of changes
@@ -4903,9 +4881,6 @@ int ipv4_connect( void )
         }
         memcpy( &sa.sin_addr, hostp->h_addr, hostp->h_length );
     }
-#else
-    sa.sin_addr.s_addr = inet_addr(this_imcmud->rhost);
-#endif
 
     sa.sin_port = htons( this_imcmud->rport );
 
@@ -4916,15 +4891,6 @@ int ipv4_connect( void )
         return -1;
     }
 
-#ifdef WIN32
-    r = 1;
-    if ( ioctlsocket( desc, FIONBIO, &r ) == SOCKET_ERROR )
-    {
-        perror( "imc_connect: ioctlsocket failed" );
-        close( desc );
-        return;
-    }
-#else
     r = fcntl( desc, F_GETFL, 0 );
     if ( r < 0 || fcntl( desc, F_SETFL, O_NONBLOCK | r ) < 0 )
     {
@@ -4932,7 +4898,6 @@ int ipv4_connect( void )
         close( desc );
         return -1;
     }
-#endif
 
     if ( connect( desc, ( struct sockaddr * )&sa, sizeof( sa ) ) == -1 )
     {
@@ -6223,91 +6188,6 @@ IMC_CMD( imcbeep )
     imc_printf( ch, "~cYou imcbeep ~Y%s~c.\r\n", argument );
     return;
 }
-
-#ifdef WEBSVR
-void web_imc_list( WEB_DESCRIPTOR *wdesc )
-{
-    REMOTEINFO *rin;
-    char *start, *onpath;
-    char buf[MAX_STRING_LENGTH], urldump[MAX_INPUT_LENGTH], netname[MAX_INPUT_LENGTH], serverpath[MAX_INPUT_LENGTH];
-    int end, count = 1;
-
-    snprintf( buf, MAX_STRING_LENGTH, "<table><tr><td colspan=\"5\"><font color=\"white\">Active muds on %s:</font></td></tr>",
-              this_imcmud->network );
-    snprintf( buf + strlen( buf ), MAX_STRING_LENGTH,
-              "<tr><td><font color=\"#008080\">%s</font></td><td><font color=\"blue\">%s</font></td><td><font color=\"green\">%s</font></td><td><font color=\"#00FF00\">%s</font></td></tr>",
-              "Name", "IMC Version", "Network", "Route" );
-    send_buf( wdesc->fd, buf );
-
-    if ( !this_imcmud->www || !str_cmp( this_imcmud->www, "??" ) || !str_cmp( this_imcmud->www, "Unknown" )
-            || !strstr( this_imcmud->www, "http://" ) )
-    {
-        snprintf( buf, MAX_STRING_LENGTH,
-                  "<tr><td><font color=\"#008080\">%s</font></td><td><font color=\"blue\">%s</font></td><td><font color=\"green\">%s</font></td><td><font color=\"#00FF00\">%s</font></td></tr>",
-                  this_imcmud->localname, this_imcmud->versionid, this_imcmud->network, this_imcmud->servername );
-    }
-    else
-    {
-        imcstrlcpy( urldump, this_imcmud->www, MAX_INPUT_LENGTH );
-        snprintf( buf, MAX_STRING_LENGTH,
-                  "<tr><td><font color=\"#008080\"><a href=\"%s\" class=\"dcyan\" target=\"_blank\">%s</a></font></td><td><font color=\"blue\">%s</font></td><td><font color=\"green\">%s</font></td><td><font color=\"#00FF00\">%s</font></td></tr>",
-                  urldump, this_imcmud->localname, this_imcmud->versionid, this_imcmud->network, this_imcmud->servername );
-    }
-    send_buf( wdesc->fd, buf );
-
-    for ( rin = first_rinfo; rin; rin = rin->next, count++ )
-    {
-        if ( !str_cmp( rin->network, "unknown" ) )
-            imcstrlcpy( netname, this_imcmud->network, MAX_INPUT_LENGTH );
-        else
-            imcstrlcpy( netname, rin->network, MAX_INPUT_LENGTH );
-
-        /* If there is more then one path use the second path */
-        if ( rin->path && rin->path[0] != '\0' )
-        {
-            if ( ( start = strchr( rin->path, '!' ) ) != NULL )
-            {
-                start++;
-                onpath = start;
-                end = 0;
-                for ( onpath = start; *onpath != '!' && *onpath != '\0'; onpath++ )
-                {
-                    serverpath[end] = *onpath;
-                    end++;
-                }
-                serverpath[end] = '\0';
-            }
-            else
-                imcstrlcpy( serverpath, rin->path, MAX_INPUT_LENGTH );
-        }
-
-        if ( !rin->url || !str_cmp( rin->url, "??" ) || !str_cmp( rin->url, "Unknown" )
-                || !strstr( rin->url, "http://" ) )
-        {
-            snprintf( buf, MAX_STRING_LENGTH,
-                      "<tr><td><font color=\"%s\">%s</font></td><td><font color=\"blue\">%s</font></td><td><font color=\"green\">%s</font></td><td><font color=\"#00FF00\">%s</font></td></tr>",
-                      rin->expired ? "red" : "#008080", rin->name, rin->version, netname, serverpath );
-        }
-        else
-        {
-            imcstrlcpy( urldump, rin->url, MAX_INPUT_LENGTH );
-            snprintf( buf, MAX_STRING_LENGTH,
-                      "<tr><td><font color=\"%s\"><a href=\"%s\" class=\"%s\" target=\"_blank\">%s</a></font></td><td><font color=\"blue\">%s</font></td><td><font color=\"green\">%s</font></td><td><font color=\"#00FF00\">%s</font></td></tr>",
-                      rin->expired ? "red" : "#008080", urldump, rin->expired ? "red" : "dcyan",
-                      rin->name, rin->version, netname, serverpath );
-        }
-        send_buf( wdesc->fd, buf );
-    }
-    imcstrlcpy( buf,
-                "<tr><td colspan=\"5\"><font color=\"white\">Red mud names indicate connections that are down.</font></td></tr>",
-                MAX_STRING_LENGTH );
-    send_buf( wdesc->fd, buf );
-    snprintf( buf, MAX_STRING_LENGTH, "<tr><td colspan=\"5\">%d connections on %s found.</td></tr></table>", count,
-              this_imcmud->network );
-    send_buf( wdesc->fd, buf );
-    return;
-}
-#endif
 
 IMC_CMD( imclist )
 {

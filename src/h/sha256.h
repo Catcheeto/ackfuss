@@ -6,8 +6,6 @@
  * _/        _/_/_/_/  _/_/_/_/ _/_/_/_/ at www.ackmud.net -- check it out!*
  ***************************************************************************/
 
-#include <cstdlib>
-
 #define DEC_SHA256_H
 
 /*-
@@ -38,9 +36,6 @@
  * $FreeBSD: src/lib/libmd/sha256.h,v 1.1 2005/03/09 19:23:04 cperciva Exp $
  */
 
-#ifndef _SHA256_H_
-#define _SHA256_H_
-
 typedef struct SHA256Context
 {
     int state[8];
@@ -56,5 +51,3 @@ char *SHA256_File( const char *, char * );
 char *SHA256_FileChunk( const char *, char *, off_t, off_t );
 char *SHA256_Data( const unsigned char *, unsigned int, char * );
 char *sha256_crypt( const char *pwd );
-
-#endif /* !_SHA256_H_ */

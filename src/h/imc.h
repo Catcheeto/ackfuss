@@ -15,8 +15,7 @@
  * _/        _/_/_/_/  _/_/_/_/ _/_/_/_/ at www.ackmud.net -- check it out!*
  ***************************************************************************/
 
-#ifndef __IMC2_H__
-#define __IMC2_H__
+#define DEC_IMC_H
 
 /* The all important version ID string, which is hardcoded for now out of laziness.
  * This name was chosen to represent the ideals of not only the code, but of the
@@ -421,7 +420,9 @@ struct who_template
 };
 
 bool imc_command_hook( CHAR_DATA * ch, char *command, char *argument );
+void imc_delete_reminfo( REMOTEINFO * p );
 void imc_hotboot( void );
+void imc_request_keepalive( void );
 void imc_startup( bool force, int desc, bool connected );
 void imc_shutdown( bool reconnect );
 void imc_initchar( CHAR_DATA * ch );
@@ -432,5 +433,3 @@ void imc_loop( void );
 IMC_CHANNEL *imc_findchannel( char *name );  /* Externalized for comm.c spamguard checks */
 void imc_register_packet_handler( char *name, PACKET_FUN * func );
 void free_imcdata( bool complete );
-
-#endif

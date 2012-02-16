@@ -82,9 +82,8 @@
 #include "h/hunt.h"
 #endif
 
-#ifdef IMC
-void imc_delete_reminfo(REMOTEINFO * p);
-void imc_request_keepalive(void);
+#ifndef DEC_IMC_H
+#include "h/imc.h"
 #endif
 
 #ifndef DEC_INTERP_H
@@ -172,7 +171,6 @@ void alarm_update(  )
     }
 }
 
-#ifndef WIN32
 /* Set the virtual (CPU time) timer to the standard setting, ALARM_FREQUENCY */
 
 void reset_itimer(  )
@@ -192,7 +190,6 @@ void reset_itimer(  )
         exit( 1 );
     }
 }
-#endif
 
 const char *szFrozenMessage = "Alarm_handler: Not checkpointed recently, aborting!\n";
 
@@ -231,7 +228,6 @@ void alarm_handler( int signo )
      */
 }
 
-#ifndef WIN32
 /* Install signal alarm handler */
 void init_alarm_handler(  )
 {
@@ -251,7 +247,6 @@ void init_alarm_handler(  )
     last_checkpoint = get_user_seconds(  );
     reset_itimer(  ); /* start timer */
 }
-#endif
 
 /*
  * Advancement stuff.
@@ -998,9 +993,7 @@ void weather_update( void )
     DESCRIPTOR_DATA *d;
     int diff;
     short x, y;
-#ifdef IMC
     REMOTEINFO *r, *rnext;
-#endif
     buf[0] = '\0';
     buf2[0] = '\0';
 
@@ -1047,7 +1040,6 @@ void weather_update( void )
                     politics_data.daily_negotiate_table[x][y] = FALSE;
             clean_donate_rooms(  );
             save_mudinfo();
-#ifdef IMC
             if ( this_imcmud->autoconnect ) /* Don't attempt a re-connect if we don't want to. --Kline */
             {
                 monitor_chan("Mud list is being refreshed.", MONITOR_IMC);
@@ -1058,7 +1050,6 @@ void weather_update( void )
                 }
                 imc_request_keepalive(  );
             }
-#endif
             break;
     }
     switch ( time_info.moon++ )

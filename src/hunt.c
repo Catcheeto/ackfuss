@@ -73,10 +73,6 @@
 H_QUEUE *h_head = NULL;
 H_QUEUE *h_tail = NULL;
 
-#ifdef DEBUG_HUNT_CODE
-static FILE *h_fp;
-#endif
-
 void h_dequeue( void )
 {
     H_QUEUE *hunt;
@@ -87,26 +83,14 @@ void h_dequeue( void )
     if ( h_tail == hunt )
         h_tail = NULL;
     hunt->room->room_flags.reset(RFLAG_HUNT_MARK);
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "Dequeue: %5d\n", hunt->room->vnum );
-    fflush( h_fp );
-#endif
     dispose( hunt, sizeof( *hunt ) );
     return;
 }
 
 void h_clear( void )
 {
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "h_clear\n" );
-    fflush( h_fp );
-#endif
     while ( h_head != NULL )
         h_dequeue( );
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "Cleared\n" );
-    fflush( h_fp );
-#endif
 }
 
 void h_enqueue( ROOM_INDEX_DATA * room, short dir )
@@ -123,10 +107,6 @@ void h_enqueue( ROOM_INDEX_DATA * room, short dir )
     else
         h_tail->next = hunt;
     h_tail = hunt;
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "Enqueue: %5d - %s\n", room->vnum, room->room_flags.test(RFLAG_HUNT_MARK) ? "set" : "unset" );
-    fflush( h_fp );
-#endif
     return;
 }
 
@@ -138,11 +118,6 @@ bool h_is_valid_exit( ROOM_INDEX_DATA * room, short dir, int h_flags )
         return FALSE;
     if ( !exit->to_room )
         return FALSE;
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "IsValid: %5d - %s\n", exit->to_room->vnum,
-             ( exit->to_room->room_flags.test(RFLAG_HUNT_MARK) ? "set" : "unset" ) );
-    fflush( h_fp );
-#endif
     if ( exit->to_room->room_flags.test(RFLAG_HUNT_MARK) )
         return FALSE;
     if ( !IS_SET( h_flags, HUNT_WORLD ) && room->area != exit->to_room->area )
@@ -166,10 +141,6 @@ void h_enqueue_room( ROOM_INDEX_DATA * room, short dir, int h_flags )
 {
     short edir;
 
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "h_enqueue_room\n" );
-    fflush( h_fp );
-#endif
     for ( edir = 0; edir < MAX_DIR; edir++ )
         if ( h_is_valid_exit( room, edir, h_flags ) )
             h_enqueue( room->exit[edir]->to_room, ( dir == -1 ? edir : dir ) );
@@ -182,12 +153,6 @@ short h_find_dir( ROOM_INDEX_DATA * room, ROOM_INDEX_DATA * target, int h_flags 
 
     if ( room == target )
         return -1;
-#ifdef DEBUG_HUNT_CODE
-    if ( !h_fp )
-        h_fp = file_open( "hunt.out", "w" );
-    fprintf( h_fp, "h_find_dir\n" );
-    fflush( h_fp );
-#endif
     room->room_flags.set(RFLAG_HUNT_MARK);
     h_enqueue_room( room, -1, h_flags );
     for ( hunt = h_head; hunt; hunt = hunt->next )
@@ -196,20 +161,12 @@ short h_find_dir( ROOM_INDEX_DATA * room, ROOM_INDEX_DATA * target, int h_flags 
         {
             short dir = hunt->dir;
 
-#ifdef DEBUG_HUNT_CODE
-            fprintf( h_fp, "Found dir %d\n", dir );
-            fflush( h_fp );
-#endif
             h_clear();
             room->room_flags.reset(RFLAG_HUNT_MARK);
             return dir;
         }
         h_enqueue_room( hunt->room, hunt->dir, h_flags );
     }
-#ifdef DEBUG_HUNT_CODE
-    fprintf( h_fp, "Invalid dir\n" );
-    fflush( h_fp );
-#endif
     h_clear();
     room->room_flags.reset(RFLAG_HUNT_MARK);
     return -1;

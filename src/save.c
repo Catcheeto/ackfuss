@@ -459,9 +459,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
                 fprintf( fp, "Skill          %d '%s'\n", ch->pcdata->learned[sn], skill_table[sn].name );
             }
         }
-#ifdef IMC
         imc_savechar( ch, fp );
-#endif
 #ifdef I3
         i3save_char( ch, fp );
 #endif
@@ -669,9 +667,7 @@ bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
 
         d->character = ch;
 
-#ifdef IMC
         imc_initchar( ch );
-#endif
 #ifdef I3
         i3init_char( ch );
 #endif
@@ -1070,10 +1066,8 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
             case 'I':
                 if ( !IS_NPC(ch) )
                     KEY( "Invis", ch->pcdata->invis, fread_number( fp ) );
-#ifdef IMC
                 if ( ( fMatch = imc_loadchar( ch, fp, word ) ) )
                     break;
-#endif
 #ifdef I3
                 if ( ( fMatch = i3load_char( ch, fp, word ) ) )
                     break;

@@ -9,8 +9,7 @@
  * _/        _/_/_/_/  _/_/_/_/ _/_/_/_/ at www.ackmud.net -- check it out!*
  ***************************************************************************/
 
-#ifndef __IMC2CFG_H__
-#define __IMC2CFG_H__
+#define DEC_IMCCFG_H
 
 #define CH_IMCDATA(ch)           ((ch)->pcdata->imcchardata)
 #define CH_IMCLEVEL(ch)          ((ch)->level)
@@ -20,5 +19,3 @@
 
 #define first_descriptor first_desc
 #define CH_IMCRANK(ch)           (str_cmp(ch->pcdata->who_name,"off") ? ch->pcdata->who_name : IS_IMMORTAL(ch) ? "Imm" : class_table[(ch)->p_class].who_name)
-
-#endif

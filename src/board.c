@@ -644,26 +644,8 @@ DO_FUN(do_write)
 
 void finished_editing( MESSAGE_DATA * msg, char **dest, CHAR_DATA * ch, bool saved )
 {
-#ifdef CHECK_VALID_BOARD
-    MESSAGE_DATA *SrchMsg;
-#endif
-
     if ( !saved )
     {
-#ifdef CHECK_VALID_BOARD
-        for ( SrchMsg = msg->board->messages; SrchMsg != NULL; SrchMsg = SrchMsg->next )
-            if ( SrchMsg == msg )
-                break;
-
-        if ( SrchMsg == NULL )
-        {
-            /*
-             * Could not find this message in board list, just lose memory.
-             */
-            return;
-        }
-#endif
-
         UNLINK( msg, msg->board->first_message, msg->board->last_message, next, prev );
         delete msg;
     }
