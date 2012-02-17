@@ -832,7 +832,7 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
                 ch->hit = UMIN( ch->max_hit, ch->hit + number_range( (int)(dam * .03), (int)(dam * .13) ) );
             }
 
-            ch->alignment = UMAX( -1000, ch->alignment - 50 );
+            ch->SetAlignment( UMAX( -1000, ch->GetAlignment() - 50 ) );
         }
     }
     if ( !IS_NPC(victim) )
@@ -2598,14 +2598,14 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
 
         if ( !IS_NPC( gch ) && ( gch->pcdata->learned[gsn_emotion_control] < 73 ) )
         {
-            align = gch->alignment - ( victim->alignment * ( 80 - gch->pcdata->learned[gsn_emotion_control] ) / 100 );
+            align = gch->GetAlignment() - ( victim->GetAlignment() * ( 80 - gch->pcdata->learned[gsn_emotion_control] ) / 100 );
 
             if ( align > 500 )
-                gch->alignment = UMIN( gch->alignment + ( align - 500 ) / 4, 1000 );
+                gch->SetAlignment( UMIN( gch->GetAlignment() + ( align - 500 ) / 4, 1000 ) );
             else if ( align < -500 )
-                gch->alignment = UMAX( gch->alignment + ( align + 500 ) / 4, -1000 );
+                gch->SetAlignment( UMAX( gch->GetAlignment() + ( align + 500 ) / 4, -1000 ) );
             else
-                gch->alignment -= gch->alignment / 4;
+                gch->DecrAlignment( gch->GetAlignment() / 4 );
         }
         for ( obj = ch->first_carry; obj != NULL; obj = obj_next )
         {

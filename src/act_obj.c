@@ -2096,9 +2096,9 @@ DO_FUN(do_sacrifice)
         }
         if ( align_direction == 0 )
         {
-            if ( ch->alignment > 200 )
+            if ( ch->GetAlignment() > 200 )
                 align_direction = -1;
-            else if ( ch->alignment < -200 )
+            else if ( ch->GetAlignment() < -200 )
                 align_direction = 1;
             if (  IS_OBJ_STAT(obj, ITEM_EXTRA_ANTI_GOOD) )
                 align_change *= 1.5;
@@ -2113,7 +2113,7 @@ DO_FUN(do_sacrifice)
         if ( obj->item_type == ITEM_BEACON || obj->item_type == ITEM_LIGHT
                 || obj->item_type == ITEM_PORTAL || obj->item_type == ITEM_FOOD )
             align_change /= 10;
-        ch->alignment = URANGE( -1000, ( ch->alignment += align_direction * (short)align_change ), 1000 );
+        ch->SetAlignment( URANGE( -1000, ( ch->GetAlignment() + align_direction * (short)align_change ), 1000 ) );
     }
 
     if ( !change_align )

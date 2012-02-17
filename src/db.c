@@ -2685,7 +2685,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->level = pMobIndex->level;
     mob->act = pMobIndex->act;
     mob->affected_by = pMobIndex->affected_by;
-    mob->alignment = pMobIndex->alignment;
+    mob->SetAlignment( pMobIndex->alignment );
     mob->sex = pMobIndex->sex;
     mob->npcdata->ac_mod = pMobIndex->ac_mod;
     mob->npcdata->hr_mod = pMobIndex->hr_mod;

@@ -988,7 +988,7 @@ DO_FUN(do_mstat)
 
     snprintf( buf, MSL,
               "Lv: %d.  Class: %d.  Align: %d.  AC: %d.  Exp: %ld.\r\n",
-              victim->get_level(), victim->p_class, victim->alignment, GET_AC( victim ), victim->GetExperience() );
+              victim->get_level(), victim->p_class, victim->GetAlignment(), GET_AC( victim ), victim->GetExperience() );
     strncat( buf1, buf, MSL - 1 );
 
     if ( !IS_NPC( victim ) )
@@ -3039,7 +3039,7 @@ DO_FUN(do_mset)
             send_to_char( "Alignment range is -1000 to 1000.\r\n", ch );
             return;
         }
-        victim->alignment = value;
+        victim->SetAlignment( value );
         return;
     }
 

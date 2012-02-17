@@ -16,49 +16,71 @@
 #include "h/thing.h"
 #endif
 
-/*
- * Level Handling
- */
+// Alignment
 
-const bool Thing::DecrExperience( const uint_t amount )
+const uint_t Thing::DecrAlignment( const uint_t amount )
 {
     if ( amount <= 0 || amount >= uintmax_t )
-        return false;
+        return 0;
+
+    if ( ( m_alignment - amount ) <= 0 )
+        return m_alignment = 0;
+    else
+        return m_alignment -= amount;
+}
+
+const uint_t Thing::IncrAlignment( const uint_t amount )
+{
+    if ( amount <= 0 || amount >= uintmax_t )
+        return 0;
+
+    if ( ( m_alignment + amount ) >= uintmax_t )
+        return m_alignment = uintmax_t;
+    else
+        return m_alignment += amount;
+}
+
+const uint_t Thing::SetAlignment( const uint_t amount )
+{
+    if ( amount <= 0 || amount >= uintmax_t )
+        return 0;
+
+    return m_alignment = amount;
+}
+
+// Level
+
+const uint_t Thing::DecrExperience( const uint_t amount )
+{
+    if ( amount <= 0 || amount >= uintmax_t )
+        return 0;
 
     if ( ( m_experience - amount ) <= 0 )
-        m_experience = 0;
+        return m_experience = 0;
     else
-        m_experience -= amount;
-
-    return true;
+        return m_experience -= amount;
 }
 
-const bool Thing::IncrExperience( const uint_t amount )
+const uint_t Thing::IncrExperience( const uint_t amount )
 {
     if ( amount <= 0 || amount >= uintmax_t )
-        return false;
+        return 0;
 
     if ( ( m_experience + amount ) >= uintmax_t )
-        m_experience = uintmax_t;
+        return m_experience = uintmax_t;
     else
-        m_experience += amount;
-
-    return true;
+        return m_experience += amount;
 }
 
-const bool Thing::SetExperience( const uint_t amount )
+const uint_t Thing::SetExperience( const uint_t amount )
 {
     if ( amount <= 0 || amount >= uintmax_t )
-        return false;
+        return 0;
 
-    m_experience = amount;
-
-    return true;
+    return m_experience = amount;
 }
 
-/*
- * 'Object' Manipulation
- */
+// 'Object' Manipulation
 
 const bool Thing::DropThing( const Thing* what )
 {
@@ -87,9 +109,7 @@ const bool Thing::RemoveThing( const Thing* what )
     return true;
 }
 
-/*
- * Name Handling
- */
+// Name
 /*
 bool Thing::IsWithinName( const char* word );
 {
@@ -133,8 +153,16 @@ bool Thing::IsWithinName( const string word );
 */
 Thing::Thing()
 {
+    // Alignment
+    m_alignment = 0;
+
+    // Level
     m_experience = 0;
+
+    // Name
     m_name.clear();
+
+    // Owner
     m_owner = NULL;
 }
 

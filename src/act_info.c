@@ -1565,26 +1565,26 @@ DO_FUN(do_score)
 
     snprintf( buf, MSL, " @@WYou are " );
 
-    if ( ch->alignment > 900 )
+    if ( ch->GetAlignment() > 900 )
         strncat( buf, "@@yangelic.", MSL );
-    else if ( ch->alignment > 700 )
+    else if ( ch->GetAlignment() > 700 )
         strncat( buf, "@@ysaintly.", MSL );
-    else if ( ch->alignment > 300 )
+    else if ( ch->GetAlignment() > 300 )
         strncat( buf, "@@ygood.", MSL );
-    else if ( ch->alignment > 100 )
+    else if ( ch->GetAlignment() > 100 )
         strncat( buf, "@@ykind.", MSL );
-    else if ( ch->alignment > -100 )
+    else if ( ch->GetAlignment() > -100 )
         strncat( buf, "@@yneutral.", MSL );
-    else if ( ch->alignment > -350 )
+    else if ( ch->GetAlignment() > -350 )
         strncat( buf, "@@ymean.", MSL );
-    else if ( ch->alignment > -700 )
+    else if ( ch->GetAlignment() > -700 )
         strncat( buf, "@@yevil.", MSL );
-    else if ( ch->alignment > -900 )
+    else if ( ch->GetAlignment() > -900 )
         strncat( buf, "@@ydemonic.", MSL );
     else
         strncat( buf, "@@ysatanic!", MSL );
 
-    snprintf( buf2, MSL, " @@WAlignment: @@y%5d.   %s", ch->alignment, buf );
+    snprintf( buf2, MSL, " @@WAlignment: @@y%5d.   %s", ch->GetAlignment(), buf );
     snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
     send_to_char( buf, ch );
 

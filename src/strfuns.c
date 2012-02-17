@@ -1762,7 +1762,7 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
                 if ( !str_cmp(arg2, "good") && IS_GOOD(ch) )       { retval = true; break; }
                 if ( !str_cmp(arg2, "neutral") && IS_NEUTRAL(ch) ) { retval = true; break; }
                 if ( !str_cmp(arg2, "evil") && IS_EVIL(ch) )       { retval = true; break; }
-                if ( evaluate_tag(arg2, ch->alignment, value) )     { retval = true; break; }
+                if ( evaluate_tag(arg2, ch->GetAlignment(), value) )     { retval = true; break; }
                 break;
             }
             break;

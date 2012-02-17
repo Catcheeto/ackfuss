@@ -539,7 +539,6 @@ class char_data : public Thing {
 
         bitset<MAX_BITSET> act;
         int affected_by;
-        short alignment;
         short armor;
         short carry_number;
         float carry_weight;

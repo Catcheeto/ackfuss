@@ -2247,7 +2247,7 @@ bool spell_energy_drain( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     if ( saves_spell( level, victim ) )
         return TRUE;
 
-    ch->alignment = UMAX( -1000, ch->alignment - 200 );
+    ch->SetAlignment( UMAX( -1000, ch->GetAlignment() - 200 ) );
     if ( victim->level <= 2 )
     {
         dam = ch->hit + 1;
@@ -2723,7 +2723,7 @@ bool spell_know_alignment( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     char *msg;
     int ap;
 
-    ap = victim->alignment;
+    ap = victim->GetAlignment();
 
     if ( ap > 700 )
         msg = "$N has an aura as white as the driven snow.";

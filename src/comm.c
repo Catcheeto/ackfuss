@@ -1362,7 +1362,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 break;
             case 'a':
                 if ( ch->level < 5 )
-                    snprintf( buf2, MSL, "%d", ch->alignment );
+                    snprintf( buf2, MSL, "%d", ch->GetAlignment() );
                 else
                     snprintf( buf2, MSL, "%s", IS_GOOD( ch ) ? "good" : IS_EVIL( ch ) ? "evil" : "neutral" );
                 i = buf2;

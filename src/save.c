@@ -313,7 +313,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "Position       %d\n", ch->position == POS_FIGHTING ? POS_STANDING : ch->position );
 
     fprintf( fp, "SavingThrow    %d\n", ch->saving_throw );
-    fprintf( fp, "Alignment      %d\n", ch->alignment );
+    fprintf( fp, "Alignment      %d\n", ch->GetAlignment() );
     fprintf( fp, "Hitroll        %d\n", ch->hitroll );
     fprintf( fp, "Damroll        %d\n", ch->damroll );
     fprintf( fp, "Armor          %d\n", ch->armor );
@@ -824,7 +824,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     break;
                 }
                 KEY( "AffectedBy", ch->affected_by, fread_number( fp ) );
-                KEY( "Alignment", ch->alignment, fread_number( fp ) );
+                KEY_( "Alignment", ch->SetAlignment, fread_number( fp ) );
                 KEY( "Armor", ch->armor, fread_number( fp ) );
                 if ( !IS_NPC(ch) )
                 {
