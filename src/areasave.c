@@ -311,7 +311,7 @@ void build_save_mobs(  )
     fprintf( SaveFile, "RaceMods   %d\n", pMobIndex->race_mods );
     fprintf( SaveFile, "Resist     %d\n", pMobIndex->resist );
     fprintf( SaveFile, "Sex        %d\n", pMobIndex->sex );
-    fprintf( SaveFile, "ShortDesc  %s~\n", pMobIndex->short_descr );
+    fprintf( SaveFile, "ShortDesc  %s~\n", pMobIndex->GetDescrShort_() );
     fprintf( SaveFile, "Skills     %d\n", pMobIndex->skills );
     fprintf( SaveFile, "SMagic     %d\n", pMobIndex->strong_magic );
     fprintf( SaveFile, "SpecFun    %s\n", rev_spec_lookup(pMobIndex->spec_fun) );
@@ -368,7 +368,7 @@ void build_save_objects(  )
     fprintf( SaveFile, "LongDesc   %s~\n", pObjIndex->long_descr );
     fprintf( SaveFile, "Name       %s~\n", pObjIndex->GetName_() );
     fprintf( SaveFile, "ObjFun     %s\n", rev_obj_fun_lookup( pObjIndex->obj_fun ) );
-    fprintf( SaveFile, "ShortDesc  %s~\n", pObjIndex->short_descr );
+    fprintf( SaveFile, "ShortDesc  %s~\n", pObjIndex->GetDescrShort_() );
     fprintf( SaveFile, "Speed      %0.2f\n", pObjIndex->speed );
     fprintf( SaveFile, "Type       %d\n", pObjIndex->item_type );
 

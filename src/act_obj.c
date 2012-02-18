@@ -227,13 +227,13 @@ DO_FUN(do_get)
         char name[MSL];
         CHAR_DATA *gch;
         list<CHAR_DATA *>::iterator li;
-        char *pd;
+        string pd;
         if ( IS_NPC( ch ) )
         {
             send_to_char( "You can't do that.\r\n", ch );
             return;
         }
-        pd = container->short_descr;
+        pd = container->GetName();
         pd = one_argument( pd, name );
         pd = one_argument( pd, name );
         pd = one_argument( pd, name );
@@ -850,7 +850,7 @@ DO_FUN(do_give)
                     /*
                      * Then ch has recovered the quest object!!!!!
                      */
-                    snprintf( buf, MSL, "Oh! %s you found %s for me!  Thank You!", ch->get_name(), obj->short_descr );
+                    snprintf( buf, MSL, "Oh! %s you found %s for me!  Thank You!", ch->get_name(), obj->GetDescrShort_() );
                     do_say( victim, buf );
                     interpret( victim, "hop" );
 
@@ -2030,7 +2030,7 @@ DO_FUN(do_sacrifice)
         {
 
             snprintf( buf, MSL, "%s: Sentence reduced to %d ( - %.0f ) by sacrificing %s.", ch->GetName_(),
-                      ch->pcdata->sentence, obj_value, obj->short_descr );
+                      ch->pcdata->sentence, obj_value, obj->GetDescrShort_() );
             monitor_chan( buf, MONITOR_OBJ );
             act( "The judge accepts $p as partial payment of your fine.", ch, obj, 0, TO_CHAR );
         }
@@ -2957,8 +2957,8 @@ DO_FUN(do_list)
                 stopcounter++;
                 rounded_cost = round_money_off( 10 * pet->level * pet->level, 1 );
                 snprintf( costbuf, MSL, "%s", money_string( rounded_cost ) );
-                snprintf( buf, MSL, "[ @@W%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", pet->level, ccode_len( pet->npcdata->short_descr, 30 ),
-                          capitalize( pet->npcdata->short_descr ), ccode_len( costbuf, 35 ), costbuf );
+                snprintf( buf, MSL, "[ @@W%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", pet->level, ccode_len( pet->GetDescrShort_(), 30 ),
+                          capitalize( pet->GetDescrShort_() ), ccode_len( costbuf, 35 ), costbuf );
                 delete rounded_cost;
                 strncat( buf1, buf, MSL - 1 );
                 if ( stopcounter > 45 )
@@ -2995,7 +2995,7 @@ DO_FUN(do_list)
                 rounded_cost = round_money_off( cost, 1 );
                 snprintf( costbuf, MSL, "%s", money_string( rounded_cost ) );
                 snprintf( buf, MSL, "@@g[%s%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", ( IS_OBJ_STAT(obj, ITEM_EXTRA_REMORT) ? "@@m" : "@@a" ),
-                          obj->level, ccode_len( obj->short_descr, 30 ), capitalize( obj->short_descr ), ccode_len( costbuf, 30 ),
+                          obj->level, ccode_len( obj->GetDescrShort_(), 30 ), capitalize( obj->GetDescrShort_() ), ccode_len( costbuf, 30 ),
                           costbuf );
                 delete rounded_cost;
                 strncat( buf1, buf, MSL - 1 );
@@ -3449,9 +3449,8 @@ DO_FUN(do_adapt)
     money_to_value(ch, mbuf);
 
     obj->level = ch->level; /* Allow ch to use the eq... */
-    snprintf( buf, MSL, "%s <adapted>", obj->short_descr );
-    free_string( obj->short_descr );
-    obj->short_descr = str_dup( buf );
+    snprintf( buf, MSL, "%s <adapted>", obj->GetDescrShort_() );
+    obj->SetDescrShort( buf );
     snprintf( buf, MSL, "<adapted> %s", obj->long_descr );
     free_string( obj->long_descr );
     obj->long_descr = str_dup( buf );
@@ -3862,7 +3861,7 @@ DO_FUN(do_auction)
                     good_buyer = TRUE;
             }
 
-            snprintf( buf, MSL, "The auction of %s has been stopped by an @@mImmortal@@N.\r\n", auction_item->short_descr );
+            snprintf( buf, MSL, "The auction of %s has been stopped by an @@mImmortal@@N.\r\n", auction_item->GetDescrShort_() );
             if ( !str_cmp( arg, "take" ) )
             {
                 char buf2[MSL];
@@ -3911,7 +3910,7 @@ DO_FUN(do_auction)
     if ( auction_item != NULL )
     {
         char lastbidbuf[MSL];
-        snprintf( buf, MSL, "The current object being auctioned is: %s\r\n", auction_item->short_descr );
+        snprintf( buf, MSL, "The current object being auctioned is: %s\r\n", auction_item->GetDescrShort_() );
         send_to_char( buf, ch );
         snprintf( buf, MSL, "Item was offered for sale by %s.\r\n", auction_owner->GetName_() );
         send_to_char( buf, ch );

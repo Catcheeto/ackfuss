@@ -1008,7 +1008,7 @@ void obj_from_char( OBJ_DATA * obj )
     if ( ( ch = obj->carried_by ) == NULL )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "obj_from_char: NULL ch to remove %s from.", obj->short_descr );
+        snprintf( buf, MSL, "obj_from_char: NULL ch to remove %s from.", obj->GetDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
 
         bug( "Obj_from_char: null ch.", 0 );
@@ -1113,7 +1113,7 @@ void equip_char( CHAR_DATA * ch, OBJ_DATA * obj, int iWear )
     if ( ( !IS_NPC( ch ) && ch->desc->connected != CON_SETTING_STATS ) && ( get_eq_char( ch, iWear ) != NULL ) )
     {
         snprintf( log, MSL, "equip_char: %s (room %d) cannot be equiped with %s, as wear slot (%d) not empty.",
-                  ch->get_name(), ch->in_room->vnum, obj->short_descr, iWear );
+                  ch->get_name(), ch->in_room->vnum, obj->GetDescrShort_(), iWear );
         monitor_chan( log, MONITOR_OBJ );
 
         bug( log, 0 );
@@ -1228,7 +1228,7 @@ void unequip_char( CHAR_DATA * ch, OBJ_DATA * obj )
     if ( obj->wear_loc == WEAR_NONE )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "unequip_char: %s is not wearing %s.", ch->get_name(), obj->short_descr );
+        snprintf( buf, MSL, "unequip_char: %s is not wearing %s.", ch->get_name(), obj->GetDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
 
         bug( "Unequip_char: already unequipped.", 0 );
@@ -1363,7 +1363,7 @@ void obj_from_room( OBJ_DATA * obj )
     if ( ( in_room = obj->in_room ) == NULL )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "obj_from_room: %s in NULL room.", obj->short_descr );
+        snprintf( buf, MSL, "obj_from_room: %s in NULL room.", obj->GetDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
 
         bug( "obj_from_room: NULL.", 0 );
@@ -1376,7 +1376,7 @@ void obj_from_room( OBJ_DATA * obj )
         obj_to_room( obj, get_room_index( ROOM_VNUM_LIMBO ) );
         if ( ( in_room = obj->in_room ) == NULL )
         {
-            snprintf( buf, MSL, "obj_from_room, %s really screwed up, failed attempts to move to Limbo.", obj->short_descr );
+            snprintf( buf, MSL, "obj_from_room, %s really screwed up, failed attempts to move to Limbo.", obj->GetDescrShort_() );
             monitor_chan( buf, MONITOR_OBJ );
             return;
         }
@@ -1456,7 +1456,7 @@ void obj_from_obj( OBJ_DATA * obj )
     if ( ( obj_from = obj->in_obj ) == NULL )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "obj_from_obj: %s not in another object.", obj->short_descr );
+        snprintf( buf, MSL, "obj_from_obj: %s not in another object.", obj->GetDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
         bug( "Obj_from_obj: null obj_from.", 0 );
         return;
@@ -2121,9 +2121,8 @@ OBJ_DATA *create_money( int amount )
     else
     {
         obj = create_object( get_obj_index( OBJ_VNUM_MONEY_SOME ), 0 );
-        snprintf( buf, MSL, obj->short_descr, amount );
-        free_string( obj->short_descr );
-        obj->short_descr = str_dup( buf );
+        snprintf( buf, MSL, obj->GetDescrShort_(), amount );
+        obj->SetDescrShort( buf );
         obj->value[0] = amount;
     }
 

@@ -138,7 +138,6 @@ static void walk_mob_index_data( MOB_INDEX_DATA * m )
     if ( !m )
         return;
 
-    touch( m->short_descr );
     touch( m->long_descr );
     touch( m->description );
 
@@ -152,14 +151,6 @@ static void walk_note_data( NOTE_DATA * note )
     touch( note->date );
     touch( note->subject );
     touch( note->text );
-}
-
-static void walk_npcdata( NPC_DATA * n )
-{
-    if ( !n )
-        return;
-
-    touch( n->short_descr );
 }
 
 static void walk_pcdata( PC_DATA * p )
@@ -224,7 +215,6 @@ static void walk_char_data( CHAR_DATA * ch )
     if ( !ch )
         return;
 
-    walk_npcdata( ch->npcdata );
     walk_pcdata( ch->pcdata );
     walk_shieldlist( ch->first_shield );
 }
@@ -234,7 +224,6 @@ static void walk_obj_index_data( OBJ_INDEX_DATA * o )
     if ( !o )
         return;
 
-    touch( o->short_descr );
     touch( o->long_descr );
 }
 
@@ -244,7 +233,6 @@ static void walk_obj_data( OBJ_DATA * o )
     if ( !o )
         return;
 
-    touch( o->short_descr );
     touch( o->long_descr );
 }
 

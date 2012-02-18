@@ -48,7 +48,7 @@ const sint_t Thing::SetAlignment( const sint_t amount )
 }
 
 // Descriptions
-const string Thing::GetDescrExtra( string key )
+const string Thing::GetDescrExtra( const string key )
 {
     map<string,string>::iterator it = m_descr_extra.find( key );
     string value = it->second;
@@ -186,6 +186,7 @@ Thing::Thing()
 
     // Descriptions
     m_descr_extra.clear();
+    m_descr_short.clear();
 
     // Level
     m_experience = 0;

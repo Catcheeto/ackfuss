@@ -88,13 +88,10 @@ DO_FUN(do_clutch)
      */
 
     OBJ_DATA *obj;
-    bool found;
-
 
     /*
      * See if any object is clutched...
      */
-    found = FALSE;
     for ( obj = ch->first_carry; obj != NULL; obj = obj->next_in_carry_list )
         if ( ( obj->wear_loc == WEAR_HOLD_HAND_L ) && ( obj->item_type == ITEM_CLUTCH ) )
             break;
@@ -115,11 +112,8 @@ DO_FUN(do_clutch)
     act( "You clutch $p tightly in your hand!", ch, obj, NULL, TO_CHAR );
     if ( !ch->in_room->room_flags.test(RFLAG_NO_PORTAL) )
         ( *clutch_table[obj->value[0] - 1].func_name ) ( obj->value[1], obj->value[2], obj->value[3], ch, obj );
-
     else
-
         return;
-
 
     if ( clutch_table[obj->value[0] - 1].destroy )
     {

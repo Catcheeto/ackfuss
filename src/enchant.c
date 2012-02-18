@@ -358,7 +358,7 @@ DO_FUN(do_enchant)
 
     if ( !str_cmp( arg1, "show" ) )
     {
-        snprintf( msg_buf, MSL, "Your enchantment will add the following to %s\r\n", unique->short_descr );
+        snprintf( msg_buf, MSL, "Your enchantment will add the following to %s\r\n", unique->GetDescrShort_() );
 
         if ( new_extras.count() != 0 )
         {
@@ -586,7 +586,7 @@ DO_FUN(do_enchant)
         }
         if ( IS_OBJ_STAT(unique, ITEM_EXTRA_CLAN_EQ) )
         {
-            snprintf( cat_buf, MSL, "%s is clan equipment, and may not be enchanted.\r\n", unique->short_descr );
+            snprintf( cat_buf, MSL, "%s is clan equipment, and may not be enchanted.\r\n", unique->GetDescrShort_() );
             strncat( msg_buf, cat_buf, MSL - 1 );
             legal_enchant = FALSE;
         }
@@ -616,7 +616,7 @@ DO_FUN(do_enchant)
             {
                 snprintf( cat_buf, MSL,
                           "@@eWARNING: @@WEnchanting %s with these affects will make the item level %d, which is higher than your current ability to use.\r\n",
-                          unique->short_descr, min_level );
+                          unique->GetDescrShort_(), min_level );
                 strncat( msg_buf, cat_buf, MSL - 1 );
             }
         }
@@ -876,7 +876,7 @@ DO_FUN(do_enchant)
             AFFECT_DATA *one_aff;
 
             snprintf( brandbuf, MSL, "UNIQUE ITEM: keyword: %s, Name: %s, flags: %s \r\n level: %d, affects:\r\n",
-                      unique->GetName_(), unique->short_descr, extra_bit_name( unique->extra_flags ), unique->level );
+                      unique->GetName_(), unique->GetDescrShort_(), extra_bit_name( unique->extra_flags ), unique->level );
             for ( one_aff = unique->first_apply; one_aff != NULL; one_aff = one_aff->next )
             {
                 if ( one_aff->location != APPLY_NONE && one_aff->modifier != 0 )

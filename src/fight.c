@@ -1112,15 +1112,13 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
                     char bufz[MSL];
 
                     explosion->level = 120;
-                    free_string( explosion->short_descr );
-                    explosion->short_descr = str_dup( "@@mConflagration@@N" );
+                    explosion->SetDescrShort( "@@mConflagration@@N" );
                     free_string( explosion->long_descr );
                     explosion->long_descr = str_dup( "@@N A @@eFlaming @@NStaff of @@aIce@@N is supsended in mid air!" );
 
                     elemental->level = 140;
                     elemental->SetName(".hidden");
-                    free_string( elemental->npcdata->short_descr );
-                    elemental->npcdata->short_descr = str_dup( "@@NThe @@rConflict@@N of @@eFire @@Nand @@aIce@@N" );
+                    elemental->SetDescrShort( "@@NThe @@rConflict@@N of @@eFire @@Nand @@aIce@@N" );
                     elemental->long_descr = "@@NA @@rPillar@@N of @@eFire @@Nand @@aIce@@N immolates itself!";
 
                     char_to_room( elemental, ch->in_room );
@@ -1341,8 +1339,8 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
             else
             {
                 snprintf( buf, MSL, "%s turns %s into a corpse.  Whooops.",
-                          ( IS_NPC(ch) ? ch->npcdata->short_descr : ch->GetName_() ),
-                          ( IS_NPC(victim) ? victim->npcdata->short_descr : victim->GetName_()) );
+                          ( IS_NPC(ch) ? ch->GetDescrShort_() : ch->GetName_() ),
+                          ( IS_NPC(victim) ? victim->GetDescrShort_() : victim->GetName_()) );
                 info( buf, 1 );
             }
 
@@ -2318,9 +2316,8 @@ void make_corpse( CHAR_DATA * ch, char *argument )
         corpse->value[0] = 1;
         corpse->value[3] = number_range( 3, 6 );
     }
-    snprintf( buf, MSL, corpse->short_descr, name );
-    free_string( corpse->short_descr );
-    corpse->short_descr = str_dup( buf );
+    snprintf( buf, MSL, corpse->GetDescrShort_(), name );
+    corpse->SetDescrShort( buf );
 
     snprintf( buf, MSL, corpse->long_descr, name );
     free_string( corpse->long_descr );
@@ -4812,7 +4809,7 @@ void obj_damage( OBJ_DATA * obj, CHAR_DATA * victim, float dam )
         if ( !IS_NPC( victim ) )
         {
 
-            snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->GetName_(), obj->short_descr, victim->in_room->vnum );
+            snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->GetName_(), obj->GetDescrShort_(), victim->in_room->vnum );
             log_string( log_buf );
 
             notify( log_buf, 82 );
@@ -5159,9 +5156,8 @@ void death_message( CHAR_DATA * ch, CHAR_DATA * victim, int dt, int max_dt )
         obj = create_object( get_obj_index( vnum ), 0 );
         obj->timer = number_range( 4, 7 );
 
-        snprintf( buf, MSL, obj->short_descr, name );
-        free_string( obj->short_descr );
-        obj->short_descr = str_dup( buf );
+        snprintf( buf, MSL, obj->GetDescrShort_(), name );
+        obj->SetDescrShort( buf );
 
         snprintf( buf, MSL, obj->long_descr, name );
         free_string( obj->long_descr );

@@ -18,7 +18,7 @@ class Thing {
         ~Thing();
 
         // Alignment
-        const sint_t GetAlignment() const { return m_alignment; };
+        const sint_t GetAlignment() const { return m_alignment; }
         const sint_t DecrAlignment( const sint_t amount );
         const sint_t IncrAlignment( const sint_t amount );
         const sint_t SetAlignment( const sint_t amount );
@@ -28,24 +28,27 @@ class Thing {
         const string GetDescrExtra( string key );
         const char* GetDescrExtra_( string key ) { return GetDescrExtra( key ).c_str(); }
         const list<string> GetDescrExtraKeys();
-        const uint_t GetDescrExtraSize() const { return m_descr_extra.size(); };
+        const uint_t GetDescrExtraSize() const { return m_descr_extra.size(); }
         const list<string> GetDescrExtraValues();
-        const pair<map<string,string>::iterator,bool> SetDescrExtra( string key, string value ) { return m_descr_extra.insert( pair<string,string>( key, value ) ); }
+        const pair<map<string,string>::iterator,bool> SetDescrExtra( const string key, string value ) { return m_descr_extra.insert( pair<string,string>( key, value ) ); }
+        const string GetDescrShort( const Thing* looker = NULL ) const { return m_descr_short; }
+        const char* GetDescrShort_( const Thing* looker = NULL ) const { return GetDescrShort( looker ).c_str(); }
+        const string SetDescrShort( const string descr ) { return m_descr_short = descr; }
 
         // Level
-        const uint_t GetExperience() const { return m_experience; };
+        const uint_t GetExperience() const { return m_experience; }
         const uint_t DecrExperience( const uint_t amount );
         const uint_t IncrExperience( const uint_t amount );
         const uint_t SetExperience( const uint_t amount );
 
         // Name
-        const string AppendName( const string name ) { return m_name.append( name ); };
-        const string GetName( Thing* looker = NULL ) const { return m_name; };
-        const char* GetName_( Thing* looker = NULL ) const { return GetName().c_str(); };
+        const string AppendName( const string name ) { return m_name.append( name ); }
+        const string GetName( const Thing* looker = NULL ) const { return m_name; }
+        const char* GetName_( const Thing* looker = NULL ) const { return GetName( looker ).c_str(); }
 /*        bool IsWithinName( const char* word );
         bool IsWithinName( const string word );*/
-        const string PrefixName( const string name ) { return m_name.insert( 0, name ); };
-        const string SetName( const string name ) { return m_name = name; };
+        const string PrefixName( const string name ) { return m_name.insert( 0, name ); }
+        const string SetName( const string name ) { return m_name = name; }
 
         // 'Object' Manipulation
         const bool DropThing( const Thing* what );
@@ -53,8 +56,8 @@ class Thing {
         const bool RemoveThing( const Thing* what );
 
         // Owner
-        const Thing* GetOwner() const { return m_owner; };
-        const Thing* SetOwner( Thing* owner ) { return m_owner = owner;};
+        const Thing* GetOwner() const { return m_owner; }
+        const Thing* SetOwner( Thing* owner ) { return m_owner = owner; }
 
     protected:
         // Alignment
@@ -62,6 +65,7 @@ class Thing {
 
         // Descriptions
         map<string,string> m_descr_extra;
+        string m_descr_short;
 
         // Level
         uint_t m_experience;

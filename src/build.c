@@ -457,7 +457,7 @@ DO_FUN(build_showmob)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n",
-              pMob->short_descr, pMob->long_descr[0] != '\0' ? pMob->long_descr : "(none)." );
+              pMob->GetDescrShort_(), pMob->long_descr[0] != '\0' ? pMob->long_descr : "(none)." );
     strncat( buf1, buf, MSL - 1 );
 
     if ( pMob->spec_fun != 0 )
@@ -530,7 +530,7 @@ DO_FUN(build_showobj)
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WType: @@y%s.\r\n", obj->vnum, tab_item_types[( obj->item_type ) - 1].text );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n", obj->short_descr, obj->long_descr );
+    snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n", obj->GetDescrShort_(), obj->long_descr );
     strncat( buf1, buf, MSL - 1 );
 
     /*
@@ -1015,7 +1015,7 @@ DO_FUN(build_findmob)
         if ( fAll || is_name( arg, pMobIndex->GetName() ) )
         {
             found = TRUE;
-            snprintf( buf, MSL, "[%5d] %s\r\n", pMobIndex->vnum, capitalize( pMobIndex->short_descr ) );
+            snprintf( buf, MSL, "[%5d] %s\r\n", pMobIndex->vnum, capitalize( pMobIndex->GetDescrShort_() ) );
             strncat( buf1, buf, MSL - 1 );
         }
     }
@@ -1137,7 +1137,7 @@ DO_FUN(build_findobject)
         if ( fAll || is_name( arg, pObjIndex->GetName() ) )
         {
             found = TRUE;
-            snprintf( buf, MSL, "[%5d] %s\r\n", pObjIndex->vnum, capitalize( pObjIndex->short_descr ) );
+            snprintf( buf, MSL, "[%5d] %s\r\n", pObjIndex->vnum, capitalize( pObjIndex->GetDescrShort_() ) );
             strncat( buf1, buf, MSL - 1 );
         }
     }
@@ -1670,7 +1670,7 @@ DO_FUN(build_setmob)
 
     if ( !str_cmp( arg2, "short" ) )
     {
-        build_strdup( &pMob->short_descr, arg3, TRUE, FALSE, ch );
+        pMob->SetDescrShort( arg3 );
         area_modified( pArea );
         return;
     }
@@ -2752,7 +2752,7 @@ DO_FUN(build_setobject)
 
     if ( !str_cmp( arg2, "short" ) )
     {
-        build_strdup( &pObj->short_descr, arg3, TRUE, FALSE, ch );
+        pObj->SetDescrShort( arg3 );
         return;
     }
 
@@ -4856,7 +4856,7 @@ DO_FUN(build_setvnum)
                 found = FALSE;
             }
             else
-                snprintf( buf2, MSL, "Object exists: %s\r\n", obj->short_descr );
+                snprintf( buf2, MSL, "Object exists: %s\r\n", obj->GetDescrShort_() );
 
             break;
 
@@ -4875,7 +4875,7 @@ DO_FUN(build_setvnum)
                 found = FALSE;
             }
             else
-                snprintf( buf2, MSL, "Mobile exists: %s\r\n", mob->short_descr );
+                snprintf( buf2, MSL, "Mobile exists: %s\r\n", mob->GetDescrShort_() );
 
             break;
 
@@ -5929,9 +5929,7 @@ DO_FUN(build_clone)
          */
         this_obj->SetName( obj->GetName() );
         this_obj->level = obj->level;
-        if ( this_obj->short_descr != NULL )
-            free_string( this_obj->short_descr );
-        this_obj->short_descr = str_dup( obj->short_descr );
+        this_obj->SetDescrShort( obj->GetDescrShort_() );
         if ( this_obj->long_descr != NULL )
             free_string( this_obj->long_descr );
         this_obj->long_descr = str_dup( obj->long_descr );
@@ -6001,9 +5999,7 @@ DO_FUN(build_clone)
          * Copy details across...
          */
         this_mob->SetName( mob->GetName() );
-        if ( this_mob->short_descr != NULL )
-            free_string( this_mob->short_descr );
-        this_mob->short_descr = str_dup( mob->short_descr );
+        this_mob->SetDescrShort( mob->GetDescrShort_() );
         if ( this_mob->long_descr != NULL )
             free_string( this_mob->long_descr );
         this_mob->long_descr = str_dup( mob->long_descr );

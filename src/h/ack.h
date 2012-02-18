@@ -470,7 +470,6 @@ class mob_index_data : public Thing {
         int race_mods;
         int resist;
         short sex;
-        char *short_descr;
         int skills;
         SPEC_FUN *spec_fun;
         float speed[MAX_SPEED];
@@ -602,7 +601,6 @@ class npc_data
         MOB_INDEX_DATA *pIndexData;
         RESET_DATA *reset;
         int resist;
-        char *short_descr;
         int skills;
         SPEC_FUN *spec_fun;
         int strong_magic;
@@ -734,7 +732,6 @@ class obj_index_data : public Thing {
         short max_durability;
         OBJ_INDEX_DATA *next;
         OBJ_FUN *obj_fun;
-        char *short_descr;
         float speed;
         int value[MAX_OBJ_VALUE];
         int vnum;
@@ -768,7 +765,6 @@ class obj_data : public Thing {
         AFFECT_DATA *last_apply;
         OBJ_INDEX_DATA *pIndexData;
         ROOM_INDEX_DATA *in_room;
-        char *short_descr;
         char *long_descr;
         int item_type;
         bitset<MAX_BITSET> extra_flags;

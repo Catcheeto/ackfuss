@@ -329,7 +329,6 @@ mob_index_data::mob_index_data()
     race_mods = 0;
     resist = 0;
     sex = 0;
-    short_descr = &str_empty[0];
     skills = 0;
     spec_fun = NULL;
     for ( short i = 0; i < MAX_SPEED; i++ )
@@ -374,7 +373,6 @@ npc_data::npc_data()
     pIndexData = NULL;
     reset = NULL;
     resist = 0;
-    short_descr = &str_empty[0];
     skills = 0;
     spec_fun = NULL;
     strong_magic = 0;
@@ -418,7 +416,6 @@ obj_data::obj_data()
     last_apply = NULL;
     pIndexData = NULL;
     in_room = NULL;
-    short_descr = &str_empty[0];
     long_descr = &str_empty[0];
     item_type = 0;
     item_apply = 0;
@@ -455,7 +452,6 @@ obj_index_data::obj_index_data()
     max_durability = number_range(2, 100);
     next = NULL;
     obj_fun = NULL;
-    short_descr = &str_empty[0];
     speed = number_speed();
     for ( short i = 0; i < MAX_OBJ_VALUE; i++ )
         value[i] = 0;

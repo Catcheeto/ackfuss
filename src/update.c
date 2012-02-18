@@ -646,21 +646,8 @@ void rage_gain( CHAR_DATA * ch )
 
 void bloodlust_gain( CHAR_DATA * ch, int value )
 {
-    /*
-     * Kinda like condition_gain, but handles vampires -S-
-     */
-
-    int condition;
-
     if ( value == 0 )
         return;
-
-    condition = ch->pcdata->super->energy;
-
-    /*
-     * in case vamp bites off more than he can chew ;)
-     * -Damane- 4/26/96
-     */
 
     if ( ( ch->pcdata->super->energy + value ) > ch->pcdata->super->energy_max )
         ch->pcdata->super->energy = ch->pcdata->super->energy_max;
@@ -1213,7 +1200,6 @@ void gain_update( void )
 
     {
 
-        short count = 0;
         short council_index;
 
         for ( council_index = 1; council_index < MAX_SUPER; council_index++ )
@@ -2085,7 +2071,7 @@ bool check_rewield( CHAR_DATA * ch )
 
         if ( pickup )
         {
-            snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", weapon->short_descr );
+            snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", weapon->GetDescrShort_() );
             do_say( ch, buf );
         }
 
@@ -2124,19 +2110,13 @@ bool check_reequip( CHAR_DATA * ch )
     OBJ_DATA *obj2;
     OBJ_DATA *armor = NULL;
     OBJ_DATA *light = NULL;
-    int ac;
     int chance;
     bool pickup;
     bool ident;
-    int best;
     char buf[MAX_STRING_LENGTH];
     int objnum;
 
-
-
-    best = -1;
     pickup = TRUE;
-    ac = 0;
 
     chance = ( ch->fighting == NULL ? 35 : 60 );
     if ( number_percent(  ) < chance )
@@ -2246,7 +2226,7 @@ bool check_reequip( CHAR_DATA * ch )
              */
             if ( pickup )
             {
-                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", armor->short_descr );
+                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", armor->GetDescrShort_() );
                 do_say( ch, buf );
             }
 
@@ -2280,7 +2260,7 @@ bool check_reequip( CHAR_DATA * ch )
              */
             if ( pickup )
             {
-                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", light->short_descr );
+                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", light->GetDescrShort_() );
                 do_say( ch, buf );
             }
 
@@ -2333,20 +2313,20 @@ void auction_update( void )
             {
                 snprintf( buf, MSL,
                           "@@N%s (level:%d, valued at %s) has been offered for auction.  A @@e10%% fee@@N will be charged, the higher of the reserve price or highest bid.",
-                          auction_item->short_descr, auction_item->level, cost_to_money( auction_item->cost ) );
+                          auction_item->GetDescrShort_(), auction_item->level, cost_to_money( auction_item->cost ) );
             }
             else
             {
                 snprintf( buf, MSL, "%s has bid %s for %s.", auction_bidder->GetName_(),
-                          cost_to_money( auction_bid ), auction_item->short_descr );
+                          cost_to_money( auction_bid ), auction_item->GetDescrShort_() );
             }
             break;
         case 1:
             if ( auction_bidder == NULL )
-                snprintf( buf, MSL, "Last chance to bid for %s.", auction_item->short_descr );
+                snprintf( buf, MSL, "Last chance to bid for %s.", auction_item->GetDescrShort_() );
             else
                 snprintf( buf, MSL, "Last bid for %s was %s.  Any more offers?",
-                          auction_item->short_descr, cost_to_money( auction_bid ) );
+                          auction_item->GetDescrShort_(), cost_to_money( auction_bid ) );
             break;
         case 2:
             if ( auction_bidder == NULL )
@@ -2382,10 +2362,10 @@ void auction_update( void )
                 auction_item = NULL;
                 return;
             }
-            snprintf( buf, MSL, "%s - Going Once!", auction_item->short_descr );
+            snprintf( buf, MSL, "%s - Going Once!", auction_item->GetDescrShort_() );
             break;
         case 3:
-            snprintf( buf, MSL, "%s - Going TWICE!", auction_item->short_descr );
+            snprintf( buf, MSL, "%s - Going TWICE!", auction_item->GetDescrShort_() );
             break;
         case 4:
             if ( auction_bid < auction_reserve )
@@ -2399,7 +2379,7 @@ void auction_update( void )
                         good_buyer = TRUE;
                 }
 
-                snprintf( buf, MSL, "%s - CANCELLED.  Reserve price not matched.", auction_item->short_descr );
+                snprintf( buf, MSL, "%s - CANCELLED.  Reserve price not matched.", auction_item->GetDescrShort_() );
                 if ( good_seller )
                 {
                     int bid;
@@ -2432,13 +2412,13 @@ void auction_update( void )
 
                 if ( good_buyer )
                 {
-                    snprintf( buf, MSL, "%s - SOLD! to %s.", auction_item->short_descr, auction_bidder->GetName_() );
+                    snprintf( buf, MSL, "%s - SOLD! to %s.", auction_item->GetDescrShort_(), auction_bidder->GetName_() );
 
                     obj_to_char( auction_item, auction_bidder );
                 }
                 else
                 {
-                    snprintf( buf, MSL, "%s - SOLD!, but the buyer has left us.  Oh Well!!!", auction_item->short_descr );
+                    snprintf( buf, MSL, "%s - SOLD!, but the buyer has left us.  Oh Well!!!", auction_item->GetDescrShort_() );
                     extract_obj( auction_item );
                 }
                 if ( good_seller )

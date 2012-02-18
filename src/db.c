@@ -1088,7 +1088,7 @@ void load_mobile( FILE * fp )
 
             case 'S':
                 KEY("Sex", pMobIndex->sex, fread_number(fp));
-                SKEY("ShortDesc", pMobIndex->short_descr, fread_string(fp));
+                KEY_("ShortDesc", pMobIndex->SetDescrShort, fread_string(fp));
                 KEY("Skills", pMobIndex->skills, fread_number(fp));
                 KEY("SMagic", pMobIndex->strong_magic, fread_number(fp));
                 if ( !str_cmp(word, "SpecFun") )
@@ -1141,7 +1141,7 @@ void load_mobile( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in mob :%s (%s), no match for ( %s ).", area_load->name, pMobIndex->short_descr, word );
+        snprintf( log_buf, (2 * MIL), "Loading in mob :%s (%s), no match for ( %s ).", area_load->name, pMobIndex->GetDescrShort_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -1319,7 +1319,7 @@ void load_object( FILE * fp )
                 break;
 
             case 'S':
-                SKEY("ShortDesc", pObjIndex->short_descr, fread_string(fp));
+                KEY_("ShortDesc", pObjIndex->SetDescrShort, fread_string(fp));
                 KEY("Speed", pObjIndex->speed, fread_float(fp));
                 break;
 
@@ -1383,7 +1383,7 @@ void load_object( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in obj :%s (%s), no match for ( %s ).", area_load->name, pObjIndex->short_descr, word );
+        snprintf( log_buf, (2 * MIL), "Loading in obj :%s (%s), no match for ( %s ).", area_load->name, pObjIndex->GetDescrShort_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -1846,7 +1846,7 @@ void load_shop( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in shop :%s (%s), no match for ( %s ).", area_load->name, get_mob_index(pShop->keeper)->short_descr, word );
+        snprintf( log_buf, (2 * MIL), "Loading in shop :%s (%s), no match for ( %s ).", area_load->name, get_mob_index(pShop->keeper)->GetDescrShort_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -2680,7 +2680,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     else
         mob->SetName( pMobIndex->GetName() );
 
-    mob->npcdata->short_descr = str_dup( pMobIndex->short_descr );
+    mob->SetDescrShort( pMobIndex->GetDescrShort() );
     mob->long_descr = str_dup( pMobIndex->long_descr );
     mob->description = pMobIndex->description;
     mob->npcdata->spec_fun = pMobIndex->spec_fun;
@@ -2815,7 +2815,7 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
     obj->wear_loc = -1;
 
     obj->SetName( pObjIndex->GetName() );
-    obj->short_descr = str_dup( pObjIndex->short_descr );
+    obj->SetDescrShort( pObjIndex->GetDescrShort() );
     obj->long_descr = str_dup( pObjIndex->long_descr );
     obj->item_type = pObjIndex->item_type;
     obj->extra_flags = pObjIndex->extra_flags;

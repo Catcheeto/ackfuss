@@ -191,9 +191,7 @@ bool set_hunt( CHAR_DATA * ch, CHAR_DATA * fch, CHAR_DATA * vch, OBJ_DATA * vobj
     if ( !ch->searching.empty() )
         ch->searching.clear();
     ch->hunt_flags = nflags;
-    snprintf( buf, MSL, "%s has started hunting (%s) %s",
-              ch->get_name(),
-          ( vch ? IS_NPC( vch ) ? "mobile" : "player" : "object" ), ( vch ? vch->get_name() : vobj->short_descr ) );
+    snprintf( buf, MSL, "%s has started hunting (%s) %s", ch->get_name(), ( vch ? IS_NPC( vch ) ? "mobile" : "player" : "object" ), ( vch ? vch->get_name() : vobj->GetDescrShort_() ) );
     if ( fch )
         snprintf( buf + strlen( buf ), (2 * MIL), " for %s", fch->get_name() );
     monitor_chan( buf, MONITOR_HUNTING );
@@ -471,25 +469,25 @@ void char_hunt( CHAR_DATA * ch )
         {
             if ( !can_see_obj( ch, ch->hunt_obj ) || !ch->hunt_obj->in_room )
             {
-                snprintf( buf, MSL, "@@RYou seem to have lost the trail to %s.@@N\r\n", ch->hunt_obj->short_descr );
+                snprintf( buf, MSL, "@@RYou seem to have lost the trail to %s.@@N\r\n", ch->hunt_obj->GetDescrShort_() );
                 send_to_char( buf, ch );
                 end_hunt( ch );
             }
             else if ( ch->hunt_obj->in_room == ch->in_room )
             {
-                snprintf( buf, MSL, "@@RAhhh.  You have found %s!@@N\r\n", ch->hunt_obj->short_descr );
+                snprintf( buf, MSL, "@@RAhhh.  You have found %s!@@N\r\n", ch->hunt_obj->GetDescrShort_() );
                 send_to_char( buf, ch );
                 end_hunt( ch );
             }
             else if ( ( dir = h_find_dir( ch->in_room, ch->hunt_obj->in_room, ch->hunt_flags ) ) < 0 )
             {
-                snprintf( buf, MSL, "@@RYou seem to have lost the trail to %s.@@N\r\n", ch->hunt_obj->short_descr );
+                snprintf( buf, MSL, "@@RYou seem to have lost the trail to %s.@@N\r\n", ch->hunt_obj->GetDescrShort_() );
                 send_to_char( buf, ch );
                 end_hunt( ch );
             }
             else
             {
-                snprintf( buf, MSL, "@@RYou sense that %s is %s of here.@@N\r\n", ch->hunt_obj->short_descr, dir_name[dir] );
+                snprintf( buf, MSL, "@@RYou sense that %s is %s of here.@@N\r\n", ch->hunt_obj->GetDescrShort_(), dir_name[dir] );
                 send_to_char( buf, ch );
             }
         }
@@ -545,7 +543,7 @@ DO_FUN(do_hunt)
         }
         else if ( ch->hunt_obj )
         {
-            snprintf( arg, MIL, "You stop looking for %s.\r\n", ch->hunt_obj->short_descr );
+            snprintf( arg, MIL, "You stop looking for %s.\r\n", ch->hunt_obj->GetDescrShort_() );
             send_to_char( arg, ch );
         }
         else

@@ -154,7 +154,6 @@ mob_index_data::~mob_index_data()
 {
     free_string(description);
     free_string(long_descr);
-    free_string(short_descr);
 }
 
 money_type::~money_type()
@@ -170,7 +169,6 @@ note_data::~note_data()
 
 npc_data::~npc_data()
 {
-    free_string(short_descr);
 }
 
 npc_group_data::~npc_group_data()
@@ -187,14 +185,12 @@ obj_data::~obj_data()
         delete a;
     }
 
-    free_string(short_descr);
     free_string(long_descr);
     delete money;
 }
 
 obj_index_data::~obj_index_data()
 {
-    free_string(short_descr);
     free_string(long_descr);
 }
 

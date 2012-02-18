@@ -151,8 +151,8 @@ char *format_obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch, bool fShort, bool iNam
 
     if ( fShort )
     {
-        if ( obj->short_descr != NULL )
-            strncat( buf, obj->short_descr, MSL - 1 );
+        if ( !obj->GetDescrShort().empty() )
+            strncat( buf, obj->GetDescrShort_(), MSL - 1 );
     }
     else
     {
@@ -536,7 +536,7 @@ void show_char_to_char_0( CHAR_DATA * victim, CHAR_DATA * ch )
             if ( victim->sitting != NULL && victim->sitting->in_room == victim->in_room )
             {
                 char sit[MSL];
-                snprintf( sit, MSL, " is here, resting on %s.", victim->sitting->short_descr );
+                snprintf( sit, MSL, " is here, resting on %s.", victim->sitting->GetDescrShort_() );
                 strncat( buf, sit, MSL - 1 );
             }
             else

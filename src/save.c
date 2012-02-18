@@ -235,8 +235,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     }
     fprintf( fp, "%sEOL\n", outstr.c_str() );
 
-    if ( IS_NPC(ch) )
-        fprintf( fp, "ShortDescr     %s~\n", ch->npcdata->short_descr );
+    fprintf( fp, "ShortDescr     %s~\n", ch->GetDescrShort_() );
     fprintf( fp, "LongDescr      %s~\n", ch->long_descr_orig.c_str() );
     fprintf( fp, "Description    %s~\n", ch->description.c_str() );
     fprintf( fp, "Prompt         %s~\n", ch->prompt.c_str() );
@@ -508,7 +507,7 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
     fprintf( fp, "#OBJECT\n" );
     fprintf( fp, "Nest         %d\n", iNest );
     fprintf( fp, "Name         %s~\n", obj->GetName_() );
-    fprintf( fp, "ShortDescr   %s~\n", obj->short_descr );
+    fprintf( fp, "ShortDescr   %s~\n", obj->GetDescrShort_() );
     fprintf( fp, "LongDescr    %s~\n", obj->long_descr );
     fprintf( fp, "Durability   %d %d\n", obj->durability, obj->max_durability );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );
@@ -1279,8 +1278,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 if ( !IS_NPC(ch ) )
                     KEY( "Sentence", ch->pcdata->sentence, fread_number( fp ) );
                 KEY( "Sex", ch->sex, fread_number( fp ) );
-                if ( IS_NPC( ch ) )
-                    SKEY( "ShortDescr", ch->npcdata->short_descr, fread_string( fp ) );
+                KEY_( "ShortDescr", ch->SetDescrShort, fread_string( fp ) );
 
                 if ( !str_cmp( word, "Skill" ) && !IS_NPC( ch ) )
                 {
@@ -1534,7 +1532,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                                     if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
                                     {
                                         nMatch++;
-                                        if ( !str_cmp( obj->short_descr, pObjIndex->short_descr ) )
+                                        if ( obj->GetDescrShort() == pObjIndex->GetDescrShort() )
                                         {
                                             obj->pIndexData = pObjIndex;
                                             break;
@@ -1611,7 +1609,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                 break;
 
             case 'S':
-                SKEY( "ShortDescr", obj->short_descr, fread_string( fp ) );
+                KEY_( "ShortDescr", obj->SetDescrShort, fread_string( fp ) );
                 KEY( "Speed", obj->speed, fread_float( fp ) );
 
                 if ( !str_cmp( word, "Spell" ) )
@@ -1841,7 +1839,7 @@ void fread_corpse( FILE * fp )
                                     if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
                                     {
                                         nMatch++;
-                                        if ( !str_cmp( obj->short_descr, pObjIndex->short_descr ) )
+                                        if ( obj->GetDescrShort() == pObjIndex->GetDescrShort() )
                                         {
                                             obj->pIndexData = pObjIndex;
                                             break;
@@ -1915,7 +1913,7 @@ void fread_corpse( FILE * fp )
                 break;
 
             case 'S':
-                SKEY( "ShortDescr", obj->short_descr, fread_string( fp ) );
+                KEY_( "ShortDescr", obj->SetDescrShort, fread_string( fp ) );
                 KEY( "Speed", obj->speed, fread_float( fp ) );
 
                 if ( !str_cmp( word, "Spell" ) )
@@ -2040,7 +2038,7 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
 
     fprintf( fp, "Nest         %d\n", iNest );
     fprintf( fp, "Name         %s~\n", obj->GetName_() );
-    fprintf( fp, "ShortDescr   %s~\n", obj->short_descr );
+    fprintf( fp, "ShortDescr   %s~\n", obj->GetDescrShort_() );
     fprintf( fp, "LongDescr    %s~\n", obj->long_descr );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );
 

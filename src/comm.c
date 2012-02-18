@@ -1086,7 +1086,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
             {
                 obj = get_obj_index( ch->pcdata->build_vnum );
                 if ( obj != NULL )
-                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, obj->short_descr );
+                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, obj->GetDescrShort_() );
             }
         }
 
@@ -1100,7 +1100,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
             {
                 mob = get_mob_index( ch->pcdata->build_vnum );
                 if ( mob != NULL )
-                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, mob->short_descr );
+                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, mob->GetDescrShort_() );
             }
         }
         snprintf( msg3, MSL, "< %s %s >", msg, msg2 );
@@ -3702,16 +3702,12 @@ void act( const char *format, CHAR_DATA * ch, const void *arg1, const void *arg2
 
                     case 'p':
                         if ( obj1 )
-                        {
-                            i = can_see_obj( to, obj1 ) ? obj1->short_descr : "something";
-                        }
+                            obj1->GetDescrShort_( to );
                         break;
 
                     case 'P':
                         if ( obj2 )
-                        {
-                            i = can_see_obj( to, obj2 ) ? obj2->short_descr : "something";
-                        }
+                            obj2->GetDescrShort_( to );
                         break;
 
                     case 'd':

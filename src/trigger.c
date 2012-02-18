@@ -121,7 +121,7 @@ TRIG_FUN(trig_transfer)
         return;
     }
 
-    if ( obj->short_descr != NULL && strlen(obj->short_descr) > 0 )
+    if ( !obj->GetDescrShort().empty() )
     {
         act( "$p glows brightly!", ch, obj, NULL, TO_CHAR );
         act( "$p glows brightly!", ch, obj, NULL, TO_ROOM );
