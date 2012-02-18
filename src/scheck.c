@@ -57,7 +57,6 @@
  * Things which are walked (anything else must be touched from these):
  *
  * o char_list
- * o descriptor_list
  * o object_list
  * o mob_index hash table
  * o obj_index hash table
@@ -290,16 +289,6 @@ static void walk_room_index_data( ROOM_INDEX_DATA * r )
 }
 
 
-static void walk_descriptor_data( DESCRIPTOR_DATA * d )
-{
-    if ( !d )
-        return;
-
-    touch( d->host );
-}
-
-
-
 static void walk_ban_data( BAN_DATA * b )
 {
     touch( b->name );
@@ -317,14 +306,6 @@ static void walk_chars( void )
         ch = *li;
         walk_char_data( ch );
     }
-}
-
-static void walk_descriptors( void )
-{
-    DESCRIPTOR_DATA *d;
-
-    for ( d = first_desc; d; d = d->next )
-        walk_descriptor_data( d );
 }
 
 static void walk_areas( void )
@@ -411,7 +392,6 @@ DO_FUN(do_scheck)
     clear(  );
 
     walk_chars(  );
-    walk_descriptors(  );
     walk_areas(  );
     walk_bans(  );
     walk_mob_indexes(  );

@@ -8,6 +8,10 @@
 
 #define DEC_THING_H
 
+#ifndef DEC_BRAIN_H
+#include "brain.h"
+#endif
+
 /*
  * One Thing to rule them all!
  */
@@ -22,6 +26,10 @@ class Thing {
         const sint_t DecrAlignment( const sint_t amount );
         const sint_t IncrAlignment( const sint_t amount );
         const sint_t SetAlignment( const sint_t amount );
+
+        // Brain
+        const Brain* AttachBrain( Brain* brain = NULL );
+        const Brain* GetBrain() const { return m_brain; }
 
         // Combat Stats
         const sint_t GetModAC() const { return m_mod_ac; }
@@ -81,6 +89,9 @@ class Thing {
     protected:
         // Alignment
         sint_t m_alignment;
+
+        // Brain
+        Brain* m_brain;
 
         // Combat Stats
         sint_t m_mod_ac;

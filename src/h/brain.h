@@ -7,3 +7,16 @@
  ***************************************************************************/
 
 #define DEC_BRAIN_H
+
+class Brain {
+    public:
+        Brain();
+        ~Brain();
+
+        const string GetHost() const { return m_host; }
+        const char* GetHost_() const { return GetHost().c_str(); }
+        const string SetHost( const string host ) { return m_host = host; }
+
+    private:
+        string m_host;
+};

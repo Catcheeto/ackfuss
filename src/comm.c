@@ -586,8 +586,7 @@ void *lookup_address( void *input )
 
     if ( from && from->h_name )
     {
-        free_string(ld->d->host);
-        ld->d->host = str_dup(from->h_name);
+        ld->d->brain->SetHost( from->h_name );
         snprintf( log_buf, (2 * MIL), "Hostname resolved to: %s.", from->h_name );
         monitor_chan( log_buf, MONITOR_CONNECT );
     }
@@ -641,12 +640,13 @@ void new_descriptor( int d_control )
     dnew->outsize = 2000;
     dnew->flags = 0;
     dnew->childpid = 0;
+    dnew->brain = new Brain;
 
     size = sizeof( sock );
     if ( getpeername( desc, ( struct sockaddr * )&sock, &size ) < 0 )
     {
         perror( "New_descriptor: getpeername" );
-        dnew->host = str_dup( "(unknown)" );
+        dnew->brain->SetHost( "(unknown)" );
     }
     else
     {
@@ -666,7 +666,7 @@ void new_descriptor( int d_control )
         monitor_chan( log_buf, MONITOR_CONNECT );
 
         dnew->remote_port = ntohs( sock.sin_port );
-        dnew->host = str_dup( buf );
+        dnew->brain->SetHost( buf );
 
         LOOKUP_DATA *ld = new LOOKUP_DATA;
         ld->d = dnew;
@@ -785,11 +785,12 @@ void close_socket( DESCRIPTOR_DATA * dclose )
 
     UNLINK( dclose, first_desc, last_desc, next, prev );
     close( dclose->descriptor );
-    free_string( dclose->host );
     if ( dclose->outbuf )
         dispose( dclose->outbuf, dclose->outsize );
     if ( dclose->showstr_head )
         free(dclose->showstr_head);
+    if ( dclose->brain )
+        delete dclose->brain;
 
     delete dclose;
     update_player_cnt( );
@@ -813,9 +814,9 @@ bool read_from_descriptor( DESCRIPTOR_DATA * d )
     iStart = strlen( d->inbuf );
     if ( iStart >= (int)sizeof( d->inbuf ) - 10 )
     {
-        snprintf( log_buf, (2 * MIL), "%s input overflow!", d->host );
+        snprintf( log_buf, (2 * MIL), "%s input overflow!", d->brain->GetHost_() );
         log_string( log_buf );
-        snprintf( log_buf, (2 * MIL), "input overflow by %s (%s)", ( d->character == NULL ) ? "[login]" : d->character->GetName_(), d->host );
+        snprintf( log_buf, (2 * MIL), "input overflow by %s (%s)", ( d->character == NULL ) ? "[login]" : d->character->GetName_(), d->brain->GetHost_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
         write_to_descriptor( d->descriptor, "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
         return FALSE;
@@ -2081,12 +2082,12 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         if ( check_login_cmd( d, argument ) )
             return;
 
-        snprintf( buf, MSL, "%s provided as name from login from site %s.", argument, d->host );
+        snprintf( buf, MSL, "%s provided as name from login from site %s.", argument, d->brain->GetHost_() );
         monitor_chan( buf, MONITOR_CONNECT );
 
         if ( !check_parse_name( argument ) )
         {
-            snprintf( buf, MSL, "Illegal name %s from site %s.", argument, d->host );
+            snprintf( buf, MSL, "Illegal name %s from site %s.", argument, d->brain->GetHost_() );
             monitor_chan( buf, MONITOR_CONNECT );
             write_to_buffer( d, "Illegal name, try another.\r\nName: " );
             return;
@@ -2098,7 +2099,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
         if ( ch->act.test(ACT_DENY) )
         {
-            snprintf( log_buf, (2 * MIL), "Denying access to %s@%s.", argument, d->host );
+            snprintf( log_buf, (2 * MIL), "Denying access to %s@%s.", argument, d->brain->GetHost_() );
             log_string( log_buf );
             monitor_chan( log_buf, MONITOR_CONNECT );
             write_to_buffer( d, "You are denied access.\r\n" );
@@ -2110,12 +2111,12 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             bool found = false;
 
             for ( short i = 0; i < MAX_HOSTS; i++ )
-                if ( ch->pcdata->whitelist[i] != str_empty && !str_prefix(ch->pcdata->whitelist[i], d->host) )
+                if ( ch->pcdata->whitelist[i] != str_empty && !str_prefix(ch->pcdata->whitelist[i], d->brain->GetHost_()) )
                     found = true;
 
             if ( !found )
             {
-                snprintf(log_buf, (2 * MIL), "Whitelist prohibited login %s@%s.", argument, d->host);
+                snprintf(log_buf, (2 * MIL), "Whitelist prohibited login %s@%s.", argument, d->brain->GetHost_());
                 log_string(log_buf);
                 monitor_chan(log_buf, MONITOR_CONNECT);
                 write_to_buffer(d, "This is not an approved connection domain for this character.\r\n");
@@ -2163,9 +2164,9 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             for ( li = ban_list.begin(); li != ban_list.end(); li++ )
             {
                 pban = *li;
-                if ( !str_prefix( pban->name, d->host ) && ( pban->newbie == FALSE ) )
+                if ( !str_prefix( pban->name, d->brain->GetHost_() ) && ( pban->newbie == FALSE ) )
                 {
-                    snprintf( buf, MSL, "Denying access to banned site %s", d->host );
+                    snprintf( buf, MSL, "Denying access to banned site %s", d->brain->GetHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
                     write_to_descriptor( d->descriptor, "Your site has been banned from this Mud.  BYE BYE!\r\n" );
                     d->connected = CON_QUITTING;
@@ -2198,10 +2199,10 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             for ( li = ban_list.begin(); li != ban_list.end(); li++ )
             {
                 pban = *li;
-                if ( !str_prefix( pban->name, d->host ) )
+                if ( !str_prefix( pban->name, d->brain->GetHost_() ) )
 
                 {
-                    snprintf( buf, MSL, "Denying access to banned site %s", d->host );
+                    snprintf( buf, MSL, "Denying access to banned site %s", d->brain->GetHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
                     write_to_descriptor( d->descriptor, "Your site has been banned from this Mud.  BYE BYE!\r\n" );
                     d->connected = CON_QUITTING;
@@ -2223,7 +2224,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
         {
             write_to_buffer( d, "Wrong password.\r\n" );
-            snprintf( buf, MSL, "FAILED LOGIN for %s from site %s.", ch->GetName_(), d->host );
+            snprintf( buf, MSL, "FAILED LOGIN for %s from site %s.", ch->GetName_(), d->brain->GetHost_() );
             monitor_chan( buf, MONITOR_CONNECT );
             ch->pcdata->failures++;
             save_char_obj( ch );
@@ -2242,7 +2243,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         snprintf( log_buf, (2 * MIL), "%s has connected.", ch->GetName_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
-        snprintf( log_buf, (2 * MIL), "Site Name: %s.", d->host );
+        snprintf( log_buf, (2 * MIL), "Site Name: %s.", d->brain->GetHost_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
         log_string( log_buf );
@@ -2439,7 +2440,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                     show_menu_to( d );
                     return;
                 }
-                snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), d->host );
+                snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), d->brain->GetHost_() );
                 log_string( log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
                 write_to_buffer( d, "\r\n", 2 );
@@ -2886,9 +2887,9 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
             for ( short i = 0; i < MAX_HOSTS; i++ )
             {
-                if ( strcmp( d->host, ch->pcdata->host[i] ) )
+                if ( strcmp( d->brain->GetHost_(), ch->pcdata->host[i] ) )
                 {
-                    snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->GetName_(), d->host, ch->pcdata->host[0] );
+                    snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->GetName_(), d->brain->GetHost_(), ch->pcdata->host[0] );
                     log_string( msg );
                     monitor_chan( msg, MONITOR_CONNECT );
                     if ( ( ch->level > 80 ) )
@@ -2905,7 +2906,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 if ( !str_cmp(ch->pcdata->host[i], "Unknown!") )
                 {
                     free_string(ch->pcdata->host[i]);
-                    ch->pcdata->host[i] = str_dup(d->host);
+                    ch->pcdata->host[i] = str_dup(d->brain->GetHost_());
                     break;
                 }
                 if ( i == (MAX_HOSTS - 1 ) )
@@ -3329,7 +3330,7 @@ bool check_reconnect( DESCRIPTOR_DATA * d, bool fConn )
                 ch->timer = 0;
                 send_to_char( "Reconnecting.\r\n", ch );
                 act( "$n reconnects.", ch, NULL, NULL, TO_ROOM );
-                snprintf( log_buf, (2 * MIL), "%s@%s reconnected.", ch->GetName_(), d->host );
+                snprintf( log_buf, (2 * MIL), "%s@%s reconnected.", ch->GetName_(), d->brain->GetHost_() );
                 log_string( log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
                 d->connected = CON_PLAYING;
@@ -3366,7 +3367,7 @@ bool check_playing( DESCRIPTOR_DATA * d, string name )
                 && dold->connected != CON_GET_OLD_PASSWORD
                 && name == ( dold->original ? dold->original->GetName() : dold->character->GetName() ) )
         {
-            snprintf( buf, MSL, "Player from site %s tried to login as %s (already playing) !", d->host, name.c_str() );
+            snprintf( buf, MSL, "Player from site %s tried to login as %s (already playing) !", d->brain->GetHost_(), name.c_str() );
             monitor_chan( buf, MONITOR_CONNECT );
             /* Not sure if we want to do this..players can cheat and try to log back in as themselves to end a fight Zen
                     dold->character->position = POS_STANDING;
@@ -3842,9 +3843,10 @@ void copyover_recover(  )
         }
 
         d = new DESCRIPTOR_DATA;
+        d->brain = new Brain;
         init_descriptor( d, desc );   /* set up various stuff */
 
-        d->host = str_dup( host );
+        d->brain->SetHost( host );
         d->next = NULL;
         d->prev = NULL;
 

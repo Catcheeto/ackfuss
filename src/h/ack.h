@@ -193,12 +193,12 @@ class descriptor_data
     public:
         descriptor_data();
         ~descriptor_data();
+        Brain* brain;
         DESCRIPTOR_DATA *next;
         DESCRIPTOR_DATA *prev;
         DESCRIPTOR_DATA *snoop_by;
         CHAR_DATA *character;
         CHAR_DATA *original;
-        char *host;
         short descriptor;
         short connected;
         bool fcommand;

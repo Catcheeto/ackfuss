@@ -12,6 +12,10 @@
 #include "h/act_obj.h"
 #endif
 
+#ifndef DEC_BRAIN_H
+#include "h/brain.h"
+#endif
+
 #ifndef DEC_THING_H
 #include "h/thing.h"
 #endif
@@ -45,6 +49,15 @@ const sint_t Thing::SetAlignment( const sint_t amount )
         return 0;
 
     return m_alignment = amount;
+}
+
+// Brain
+const Brain* Thing::AttachBrain( Brain* brain )
+{
+    if ( brain )
+        return m_brain = brain;
+    else
+        return m_brain = new Brain;
 }
 
 // Combat Stats
@@ -275,6 +288,9 @@ Thing::Thing()
     // Alignment
     m_alignment = uintmin_t;
 
+    // Brain
+    m_brain = NULL;
+
     // Combat Stats
     m_mod_ac = uintmin_t;
 
@@ -295,4 +311,6 @@ Thing::Thing()
 
 Thing::~Thing()
 {
+    if ( m_brain )
+        delete m_brain;
 }

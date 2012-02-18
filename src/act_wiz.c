@@ -3702,7 +3702,7 @@ DO_FUN(do_users)
         snprintf( buf + strlen( buf ), MSL, "[%3d %3d %18s] %-12s %-30s",
                   d->descriptor,
                   d->connected,
-                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->host );
+                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->brain->GetHost_() );
         if ( get_trust( ch ) == 85 )
             snprintf( buf + strlen( buf ), MSL, "  %5d\r\n", d->remote_port );
         else
@@ -6230,7 +6230,7 @@ DO_FUN(do_hotreboot)
         }
         else
         {
-            fprintf( fp, "%d %s %s\n", d->descriptor, och->GetName_(), d->host );
+            fprintf( fp, "%d %s %s\n", d->descriptor, och->GetName_(), d->brain->GetHost_() );
             save_char_obj( och );
             write_to_descriptor( d->descriptor, buf );
         }

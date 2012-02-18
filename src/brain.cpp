@@ -8,7 +8,12 @@
 
 #include "h/globals.h"
 
-#ifndef DEC_BRAIN_H
-#include "h/brain.h"
-#endif
+Brain::Brain()
+{
+    // Remote Hostname
+    m_host.clear();
+}
 
+Brain::~Brain()
+{
+}
