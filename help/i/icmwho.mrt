@@ -1,0 +1,10 @@
+IMCWHO
+
+Syntax: imcwho (mudname)        - ask for a who listing from another mud
+
+imcwho i3       - Shows I3 network mudlist.
+
+Requests a list of the current players on the target mud. Invisble players
+will not be displayed. You should use the mud abbreviation listed in
+'IMCLIST' when issuing a IMCWHO.
+

@@ -1,0 +1,12 @@
+IMCLISTEN
+
+Syntax: imclisten               - display current channel status
+        imclisten (localname)   - toggle a channel
+
+IMCLISTEN lets you show and toggle which channels you are listening
+to. Without arguments, it will show you the channels you belong to; with
+an argument, it will turn that channel on or off.
+
+Any channels you listen to must be locally configured first - see
+IMCSETUP. IMCCHANLIST can be used to see available channels.
+

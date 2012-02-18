@@ -1,0 +1,9 @@
+IMCINVIS
+
+Syntax: imcinvis               - makes you invisible to the network.
+
+When you toggle the imcinvis setting, other users will no longer be able to see
+you on the network in who listing, nor will they be able to send you tells.
+You will also be unable to send your own tells.
+
+The only thing invisibility does not stop is your ability to use network channels.

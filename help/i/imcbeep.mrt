@@ -1,0 +1,9 @@
+IMCBEEP
+
+Syntax: imcbeep person@mud     - "beep" a player over IMC
+
+Sends a short sound tone to the person on the target mud. If their terminal
+program supports it, it will make an audible beep to get their
+attention. If you don't get a response, don't keep beeping. The person may
+be busy or away and spamming them will only tick them off as well as
+possibly leading to your IMC priviliges being revoked.

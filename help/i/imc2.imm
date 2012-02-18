@@ -1,0 +1,6 @@
+IMC2
+
+The following IMC2 commands are available:
+    imccommand   imcdeny        imcucache  imcban
+    imcping      imcsetup       imcstats   imcconfig
+    imcperms     imcpermset

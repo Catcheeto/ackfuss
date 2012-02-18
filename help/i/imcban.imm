@@ -1,0 +1,19 @@
+IMCBAN
+
+Syntax: imcban                   - list current bans
+        imcban add <mudname>     - add mud to ban list
+        imcban delete <mudname>  - remove mud from ban list
+
+The IMCBAN command is used to stop an individual user, or an entire
+mud from sending any traffic to your mud at all. This is your second line
+of defense in the event individual user-level ignores fail to do the job
+adequately for you. This is a somewhat drastic measure and should only be
+used in elevated cases. In general it is best to have documented cases of
+problems with individual users on your mud before resorting to this. All
+incoming traffic from the offending mud is simply dropped and no further
+action taken on the packets. If this level of action fails to stop the
+problems you are having, document the incidents and proceed to the next
+level and seek assistance from the server administrator of the server you
+are connected to. They will be able to direct you further, and can issue
+bans at the server or network level if need be.
+

@@ -1,0 +1,7 @@
+IMC2
+
+The following IMC2 commands are available:
+    imcbeep      imcchanlist    imclist    imcinvis
+    imclisten    imcreply       imctell    imclocate
+    imcfinger    imcinfo        imcwho     imcignore
+    imccolor     imcchanwho

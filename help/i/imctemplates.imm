@@ -1,0 +1,7 @@
+IMCTEMPLATES
+
+Syntax: imctemplates           - reloads the template file set from disk.
+
+Issuing this command will refresh any editing you've done to your template files.
+This saves you from needing to disconnect from the network and reconnect just to
+test changes.

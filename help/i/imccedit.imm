@@ -1,0 +1,9 @@
+IMCCEDIT
+
+Syntax: imccedit <command> <create|delete|rename|code|permission|connected> [field]
+
+This command allows you to edit the data contained in other commands, create new commands,
+and delete commands.
+
+When creating, you can optionally specify the name of the function the command will use.
+If the function named does not exist, the command will not work.

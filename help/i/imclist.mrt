@@ -1,0 +1,9 @@
+IMCLIST
+
+Syntax: imclist                  - get a list of active muds on IMC2
+
+'IMCLIST' lists active muds on IMC2. It lists all the muds which this mud
+knows about on the IMC2 network, what client version they run ( or server version
+in the case of servers ), what network they claim to be registered with, and what
+server they are routed from.
+

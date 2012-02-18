@@ -1,0 +1,7 @@
+IMCDEBUG
+
+Syntax: imcdebug
+
+This toggles the mud's packet debugging. Your logs will begin displaying incoming and outgoing
+packets. For this reason, it is not recommended to be used unless absolutely necessary since
+using it could create potential privacy issues. It's called debug for a reason, use it responsibly.

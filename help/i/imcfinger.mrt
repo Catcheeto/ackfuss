@@ -1,0 +1,11 @@
+IMCFINGER
+
+Syntax: imcfinger (person@mud)     - get information about a player
+
+Requests information about a specific person on the target mud. The mud
+will either respond with information they feel is appropriate, or with
+a message saying finger is not supported.
+
+When used with the bridge, typing imcfinger (mud@i3) will produce a who
+listing of the target mud.
+

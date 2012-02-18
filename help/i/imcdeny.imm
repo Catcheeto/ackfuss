@@ -1,0 +1,8 @@
+IMCDENY
+
+Syntax: imcdeny <person> <local channel name>
+Syntax: imcdeny <person> [tell/beep/finger]
+
+This command allows you to deny players the use of a local channel, the tell
+functions, beep functions, and finger functions. It is a simple toggle that
+can be changed as needed.

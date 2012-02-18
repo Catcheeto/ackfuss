@@ -36,13 +36,15 @@
 #define IMC_BAN_FILE     IMC_DIR "imc.ignores"
 #define IMC_UCACHE_FILE  IMC_DIR "imc.ucache"
 #define IMC_COLOR_FILE   IMC_DIR "imc.color"
-#define IMC_HELP_FILE    IMC_DIR "imc.help"
 #define IMC_CMD_FILE     IMC_DIR "imc.commands"
 #define IMC_HOTBOOT_FILE IMC_DIR "imc.hotboot"
 #define IMC_WHO_FILE     IMC_DIR "imc.who"
 
-/* Make sure you set the macros in the imccfg.h file properly or things get ugly from here. */
-#include "imccfg.h"
+#define CH_IMCDATA(ch)           ((ch)->pcdata->imcchardata)
+#define CH_IMCLEVEL(ch)          ((ch)->level)
+#define CH_IMCSEX(ch)            ((ch)->sex)
+#define CH_IMCTITLE(ch)          ((ch)->get_title())
+#define CH_IMCRANK(ch)           (str_cmp(ch->pcdata->who_name,"off") ? ch->pcdata->who_name : IS_IMMORTAL(ch) ? "Imm" : class_table[(ch)->p_class].who_name)
 
 #define IMC_BUFF_SIZE 16384
 
@@ -212,7 +214,6 @@ typedef struct imc_ignore IMC_IGNORE;  /* Player level ignores */
 typedef struct imcucache_data IMCUCACHE_DATA;   /* User cache data for gender targetting socials */
 typedef struct imc_color_table IMC_COLOR; /* The Color config */
 typedef struct imc_command_table IMC_CMD_DATA;  /* Command table */
-typedef struct imc_help_table IMC_HELP_DATA; /* Help table */
 typedef struct imc_cmd_alias IMC_ALIAS;   /* Big, bad, bloated command alias thing */
 typedef struct imc_packet_handler IMC_PHANDLER; /* custom packet handlers added dynamically */
 typedef struct who_template WHO_TEMPLATE; /* The who templates */
@@ -247,15 +248,6 @@ struct imc_command_table
     char *name;
     int level;
     bool connected;
-};
-
-struct imc_help_table
-{
-    IMC_HELP_DATA *next;
-    IMC_HELP_DATA *prev;
-    char *name;
-    char *text;
-    int level;
 };
 
 struct imc_color_table

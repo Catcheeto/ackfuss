@@ -1,0 +1,8 @@
+IMCLOCATE
+
+Syntax: imclocate (person)          - find a player on IMC
+
+Sends a request out to all muds on the IMC network looking for the
+specified player. If they are online and visible, a response will
+be sent back indicating this.
+

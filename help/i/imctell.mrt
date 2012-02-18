@@ -1,0 +1,19 @@
+IMCTELL
+
+Syntax: imctell (person@mud) (message) - send a 'tell' to another player
+Syntax: imcreply (message)             - send a 'tell' to the last player
+                                         to send you a IMCTELL
+
+imctell Name:MUD@I3 (message)          - Sends a tell to a person on the I3 network.
+
+IMCREPLY will work on either a normal IMCTELL or one forwarded by the bridge.
+
+A private message can be sent from you to a person on another mud.
+
+To send a reply to someone who sent you a tell, simply use the
+IMCREPLY command with your message.
+
+Due to certain conditions within the network, your conversations COULD be
+monitored, so don't send anything critical, like passwords or credit card
+numbers ( or anything else you don't want to risk being snooped ), over an IMCTELL.
+

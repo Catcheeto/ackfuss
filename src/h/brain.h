@@ -13,9 +13,9 @@ class Brain {
         Brain();
         ~Brain();
 
-        const string GetHost() const { return m_host; }
-        const char* GetHost_() const { return GetHost().c_str(); }
-        const string SetHost( const string host ) { return m_host = host; }
+        string GetHost() const { return m_host; }
+        char* GetHost_() const { return const_cast<char*>( GetHost().c_str() ); }
+        string SetHost( const string host ) { return m_host = host; }
 
     private:
         string m_host;

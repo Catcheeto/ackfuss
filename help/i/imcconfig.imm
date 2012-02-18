@@ -1,0 +1,27 @@
+IMCCONFIG
+
+Syntax: imc <field> [value]
+
+Configuration info for your mud. Changes save when edited.
+You may set the following:
+
+Show          : Displays your current configuration.
+Localname     : The name IMC2 knows your mud by.
+Autoconnect   : Toggles automatic connection on reboots.
+MinPlayerLevel: Sets the minimum level IMC2 can see your players at.
+MinImmLevel   : Sets the level at which immortal commands become available.
+Adminlevel    : Sets the level at which administrative commands become available.
+Implevel      : Sets the level at which immplementor commands become available.
+Infoname      : Name of your mud, as seen from the imcquery info sheet.
+Infohost      : Telnet address of your mud.
+Infoport      : Telnet port of your mud.
+Infoemail     : Email address of the mud's IMC2 administrator.
+InfoWWW       : The Web address of your mud, cannot contain tildes.
+InfoDetails   : SHORT Description of your mud.
+ServerName    : Name of the server your mud connets to IMC2 on.
+ServerAddr    : DNS or IP address of the server you mud connects to.
+ServerPort    : Port of the server your mud connects to.
+ClientPwd     : Client password for your mud.
+ServerPwd     : Server password for your mud.
+
+This display will also indicate whether your mud is using MD5 or plain text to authenticate.

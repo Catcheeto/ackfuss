@@ -21,7 +21,7 @@
 #endif
 
 // Alignment
-const sint_t Thing::DecrAlignment( const sint_t amount )
+sint_t Thing::DecrAlignment( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -32,7 +32,7 @@ const sint_t Thing::DecrAlignment( const sint_t amount )
         return m_alignment -= amount;
 }
 
-const sint_t Thing::IncrAlignment( const sint_t amount )
+sint_t Thing::IncrAlignment( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -43,7 +43,7 @@ const sint_t Thing::IncrAlignment( const sint_t amount )
         return m_alignment += amount;
 }
 
-const sint_t Thing::SetAlignment( const sint_t amount )
+sint_t Thing::SetAlignment( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -52,7 +52,7 @@ const sint_t Thing::SetAlignment( const sint_t amount )
 }
 
 // Brain
-const Brain* Thing::AttachBrain( Brain* brain )
+Brain* Thing::AttachBrain( Brain* brain )
 {
     if ( brain )
         return m_brain = brain;
@@ -61,7 +61,7 @@ const Brain* Thing::AttachBrain( Brain* brain )
 }
 
 // Combat Stats
-const sint_t Thing::DecrModAC( const sint_t amount )
+sint_t Thing::DecrModAC( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -72,7 +72,7 @@ const sint_t Thing::DecrModAC( const sint_t amount )
         return m_mod_ac -= amount;
 }
 
-const sint_t Thing::IncrModAC( const sint_t amount )
+sint_t Thing::IncrModAC( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -83,7 +83,7 @@ const sint_t Thing::IncrModAC( const sint_t amount )
         return m_mod_ac += amount;
 }
 
-const sint_t Thing::SetModAC( const sint_t amount )
+sint_t Thing::SetModAC( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -91,7 +91,7 @@ const sint_t Thing::SetModAC( const sint_t amount )
     return m_mod_ac = amount;
 }
 
-const sint_t Thing::DecrModDR( const sint_t amount )
+sint_t Thing::DecrModDR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -102,7 +102,7 @@ const sint_t Thing::DecrModDR( const sint_t amount )
         return m_mod_dr -= amount;
 }
 
-const sint_t Thing::IncrModDR( const sint_t amount )
+sint_t Thing::IncrModDR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -113,7 +113,7 @@ const sint_t Thing::IncrModDR( const sint_t amount )
         return m_mod_dr += amount;
 }
 
-const sint_t Thing::SetModDR( const sint_t amount )
+sint_t Thing::SetModDR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -121,7 +121,7 @@ const sint_t Thing::SetModDR( const sint_t amount )
     return m_mod_dr = amount;
 }
 
-const sint_t Thing::DecrModHR( const sint_t amount )
+sint_t Thing::DecrModHR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -132,7 +132,7 @@ const sint_t Thing::DecrModHR( const sint_t amount )
         return m_mod_hr -= amount;
 }
 
-const sint_t Thing::IncrModHR( const sint_t amount )
+sint_t Thing::IncrModHR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -143,7 +143,7 @@ const sint_t Thing::IncrModHR( const sint_t amount )
         return m_mod_hr += amount;
 }
 
-const sint_t Thing::SetModHR( const sint_t amount )
+sint_t Thing::SetModHR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -152,17 +152,17 @@ const sint_t Thing::SetModHR( const sint_t amount )
 }
 
 // Descriptions
-const string Thing::GetDescrExtra( const string key )
+string Thing::GetDescrExtra( const string key ) const
 {
-    map<string,string>::iterator it = m_descr_extra.find( key );
+    map<string,string>::const_iterator it = m_descr_extra.find( key );
     string value = it->second;
 
     return value;
 }
 
-const list<string> Thing::GetDescrExtraKeys()
+list<string> Thing::GetDescrExtraKeys() const
 {
-    map<string,string>::iterator it = m_descr_extra.begin();
+    map<string,string>::const_iterator it = m_descr_extra.begin();
     list<string> value;;
 
     while ( it++ != m_descr_extra.end() )
@@ -171,9 +171,9 @@ const list<string> Thing::GetDescrExtraKeys()
     return value;
 }
 
-const list<string> Thing::GetDescrExtraValues()
+list<string> Thing::GetDescrExtraValues() const
 {
-    map<string,string>::iterator it = m_descr_extra.begin();
+    map<string,string>::const_iterator it = m_descr_extra.begin();
     list<string> value;
 
     while ( it++ != m_descr_extra.end() )
@@ -183,7 +183,7 @@ const list<string> Thing::GetDescrExtraValues()
 }
 
 // Level
-const uint_t Thing::DecrExperience( const uint_t amount )
+uint_t Thing::DecrExperience( const uint_t amount )
 {
     if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
@@ -194,7 +194,7 @@ const uint_t Thing::DecrExperience( const uint_t amount )
         return m_experience -= amount;
 }
 
-const uint_t Thing::IncrExperience( const uint_t amount )
+uint_t Thing::IncrExperience( const uint_t amount )
 {
     if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
@@ -205,7 +205,7 @@ const uint_t Thing::IncrExperience( const uint_t amount )
         return m_experience += amount;
 }
 
-const uint_t Thing::SetExperience( const uint_t amount )
+uint_t Thing::SetExperience( const uint_t amount )
 {
     if ( amount <= 0 || amount >= uintmax_t )
         return 0;
@@ -214,7 +214,7 @@ const uint_t Thing::SetExperience( const uint_t amount )
 }
 
 // 'Object' Manipulation
-const bool Thing::DropThing( const Thing* what )
+bool Thing::DropThing( const Thing* what )
 {
     char name[MSL];
 
@@ -223,7 +223,7 @@ const bool Thing::DropThing( const Thing* what )
     return true;
 }
 
-const bool Thing::EquipThing( const Thing* what )
+bool Thing::EquipThing( const Thing* what )
 {
     char name[MSL];
 
@@ -232,7 +232,7 @@ const bool Thing::EquipThing( const Thing* what )
     return true;
 }
 
-const bool Thing::RemoveThing( const Thing* what )
+bool Thing::RemoveThing( const Thing* what )
 {
     char name[MSL];
 

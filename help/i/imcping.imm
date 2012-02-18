@@ -1,0 +1,9 @@
+IMCPING
+
+Syntax: imcping (mud)
+
+IMCPING allows you to trace connectivity of another connection from your
+own. You will be given a path to and from the target mud. This command is
+basically just for simple diagnostics and should not be considered a reliable
+network tool.
+

@@ -1,0 +1,8 @@
+IMCUCACHE
+
+Syntax: imcucache
+
+Displays the contents of the ucache tables which are used for proper targetting of
+genders in socials. This output can be very spammy depending on the number of
+supporting clients.
+

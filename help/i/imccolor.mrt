@@ -1,0 +1,7 @@
+IMCCOLOR
+
+Syntax: imccolor
+
+This command simply toggles receiving of imc color codes. If on, you will see everything
+in as much color as your mud is capable of displaying. If off, all IMC2 traffic will be
+in whatever your terminal default color is.

@@ -1,0 +1,10 @@
+IMCCHANWHO
+
+Syntax: imcchanwho <channel> <mud>
+
+This command will show you a listing of people who are listening to the specified channel
+on the specified mud. You can also ask for a listing from multiple muds by putting all
+of their names in the command. Or, you can also specify "all" and the command will query
+all muds on the network for who is listening. Be advised this command can generate alot
+of output.
+

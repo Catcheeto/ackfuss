@@ -1,0 +1,38 @@
+IMCCOMMAND
+
+Syntax: imccommand (command) (channel) [(data..)]
+
+Common commands: list [(channel)]           - list available commands
+                 create (channel)           - create a channel
+                 destroy (channel)          - destroy a channel
+                 invite (channel) (name)    - add an invited name
+                 uninvite (channel) (name)  - remove an invited name
+                 exclude (channel) (name)   - exclude a name
+                 unexclude (channel) (name) - remove an exclusion
+                 policy (channel) (policy)  - change channel policy
+                 addop (channel) (name)     - add a channel operator
+                 removeop (channel) (name)  - remove an operator
+
+IMCCOMMAND is used to send commands to a channel daemon elsewhere on IMC.
+It directly affects the channel itself - any changes made here will
+affect all muds using the channel.
+
+Since the actual commands are interpreted by the channel daemon, not your
+mud, what is available may vary. To get a list of available commands, use
+IMCCOMMAND list (nodename) for public commands, or IMCCOMMAND list
+(node:channel) to see what commands you have for that channel.
+
+IMCCOMMAND create creates a new channel, with you as the owner.
+
+IMCCOMMAND destroy destroys a channel. You must own the channel.
+
+IMCCOMMAND policy changes the basic policy of the channel. You must be the owner.
+
+IMCCOMMAND addop/removeop add and remove operators from a channel. You must
+be the owner, and specify the operator's full user@mud name.
+
+IMCCOMMAND invite/uninvite/exclude/unexcluded modify the invite and exclude
+lists for a channel. You must be the owner or an operator on the
+channel. Either a full user@mud or a simple 'mud' name (no @) can be
+specified.
+

@@ -1,0 +1,6 @@
+IMCINFO
+
+Syntax: imcinfo <mud>
+
+This command will display information about one mud on the network. The information
+presented by the command is chosen by the mud's administrators.

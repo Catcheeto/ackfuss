@@ -1,0 +1,8 @@
+IMCPERMS
+
+Syntax: imcperms <user>
+
+This command will display the permission level of the target player, and will tell you how
+that permission value was given.
+
+If a permission was set with imcpermset, this permission will not update itself at user login.

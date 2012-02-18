@@ -6,23 +6,9 @@ Connected 0
 End
 
 #COMMAND
-Name      imchelp
-Code      imchelp
-Perm      Mort
-Connected 0
-End
-
-#COMMAND
 Name      imccedit
 Code      imccedit
 Perm      Imp
-Connected 0
-End
-
-#COMMAND
-Name      imchedit
-Code      imchedit
-Perm      Admin
 Connected 0
 End
 

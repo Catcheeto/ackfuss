@@ -1,0 +1,21 @@
+IMCIGNORE
+
+Syntax: imcignore                  - list current ignores
+        imcignore add <target>     - add entry to ignore list
+        imcignore delete <target>  - remove entry from ignore list
+
+The IMCIGNORE command blocks all messages specifically directed toward an
+individual user and is your first line of defense against an annoying pest.
+You can specify individual users, or an entire mud using wildcards like so:
+
+imcignore pest@mud
+imcignore *@mud
+imcignore pest@*
+
+Before going to the mud's administration with a complaint, try this first.
+If the particular person you are attempting to ignore continues to cause
+problems or is becoming a nuisance to the mud in general, advise your mud
+administration to seek the use of an IMCBAN command against them.
+Be prepared to justify this with a good reason and provide any documentation
+of any incidents your administrators ask for.
+

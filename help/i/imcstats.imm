@@ -1,0 +1,7 @@
+IMCSTATS
+
+Syntax: imcstats                     - displays useful statistics
+
+IMCSTATS shows some useful statistics about how much traffic your mud is
+generating due to IMC. It will also report which descriptor number your mud
+is using to connect to the network.

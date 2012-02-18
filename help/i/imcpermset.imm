@@ -1,0 +1,13 @@
+IMCPERMSET
+
+Syntax: imcpermset <user> <permission>
+
+This command will set the specified permission level on the target user.
+Valid permissions are: None, Mort, Imm, Admin, and Imp.
+You will only be able to alter permissions on users who are below your current permission level.
+
+When a permission is manually set, the user will no longer have it adjusted at login time.
+This action sets the override flag for that user.
+
+You can also specify 'override' to remove the override flag and allow the code to reset their
+permission level at next login.

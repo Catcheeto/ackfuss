@@ -1,0 +1,11 @@
+IMCADMIN
+
+Syntax: imcadmin <server> <password> <command> [data]
+
+This is the remote administration handler. Since server administrators are the only ones who
+should have any business using this, details are available in the RemoteAdmin.txt file
+which accompanied the source code for IMC2. Besides, the list is a bit large to put here.
+
+A password provided by the owner of the server is required to use these commands. If your mud
+uses MD5 authentication, that password will be encrypted. If not, it isn't wise to use
+these functions as anyone sniffing could potentially do damage in the right conditions.

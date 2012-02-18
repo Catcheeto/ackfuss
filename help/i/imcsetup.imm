@@ -1,0 +1,39 @@
+IMCSETUP
+
+Syntax:
+imcsetup setlocal (channel) (localname)   - locally configure a channel
+IMCSETUP delete (localname)               - delete a channel
+IMCSETUP rename (oldname) (newname)       - rename a channel
+IMCSETUP regformat (localname) (format)   - change channel talk format
+IMCSETUP emoteformat (localname) (format) - change channel emote format
+IMCSETUP socformat (localname) (format)   - change channel social format
+IMCSETUP level (localname) (level)        - set channel level
+
+IMCSETUP allows you to change the local configuration of an ICE
+channel. None of these commands have a lasting effect on the channel's
+configuration on other muds.
+
+IMCSETUP setlocal configures a channel. It connects the specified channel
+(of the form nodename:channelname) to a local name.
+
+For example: IMCSETUP setlocal Server01:IMCChat imcchat. The local name is also the
+command used to speak on the channel.
+
+When the channel is configured, default values are filled in for
+regformat, emoteformat, socformat and level.
+
+IMCSETUP delete removes this link. It does not affect the channel itself;
+it just deletes the local configuration link for the channel.
+
+IMCSETUP rename changes the local name of a channel. It does not affect the
+channel name itself for other muds - just the command used locally to
+access it.
+
+IMCSETUP regformat, emoteformat and socformat change how a channel is
+displayed locally. Each format string must have exactly two %s's within it,
+except socformat, (this is checked for) - the first will be replaced by the
+speaker's name, the second by whatever they say or do. Regformat is used for
+normal speech, emoteformat is for emotes and socformat is for socials.
+
+IMCSETUP level sets the minimum level necessary on your mud to hear or use
+the channel.

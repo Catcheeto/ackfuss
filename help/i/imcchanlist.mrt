@@ -1,0 +1,74 @@
+IMCCHANLIST
+
+Syntax: imcchanlist               - list all known IMC channels
+        imcchanlist (channel)     - list details on one IMC channel
+
+IMCCHANLIST displays information on channels active on IMC.
+Without arguments, it will produce a display similar to:
+
+Name            Local name      Owner           Perm    Policy
+Server02:test   test            Samson@Alsherok Admin   Private
+Server02:icode  icode           Samson@Alsherok Imm     Open
+Server02:i2chat i2              Samson@Alsherok Imm     Open
+Server01:ichat  ichat           Paradigm@Pabulu Imm     Open
+Server01:pchat  pchat           Paradigm@Pabulu Mort    Open
+Server02:irc    irc             Samson@Alsherok Imm     Open
+Server02:i3chat i3b             Samson@Alsherok Imm     Open
+Server10:UCMMCh UCMMChat        Ntanel@RM       Imm     Private
+Server02:igame  game            Samson@Alsherok Mort    Open
+
+This shows the channel's network name (eg. Server01:ichat), the local name
+ eg ichat - which can be used as an abbreviation in IMCSETUP, and which is also
+the command to speak on that channel), the owner of the channel
+(eg. Paradigm@Pabulum), and the channel's policy.
+
+Channel policies available are: open, and private.
+
+Open channels can be seen and used by anyone meeting the mud's minimum level for IMC2.
+Private channels can only be seen and used by the list of invited users.
+
+If a channel is not configured locally, it will have (not local) for its local name.
+
+If a channel is configured locally, but is not actually active on IMC2, it
+will have an Unknown flag on it.
+
+IMCCHANLIST with a channel name will provide detailed information on that
+channel. For example:
+
+Channel Server01:ichat:
+  Local name: ichat
+  Regformat : [ichat] %s: %s
+  Emformat  : [ichat] %s %s
+  Socformat : [ichat] %s
+  Perms     : Imm
+
+  Policy    : Open -- Open to all muds
+  Owner     : Paradigm@Pabulum
+  Operators : remcon@pabulum paradigm@pabulum
+  Invited   :
+  Excluded  :
+
+This displays the channel name, local name, policy and owner, as above. It
+also displays:
+
+- The minimum permissions needed on your mud to see the channel.
+
+- The format for displaying messages from the channel. These can contain
+  any color codes etc that your mud uses.
+
+  Regformat is the string displayed when someone speaks normally on the
+  channel - the first %s is replaced by their name, the second %s by what
+  they say.
+
+  Emformat is a similar string for emotes. Again the first %s is their
+  name, the second %s the text of their emote.
+
+  Socformat is a similar string for emotes. Except there is only one %s and
+  is the format used to send socials to the network.
+
+- Any operators for the channel. This can only be changed by the owner of
+  the channel. Operators can modify the 'invited' and 'excluded' fields
+  via the IMCSETUP command.
+
+- The invited and excluded people on the channel.
+
