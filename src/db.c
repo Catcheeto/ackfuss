@@ -1200,7 +1200,7 @@ void load_oaffect( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in oaffect :%s (%s), no match for ( %s ).", area_load->name, obj_load->name, word );
+        snprintf( log_buf, (2 * MIL), "Loading in oaffect :%s (%s), no match for ( %s ).", area_load->name, obj_load->GetName_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -1292,7 +1292,7 @@ void load_object( FILE * fp )
                 break;
 
             case 'N':
-                SKEY("Name", pObjIndex->name, fread_string(fp));
+                KEY_("Name", pObjIndex->SetName, fread_string(fp));
                 break;
 
             case 'O':
@@ -1438,7 +1438,7 @@ void load_oextra( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in oextra :%s (%s), no match for ( %s ).", area_load->name, obj_load->name, word );
+        snprintf( log_buf, (2 * MIL), "Loading in oextra :%s (%s), no match for ( %s ).", area_load->name, obj_load->GetName_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -2814,7 +2814,7 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
 
     obj->wear_loc = -1;
 
-    obj->SetName( pObjIndex->name );
+    obj->SetName( pObjIndex->GetName() );
     obj->short_descr = str_dup( pObjIndex->short_descr );
     obj->long_descr = str_dup( pObjIndex->long_descr );
     obj->item_type = pObjIndex->item_type;

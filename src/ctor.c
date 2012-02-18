@@ -453,7 +453,6 @@ obj_index_data::obj_index_data()
     level = 1;
     long_descr = &str_empty[0];
     max_durability = number_range(2, 100);
-    name = &str_empty[0];
     next = NULL;
     obj_fun = NULL;
     short_descr = &str_empty[0];

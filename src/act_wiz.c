@@ -1441,7 +1441,7 @@ DO_FUN(do_ofind)
         if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
         {
             nMatch++;
-            if ( fAll || is_name( arg, pObjIndex->name ) )
+            if ( fAll || is_name( arg, pObjIndex->GetName() ) )
             {
                 found = TRUE;
                 snprintf( buf, MSL, "[%5d] [%3d] %s %s\r\n",
@@ -5922,7 +5922,7 @@ DO_FUN(do_findreset)
                                                 strncat( outbuf, "  sells ", MSL );
                                             else
                                                 strncat( outbuf, "  with ", MSL );
-                                            snprintf( catbuf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->name );
+                                            snprintf( catbuf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->GetName_() );
                                             strncat( outbuf, catbuf, MSL - 1 );
                                         }
                                         else
@@ -5936,7 +5936,7 @@ DO_FUN(do_findreset)
                                         pObj = get_obj_index( similar->arg1 );
                                         if ( pObj != NULL )
                                             snprintf( catbuf, MSL, "  equiped with [%d] %s, on %s.\r\n", pObj->vnum,
-                                                      pObj->name, tab_wear_loc[( similar->arg3 )].text );
+                                                      pObj->GetName_(), tab_wear_loc[( similar->arg3 )].text );
                                         else
                                             snprintf( catbuf, MSL, "[%d] unknown object equipped on %s.\r\n",
                                                       similar->arg1, tab_wear_loc[similar->arg3].text );

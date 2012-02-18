@@ -194,7 +194,6 @@ obj_data::~obj_data()
 
 obj_index_data::~obj_index_data()
 {
-    free_string(name);
     free_string(short_descr);
     free_string(long_descr);
 }

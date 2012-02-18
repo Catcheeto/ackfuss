@@ -234,7 +234,6 @@ static void walk_obj_index_data( OBJ_INDEX_DATA * o )
     if ( !o )
         return;
 
-    touch( o->name );
     touch( o->short_descr );
     touch( o->long_descr );
 }

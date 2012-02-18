@@ -387,7 +387,6 @@ DO_FUN(build_showmob)
     MOB_INDEX_DATA *pMob;
     /*    RESET_DATA     *pReset; Unused var */
     SHOP_DATA *pShop;
-    bool is_shopkeeper = 0;
     int iTrade;
 
     argument = one_argument( argument, arg1 );
@@ -469,7 +468,6 @@ DO_FUN(build_showmob)
 
     if ( ( pShop = pMob->pShop ) != 0 )
     {
-        is_shopkeeper = 1;
         strncat( buf1, "@@WMobile is a shopkeeper, will buy @@y", MSL );
         for ( iTrade = 0; iTrade < MAX_TRADE; iTrade++ )
         {
@@ -526,7 +524,7 @@ DO_FUN(build_showobj)
     if ( !build_canread( obj->area, ch, 1 ) )
         return;
 
-    snprintf( buf, MSL, "@@WName: @@y%s  @@WLevel: @@y%d.\r\n", obj->name, obj->level );
+    snprintf( buf, MSL, "@@WName: @@y%s  @@WLevel: @@y%d.\r\n", obj->GetName_(), obj->level );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WType: @@y%s.\r\n", obj->vnum, tab_item_types[( obj->item_type ) - 1].text );
@@ -748,7 +746,7 @@ DO_FUN(build_showroom)
                     strncat( buf1, buf, MSL - 1 );
                     snprintf( buf, MSL, "             @@WKey: @@y%5i %s@@N\r\n@@WExit Type:@@y %s@@N\r\n",
                               pKeyObj != NULL ? pKeyObj->vnum : 0,
-                              pKeyObj != NULL ? pKeyObj->name : "None", bs_show_values( tab_door_types, pexit->exit_info ) );
+                              pKeyObj != NULL ? pKeyObj->GetName_() : "None", bs_show_values( tab_door_types, pexit->exit_info ) );
                     strncat( buf1, buf, MSL - 1 );
                     if ( pexit->keyword != NULL && pexit->keyword[0] != '\0' )
                     {
@@ -838,7 +836,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
         case 'G':
             pObj = get_obj_index( pReset->arg1 );
             if ( pObj )
-                snprintf( buf, MSL, "  stray 'give' reset: object [%d] %s.\r\n", pReset->arg1, pObj->name );
+                snprintf( buf, MSL, "  stray 'give' reset: object [%d] %s.\r\n", pReset->arg1, pObj->GetName_() );
             else
                 snprintf( buf, MSL, "  stray 'give' reset: object %d (unknown).\r\n", pReset->arg1 );
             strncat( buf1, buf, MSL - 1 );
@@ -847,7 +845,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
             pObj = get_obj_index( pReset->arg1 );
             if ( pObj )
                 snprintf( buf, MSL, "  stray 'equip' reset: object [%d] %s, on %s.\r\n",
-                          pReset->arg1, pObj->name, tab_wear_loc[( pReset->arg3 )].text );
+                          pReset->arg1, pObj->GetName_(), tab_wear_loc[( pReset->arg3 )].text );
             else
                 snprintf( buf, MSL, "  stray 'equip' reset: object [%d] (unknown), on %s.\r\n",
                           pReset->arg1, tab_wear_loc[( pReset->arg3 )].text );
@@ -888,7 +886,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
                             strncat( buf1, "  sells ", MSL );
                         else
                             strncat( buf1, "  with ", MSL );
-                        snprintf( buf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->name );
+                        snprintf( buf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->GetName_() );
                         strncat( buf1, buf, MSL - 1 );
                     }
                     else
@@ -902,7 +900,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
                     pObj = get_obj_index( pReset->arg1 );
                     if ( pObj != NULL )
                         snprintf( buf, MSL, "  equiped with [%d] %s, on %s.\r\n", pObj->vnum,
-                                  pObj->name, tab_wear_loc[( pReset->arg3 )].text );
+                                  pObj->GetName_(), tab_wear_loc[( pReset->arg3 )].text );
                     else
                         snprintf( buf, MSL, "[%d] unknown object equipped on %s.\r\n", pReset->arg1, tab_wear_loc[pReset->arg3].text );
                     strncat( buf1, buf, MSL - 1 );
@@ -912,7 +910,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
         case 'O':  /* Load object to room */
             pObj = get_obj_index( pReset->arg1 );
             if ( pObj != NULL )
-                snprintf( buf, MSL, " [%d] %s no more than %d in room.\r\n", pObj->vnum, pObj->name, pReset->arg2 );
+                snprintf( buf, MSL, " [%d] %s no more than %d in room.\r\n", pObj->vnum, pObj->GetName_(), pReset->arg2 );
             else
                 snprintf( buf, MSL, " [%d] unknown object reset!\r\n", pReset->arg1 );
             strncat( buf1, buf, MSL - 1 );
@@ -923,9 +921,9 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
             if ( pObj )
             {
                 if ( to_obj )
-                    snprintf( buf, MSL, " object [%d] %s inside object [%d] %s. (limit %d)\r\n", pReset->arg1, pObj->name, pReset->arg3, to_obj->name, pReset->arg2 );
+                    snprintf( buf, MSL, " object [%d] %s inside object [%d] %s. (limit %d)\r\n", pReset->arg1, pObj->GetName_(), pReset->arg3, to_obj->GetName_(), pReset->arg2 );
                 else
-                    snprintf( buf, MSL, " object [%d] %s inside object [%d] (unknown). (limit %d)\r\n", pReset->arg1, pObj->name, pReset->arg3, pReset->arg2 );
+                    snprintf( buf, MSL, " object [%d] %s inside object [%d] (unknown). (limit %d)\r\n", pReset->arg1, pObj->GetName_(), pReset->arg3, pReset->arg2 );
             }
             else
                 snprintf( buf, MSL, " object [%d] (unknown) inside object [%d] (unknown). (limit %d)\r\n", pReset->arg1, pReset->arg3, pReset->arg2 );
@@ -1136,7 +1134,7 @@ DO_FUN(build_findobject)
     {
         pObjIndex = (OBJ_INDEX_DATA *)pList->data;
         nMatch++;
-        if ( fAll || is_name( arg, pObjIndex->name ) )
+        if ( fAll || is_name( arg, pObjIndex->GetName() ) )
         {
             found = TRUE;
             snprintf( buf, MSL, "[%5d] %s\r\n", pObjIndex->vnum, capitalize( pObjIndex->short_descr ) );
@@ -2011,8 +2009,6 @@ DO_FUN(build_setroom)
 
     if ( !str_cmp( arg1, "ed" ) )
     {
-        bool found;
-
         argument = one_argument( argument, arg2 );
         strcpy( arg3, argument );
 
@@ -2750,7 +2746,7 @@ DO_FUN(build_setobject)
 
     if ( !str_cmp( arg2, "name" ) )
     {
-        build_strdup( &pObj->name, arg3, TRUE, FALSE, ch );
+        pObj->SetName( arg3 );
         return;
     }
 
@@ -3167,7 +3163,7 @@ DO_FUN(build_addobject)
     pObjIndex = new OBJ_INDEX_DATA;
     pObjIndex->vnum = vnum;
     pObjIndex->area = pArea;
-    pObjIndex->name = str_dup(arg2);
+    pObjIndex->SetName( arg2 );
 
     iHash = vnum % MAX_KEY_HASH;
     SING_TOPLINK( pObjIndex, obj_index_hash[iHash], next );
@@ -4161,7 +4157,7 @@ DO_FUN(build_delobject)
 
         old_ovnum = vnum;
 
-        snprintf( buf, MSL, "Are you sure you want to delete object: [%d] %s?\r\n", vnum, pObjIndex->name );
+        snprintf( buf, MSL, "Are you sure you want to delete object: [%d] %s?\r\n", vnum, pObjIndex->GetName_() );
         strncat( buf, "Type delobject ok if you are sure.\r\n", MSL );
         send_to_char( buf, ch );
         return;
@@ -5931,9 +5927,7 @@ DO_FUN(build_clone)
         /*
          * Copy details across...
          */
-        if ( this_obj->name != NULL )
-            free_string( this_obj->name );
-        this_obj->name = str_dup( obj->name );
+        this_obj->SetName( obj->GetName() );
         this_obj->level = obj->level;
         if ( this_obj->short_descr != NULL )
             free_string( this_obj->short_descr );

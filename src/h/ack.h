@@ -732,7 +732,6 @@ class obj_index_data : public Thing {
         short level;
         char *long_descr;
         short max_durability;
-        char *name;
         OBJ_INDEX_DATA *next;
         OBJ_FUN *obj_fun;
         char *short_descr;
