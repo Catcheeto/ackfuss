@@ -154,7 +154,6 @@ mob_index_data::~mob_index_data()
 {
     free_string(description);
     free_string(long_descr);
-    free_string(player_name);
     free_string(short_descr);
 }
 

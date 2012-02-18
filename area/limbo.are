@@ -60,7 +60,7 @@ DrMod      0
 HrMod      0
 Level      1
 LongDesc   @@yP@@buff @@dthe @@aM@@cagic @@rD@@Gragon @@dfly's around lazily in the void...@@N~
-PlrName    puff magic dragon~
+Name       puff magic dragon~
 Position   0
 Race       8
 RaceMods   0
@@ -90,7 +90,7 @@ DrMod      0
 HrMod      0
 Level      80
 LongDesc   A Dark Stalker stands here, searching for it's prey.~
-PlrName    dark stalker~
+Name       dark stalker~
 Position   0
 Race       0
 RaceMods   66049
@@ -120,7 +120,7 @@ DrMod      0
 HrMod      0
 Level      1
 LongDesc   @@ba little brown doggy sniffs around the room@@N~
-PlrName    little brown doggy~
+Name       little brown doggy~
 Position   0
 Race       19
 RaceMods   0

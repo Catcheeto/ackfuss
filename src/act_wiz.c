@@ -1306,7 +1306,7 @@ DO_FUN(do_mfind)
         if ( ( pMobIndex = get_mob_index( vnum ) ) != NULL )
         {
             nMatch++;
-            if ( fAll || is_name( arg, pMobIndex->player_name ) )
+            if ( fAll || is_name( arg, pMobIndex->GetName() ) )
             {
                 found = TRUE;
                 snprintf( buf, MSL, "[%5d] [%3d] %s\r\n", pMobIndex->vnum, pMobIndex->level, capitalize( pMobIndex->short_descr ) );

@@ -305,7 +305,7 @@ void build_save_mobs(  )
     fprintf( SaveFile, "HrMod      %d\n", pMobIndex->hr_mod );
     fprintf( SaveFile, "Level      %d\n", pMobIndex->level );
     fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->long_descr );
-    fprintf( SaveFile, "PlrName    %s~\n", pMobIndex->player_name );
+    fprintf( SaveFile, "Name       %s~\n", pMobIndex->GetName_() );
     fprintf( SaveFile, "Position   %d\n", pMobIndex->position );
     fprintf( SaveFile, "Race       %d\n", pMobIndex->race );
     fprintf( SaveFile, "RaceMods   %d\n", pMobIndex->race_mods );

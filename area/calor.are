@@ -1407,7 +1407,7 @@ DrMod      1000
 HrMod      1000
 Level      140
 LongDesc   @@cL@@aoki @@Nthe @@cF@@arost @@cW@@ayrm@@N is here perched atop the monument.~
-PlrName    guardian altar loki frost wyrm~
+Name       guardian altar loki frost wyrm~
 Position   0
 Race       8
 RaceMods   74469
@@ -1437,7 +1437,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   @@bThe @@yB@@bank @@yt@@beller stands ready to assist you with your transactions.@@N~
-PlrName    banker bank clerk teller~
+Name       banker bank clerk teller~
 Position   0
 Race       0
 RaceMods   0
@@ -1467,7 +1467,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   The @@RAvatar @@Wof @@yU@@bn@@y'@@bKresh@@N tends to the wounded citizens of @@yC@@balor@@N.~
-PlrName    avatar un'kresh~
+Name       avatar un'kresh~
 Position   0
 Race       10
 RaceMods   66149
@@ -1497,7 +1497,7 @@ DrMod      0
 HrMod      0
 Level      20
 LongDesc   @@bA guard patrols the streets of @@yC@@balor.@@N~
-PlrName    city guard cityguard calor~
+Name       city guard cityguard calor~
 Position   0
 Race       0
 RaceMods   0
@@ -1527,7 +1527,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   @@bA thief catcher blends into the shadows...@@N~
-PlrName    calor thief catcher~
+Name       calor thief catcher~
 Position   0
 Race       17
 RaceMods   0
@@ -1557,7 +1557,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   @@eS@@Rerei @@bthe blacksmith is here crafting new armor and weapons.@@N~
-PlrName    serei blacksmith~
+Name       serei blacksmith~
 Position   0
 Race       2
 RaceMods   0
@@ -1587,7 +1587,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   @@lA@@Bnnibelle @@bthe baker is here selling delicious smelling treats!@@N~
-PlrName    annibelle baker~
+Name       annibelle baker~
 Position   0
 Race       4
 RaceMods   0
@@ -1617,7 +1617,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   @@rE@@Gvindrix @@bthe alchemist is brewing up magical potions!@@N~
-PlrName    evindrix alchemist~
+Name       evindrix alchemist~
 Position   0
 Race       4
 RaceMods   0
@@ -1647,7 +1647,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   @@pG@@mriftah @@bis slyly trying to sell his shiny baubles...@@N~
-PlrName    griftah trinket~
+Name       griftah trinket~
 Position   0
 Race       13
 RaceMods   0

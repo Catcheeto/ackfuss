@@ -322,7 +322,6 @@ mob_index_data::mob_index_data()
     level = 1;
     long_descr = &str_empty[0];
     next = NULL;
-    player_name = &str_empty[0];
     position = 0;
     pShop = NULL;
     p_class = 0;

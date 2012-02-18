@@ -417,7 +417,7 @@ DO_FUN(build_showmob)
 
     buf1[0] = '\0';
 
-    snprintf( buf, MSL, "@@WName: @@y%s.    @@WClass: @@y%s.\r\n", pMob->player_name, tab_mob_class[pMob->p_class].text );
+    snprintf( buf, MSL, "@@WName: @@y%s.    @@WClass: @@y%s.\r\n", pMob->GetName_(), tab_mob_class[pMob->p_class].text );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WSex: @@y%s.  @@WRace:@@y %s ",
@@ -860,7 +860,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
         case 'M':  /* Load mob */
             pMob = get_mob_index( pReset->arg1 );
             if ( pMob != NULL )
-                snprintf( buf, MSL, " [%d] %s (limit of %d).\r\n", pMob->vnum, pMob->player_name, pReset->arg2 );
+                snprintf( buf, MSL, " [%d] %s (limit of %d).\r\n", pMob->vnum, pMob->GetName_(), pReset->arg2 );
             else
                 snprintf( buf, MSL, " [%d] (unknown) (limit of %d).\r\n", pReset->arg1, pReset->arg2 );
             strncat( buf1, buf, MSL - 1 );
@@ -1014,7 +1014,7 @@ DO_FUN(build_findmob)
     {
         nMatch++;
         pMobIndex = (MOB_INDEX_DATA *)Pointer->data;
-        if ( fAll || is_name( arg, pMobIndex->player_name ) )
+        if ( fAll || is_name( arg, pMobIndex->GetName() ) )
         {
             found = TRUE;
             snprintf( buf, MSL, "[%5d] %s\r\n", pMobIndex->vnum, capitalize( pMobIndex->short_descr ) );
@@ -1665,7 +1665,7 @@ DO_FUN(build_setmob)
 
     if ( !str_cmp( arg2, "name" ) )
     {
-        build_strdup( &pMob->player_name, arg3, TRUE, FALSE, ch );
+        pMob->SetName( arg3 );
         area_modified( pArea );
         return;
     }
@@ -3101,7 +3101,7 @@ DO_FUN(build_addmob)
     pMobIndex = new MOB_INDEX_DATA;
     pMobIndex->vnum = vnum;
     pMobIndex->area = pArea;
-    pMobIndex->player_name = str_dup( arg2 );
+    pMobIndex->SetName( arg2 );
 
     iHash = vnum % MAX_KEY_HASH;
     SING_TOPLINK( pMobIndex, mob_index_hash[iHash], next );
@@ -4335,7 +4335,7 @@ DO_FUN(build_delmob)
 
         old_mob_vnum = vnum;
 
-        snprintf( buf, MSL, "Are you sure you want to delete mobile: [%d] %s?\r\n", vnum, pMobIndex->player_name );
+        snprintf( buf, MSL, "Are you sure you want to delete mobile: [%d] %s?\r\n", vnum, pMobIndex->GetName_() );
         strncat( buf, "Type delmobile ok if you are sure.\r\n", MSL );
         send_to_char( buf, ch );
         return;
@@ -6006,9 +6006,7 @@ DO_FUN(build_clone)
         /*
          * Copy details across...
          */
-        if ( this_mob->player_name != NULL )
-            free_string( this_mob->player_name );
-        this_mob->player_name = str_dup( mob->player_name );
+        this_mob->SetName( mob->GetName() );
         if ( this_mob->short_descr != NULL )
             free_string( this_mob->short_descr );
         this_mob->short_descr = str_dup( mob->short_descr );

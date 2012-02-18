@@ -463,7 +463,6 @@ class mob_index_data : public Thing {
         short level;
         char *long_descr;
         MOB_INDEX_DATA *next;
-        char *player_name;
         short position;
         SHOP_DATA *pShop;
         short p_class;

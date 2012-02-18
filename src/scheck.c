@@ -138,7 +138,6 @@ static void walk_mob_index_data( MOB_INDEX_DATA * m )
     if ( !m )
         return;
 
-    touch( m->player_name );
     touch( m->short_descr );
     touch( m->long_descr );
     touch( m->description );

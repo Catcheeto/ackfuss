@@ -3291,7 +3291,7 @@ bool check_parse_name( char *name )
         {
             for ( pMobIndex = mob_index_hash[iHash]; pMobIndex != NULL; pMobIndex = pMobIndex->next )
             {
-                if ( is_name( name, pMobIndex->player_name ) )
+                if ( is_name( name, pMobIndex->GetName() ) )
                     return FALSE;
             }
         }

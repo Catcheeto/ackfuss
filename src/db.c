@@ -475,6 +475,7 @@ void boot_db( void )
 #endif
 
 #define KEY( literal, field, value )  if ( !str_cmp( word, literal ) ) { field  = value; fMatch = true;  break;}
+#define KEY_( literal, field, value ) if ( !str_cmp( word, literal ) ) { field( value ); fMatch = true; break; }
 #define SKEY( literal, field, value )  if ( !str_cmp( word, literal ) ) { if (field!=NULL) free_string(field);field  = value; fMatch = true;  break;}
 /*
  * Read in all the area files.
@@ -1071,8 +1072,11 @@ void load_mobile( FILE * fp )
                 SKEY("LongDesc", pMobIndex->long_descr, fread_string(fp));
                 break;
 
+            case 'N':
+                KEY_("Name", pMobIndex->SetName, fread_string(fp));
+                break;
+
             case 'P':
-                SKEY("PlrName", pMobIndex->player_name, fread_string(fp));
                 KEY("Position", pMobIndex->position, fread_number(fp));
                 break;
 
@@ -2658,7 +2662,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
         /*
          * Only load one with the same name
          */
-        snprintf( buf, 255, "%s n%i", pMobIndex->player_name, 1 );
+        snprintf( buf, 255, "%s n%i", pMobIndex->GetName_(), 1 );
 
     }
 
@@ -2674,7 +2678,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     if ( pMobIndex->act.test(ACT_INTELLIGENT) )
         mob->SetName( buf );
     else
-        mob->SetName( pMobIndex->player_name );
+        mob->SetName( pMobIndex->GetName() );
 
     mob->npcdata->short_descr = str_dup( pMobIndex->short_descr );
     mob->long_descr = str_dup( pMobIndex->long_descr );

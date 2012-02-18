@@ -1085,7 +1085,7 @@ DrMod      0
 HrMod      0
 Level      140
 LongDesc   The @@WOld @@RWar @@dVeteran stands ready to assist in your training.@@N~
-PlrName    war veteran trainer old~
+Name       war veteran trainer old~
 Position   0
 Race       0
 RaceMods   0
@@ -1114,7 +1114,7 @@ DrMod      -5
 HrMod      -5
 Level      3
 LongDesc   The @@WLord @@Nof @@RT@@dhe @@RP@@dit@@N, @@RB@@ea@@dln@@eo@@Rr@@N, surveys the area.~
-PlrName    pit lord balnor~
+Name       pit lord balnor~
 Position   0
 Race       0
 RaceMods   0
@@ -1143,7 +1143,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@dmale @@Rwarrior@@N wanders throughout @@RT@@dhe @@RP@@dit.@@N~
-PlrName    novice male warrior~
+Name       novice male warrior~
 Position   0
 Race       0
 RaceMods   0
@@ -1172,7 +1172,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@bfemale @@Rwarrior@@N wanders throughout @@RT@@dhe @@RP@@dit.@@N~
-PlrName    novice female warrior~
+Name       novice female warrior~
 Position   0
 Race       0
 RaceMods   0
@@ -1201,7 +1201,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@dmale @@emage@@N is studying his spells.~
-PlrName    novice male mage~
+Name       novice male mage~
 Position   0
 Race       0
 RaceMods   0
@@ -1230,7 +1230,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@bfemale @@emage@@N is studying her spells.~
-PlrName    novice female mage~
+Name       novice female mage~
 Position   0
 Race       0
 RaceMods   0
@@ -1259,7 +1259,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@dmale @@acleric@@N diligently prays to his god.~
-PlrName    novice male cleric~
+Name       novice male cleric~
 Position   0
 Race       0
 RaceMods   0
@@ -1288,7 +1288,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@bfemale @@acleric@@N diligently prays to her god.~
-PlrName    novice female cleric~
+Name       novice female cleric~
 Position   0
 Race       0
 RaceMods   0
@@ -1317,7 +1317,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@dmale @@ythief@@N stalks about.~
-PlrName    novice male thief~
+Name       novice male thief~
 Position   0
 Race       0
 RaceMods   0
@@ -1346,7 +1346,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@bfemale @@ythief@@N stalks about.~
-PlrName    novice female thief~
+Name       novice female thief~
 Position   0
 Race       0
 RaceMods   0
@@ -1375,7 +1375,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@dmale @@mpsionicist@@N focuses his mental energies.~
-PlrName    novice male psionicist~
+Name       novice male psionicist~
 Position   0
 Race       0
 RaceMods   0
@@ -1404,7 +1404,7 @@ DrMod      -10
 HrMod      -10
 Level      1
 LongDesc   A @@Gnovice @@bfemale @@mpsionicist@@N focuses her mental energies.~
-PlrName    novice female psionicist~
+Name       novice female psionicist~
 Position   0
 Race       0
 RaceMods   0

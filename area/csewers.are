@@ -1343,7 +1343,7 @@ DrMod      0
 HrMod      0
 Level      2
 LongDesc   @@GA vicious blob floats atop the waste.@@N~
-PlrName    vicious blob~
+Name       vicious blob~
 Position   0
 Race       19
 RaceMods   0
@@ -1373,7 +1373,7 @@ DrMod      -2
 HrMod      -2
 Level      1
 LongDesc   @@bA sewer rat scurries about in the filth.@@N~
-PlrName    sewer rat~
+Name       sewer rat~
 Position   0
 Race       19
 RaceMods   0
@@ -1403,7 +1403,7 @@ DrMod      0
 HrMod      0
 Level      1
 LongDesc   @@dA black cockroach skitters about.@@N~
-PlrName    black cockroach~
+Name       black cockroach~
 Position   0
 Race       19
 RaceMods   0
@@ -1433,7 +1433,7 @@ DrMod      0
 HrMod      0
 Level      3
 LongDesc   @@bA @@cjunior @@dsewer operator is busy checking monitors and lights.@@N~
-PlrName    junior sewer operator~
+Name       junior sewer operator~
 Position   0
 Race       0
 RaceMods   0
@@ -1463,7 +1463,7 @@ DrMod      0
 HrMod      0
 Level      4
 LongDesc   @@bA @@Wsenior @@dsewer operator oversees the operations.@@N~
-PlrName    senior sewer operator~
+Name       senior sewer operator~
 Position   0
 Race       0
 RaceMods   0
@@ -1493,7 +1493,7 @@ DrMod      2
 HrMod      2
 Level      5
 LongDesc   @@dThe @@Wsewer @@cmanager @@dis buried in paperwork behind his desk.@@N~
-PlrName    sewer manager~
+Name       sewer manager~
 Position   0
 Race       0
 RaceMods   0
