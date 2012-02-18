@@ -47,6 +47,37 @@ const sint_t Thing::SetAlignment( const sint_t amount )
     return m_alignment = amount;
 }
 
+// Combat Stats
+const sint_t Thing::DecrModAC( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    if ( ( m_mod_ac - amount ) <= sintmin_t )
+        return m_mod_ac = sintmin_t;
+    else
+        return m_mod_ac -= amount;
+}
+
+const sint_t Thing::IncrModAC( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    if ( ( m_mod_ac + amount ) >= sintmax_t )
+        return m_mod_ac = sintmax_t;
+    else
+        return m_mod_ac += amount;
+}
+
+const sint_t Thing::SetModAC( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    return m_mod_ac = amount;
+}
+
 // Descriptions
 const string Thing::GetDescrExtra( const string key )
 {
@@ -182,7 +213,10 @@ bool Thing::IsWithinName( const string word );
 Thing::Thing()
 {
     // Alignment
-    m_alignment = 0;
+    m_alignment = uintmin_t;
+
+    // Combat Stats
+    m_mod_ac = uintmin_t;
 
     // Descriptions
     m_descr_extra.clear();
@@ -190,7 +224,7 @@ Thing::Thing()
     m_descr_short.clear();
 
     // Level
-    m_experience = 0;
+    m_experience = uintmin_t;
 
     // Name
     m_name.clear();

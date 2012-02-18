@@ -447,7 +447,6 @@ class mob_index_data : public Thing {
         mob_index_data();
         ~mob_index_data();
         bitset<MAX_BITSET> act;
-        short ac_mod;
         int affected_by;
         short alignment;
         AREA_DATA *area;
@@ -562,7 +561,6 @@ class char_data : public Thing {
         OBJ_DATA *sitting;   /* What they're resting or sleeping on */
         float speed[MAX_SPEED];
         int stance;
-        short stance_ac_mod;
         short stance_dr_mod;
         short stance_hr_mod;
         bool stop_fighting;
@@ -586,7 +584,6 @@ class npc_data
     public:
         npc_data();
         ~npc_data();
-        short ac_mod;
         int cast;
         int def;
         short dr_mod;
@@ -939,7 +936,7 @@ struct lookup_type
 struct chan_type
 {
     short bit;
-    int min_level;
+    uint_t min_level;
     char *name;
     char *on_string;
     char *off_string;

@@ -1023,7 +1023,7 @@ void load_mobile( FILE * fp )
                 break;
 
             case 'A':
-                KEY("AcMod", pMobIndex->ac_mod, fread_number(fp));
+                KEY_("AcMod", pMobIndex->SetModAC, fread_number(fp));
                 if ( !str_cmp( word, "Act" ) )
                 {
                     tmp = fread_word(fp);
@@ -2690,7 +2690,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->affected_by = pMobIndex->affected_by;
     mob->SetAlignment( pMobIndex->alignment );
     mob->sex = pMobIndex->sex;
-    mob->npcdata->ac_mod = pMobIndex->ac_mod;
+    mob->SetModAC( pMobIndex->GetModAC() );
     mob->npcdata->hr_mod = pMobIndex->hr_mod;
     mob->npcdata->dr_mod = pMobIndex->dr_mod;
 

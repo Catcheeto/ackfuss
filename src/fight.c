@@ -609,7 +609,7 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
     {
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
-        ch->stance_ac_mod = 0;
+        ch->SetModAC( 0 );
         ch->stance_dr_mod = 0;
         ch->stance_hr_mod = 0;
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );
@@ -5801,7 +5801,7 @@ DO_FUN(do_rage)
         ch->act.set(ACT_RAGED);
         ch->pcdata->super->energy = ( ch->pcdata->super->energy_max - number_range( 0, ch->pcdata->super->generation * 3 ) );
         ch->stance = STANCE_WARRIOR;
-        ch->stance_ac_mod = 0;
+        ch->SetModAC( 0 );
         ch->stance_dr_mod = 0;
         ch->stance_hr_mod = 0;
     }
@@ -6282,9 +6282,9 @@ DO_FUN(do_stance)
         {
             char stance_buf[MSL];
             if ( stance_app[i].ac_mod > 0 )
-                ch->stance_ac_mod = ( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->SetModAC( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo")) / 12 );
             else
-                ch->stance_ac_mod = stance_app[i].ac_mod * ch->get_level("psuedo") / 12;
+                ch->SetModAC( stance_app[i].ac_mod * ch->get_level("psuedo") / 12 );
 
             if ( stance_app[i].dr_mod < 0 )
                 ch->stance_dr_mod = ( stance_app[i].dr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );

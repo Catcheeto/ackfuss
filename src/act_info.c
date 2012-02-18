@@ -1552,7 +1552,7 @@ DO_FUN(do_score)
         strncat( buf, "@@yalmost invincible!", MSL );
 
 
-    snprintf( buf2, MSL, " @@WArmor Class: @@y%5d.   %s", GET_AC( ch ), buf );
+    snprintf( buf2, MSL, " @@WArmor Class: @@y%5ld.   %s", GET_AC( ch ), buf );
     snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
     send_to_char( buf, ch );
 
@@ -2125,7 +2125,7 @@ DO_FUN(do_consider)
     {
         diff += victim->npcdata->hr_mod / 4;
         diff += victim->npcdata->dr_mod / 4;
-        diff += victim->npcdata->ac_mod / 30;
+        diff += victim->GetModAC() / 30;
     }
 
     if ( diff >= 10 )

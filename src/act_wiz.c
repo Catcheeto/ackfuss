@@ -994,7 +994,7 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL,
-              "Lv: %d.  Class: %d.  Align: %ld.  AC: %d.  Exp: %ld.\r\n",
+              "Lv: %d.  Class: %d.  Align: %ld.  AC: %ld.  Exp: %ld.\r\n",
               victim->get_level(), victim->p_class, victim->GetAlignment(), GET_AC( victim ), victim->GetExperience() );
     strncat( buf1, buf, MSL - 1 );
 
@@ -1015,7 +1015,7 @@ DO_FUN(do_mstat)
 
     if ( IS_NPC( victim ) )
     {
-        snprintf( buf, MSL, "MODIFIERS: AC: %d.  Hitroll: %d.  Damroll: %d.\r\n", victim->npcdata->ac_mod, victim->npcdata->hr_mod, victim->npcdata->dr_mod );
+        snprintf( buf, MSL, "MODIFIERS: AC: %ld.  Hitroll: %d.  Damroll: %d.\r\n", victim->GetModAC(), victim->npcdata->hr_mod, victim->npcdata->dr_mod );
         strncat( buf1, buf, MSL - 1 );
         snprintf( buf, MSL, "TARGET: %s\r\n", victim->target.c_str() );
         strncat( buf1, buf, MSL - 1 );

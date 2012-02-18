@@ -1228,7 +1228,7 @@ void interpret( CHAR_DATA * ch, char *argument )
     {
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
-        ch->stance_ac_mod = 0;
+        ch->SetModAC( 0 );
         ch->stance_dr_mod = 0;
         ch->stance_hr_mod = 0;
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );

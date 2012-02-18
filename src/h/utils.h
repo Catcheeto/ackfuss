@@ -106,7 +106,7 @@
 #define IS_EVIL(ch)             ( (ch)->GetAlignment() <= -350)
 #define IS_NEUTRAL(ch)          (!IS_GOOD(ch) && !IS_EVIL(ch))
 #define IS_AWAKE(ch)            (ch->position > POS_SLEEPING)
-#define GET_AC(ch)              ( IS_NPC(ch) ? (REAL_AC( ch ) + ch->npcdata->ac_mod) : REAL_AC( ch ) + ch->stance_ac_mod )
+#define GET_AC(ch)              ( REAL_AC( ch ) + (ch)->GetModAC() )
 #define REAL_AC(ch)             ((ch)->armor  + ( IS_AWAKE(ch) \
                                  ? ( IS_NPC( ch ) \
                                      ? ( dex_app[get_curr_dex(ch)].defensive * ch->get_level("psuedo") / 20 ) \

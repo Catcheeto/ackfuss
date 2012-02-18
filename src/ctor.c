@@ -191,7 +191,6 @@ char_data::char_data()
     for ( short i = 0; i < MAX_SPEED; i++ )
         speed[i] = 0;
     stance = STANCE_WARRIOR;
-    stance_ac_mod = 0;
     stance_dr_mod = 0;
     stance_hr_mod = 0;
     stop_fighting = false;
@@ -303,7 +302,6 @@ mark_data::mark_data()
 mob_index_data::mob_index_data()
 {
     act.reset();
-    ac_mod = 0;
     affected_by = 0;
     alignment = 0;
     area = NULL;
@@ -358,7 +356,6 @@ note_data::note_data()
 
 npc_data::npc_data()
 {
-    ac_mod = 0;
     cast = 0;
     def = 0;
     dr_mod = 0;

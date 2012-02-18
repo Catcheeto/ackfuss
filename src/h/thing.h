@@ -23,6 +23,12 @@ class Thing {
         const sint_t IncrAlignment( const sint_t amount );
         const sint_t SetAlignment( const sint_t amount );
 
+        // Combat Stats
+        const sint_t GetModAC() const { return m_mod_ac; }
+        const sint_t DecrModAC( const sint_t amount );
+        const sint_t IncrModAC( const sint_t amount );
+        const sint_t SetModAC( const sint_t amount );
+
         // Descriptions
         const string AppendDescrLong( const string descr ) { return m_descr_long.append( descr ); }
         const string AppendDescrShort( const string descr ) { return m_descr_short.append( descr ); }
@@ -67,6 +73,9 @@ class Thing {
     protected:
         // Alignment
         sint_t m_alignment;
+
+        // Combat Stats
+        sint_t m_mod_ac;
 
         // Descriptions
         map<string,string> m_descr_extra;

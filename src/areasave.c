@@ -280,7 +280,7 @@ void build_save_mobs(  )
 
     fprintf( SaveFile, "\n#MOBILE\n" );
     fprintf( SaveFile, "Vnum      %d\n", pMobIndex->vnum );  /* Must be first for sanity checks --Kline */
-    fprintf( SaveFile, "AcMod     %d\n", pMobIndex->ac_mod );
+    fprintf( SaveFile, "AcMod     %ld\n", pMobIndex->GetModAC() );
 
     outstr.clear();
     fprintf( SaveFile, "Act       " );

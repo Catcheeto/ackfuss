@@ -1309,7 +1309,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case '*':
-                snprintf( buf2, MSL, "%d", GET_AC( ch ) );
+                snprintf( buf2, MSL, "%ld", GET_AC( ch ) );
                 i = buf2;
                 break;
             case 'h':
@@ -3247,7 +3247,7 @@ bool check_parse_name( char *name )
     /*
      * Reserved words.
      */
-    if ( is_name( name, "all auto everymob localmobs immortal zen self someone help reset recover" ) )
+    if ( is_name( name, "all auto everymob localmobs immortal zen self someone help reset recover reboot shutdown" ) )
         return FALSE;
 
     /*
