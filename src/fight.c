@@ -6029,7 +6029,7 @@ DO_FUN(do_disguise)
     }
     if ( !str_cmp(farg, "reset") )
     {
-        ch->long_descr = ch->long_descr_orig;
+        ch->long_descr.clear();
         send_to_char("You have removed your disguise.\r\n", ch);
         return;
     }

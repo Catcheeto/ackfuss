@@ -2079,7 +2079,6 @@ const char *who_pers( CHAR_DATA *pers )
  char buf1[MSL] = {'\0'}, buf2[MSL] = {'\0'}, ntbuf[MSL] = {'\0'};
  char cjob[2] = {'\0'};
  char flags1[10] = {'\0'}, flags2[10] = {'\0'};
- int nlen = 0, tlen = 0;
  static const char *output;
  string format;
 
@@ -2135,15 +2134,11 @@ const char *who_pers( CHAR_DATA *pers )
  if ( pers->timer > 5 )
      snprintf( flags2, 10, "IDLE:%2d", pers->timer );
 
- /* Sort out name + title length */
- nlen = nocol_strlen( pers->GetName_() );
- tlen = 3 + strlen( pers->get_title() ) + nlen; /* Add 3 for space padded on either end of the total string, and terminating NUL */
  snprintf( buf2, MSL, "%s%s", pers->get_name(), pers->get_title() );
  snprintf( ntbuf, MSL, "%s", color_format(buf2,33,true) );
 
  /* Make the magic happen */
- snprintf( buf1, MSL, "%s  %3s%5s  %s @@R|@@N %s @@e%-7s@@N", pers->get_whoname(), race_table[pers->race].race_name, clan_table[pers->clan].clan_name,
-                                                              flags1, ntbuf, flags2 );
+ snprintf( buf1, MSL, "%s  %3s%5s  %s @@R|@@N %s @@e%-7s@@N", pers->get_whoname(), race_table[pers->race].race_name, clan_table[pers->clan].clan_name, flags1, ntbuf, flags2 );
  output = str_dup( buf1 );
 
  return output;

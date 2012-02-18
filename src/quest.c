@@ -371,7 +371,6 @@ DO_FUN(do_iquest)
         quest = TRUE;
         new_long_desc[0] = '\0';
 
-        quest_mob->long_descr_orig = quest_mob->long_descr;
         snprintf( new_long_desc, MSL, "%s @@Nsays have you found my %s ?", quest_mob->get_name(), quest_object->GetDescrShort_() );
         quest_mob->long_descr = new_long_desc;
         quest_mob->act.set(ACT_NO_SUMMON );
@@ -380,7 +379,6 @@ DO_FUN(do_iquest)
 
         new_long_desc[0] = '\0';
 
-        quest_target->long_descr_orig = quest_target->long_descr;
         snprintf( new_long_desc, MSL, "%s @@Nsays I stole the %s !!!", quest_target->get_name(), quest_object->GetDescrShort_() );
         quest_target->long_descr = new_long_desc;
 
@@ -627,15 +625,9 @@ void clear_quest(  )
     quest = FALSE;
     extract_obj( quest_object );
     if ( quest_mob )
-    {
-        quest_mob->long_descr = quest_mob->long_descr_orig;
-        quest_mob->long_descr_orig.clear();
-    }
+        quest_mob->long_descr = quest_mob->npcdata->pIndexData->long_descr;
     if ( quest_target )
-    {
-        quest_target->long_descr = quest_target->long_descr_orig;
-        quest_target->long_descr_orig.clear();
-    }
+        quest_target->long_descr = quest_target->npcdata->pIndexData->long_descr;
 
 
     quest_mob = NULL;
@@ -772,7 +764,6 @@ void generate_auto_quest(  )
         quest = TRUE;
         new_long_desc[0] = '\0';
 
-        quest_mob->long_descr_orig = quest_mob->long_descr;
         snprintf( new_long_desc, MSL, "%s @@Nsays have you found my %s ?", quest_mob->get_name(), quest_object->GetDescrShort_() );
         quest_mob->long_descr = new_long_desc;
         quest_mob->act.set(ACT_NO_SUMMON );
@@ -782,7 +773,6 @@ void generate_auto_quest(  )
 
         new_long_desc[0] = '\0';
 
-        quest_target->long_descr_orig = quest_target->long_descr;
         snprintf( new_long_desc, MSL, "%s @@Nsays I stole the %s !!!", quest_target->get_name(), quest_object->GetDescrShort_() );
         quest_target->long_descr = new_long_desc;
 

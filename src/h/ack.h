@@ -531,7 +531,6 @@ class char_data : public Thing {
         short level;  /* For m/c this = max of levels */
         time_t logon;
         string long_descr;
-        string long_descr_orig;
         int lvl[MAX_CLASS];  /* Holds details for m/c levels */
         int lvl2[MAX_CLASS]; /* for remort (if any) */
         int mana;

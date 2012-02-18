@@ -236,7 +236,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "%sEOL\n", outstr.c_str() );
 
     fprintf( fp, "ShortDescr     %s~\n", ch->GetDescrShort_() );
-    fprintf( fp, "LongDescr      %s~\n", ch->long_descr_orig.c_str() );
+    fprintf( fp, "LongDescr      %s~\n", ch->long_descr.c_str() );
     fprintf( fp, "Description    %s~\n", ch->description.c_str() );
     fprintf( fp, "Prompt         %s~\n", ch->prompt.c_str() );
     fprintf( fp, "Sex            %d\n", ch->sex );
@@ -1376,7 +1376,6 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 ch->prompt = DEFAULT_PROMPT;
         }
 
-        ch->long_descr_orig = ch->long_descr;
         if ( !fMatch )
         {
             snprintf( log_buf, (2 * MIL), "Loading in pfile :%s, no match for ( %s ).", ch->GetName_(), word );

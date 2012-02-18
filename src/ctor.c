@@ -156,7 +156,6 @@ char_data::char_data()
     level = 0;
     logon = current_time;
     long_descr.clear();
-    long_descr_orig.clear();
     for ( short i = 0; i < MAX_CLASS; i++ )
         lvl[i] = -1;
     for ( short i = 0; i < MAX_CLASS; i++ )
