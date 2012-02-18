@@ -78,6 +78,66 @@ const sint_t Thing::SetModAC( const sint_t amount )
     return m_mod_ac = amount;
 }
 
+const sint_t Thing::DecrModDR( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    if ( ( m_mod_dr - amount ) <= sintmin_t )
+        return m_mod_dr = sintmin_t;
+    else
+        return m_mod_dr -= amount;
+}
+
+const sint_t Thing::IncrModDR( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    if ( ( m_mod_dr + amount ) >= sintmax_t )
+        return m_mod_dr = sintmax_t;
+    else
+        return m_mod_dr += amount;
+}
+
+const sint_t Thing::SetModDR( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    return m_mod_dr = amount;
+}
+
+const sint_t Thing::DecrModHR( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    if ( ( m_mod_hr - amount ) <= sintmin_t )
+        return m_mod_hr = sintmin_t;
+    else
+        return m_mod_hr -= amount;
+}
+
+const sint_t Thing::IncrModHR( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    if ( ( m_mod_hr + amount ) >= sintmax_t )
+        return m_mod_hr = sintmax_t;
+    else
+        return m_mod_hr += amount;
+}
+
+const sint_t Thing::SetModHR( const sint_t amount )
+{
+    if ( amount <= sintmin_t || amount >= sintmax_t )
+        return 0;
+
+    return m_mod_hr = amount;
+}
+
 // Descriptions
 const string Thing::GetDescrExtra( const string key )
 {

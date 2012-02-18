@@ -28,6 +28,14 @@ class Thing {
         const sint_t DecrModAC( const sint_t amount );
         const sint_t IncrModAC( const sint_t amount );
         const sint_t SetModAC( const sint_t amount );
+        const sint_t GetModDR() const { return m_mod_dr; }
+        const sint_t DecrModDR( const sint_t amount );
+        const sint_t IncrModDR( const sint_t amount );
+        const sint_t SetModDR( const sint_t amount );
+        const sint_t GetModHR() const { return m_mod_hr; }
+        const sint_t DecrModHR( const sint_t amount );
+        const sint_t IncrModHR( const sint_t amount );
+        const sint_t SetModHR( const sint_t amount );
 
         // Descriptions
         const string AppendDescrLong( const string descr ) { return m_descr_long.append( descr ); }
@@ -76,6 +84,8 @@ class Thing {
 
         // Combat Stats
         sint_t m_mod_ac;
+        sint_t m_mod_dr;
+        sint_t m_mod_hr;
 
         // Descriptions
         map<string,string> m_descr_extra;

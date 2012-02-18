@@ -1556,7 +1556,7 @@ DO_FUN(do_score)
     snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, " @@WHitroll: @@y%-5d   @@WDamroll: @@y%-5d", GET_HITROLL( ch ), GET_DAMROLL( ch ) );
+    snprintf( buf, MSL, " @@WHitroll: @@y%-5ld   @@WDamroll: @@y%-5ld", GET_HITROLL( ch ), GET_DAMROLL( ch ) );
     snprintf( buf2, MSL, "@@c|%s @@c|\r\n", center_text( buf, 62 ) );
     send_to_char( buf2, ch );
 
@@ -2123,9 +2123,9 @@ DO_FUN(do_consider)
      */
     if ( IS_NPC( victim ) )
     {
-        diff += victim->npcdata->hr_mod / 4;
-        diff += victim->npcdata->dr_mod / 4;
         diff += victim->GetModAC() / 30;
+        diff += victim->GetModDR() / 4;
+        diff += victim->GetModHR() / 4;
     }
 
     if ( diff >= 10 )

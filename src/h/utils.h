@@ -122,9 +122,9 @@
 /* Added bonus to hit and dam for higher levl players */
 /* High level naked players should still be able to fight ok */
 
-#define GET_HITROLL(ch)         ( IS_NPC(ch) ? (REAL_HITROLL(ch) + ch->npcdata->hr_mod + (ch->get_level("psuedo") / 4 )) : REAL_HITROLL(ch)+(ch->level/8) + ch->stance_hr_mod )
+#define GET_HITROLL(ch)         ( REAL_HITROLL(ch) + ch->GetModHR() + (ch->get_level("psuedo") / 4 ) )
 #define REAL_HITROLL(ch)        ((ch)->hitroll+ (str_app[get_curr_str(ch)].tohit * ch->get_level("psuedo") / 10) )
-#define GET_DAMROLL(ch)         ( IS_NPC(ch) ? (REAL_DAMROLL(ch) + ch->npcdata->dr_mod + (ch->level / 3 ))  : REAL_DAMROLL(ch)+(ch->level/10) + ch->stance_dr_mod )
+#define GET_DAMROLL(ch)         ( REAL_DAMROLL(ch) + ch->GetModDR() + (ch->get_level("psuedo") / 4 ) )
 #define REAL_DAMROLL(ch)        ((ch)->damroll+( str_app[get_curr_str(ch)].todam * ch->get_level("psuedo") / 10 ) )
 #define IS_OUTSIDE(ch)          (!(ch)->in_room->room_flags.test(RFLAG_INDOORS))
 #define WAIT_STATE(ch, npulse)  ((ch)->wait = UMAX((ch)->wait, (npulse)))

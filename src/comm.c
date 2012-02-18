@@ -1301,11 +1301,11 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                     break;
                 }
             case '!':
-                snprintf( buf2, MSL, "%d", GET_HITROLL( ch ) );
+                snprintf( buf2, MSL, "%ld", GET_HITROLL( ch ) );
                 i = buf2;
                 break;
             case '+':
-                snprintf( buf2, MSL, "%d", GET_DAMROLL( ch ) );
+                snprintf( buf2, MSL, "%ld", GET_DAMROLL( ch ) );
                 i = buf2;
                 break;
             case '*':

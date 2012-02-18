@@ -1060,11 +1060,11 @@ void load_mobile( FILE * fp )
             case 'D':
                 KEY("Def", pMobIndex->def, fread_number(fp));
                 SKEY("Desc", pMobIndex->description, fread_string(fp));
-                KEY("DrMod", pMobIndex->dr_mod, fread_number(fp));
+                KEY_("DrMod", pMobIndex->SetModDR, fread_number(fp));
                 break;
 
             case 'H':
-                KEY("HrMod", pMobIndex->hr_mod, fread_number(fp));
+                KEY_("HrMod", pMobIndex->SetModHR, fread_number(fp));
                 break;
 
             case 'L':
@@ -2691,8 +2691,8 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->SetAlignment( pMobIndex->alignment );
     mob->sex = pMobIndex->sex;
     mob->SetModAC( pMobIndex->GetModAC() );
-    mob->npcdata->hr_mod = pMobIndex->hr_mod;
-    mob->npcdata->dr_mod = pMobIndex->dr_mod;
+    mob->SetModHR( pMobIndex->GetModHR() );
+    mob->SetModDR( pMobIndex->GetModDR() );
 
     mob->armor = interpolate( mob->level / 2, 100, 100 );
     hold = mob->armor;

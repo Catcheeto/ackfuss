@@ -1009,13 +1009,13 @@ DO_FUN(do_mstat)
     }
 
 
-    snprintf( buf, MSL, "Hitroll: %d.  Damroll: %d.  Position: %d.  Wimpy: %d.\r\n",
+    snprintf( buf, MSL, "Hitroll: %ld.  Damroll: %ld.  Position: %d.  Wimpy: %d.\r\n",
               GET_HITROLL( victim ), GET_DAMROLL( victim ), victim->position, victim->wimpy );
     strncat( buf1, buf, MSL - 1 );
 
     if ( IS_NPC( victim ) )
     {
-        snprintf( buf, MSL, "MODIFIERS: AC: %ld.  Hitroll: %d.  Damroll: %d.\r\n", victim->GetModAC(), victim->npcdata->hr_mod, victim->npcdata->dr_mod );
+        snprintf( buf, MSL, "MODIFIERS: AC: %ld.  Hitroll: %ld.  Damroll: %ld.\r\n", victim->GetModAC(), victim->GetModHR(), victim->GetModDR() );
         strncat( buf1, buf, MSL - 1 );
         snprintf( buf, MSL, "TARGET: %s\r\n", victim->target.c_str() );
         strncat( buf1, buf, MSL - 1 );

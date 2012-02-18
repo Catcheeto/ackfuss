@@ -127,8 +127,8 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
         ch->SetModAC( 0 );
-        ch->stance_dr_mod = 0;
-        ch->stance_hr_mod = 0;
+        ch->SetModDR( 0 );
+        ch->SetModHR( 0 );
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );
     }
     if ( IS_NPC( ch ) )

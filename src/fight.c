@@ -610,8 +610,8 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
         ch->SetModAC( 0 );
-        ch->stance_dr_mod = 0;
-        ch->stance_hr_mod = 0;
+        ch->SetModDR( 0 );
+        ch->SetModHR( 0 );
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );
     }
 
@@ -5802,8 +5802,8 @@ DO_FUN(do_rage)
         ch->pcdata->super->energy = ( ch->pcdata->super->energy_max - number_range( 0, ch->pcdata->super->generation * 3 ) );
         ch->stance = STANCE_WARRIOR;
         ch->SetModAC( 0 );
-        ch->stance_dr_mod = 0;
-        ch->stance_hr_mod = 0;
+        ch->SetModDR( 0 );
+        ch->SetModHR( 0 );
     }
     else
         send_to_char( "You fail to become @@eENRAGED@@N.\r\n", ch );
@@ -6282,19 +6282,19 @@ DO_FUN(do_stance)
         {
             char stance_buf[MSL];
             if ( stance_app[i].ac_mod > 0 )
-                ch->SetModAC( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo")) / 12 );
+                ch->SetModAC( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
             else
                 ch->SetModAC( stance_app[i].ac_mod * ch->get_level("psuedo") / 12 );
 
             if ( stance_app[i].dr_mod < 0 )
-                ch->stance_dr_mod = ( stance_app[i].dr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->SetModDR( stance_app[i].dr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
             else
-                ch->stance_dr_mod = stance_app[i].dr_mod * ch->get_level("psuedo") / 10;
+                ch->SetModDR( stance_app[i].dr_mod * ch->get_level("psuedo") / 10 );
 
             if ( stance_app[i].hr_mod < 0 )
-                ch->stance_hr_mod = ( stance_app[i].hr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->SetModHR( stance_app[i].hr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
             else
-                ch->stance_hr_mod = stance_app[i].hr_mod * ch->get_level("psuedo") / 10;
+                ch->SetModHR( stance_app[i].hr_mod * ch->get_level("psuedo") / 10 );
 
             ch->stance = i;
             snprintf( stance_buf, MSL, "$n assumes the Stance of the %s!", stance_app[i].name );

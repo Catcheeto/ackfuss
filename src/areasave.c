@@ -301,8 +301,8 @@ void build_save_mobs(  )
     fprintf( SaveFile, "Class      %d\n", pMobIndex->p_class );
     fprintf( SaveFile, "Def        %d\n", pMobIndex->def );
     fprintf( SaveFile, "Desc       %s~\n", pMobIndex->description );
-    fprintf( SaveFile, "DrMod      %d\n", pMobIndex->dr_mod );
-    fprintf( SaveFile, "HrMod      %d\n", pMobIndex->hr_mod );
+    fprintf( SaveFile, "DrMod      %ld\n", pMobIndex->GetModDR() );
+    fprintf( SaveFile, "HrMod      %ld\n", pMobIndex->GetModHR() );
     fprintf( SaveFile, "Level      %d\n", pMobIndex->level );
     fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->GetDescrLong_() );
     fprintf( SaveFile, "Name       %s~\n", pMobIndex->GetName_() );

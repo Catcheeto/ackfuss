@@ -454,8 +454,6 @@ class mob_index_data : public Thing {
         short clan;
         int def;
         char *description;
-        short dr_mod;
-        short hr_mod;
         int hunt_flags;
         short killed;
         short learned[MAX_SKILL];
@@ -561,8 +559,6 @@ class char_data : public Thing {
         OBJ_DATA *sitting;   /* What they're resting or sleeping on */
         float speed[MAX_SPEED];
         int stance;
-        short stance_dr_mod;
-        short stance_hr_mod;
         bool stop_fighting;
         short stun_timer;
         bool switched; /* = not isnull(descriptor->original) */
@@ -586,9 +582,7 @@ class npc_data
         ~npc_data();
         int cast;
         int def;
-        short dr_mod;
         short extract_timer; /* charmie timer */
-        short hr_mod;
         CHAR_DATA *hunt_for; /* who hired the merc / corpse return */
         ROOM_INDEX_DATA *hunt_home; /* return to loc */
         NPC_GROUP_DATA *ngroup;

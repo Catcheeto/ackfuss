@@ -191,8 +191,6 @@ char_data::char_data()
     for ( short i = 0; i < MAX_SPEED; i++ )
         speed[i] = 0;
     stance = STANCE_WARRIOR;
-    stance_dr_mod = 0;
-    stance_hr_mod = 0;
     stop_fighting = false;
     stun_timer = 0;
     switched = false;
@@ -309,8 +307,6 @@ mob_index_data::mob_index_data()
     clan = -1;
     def = 0;
     description = &str_empty[0];
-    dr_mod = 0;
-    hr_mod = 0;
     hunt_flags = 0;
     killed = 0;
     for ( short i = 0; i < MAX_SKILL; i++ )
@@ -358,9 +354,7 @@ npc_data::npc_data()
 {
     cast = 0;
     def = 0;
-    dr_mod = 0;
     extract_timer = -1;
-    hr_mod = 0;
     hunt_for = NULL;
     hunt_home = NULL;
     ngroup = NULL;

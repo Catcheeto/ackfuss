@@ -429,8 +429,8 @@ DO_FUN(build_showmob)
     snprintf( buf, MSL, " @@WLv: @@y%d.    @@WAlign: @@y%d.\r\n", pMob->level, pMob->alignment );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "@@WModifiers: AC: @@y%ld.  @@WHitroll: @@y%d.  @@WDamroll: @@y%d.\r\n",
-              pMob->GetModAC(), pMob->hr_mod, pMob->dr_mod );
+    snprintf( buf, MSL, "@@WModifiers: AC: @@y%ld.  @@WHitroll: @@y%ld.  @@WDamroll: @@y%ld.\r\n",
+              pMob->GetModAC(), pMob->GetModHR(), pMob->GetModDR() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WMob Flags:@@y\r\n%s", bs_show_values( tab_mob_act, pMob->act ) );
@@ -1633,7 +1633,7 @@ DO_FUN(build_setmob)
             send_to_char( "hr_mod range is -10 to 1000.\r\n", ch );
             return;
         }
-        pMob->hr_mod = value;
+        pMob->SetModHR( value );
         area_modified( pArea );
         return;
     }
@@ -1645,7 +1645,7 @@ DO_FUN(build_setmob)
             send_to_char( "dr_mod range is -10 to 1000.\r\n", ch );
             return;
         }
-        pMob->dr_mod = value;
+        pMob->SetModDR( value );
         area_modified( pArea );
         return;
     }
@@ -6009,8 +6009,8 @@ DO_FUN(build_clone)
         this_mob->level = mob->level;
         this_mob->sex = mob->sex;
         this_mob->SetModAC( mob->GetModAC() );
-        this_mob->hr_mod = mob->hr_mod;
-        this_mob->dr_mod = mob->dr_mod;
+        this_mob->SetModHR( mob->GetModHR() );
+        this_mob->SetModDR( mob->GetModDR() );
         this_mob->cast = mob->cast;
         this_mob->def = mob->def;
         this_mob->skills = mob->skills;
