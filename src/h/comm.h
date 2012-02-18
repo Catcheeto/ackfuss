@@ -21,7 +21,6 @@ void reopen_socket P_((int sig));
 void game_loop P_((int game_control));
 void *lookup_address P_((void *input));
 void new_descriptor P_((int d_control));
-void init_descriptor P_((DESCRIPTOR_DATA *dnew, int desc));
 void close_socket P_((DESCRIPTOR_DATA *dclose));
 bool read_from_descriptor P_((DESCRIPTOR_DATA *d));
 void read_from_buffer P_((DESCRIPTOR_DATA *d));

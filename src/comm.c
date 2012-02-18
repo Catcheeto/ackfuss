@@ -631,8 +631,6 @@ void new_descriptor( int d_control )
      * Cons a new descriptor.
      */
     dnew = new DESCRIPTOR_DATA;
-    *dnew = d_zero;
-    init_descriptor( dnew, desc );   /* Not sure is this right? */
     dnew->descriptor = desc;
     dnew->connected = CON_GET_NAME;
     dnew->showstr_head = NULL;
@@ -709,21 +707,6 @@ void new_descriptor( int d_control )
     write_to_buffer(dnew, LOGIN_STRING);
 
     return;
-}
-
-void init_descriptor( DESCRIPTOR_DATA * dnew, int desc )
-{
-    static DESCRIPTOR_DATA d_zero;
-    *dnew = d_zero;
-    dnew->descriptor = desc;
-    dnew->connected = CON_GET_NAME;
-    dnew->showstr_head = NULL;
-    dnew->showstr_point = NULL;
-    dnew->outsize = 2000;
-    dnew->outbuf = (char *)getmem( dnew->outsize );
-    dnew->flags = 0;
-    dnew->childpid = 0;
-
 }
 
 void close_socket( DESCRIPTOR_DATA * dclose )
@@ -3843,9 +3826,8 @@ void copyover_recover(  )
         }
 
         d = new DESCRIPTOR_DATA;
+        d->descriptor = desc;
         d->brain = new Brain;
-        init_descriptor( d, desc );   /* set up various stuff */
-
         d->brain->SetHost( host );
         d->next = NULL;
         d->prev = NULL;

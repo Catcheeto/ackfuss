@@ -215,6 +215,14 @@ council_data::council_data()
 
 descriptor_data::descriptor_data()
 {
+    descriptor = 0;
+    connected = CON_GET_NAME;
+    showstr_head = NULL;
+    showstr_point = NULL;
+    outsize = 2000;
+    outbuf = (char *)getmem( outsize );
+    flags = 0;
+    childpid = 0;
 }
 
 disabled_data::disabled_data()
