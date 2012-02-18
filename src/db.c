@@ -1069,7 +1069,7 @@ void load_mobile( FILE * fp )
 
             case 'L':
                 KEY("Level", pMobIndex->level, fread_number(fp));
-                SKEY("LongDesc", pMobIndex->long_descr, fread_string(fp));
+                KEY_("LongDesc", pMobIndex->SetDescrLong, fread_string(fp));
                 break;
 
             case 'N':
@@ -1288,7 +1288,7 @@ void load_object( FILE * fp )
 
             case 'L':
                 KEY("Level", pObjIndex->level, fread_number(fp));
-                SKEY("LongDesc", pObjIndex->long_descr, fread_string(fp));
+                KEY_("LongDesc", pObjIndex->SetDescrLong, fread_string(fp));
                 break;
 
             case 'N':
@@ -2681,7 +2681,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
         mob->SetName( pMobIndex->GetName() );
 
     mob->SetDescrShort( pMobIndex->GetDescrShort() );
-    mob->long_descr = str_dup( pMobIndex->long_descr );
+    mob->SetDescrLong( pMobIndex->GetDescrLong() );
     mob->description = pMobIndex->description;
     mob->npcdata->spec_fun = pMobIndex->spec_fun;
     mob->prompt = str_dup(DEFAULT_PROMPT);
@@ -2816,7 +2816,7 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
 
     obj->SetName( pObjIndex->GetName() );
     obj->SetDescrShort( pObjIndex->GetDescrShort() );
-    obj->long_descr = str_dup( pObjIndex->long_descr );
+    obj->SetDescrLong( pObjIndex->GetDescrLong() );
     obj->item_type = pObjIndex->item_type;
     obj->extra_flags = pObjIndex->extra_flags;
     obj->wear_flags = pObjIndex->wear_flags;

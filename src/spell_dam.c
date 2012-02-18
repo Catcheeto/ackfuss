@@ -450,9 +450,8 @@ void sp_death_message( CHAR_DATA * ch, CHAR_DATA * victim, int realm )
         snprintf( buf, MSL, obj->GetDescrShort_(), name );
         obj->SetDescrShort( buf );
 
-        snprintf( buf, MSL, obj->long_descr, name );
-        free_string( obj->long_descr );
-        obj->long_descr = str_dup( buf );
+        snprintf( buf, MSL, obj->GetDescrLong_(), name );
+        obj->SetDescrLong( buf );
 
         obj_to_room( obj, ch->in_room );
     }

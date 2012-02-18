@@ -186,6 +186,7 @@ Thing::Thing()
 
     // Descriptions
     m_descr_extra.clear();
+    m_descr_long.clear();
     m_descr_short.clear();
 
     // Level

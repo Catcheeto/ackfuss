@@ -115,7 +115,7 @@ extern COUNCIL_DATA super_councils[MAX_SUPER];
 /*
  * Retrieve a character's trusted level for permission checking.
  */
-int get_trust( CHAR_DATA * ch )
+uint_t get_trust( CHAR_DATA * ch )
 {
     if ( ch->desc != NULL && ch->desc->original != NULL )
         ch = ch->desc->original;

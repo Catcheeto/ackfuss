@@ -505,7 +505,7 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
     list<MESSAGE_DATA*>::iterator mi;
     BOARD_DATA *board = NULL;
     OBJ_INDEX_DATA *pObj;
-    int vnum;
+    uint_t vnum;
     MESSAGE_DATA *msg = NULL;
     int cnt = 0;
     bool mfound = FALSE;
@@ -581,8 +581,7 @@ DO_FUN(do_write)
     list<BOARD_DATA *>::iterator li;
     MESSAGE_DATA *msg;
     OBJ_INDEX_DATA *pObj;
-    int vnum;
-    extern char str_empty[1];
+    uint_t vnum;
     char buf[MAX_STRING_LENGTH];
 
     if ( IS_NPC( ch ) )

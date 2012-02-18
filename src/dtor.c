@@ -153,7 +153,6 @@ mark_data::~mark_data()
 mob_index_data::~mob_index_data()
 {
     free_string(description);
-    free_string(long_descr);
 }
 
 money_type::~money_type()
@@ -185,13 +184,11 @@ obj_data::~obj_data()
         delete a;
     }
 
-    free_string(long_descr);
     delete money;
 }
 
 obj_index_data::~obj_index_data()
 {
-    free_string(long_descr);
 }
 
 pc_data::~pc_data()

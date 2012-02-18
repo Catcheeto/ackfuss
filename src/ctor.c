@@ -155,7 +155,6 @@ char_data::char_data()
     leader = NULL;
     level = 0;
     logon = current_time;
-    long_descr.clear();
     for ( short i = 0; i < MAX_CLASS; i++ )
         lvl[i] = -1;
     for ( short i = 0; i < MAX_CLASS; i++ )
@@ -319,7 +318,6 @@ mob_index_data::mob_index_data()
     for ( short i = 0; i < MAX_SKILL; i++ )
         learned[i] = 0;
     level = 1;
-    long_descr = &str_empty[0];
     next = NULL;
     position = 0;
     pShop = NULL;
@@ -415,7 +413,6 @@ obj_data::obj_data()
     last_apply = NULL;
     pIndexData = NULL;
     in_room = NULL;
-    long_descr = &str_empty[0];
     item_type = 0;
     item_apply = 0;
     wear_loc = 0;
@@ -447,7 +444,6 @@ obj_index_data::obj_index_data()
     last_apply = NULL;
     last_trigger = NULL;
     level = 1;
-    long_descr = &str_empty[0];
     max_durability = number_range(2, 100);
     next = NULL;
     obj_fun = NULL;

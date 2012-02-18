@@ -457,7 +457,7 @@ DO_FUN(build_showmob)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n",
-              pMob->GetDescrShort_(), pMob->long_descr[0] != '\0' ? pMob->long_descr : "(none)." );
+              pMob->GetDescrShort_(), !pMob->GetDescrLong().empty() ? pMob->GetDescrLong_() : "(none)." );
     strncat( buf1, buf, MSL - 1 );
 
     if ( pMob->spec_fun != 0 )
@@ -530,7 +530,7 @@ DO_FUN(build_showobj)
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WType: @@y%s.\r\n", obj->vnum, tab_item_types[( obj->item_type ) - 1].text );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n", obj->GetDescrShort_(), obj->long_descr );
+    snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n", obj->GetDescrShort_(), obj->GetDescrLong_() );
     strncat( buf1, buf, MSL - 1 );
 
     /*
@@ -1677,7 +1677,7 @@ DO_FUN(build_setmob)
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        build_strdup( &pMob->long_descr, arg3, TRUE, FALSE, ch );
+        pMob->SetDescrLong( arg3 );
         area_modified( pArea );
         return;
     }
@@ -2758,7 +2758,7 @@ DO_FUN(build_setobject)
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        build_strdup( &pObj->long_descr, arg3, TRUE, FALSE, ch );
+        pObj->SetDescrLong( arg3 );
         return;
     }
 
@@ -5929,10 +5929,8 @@ DO_FUN(build_clone)
          */
         this_obj->SetName( obj->GetName() );
         this_obj->level = obj->level;
-        this_obj->SetDescrShort( obj->GetDescrShort_() );
-        if ( this_obj->long_descr != NULL )
-            free_string( this_obj->long_descr );
-        this_obj->long_descr = str_dup( obj->long_descr );
+        this_obj->SetDescrShort( obj->GetDescrShort() );
+        this_obj->SetDescrLong( obj->GetDescrLong() );
         this_obj->item_type = obj->item_type;
         this_obj->extra_flags = obj->extra_flags;
         this_obj->wear_flags = obj->wear_flags;
@@ -5999,10 +5997,8 @@ DO_FUN(build_clone)
          * Copy details across...
          */
         this_mob->SetName( mob->GetName() );
-        this_mob->SetDescrShort( mob->GetDescrShort_() );
-        if ( this_mob->long_descr != NULL )
-            free_string( this_mob->long_descr );
-        this_mob->long_descr = str_dup( mob->long_descr );
+        this_mob->SetDescrShort( mob->GetDescrShort() );
+        this_mob->SetDescrLong( mob->GetDescrLong() );
         if ( this_mob->description != NULL )
             free_string( this_mob->description );
         this_mob->description = str_dup( mob->description );

@@ -796,7 +796,7 @@ DO_FUN(do_ostat)
     snprintf( buf, MSL, "Vnum: %d.  Type: %s.\r\n", obj->pIndexData->vnum, item_type_name( obj ) );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "Short description: %s.\r\nLong description: %s\r\n", obj->GetDescrShort_(), obj->long_descr );
+    snprintf( buf, MSL, "Short description: %s.\r\nLong description: %s\r\n", obj->GetDescrShort_(), obj->GetDescrLong_() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Wear bits: %s.\r\nExtra bits: %s\r\n",
@@ -1074,7 +1074,7 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Short description: %s.\r\nLong  description: %s\r\n",
-              IS_NPC(victim) ? victim->GetDescrShort_() : "(none)", !victim->long_descr.empty() ? victim->long_descr.c_str() : "(none)." );
+              IS_NPC(victim) ? victim->GetDescrShort_() : "(none)", !victim->GetDescrLong().empty() ? victim->GetDescrLong_() : "(none)." );
     strncat( buf1, buf, MSL - 1 );
 
     if ( IS_NPC( victim ) )
@@ -1764,7 +1764,7 @@ DO_FUN(do_oload)
     char arg2[MSL];
     OBJ_INDEX_DATA *pObjIndex;
     OBJ_DATA *obj;
-    int level;
+    uint_t level;
 
     argument = one_argument( argument, arg1 );
     argument = one_argument( argument, arg2 );
@@ -3196,8 +3196,8 @@ DO_FUN(do_mset)
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        victim->long_descr = arg3;
-        victim->long_descr += "\r\n";
+        victim->SetDescrLong( arg3 );
+        victim->AppendDescrLong( "\r\n" );
         return;
     }
 
@@ -3532,8 +3532,7 @@ DO_FUN(do_oset)
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        free_string( obj->long_descr );
-        obj->long_descr = str_dup( arg3 );
+        obj->SetDescrLong( arg3 );
         return;
     }
 
@@ -4191,7 +4190,7 @@ DO_FUN(do_iscore)
 
     if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) )
     {
-        snprintf( buf, MSL, "You are wizinvis at level %d.\r\n", ch->pcdata->invis );
+        snprintf( buf, MSL, "You are wizinvis at level %ld.\r\n", ch->pcdata->invis );
         send_to_char( buf, ch );
     }
 

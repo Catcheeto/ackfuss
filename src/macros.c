@@ -133,7 +133,7 @@ bool ok_to_use( CHAR_DATA * ch, int value )
     return TRUE;
 }
 
-bool check_level_use( CHAR_DATA * ch, int level )
+bool check_level_use( CHAR_DATA * ch, uint_t level )
 {
     char buf[MAX_STRING_LENGTH];
     char out[MAX_STRING_LENGTH];
@@ -161,7 +161,7 @@ bool check_level_use( CHAR_DATA * ch, int level )
             strncat( out, "Adepts or higher.\r\n", MSL );
             break;
         default:
-            snprintf( buf, MSL, "level %d players and higher.\r\n", level );
+            snprintf( buf, MSL, "level %ld players and higher.\r\n", level );
             strncat( out, buf, MSL - 1 );
     }
     send_to_char( out, ch );

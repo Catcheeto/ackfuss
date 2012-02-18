@@ -3451,9 +3451,8 @@ DO_FUN(do_adapt)
     obj->level = ch->level; /* Allow ch to use the eq... */
     snprintf( buf, MSL, "%s <adapted>", obj->GetDescrShort_() );
     obj->SetDescrShort( buf );
-    snprintf( buf, MSL, "<adapted> %s", obj->long_descr );
-    free_string( obj->long_descr );
-    obj->long_descr = str_dup( buf );
+    snprintf( buf, MSL, "<adapted> %s", obj->GetDescrLong_() );
+    obj->SetDescrLong( buf );
     send_to_char( "Your weapon is now adapted.\r\n", ch );
     return;
 }

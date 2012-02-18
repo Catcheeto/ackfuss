@@ -17,7 +17,7 @@
 /* macros.c */
 void reset_gain_stats P_((CHAR_DATA *ch));
 bool ok_to_use P_((CHAR_DATA *ch, int value));
-bool check_level_use P_((CHAR_DATA *ch, int level));
+bool check_level_use P_((CHAR_DATA *ch, uint_t level));
 int exp_to_level_adept P_((CHAR_DATA *ch));
 int exp_to_level P_((CHAR_DATA *ch, int p_class, int index));
 int exp_to_level_vamp P_((int level));

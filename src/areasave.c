@@ -304,7 +304,7 @@ void build_save_mobs(  )
     fprintf( SaveFile, "DrMod      %d\n", pMobIndex->dr_mod );
     fprintf( SaveFile, "HrMod      %d\n", pMobIndex->hr_mod );
     fprintf( SaveFile, "Level      %d\n", pMobIndex->level );
-    fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->long_descr );
+    fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->GetDescrLong_() );
     fprintf( SaveFile, "Name       %s~\n", pMobIndex->GetName_() );
     fprintf( SaveFile, "Position   %d\n", pMobIndex->position );
     fprintf( SaveFile, "Race       %d\n", pMobIndex->race );
@@ -365,7 +365,7 @@ void build_save_objects(  )
 
     fprintf( SaveFile, "ItemApply  %d\n", pObjIndex->item_apply );
     fprintf( SaveFile, "Level      %d\n", pObjIndex->level );
-    fprintf( SaveFile, "LongDesc   %s~\n", pObjIndex->long_descr );
+    fprintf( SaveFile, "LongDesc   %s~\n", pObjIndex->GetDescrLong_() );
     fprintf( SaveFile, "Name       %s~\n", pObjIndex->GetName_() );
     fprintf( SaveFile, "ObjFun     %s\n", rev_obj_fun_lookup( pObjIndex->obj_fun ) );
     fprintf( SaveFile, "ShortDesc  %s~\n", pObjIndex->GetDescrShort_() );

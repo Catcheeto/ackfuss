@@ -236,7 +236,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "%sEOL\n", outstr.c_str() );
 
     fprintf( fp, "ShortDescr     %s~\n", ch->GetDescrShort_() );
-    fprintf( fp, "LongDescr      %s~\n", ch->long_descr.c_str() );
+    fprintf( fp, "LongDescr      %s~\n", ch->GetDescrLong_() );
     fprintf( fp, "Description    %s~\n", ch->description.c_str() );
     fprintf( fp, "Prompt         %s~\n", ch->prompt.c_str() );
     fprintf( fp, "Sex            %d\n", ch->sex );
@@ -249,7 +249,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     if ( !IS_NPC(ch) )
     {
         fprintf( fp, "Sentence       %d\n", ch->pcdata->sentence );
-        fprintf( fp, "Invis          %d\n", ch->pcdata->invis );
+        fprintf( fp, "Invis          %ld\n", ch->pcdata->invis );
     }
 
     fprintf( fp, "m/c            " );
@@ -508,7 +508,7 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
     fprintf( fp, "Nest         %d\n", iNest );
     fprintf( fp, "Name         %s~\n", obj->GetName_() );
     fprintf( fp, "ShortDescr   %s~\n", obj->GetDescrShort_() );
-    fprintf( fp, "LongDescr    %s~\n", obj->long_descr );
+    fprintf( fp, "LongDescr    %s~\n", obj->GetDescrLong_() );
     fprintf( fp, "Durability   %d %d\n", obj->durability, obj->max_durability );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );
 
@@ -1075,7 +1075,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
 
             case 'L':
                 KEY( "Level", ch->level, fread_number( fp ) );
-                KEY( "LongDescr", ch->long_descr, fread_string( fp ) );
+                KEY_( "LongDescr", ch->SetDescrLong, fread_string( fp ) );
 
                 if ( !IS_NPC( ch ) )
                 {
@@ -1560,7 +1560,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
 
             case 'L':
                 KEY( "Level", obj->level, fread_number( fp ) );
-                SKEY( "LongDescr", obj->long_descr, fread_string( fp ) );
+                KEY_( "LongDescr", obj->SetDescrLong, fread_string( fp ) );
                 break;
 
             case 'M':
@@ -1864,7 +1864,7 @@ void fread_corpse( FILE * fp )
 
             case 'L':
                 KEY( "Level", obj->level, fread_number( fp ) );
-                SKEY( "LongDescr", obj->long_descr, fread_string( fp ) );
+                KEY_( "LongDescr", obj->SetDescrLong, fread_string( fp ) );
                 break;
 
             case 'M':
@@ -2038,7 +2038,7 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
     fprintf( fp, "Nest         %d\n", iNest );
     fprintf( fp, "Name         %s~\n", obj->GetName_() );
     fprintf( fp, "ShortDescr   %s~\n", obj->GetDescrShort_() );
-    fprintf( fp, "LongDescr    %s~\n", obj->long_descr );
+    fprintf( fp, "LongDescr    %s~\n", obj->GetDescrLong_() );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );
 
     fprintf( fp, "ExtraFlags   " );

@@ -156,8 +156,8 @@ char *format_obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch, bool fShort, bool iNam
     }
     else
     {
-        if ( obj->long_descr != NULL )
-            strncat( buf, obj->long_descr, MSL - 1 );
+        if ( !obj->GetDescrLong().empty() )
+            strncat( buf, obj->GetDescrLong_(), MSL - 1 );
     }
     strncat( buf, color_string( ch, "normal" ), MSL - 1 );
 
@@ -312,7 +312,7 @@ void show_room_list_to_char( OBJ_DATA * list, CHAR_DATA * ch, bool fShort, bool 
      */
     for ( obj = list; obj != NULL; obj = obj->next_in_room )
     {
-        if ( obj->wear_loc == WEAR_NONE && can_see_obj( ch, obj ) && str_cmp( obj->long_descr, "" ) )
+        if ( obj->wear_loc == WEAR_NONE && can_see_obj( ch, obj ) && !obj->GetDescrLong().empty() )
         {
             pstrShow = format_obj_to_char( obj, ch, fShort, false );
             fCombine = FALSE;
@@ -476,9 +476,9 @@ void show_char_to_char_0( CHAR_DATA * victim, CHAR_DATA * ch )
 
     if ( !IS_NPC(victim) && victim->act.test(ACT_RULER) )
         strncat( buf, get_ruler_title( victim->pcdata->ruler_rank, victim->pcdata->login_sex ), MSL - 1 );
-    if ( victim->position == POS_STANDING && victim->long_descr[0] != '\0' )
+    if ( victim->position == POS_STANDING && !victim->GetDescrLong().empty() )
     {
-        strncat( buf, victim->long_descr.c_str(), MSL - 1 );
+        strncat( buf, victim->GetDescrLong_(), MSL - 1 );
         strncat( buf, "\r\n", MSL - 1 );
         strncat( buf, color_string( ch, "normal" ), MSL - 1 );
 
@@ -1058,7 +1058,7 @@ DO_FUN(do_look)
 
         if ( is_name( arg1, obj->GetName() ) )
         {
-            send_to_char( tagline_format(obj->long_descr, ch), ch );
+            send_to_char( tagline_format(obj->GetDescrLong_(), ch), ch );
             return;
         }
     }
@@ -1086,7 +1086,7 @@ DO_FUN(do_look)
 
         if ( is_name( arg1, obj->GetName() ) )
         {
-            snprintf( pdesc, MSL, "%s\r\n", obj->long_descr );
+            snprintf( pdesc, MSL, "%s\r\n", obj->GetDescrLong_() );
             send_to_char( pdesc, ch );
             act( "$L$n closely examines $p.", ch, obj, NULL, TO_ROOM );
             return;
@@ -1415,7 +1415,7 @@ DO_FUN(do_score)
 
     if ( get_trust( ch ) != ch->level )
     {
-        snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2d @@c=================X\r\n", get_trust( ch ) );
+        snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2ld @@c=================X\r\n", get_trust( ch ) );
         send_to_char( buf, ch );
     }
 

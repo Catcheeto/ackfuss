@@ -1424,7 +1424,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 if ( IS_NPC( ch ) )
                     break;
                 if ( IS_IMMORTAL( ch ) )
-                    snprintf( buf2, MSL, "INVIS: %d", ch->act.test(ACT_WIZINVIS) ? ch->pcdata->invis : 0 );
+                    snprintf( buf2, MSL, "INVIS: %ld", ch->act.test(ACT_WIZINVIS) ? ch->pcdata->invis : 0 );
                 else
                 {
                     if ( ( IS_AFFECTED( ch, AFF_INVISIBLE ) )

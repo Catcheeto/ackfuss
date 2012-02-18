@@ -15,7 +15,7 @@
 #endif
 
 /* handler.c */
-int get_trust P_((CHAR_DATA *ch));
+uint_t get_trust P_((CHAR_DATA *ch));
 void my_get_age P_((CHAR_DATA *ch, char *buf));
 int my_get_hours P_((CHAR_DATA *ch));
 int get_age P_((CHAR_DATA *ch));

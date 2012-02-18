@@ -24,6 +24,8 @@ class Thing {
         const sint_t SetAlignment( const sint_t amount );
 
         // Descriptions
+        const string AppendDescrLong( const string descr ) { return m_descr_long.append( descr ); }
+        const string AppendDescrShort( const string descr ) { return m_descr_short.append( descr ); }
         const uint_t DelDescrExtra( string key ) { return m_descr_extra.erase( key ); }
         const string GetDescrExtra( string key );
         const char* GetDescrExtra_( string key ) { return GetDescrExtra( key ).c_str(); }
@@ -31,8 +33,11 @@ class Thing {
         const uint_t GetDescrExtraSize() const { return m_descr_extra.size(); }
         const list<string> GetDescrExtraValues();
         const pair<map<string,string>::iterator,bool> SetDescrExtra( const string key, string value ) { return m_descr_extra.insert( pair<string,string>( key, value ) ); }
+        const string GetDescrLong( const Thing* looker = NULL ) const { return m_descr_long; }
+        const char* GetDescrLong_( const Thing* looker = NULL ) const { return GetDescrLong( looker ).c_str(); }
         const string GetDescrShort( const Thing* looker = NULL ) const { return m_descr_short; }
         const char* GetDescrShort_( const Thing* looker = NULL ) const { return GetDescrShort( looker ).c_str(); }
+        const string SetDescrLong( const string descr ) { return m_descr_long = descr; }
         const string SetDescrShort( const string descr ) { return m_descr_short = descr; }
 
         // Level
@@ -65,6 +70,7 @@ class Thing {
 
         // Descriptions
         map<string,string> m_descr_extra;
+        string m_descr_long;
         string m_descr_short;
 
         // Level

@@ -138,7 +138,6 @@ static void walk_mob_index_data( MOB_INDEX_DATA * m )
     if ( !m )
         return;
 
-    touch( m->long_descr );
     touch( m->description );
 
 }
@@ -217,23 +216,6 @@ static void walk_char_data( CHAR_DATA * ch )
 
     walk_pcdata( ch->pcdata );
     walk_shieldlist( ch->first_shield );
-}
-
-static void walk_obj_index_data( OBJ_INDEX_DATA * o )
-{
-    if ( !o )
-        return;
-
-    touch( o->long_descr );
-}
-
-
-static void walk_obj_data( OBJ_DATA * o )
-{
-    if ( !o )
-        return;
-
-    touch( o->long_descr );
 }
 
 static void walk_exit_data( EXIT_DATA * e )
@@ -345,18 +327,6 @@ static void walk_descriptors( void )
         walk_descriptor_data( d );
 }
 
-static void walk_objects( void )
-{
-    OBJ_DATA *o;
-    list<OBJ_DATA *>::iterator li;
-
-    for ( li = obj_list.begin(); li != obj_list.end(); li++ )
-    {
-        o = *li;
-        walk_obj_data( o );
-    }
-}
-
 static void walk_areas( void )
 {
     AREA_DATA *ad;
@@ -390,16 +360,6 @@ static void walk_mob_indexes( void )
     for ( i = 0; i < MAX_KEY_HASH; i++ )
         for ( m = mob_index_hash[i]; m; m = m->next )
             walk_mob_index_data( m );
-}
-
-static void walk_obj_indexes( void )
-{
-    OBJ_INDEX_DATA *o;
-    int i;
-
-    for ( i = 0; i < MAX_KEY_HASH; i++ )
-        for ( o = obj_index_hash[i]; o; o = o->next )
-            walk_obj_index_data( o );
 }
 
 static void walk_room_indexes( void )
@@ -452,11 +412,9 @@ DO_FUN(do_scheck)
 
     walk_chars(  );
     walk_descriptors(  );
-    walk_objects(  );
     walk_areas(  );
     walk_bans(  );
     walk_mob_indexes(  );
-    walk_obj_indexes(  );
     walk_room_indexes(  );
     walk_notes(  );
     walk_rulers(  );

@@ -1113,13 +1113,12 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
 
                     explosion->level = 120;
                     explosion->SetDescrShort( "@@mConflagration@@N" );
-                    free_string( explosion->long_descr );
-                    explosion->long_descr = str_dup( "@@N A @@eFlaming @@NStaff of @@aIce@@N is supsended in mid air!" );
+                    explosion->SetDescrLong( "@@N A @@eFlaming @@NStaff of @@aIce@@N is supsended in mid air!" );
 
                     elemental->level = 140;
                     elemental->SetName(".hidden");
                     elemental->SetDescrShort( "@@NThe @@rConflict@@N of @@eFire @@Nand @@aIce@@N" );
-                    elemental->long_descr = "@@NA @@rPillar@@N of @@eFire @@Nand @@aIce@@N immolates itself!";
+                    elemental->SetDescrLong( "@@NA @@rPillar@@N of @@eFire @@Nand @@aIce@@N immolates itself!" );
 
                     char_to_room( elemental, ch->in_room );
                     obj_to_char( explosion, elemental );
@@ -2319,9 +2318,8 @@ void make_corpse( CHAR_DATA * ch, char *argument )
     snprintf( buf, MSL, corpse->GetDescrShort_(), name );
     corpse->SetDescrShort( buf );
 
-    snprintf( buf, MSL, corpse->long_descr, name );
-    free_string( corpse->long_descr );
-    corpse->long_descr = str_dup( buf );
+    snprintf( buf, MSL, corpse->GetDescrLong_(), name );
+    corpse->SetDescrLong( buf );
 
     for ( obj = ch->first_carry; obj != NULL; obj = obj_next )
     {
@@ -5159,9 +5157,8 @@ void death_message( CHAR_DATA * ch, CHAR_DATA * victim, int dt, int max_dt )
         snprintf( buf, MSL, obj->GetDescrShort_(), name );
         obj->SetDescrShort( buf );
 
-        snprintf( buf, MSL, obj->long_descr, name );
-        free_string( obj->long_descr );
-        obj->long_descr = str_dup( buf );
+        snprintf( buf, MSL, obj->GetDescrLong_(), name );
+        obj->SetDescrLong( buf );
 
         obj_to_room( obj, ch->in_room );
     }
@@ -6029,13 +6026,13 @@ DO_FUN(do_disguise)
     }
     if ( !str_cmp(farg, "reset") )
     {
-        ch->long_descr.clear();
+        ch->SetDescrLong( "" );
         send_to_char("You have removed your disguise.\r\n", ch);
         return;
     }
     else
     {
-        ch->long_descr = farg;
+        ch->SetDescrLong( farg );
         send_to_char("You are now Disguised!!!\r\n", ch);
         return;
     }

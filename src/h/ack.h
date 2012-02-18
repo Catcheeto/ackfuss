@@ -461,7 +461,6 @@ class mob_index_data : public Thing {
         short killed;
         short learned[MAX_SKILL];
         short level;
-        char *long_descr;
         MOB_INDEX_DATA *next;
         short position;
         SHOP_DATA *pShop;
@@ -530,7 +529,6 @@ class char_data : public Thing {
         CHAR_DATA *leader;
         short level;  /* For m/c this = max of levels */
         time_t logon;
-        string long_descr;
         int lvl[MAX_CLASS];  /* Holds details for m/c levels */
         int lvl2[MAX_CLASS]; /* for remort (if any) */
         int mana;
@@ -637,7 +635,7 @@ class pc_data
         int hp_from_gain; /* same for hitpoints */
         char *ignore_list[MAX_IGNORES];  /* Ignore this person */
         IMC_CHARDATA *imcchardata;
-        short invis; /* wizinvis imm, level invis to */
+        uint_t invis; /* wizinvis imm, level invis to */
         char *lastlogin;
         time_t last_note;
         short learned[MAX_SKILL];
@@ -727,7 +725,6 @@ class obj_index_data : public Thing {
         AFFECT_DATA *last_apply;
         TRIGGER_DATA *last_trigger;
         short level;
-        char *long_descr;
         short max_durability;
         OBJ_INDEX_DATA *next;
         OBJ_FUN *obj_fun;
@@ -764,7 +761,6 @@ class obj_data : public Thing {
         AFFECT_DATA *last_apply;
         OBJ_INDEX_DATA *pIndexData;
         ROOM_INDEX_DATA *in_room;
-        char *long_descr;
         int item_type;
         bitset<MAX_BITSET> extra_flags;
         bitset<MAX_BITSET> wear_flags;
@@ -1008,7 +1004,7 @@ struct cmd_type
     char *const name;
     DO_FUN *do_fun;
     short position;
-    short level;
+    uint_t level;
     short log;
     short type;   /*added by Aeria for do_commands */
     short show;   /*added by Aeria for do_commands */
