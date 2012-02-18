@@ -698,16 +698,18 @@ DO_FUN(do_rstat)
               bs_show_values( tab_room_flags, location->room_flags ), location->description );
     strncat( buf1, buf, MSL - 1 );
 
-    if ( location->first_exdesc != NULL )
+    if ( location->GetDescrExtraSize() )
     {
-        EXTRA_DESCR_DATA *ed;
+        list<string> keys = location->GetDescrExtraKeys();
+        list<string>::iterator mi = keys.begin();
+        string value;
 
         strncat( buf1, "Extra description keywords: '", MSL );
-        for ( ed = location->first_exdesc; ed; ed = ed->next )
+        while ( mi++ != keys.end() )
         {
-            strncat( buf1, ed->keyword, MSL - 1 );
-            if ( ed->next != NULL )
-                strncat( buf1, " ", MSL );
+            value = *mi;
+            strncat( buf1, location->GetDescrExtra_( value ), MSL - 1 );
+            strncat( buf1, " ", MSL );
         }
         strncat( buf1, "'.\r\n", MSL );
     }
@@ -871,24 +873,29 @@ DO_FUN(do_ostat)
      * strncat( buf1, buf, MSL-1 );
      */
 
-    if ( obj->first_exdesc != NULL || obj->pIndexData->first_exdesc != NULL )
+    if ( obj->GetDescrExtraSize() || obj->pIndexData->GetDescrExtraSize() )
     {
-        EXTRA_DESCR_DATA *ed;
+        list<string> keys = obj->GetDescrExtraKeys();
+        list<string>::iterator mi = keys.begin();
+        string value;
 
         strncat( buf1, "Extra description keywords: '", MSL );
 
-        for ( ed = obj->first_exdesc; ed != NULL; ed = ed->next )
+        while ( mi++ != keys.end() )
         {
-            strncat( buf1, ed->keyword, MSL - 1 );
-            if ( ed->next != NULL )
-                strncat( buf1, " ", MSL );
+            value = *mi;
+            strncat( buf1, value.c_str(), MSL - 1 );
+            strncat( buf1, " ", MSL );
         }
 
-        for ( ed = obj->pIndexData->first_exdesc; ed != NULL; ed = ed->next )
+        keys = obj->pIndexData->GetDescrExtraKeys();
+        mi = keys.begin();
+
+        while ( mi++ != keys.end() )
         {
-            strncat( buf1, ed->keyword, MSL - 1 );
-            if ( ed->next != NULL )
-                strncat( buf1, " ", MSL );
+            value = *mi;
+            strncat( buf1, value.c_str(), MSL - 1 );
+            strncat( buf1, " ", MSL );
         }
 
         strncat( buf1, "'.\r\n", MSL );
@@ -987,7 +994,7 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL,
-              "Lv: %d.  Class: %d.  Align: %d.  AC: %d.  Exp: %ld.\r\n",
+              "Lv: %d.  Class: %d.  Align: %ld.  AC: %d.  Exp: %ld.\r\n",
               victim->get_level(), victim->p_class, victim->GetAlignment(), GET_AC( victim ), victim->GetExperience() );
     strncat( buf1, buf, MSL - 1 );
 
@@ -1189,9 +1196,9 @@ DO_FUN(do_ofindlev)
     int nMatch;
     bool fAll;
     bool found;
+    int objlev;
     int level;
     int level_top;
-    int objlev;
     bool mailme = FALSE;
     if ( is_name( "mailme", argument ) )
         mailme = TRUE;
@@ -3534,8 +3541,6 @@ DO_FUN(do_oset)
 
     if ( !str_cmp( arg2, "ed" ) )
     {
-        EXTRA_DESCR_DATA *ed;
-
         argument = one_argument( argument, arg3 );
         if ( argument == NULL )
         {
@@ -3543,10 +3548,7 @@ DO_FUN(do_oset)
             return;
         }
 
-        ed = new EXTRA_DESCR_DATA;
-        ed->keyword = str_dup( arg3 );
-        ed->description = str_dup( argument );
-        LINK( ed, obj->first_exdesc, obj->last_exdesc, next, prev );
+        obj->SetDescrExtra( arg3, argument );
         return;
     }
 

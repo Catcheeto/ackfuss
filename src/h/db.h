@@ -41,7 +41,6 @@ void offline_unload P_((DESCRIPTOR_DATA *who));
 DESCRIPTOR_DATA *offline_load P_((char *name));
 CHAR_DATA *create_mobile P_((MOB_INDEX_DATA *pMobIndex));
 OBJ_DATA *create_object P_((OBJ_INDEX_DATA *pObjIndex, int level));
-char *get_extra_descr P_((const char *name, EXTRA_DESCR_DATA *ed));
 MOB_INDEX_DATA *get_mob_index P_((int vnum));
 OBJ_INDEX_DATA *get_obj_index P_((int vnum));
 ROOM_INDEX_DATA *get_room_index P_((int vnum));

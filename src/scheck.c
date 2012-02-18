@@ -230,24 +230,10 @@ static void walk_char_data( CHAR_DATA * ch )
     walk_shieldlist( ch->first_shield );
 }
 
-static void walk_extra_descr_data( EXTRA_DESCR_DATA * ed )
-{
-    if ( !ed )
-        return;
-
-    touch( ed->keyword );
-    touch( ed->description );
-}
-
 static void walk_obj_index_data( OBJ_INDEX_DATA * o )
 {
-    EXTRA_DESCR_DATA *ed;
-
     if ( !o )
         return;
-
-    for ( ed = o->first_exdesc; ed; ed = ed->next )
-        walk_extra_descr_data( ed );
 
     touch( o->name );
     touch( o->short_descr );
@@ -257,13 +243,8 @@ static void walk_obj_index_data( OBJ_INDEX_DATA * o )
 
 static void walk_obj_data( OBJ_DATA * o )
 {
-    EXTRA_DESCR_DATA *ed;
-
     if ( !o )
         return;
-
-    for ( ed = o->first_exdesc; ed; ed = ed->next )
-        walk_extra_descr_data( ed );
 
     touch( o->short_descr );
     touch( o->long_descr );
@@ -328,16 +309,12 @@ static void walk_mark_data( MARK_DATA * m )
 static void walk_room_index_data( ROOM_INDEX_DATA * r )
 {
     int i;
-    EXTRA_DESCR_DATA *ed;
     list<MARK_DATA *>::iterator li;
-    /*  BUILD_DATA_LIST *reset;  */
     if ( !r )
         return;
 
     for ( i = 0; i < 6; i++ )
         walk_exit_data( r->exit[i] );
-    for ( ed = r->first_exdesc; ed; ed = ed->next )
-        walk_extra_descr_data( ed );
     for ( li = r->mark_list.begin(); li != r->mark_list.end(); li++ )
         walk_mark_data( *li );
     touch( r->name );
@@ -474,32 +451,6 @@ static void walk_bans( void )
     }
 }
 
-static void walk_message_data( MESSAGE_DATA * m )
-{
-    if ( !m )
-        return;
-
-    touch( m->message );
-    touch( m->title );
-}
-
-void walk_messages( MESSAGE_DATA * m )
-{
-    for ( ; m; m = m->next )
-        walk_message_data( m );
-}
-void walk_boards( void )
-{
-    BOARD_DATA *board;
-    list<BOARD_DATA *>::iterator li;
-
-    for ( li = board_list.begin(); li != board_list.end(); li++ )
-    {
-        board = *li;
-        walk_messages( board->first_message );
-    }
-}
-
 void walk_sysdata( void )
 {
     touch( sysdata.playtesters );
@@ -522,7 +473,6 @@ DO_FUN(do_scheck)
     walk_obj_indexes(  );
     walk_room_indexes(  );
     walk_notes(  );
-    walk_boards(  );
     walk_rulers(  );
     walk_sysdata(  );
 

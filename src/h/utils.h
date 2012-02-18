@@ -157,8 +157,6 @@
 /* Regular linking of double-linked list */
 #define LINK(link, first, last, next, prev) \
     do { \
-        if ( (link)->is_free == TRUE ) hang("LINK: link is FREE!"); \
-        if ( (link)->is_free != FALSE ) hang("LINK: link is corrupted!"); \
         if ( (link)->prev || (link)->next ) hang("LINK: link already in list?"); \
         if ( (last) && (last)->next ) hang("LINK: last->next NON-NULL!"); \
         if ( !(first) ) \
@@ -173,8 +171,6 @@
 /* Link at the head of the list rather than the tail.  Double linked */
 #define TOPLINK(link, first, last, next, prev) \
     do { \
-        if ( (link)->is_free == TRUE ) hang("TOPLINK: link is FREE!"); \
-        if ( (link)->is_free != FALSE ) hang("TOPLINK: link is corrupted!"); \
         if ( (link)->prev || (link)->next ) hang("TOPLINK: link already in list?"); \
         if ( (first) && (first)->prev ) hang("TOPLINK: first->prev NON-NULL!"); \
         if ( !(last) ) \
@@ -189,12 +185,8 @@
 /* Insert link before ref link */
 #define LINK_BEFORE(link, ref, first, last, next, prev) \
     do { \
-        if ( (link)->is_free == TRUE ) hang("LINK_BEFORE: link is FREE!"); \
-        if ( (link)->is_free != FALSE ) hang("LINK_BEFORE: link is corrupted!"); \
         if ( (link)->prev || (link)->next ) hang("LINK_BEFORE: link already in list?"); \
         if ( !(ref) ) hang("LINK_BEFORE: ref is NULL!"); \
-        if ( (ref)->is_free == TRUE ) hang("LINK_BEFORE: ref is FREE!"); \
-        if ( (ref)->is_free != FALSE ) hang("LINK_BEFORE: ref is corrupted!"); \
         (link)->next = (ref); \
         (link)->prev = (ref)->prev; \
         if ( !(ref)->prev ) \
@@ -207,12 +199,8 @@
 /* Insert link after ref link */
 #define LINK_AFTER(link, ref, first, last, next, prev) \
     do { \
-        if ( (link)->is_free == TRUE ) hang("LINK_AFTER: link is FREE!"); \
-        if ( (link)->is_free != FALSE ) hang("LINK_AFTER: link is corrupted!"); \
         if ( (link)->prev || (link)->next ) hang("LINK_AFTER: link already in list?"); \
         if ( !(ref) ) hang("LINK_AFTER: ref is NULL!"); \
-        if ( (ref)->is_free == TRUE ) hang("LINK_AFTER: ref is FREE!"); \
-        if ( (ref)->is_free != FALSE ) hang("LINK_AFTER: ref is corrupted!"); \
         (link)->prev = (ref); \
         (link)->next = (ref)->next; \
         if ( !(ref)->next ) \
@@ -225,8 +213,6 @@
 /* Unlink a double linked list */
 #define UNLINK(link, first, last, next, prev) \
     do { \
-        if ( (link)->is_free == TRUE ) hang("UNLINK: link is FREE!"); \
-        if ( (link)->is_free != FALSE ) hang("UNLINK: link is corrupted!"); \
         if ( (link)->prev && (((link)->prev)->next != (link)) ) \
             hang("UNLINK: link->prev->next corrupted!"); \
         if ( (link)->next && (((link)->next)->prev != (link)) ) \

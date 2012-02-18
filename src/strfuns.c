@@ -823,6 +823,11 @@ int number_argument( char *argument, char *arg )
  * Pick off one argument from a string and return the rest.
  * Understands quotes.
  */
+char *one_argument( string argument, char *arg_first )
+{
+    return one_argument( const_cast<char*>(argument.c_str()), arg_first );
+}
+
 char *one_argument( char *argument, char *arg_first )
 {
     char cEnd;

@@ -614,17 +614,19 @@ DO_FUN(build_showobj)
         strncat( buf1, buf, MSL - 1 );
     }
 
-    if ( obj->first_exdesc != NULL )
+    if ( obj->GetDescrExtraSize() )
     {
-        EXTRA_DESCR_DATA *ed;
+        list<string> keys = obj->GetDescrExtraKeys();
+        list<string>::iterator mi = keys.begin();
+        string value;
 
         strncat( buf1, "@@WExtra description keywords: '@@y", MSL );
 
-        for ( ed = obj->first_exdesc; ed != NULL; ed = ed->next )
+        while ( mi++ != keys.end() )
         {
-            strncat( buf1, ed->keyword, MSL - 1 );
-            if ( ed->next != NULL )
-                strncat( buf1, " ", MSL );
+            value = *mi;
+            strncat( buf1, value.c_str(), MSL - 1 );
+            strncat( buf1, " ", MSL );
         }
 
         strncat( buf1, "'@@g.\r\n", MSL );
@@ -707,16 +709,18 @@ DO_FUN(build_showroom)
         strncat( buf1, buf, MSL - 1 );
     }
 
-    if ( location->first_exdesc != NULL )
+    if ( location->GetDescrExtraSize() )
     {
-        EXTRA_DESCR_DATA *ed;
+        list<string> keys = location->GetDescrExtraKeys();
+        list<string>::iterator mi = keys.begin();
+        string value;
 
         strncat( buf1, "@@WExtra description keywords:@@y '", MSL );
-        for ( ed = location->first_exdesc; ed; ed = ed->next )
+        while ( mi++ != keys.end() )
         {
-            strncat( buf1, ed->keyword, MSL - 1 );
-            if ( ed->next != NULL )
-                strncat( buf1, " ", MSL );
+            value = *mi;
+            strncat( buf1, value.c_str(), MSL - 1 );
+            strncat( buf1, " ", MSL );
         }
         strncat( buf1, "'.\r\n", MSL );
     }
@@ -823,11 +827,6 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
     pReset = (RESET_DATA *)( *pList )->data;
 
     strncat( buf1, build_docount( pcount ), MSL );
-    if ( ( *pList )->is_free ) /* sanity check */
-        strncat( buf1, " **LIST IS FREE** ", MSL );  /* Bad Thing! */
-    if ( pReset->is_free )
-        strncat( buf1, " **RESET IS FREE** ", MSL );
-
     ( *pList ) = ( *pList )->next;
 
     switch ( pReset->command )
@@ -2012,8 +2011,6 @@ DO_FUN(build_setroom)
 
     if ( !str_cmp( arg1, "ed" ) )
     {
-
-        EXTRA_DESCR_DATA *ed;
         bool found;
 
         argument = one_argument( argument, arg2 );
@@ -2028,53 +2025,32 @@ DO_FUN(build_setroom)
         argn = arg2;
         if ( argn[0] == '-' )
         {
-            argn++;
-            found = FALSE;
+            argn = arg2 + 1;
 
-            for ( ed = location->first_exdesc; ed != NULL; ed = ed->next )
+            if ( !location->GetDescrExtraSize() )
             {
-                if ( is_name( argn, ed->keyword ) )
-                {
-                    found = TRUE;
-                    break;
-                }
+                send_to_char( "This room has no extra descrs.\r\n", ch );
+                return;
             }
 
-            if ( !found )
+            if ( !location->DelDescrExtra( argn ) )
             {
                 send_to_char( "Keyword not found.\r\n", ch );
                 return;
             }
 
-            /*
-             * Delete description
-             */
-            UNLINK( ed, location->first_exdesc, location->last_exdesc, next, prev );
-            exdesc_list.remove(ed);
-            delete ed;
-
+            send_to_char( "Keyword removed.\r\n", ch );
             return;
         }
 
-        found = FALSE;
-        for ( ed = location->first_exdesc; ed != NULL; ed = ed->next )
-            if ( is_name( arg2, ed->keyword ) )
-            {
-                found = TRUE;
-                break;
-            }
-
-        if ( !found )
+        if ( !location->GetDescrExtra( arg2 ).empty() )
         {
-            ed = new EXTRA_DESCR_DATA;
-
-            build_strdup( &ed->keyword, arg2, FALSE, FALSE, ch );
-            build_strdup( &ed->description, arg3, FALSE, FALSE, ch );
-            LINK( ed, location->first_exdesc, location->last_exdesc, next, prev );
+            //FIXME build_strdup( &ed->keyword, arg2, FALSE, FALSE, ch );
+            //FIXME build_strdup( &ed->description, arg3, FALSE, FALSE, ch );
             return;
         }
 
-        build_strdup( &ed->description, arg3, TRUE, FALSE, ch );
+        //FIXME build_strdup( &ed->description, arg3, TRUE, FALSE, ch );
         return;
 
     }
@@ -2792,9 +2768,6 @@ DO_FUN(build_setobject)
 
     if ( !str_cmp( arg2, "ed" ) )
     {
-        EXTRA_DESCR_DATA *ed;
-        int found;
-
         argument = one_argument( argument, arg3 );
 
         if ( strlen(argument) < 1 || strlen(arg3) < 1 )
@@ -2808,49 +2781,31 @@ DO_FUN(build_setobject)
              * Find and delete keyword
              */
             argn = arg3 + 1;
-            found = FALSE;
 
-            for ( ed = pObj->first_exdesc; ed != NULL; ed = ed->next )
+            if ( !pObj->GetDescrExtraSize() )
             {
-                if ( is_name( argn, ed->keyword ) )
-                {
-                    found = TRUE;
-                    break;
-                }
+                send_to_char( "This object has no extra descrs.\r\n", ch );
+                return;
             }
 
-            if ( !found )
+            if ( !pObj->DelDescrExtra( argn ) )
             {
                 send_to_char( "Keyword not found.\r\n", ch );
                 return;
             }
 
-            UNLINK( ed, pObj->first_exdesc, pObj->last_exdesc, next, prev );
-            exdesc_list.remove(ed);
-            delete ed;
-
-            return;
-        }
-        found = FALSE;
-        for ( ed = pObj->first_exdesc; ed != NULL; ed = ed->next )
-        {
-            if ( is_name( arg3, ed->keyword ) )
-            {
-                found = TRUE;
-                break;
-            }
-        }
-        if ( found )
-        {
-            build_strdup( &ed->description, argument, TRUE, FALSE, ch );
+            send_to_char ( "Keyword removed.\r\n", ch );
             return;
         }
 
+        if ( !pObj->GetDescrExtra( arg3 ).empty() )
+        {
+            //FIXME build_strdup( &ed->description, argument, TRUE, FALSE, ch );
+            return;
+        }
 
-        ed = new EXTRA_DESCR_DATA;
-        build_strdup( &ed->keyword, arg3, FALSE, FALSE, ch );
-        build_strdup( &ed->description, argument, FALSE, FALSE, ch );
-        LINK( ed, pObj->first_exdesc, pObj->last_exdesc, next, prev );
+        //FIXME build_strdup( &ed->keyword, arg3, FALSE, FALSE, ch );
+        //FIXME build_strdup( &ed->description, argument, FALSE, FALSE, ch );
         return;
     }
 
@@ -4161,20 +4116,6 @@ DO_FUN(build_delroom)
         }
     }
 
-    /*
-     * Get rid of extra descriptions
-     */
-    {
-        EXTRA_DESCR_DATA *pNext;
-        EXTRA_DESCR_DATA *pEd;
-
-        for ( pEd = pRoomIndex->first_exdesc; pEd != NULL; pEd = pNext )
-        {
-            pNext = pEd->next;
-            exdesc_list.remove(pEd);
-            delete pEd;
-        }
-    }
     room_index_list.remove(pRoomIndex);
     delete pRoomIndex;
 
@@ -4329,21 +4270,6 @@ DO_FUN(build_delobject)
                 reset_list.remove(pReset);
                 delete pReset;
             }
-        }
-    }
-
-    /*
-     * Get rid of extra descriptions
-     */
-    {
-        EXTRA_DESCR_DATA *pNext;
-        EXTRA_DESCR_DATA *pEd;
-
-        for ( pEd = pObjIndex->first_exdesc; pEd != NULL; pEd = pNext )
-        {
-            pNext = pEd->next;
-            exdesc_list.remove(pEd);
-            delete pEd;
         }
     }
 
@@ -5875,6 +5801,9 @@ DO_FUN(build_clone)
 {
     char arg1[MSL];
     char arg2[MSL];
+    list<string> keys;
+    list<string>::iterator mi;
+    string value;
 
     /*
      * Allow builder to clone a room/mob/object -
@@ -5907,7 +5836,6 @@ DO_FUN(build_clone)
     {
         ROOM_INDEX_DATA *room;
         ROOM_INDEX_DATA *in_room = ch->in_room;
-        EXTRA_DESCR_DATA *pEd, *pEd_new;
 
         if ( ch->pcdata->build_mode != BUILD_MODE_REDIT )
         {
@@ -5953,12 +5881,12 @@ DO_FUN(build_clone)
         in_room->sector_type = room->sector_type;
         in_room->room_flags = room->room_flags;
 
-        for ( pEd = room->first_exdesc; pEd != NULL; pEd = pEd->next )
+        keys = room->GetDescrExtraKeys();
+        mi = keys.begin();
+        while ( mi++ != keys.end() )
         {
-            pEd_new = new EXTRA_DESCR_DATA;
-            pEd_new->keyword = str_dup(pEd->keyword);
-            pEd_new->description = str_dup(pEd->description);
-            LINK( pEd_new, in_room->first_exdesc, in_room->last_exdesc, next, prev );
+            value = *mi;
+            in_room->SetDescrExtra( value, room->GetDescrExtra( value ) );
         }
 
         send_to_char( "Room cloned.\r\n", ch );
@@ -5969,7 +5897,6 @@ DO_FUN(build_clone)
     {
         OBJ_INDEX_DATA *obj;
         OBJ_INDEX_DATA *this_obj;
-        EXTRA_DESCR_DATA *pEd, *pEd_new;
         int looper;
 
         if ( ch->pcdata->build_mode != BUILD_MODE_OEDIT )
@@ -6028,12 +5955,12 @@ DO_FUN(build_clone)
         this_obj->obj_fun = obj->obj_fun;
         this_obj->armor_type = obj->armor_type;
 
-        for ( pEd = obj->first_exdesc; pEd != NULL; pEd = pEd->next )
+        keys = obj->GetDescrExtraKeys();
+        mi = keys.begin();
+        while ( mi++ != keys.end() )
         {
-            pEd_new = new EXTRA_DESCR_DATA;
-            pEd_new->keyword = str_dup(pEd->keyword);
-            pEd_new->description = str_dup(pEd->description);
-            LINK( pEd_new, this_obj->first_exdesc, this_obj->last_exdesc, next, prev );
+            value = *mi;
+            this_obj->SetDescrExtra( value, obj->GetDescrExtra( value ) );
         }
 
         send_to_char( "Object cloned.\r\n", ch );

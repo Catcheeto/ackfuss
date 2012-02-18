@@ -17,53 +17,82 @@
 #endif
 
 // Alignment
-
-const uint_t Thing::DecrAlignment( const uint_t amount )
+const sint_t Thing::DecrAlignment( const sint_t amount )
 {
-    if ( amount <= 0 || amount >= uintmax_t )
+    if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
 
-    if ( ( m_alignment - amount ) <= 0 )
-        return m_alignment = 0;
+    if ( ( m_alignment - amount ) <= sintmin_t )
+        return m_alignment = sintmin_t;
     else
         return m_alignment -= amount;
 }
 
-const uint_t Thing::IncrAlignment( const uint_t amount )
+const sint_t Thing::IncrAlignment( const sint_t amount )
 {
-    if ( amount <= 0 || amount >= uintmax_t )
+    if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
 
-    if ( ( m_alignment + amount ) >= uintmax_t )
-        return m_alignment = uintmax_t;
+    if ( ( m_alignment + amount ) >= sintmax_t )
+        return m_alignment = sintmax_t;
     else
         return m_alignment += amount;
 }
 
-const uint_t Thing::SetAlignment( const uint_t amount )
+const sint_t Thing::SetAlignment( const sint_t amount )
 {
-    if ( amount <= 0 || amount >= uintmax_t )
+    if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
 
     return m_alignment = amount;
 }
 
-// Level
+// Descriptions
+const string Thing::GetDescrExtra( string key )
+{
+    map<string,string>::iterator it = m_descr_extra.find( key );
+    string value = it->second;
 
+    return value;
+}
+
+const list<string> Thing::GetDescrExtraKeys()
+{
+    map<string,string>::iterator it = m_descr_extra.begin();
+    list<string> value;;
+
+    while ( it++ != m_descr_extra.end() )
+        value.push_back( it->first );
+
+    return value;
+}
+
+const list<string> Thing::GetDescrExtraValues()
+{
+    map<string,string>::iterator it = m_descr_extra.begin();
+    list<string> value;
+
+    while ( it++ != m_descr_extra.end() )
+        value.push_back( it->second );
+
+    return value;
+}
+
+// Level
 const uint_t Thing::DecrExperience( const uint_t amount )
 {
-    if ( amount <= 0 || amount >= uintmax_t )
+    if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
 
     if ( ( m_experience - amount ) <= 0 )
-        return m_experience = 0;
+        return m_experience = uintmin_t;
     else
         return m_experience -= amount;
 }
 
 const uint_t Thing::IncrExperience( const uint_t amount )
 {
-    if ( amount <= 0 || amount >= uintmax_t )
+    if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
 
     if ( ( m_experience + amount ) >= uintmax_t )
@@ -81,7 +110,6 @@ const uint_t Thing::SetExperience( const uint_t amount )
 }
 
 // 'Object' Manipulation
-
 const bool Thing::DropThing( const Thing* what )
 {
     char name[MSL];
@@ -155,6 +183,9 @@ Thing::Thing()
 {
     // Alignment
     m_alignment = 0;
+
+    // Descriptions
+    m_descr_extra.clear();
 
     // Level
     m_experience = 0;

@@ -18,10 +18,19 @@ class Thing {
         ~Thing();
 
         // Alignment
-        const uint_t GetAlignment() const { return m_alignment; };
-        const uint_t DecrAlignment( const uint_t amount );
-        const uint_t IncrAlignment( const uint_t amount );
-        const uint_t SetAlignment( const uint_t amount );
+        const sint_t GetAlignment() const { return m_alignment; };
+        const sint_t DecrAlignment( const sint_t amount );
+        const sint_t IncrAlignment( const sint_t amount );
+        const sint_t SetAlignment( const sint_t amount );
+
+        // Descriptions
+        const uint_t DelDescrExtra( string key ) { return m_descr_extra.erase( key ); }
+        const string GetDescrExtra( string key );
+        const char* GetDescrExtra_( string key ) { return GetDescrExtra( key ).c_str(); }
+        const list<string> GetDescrExtraKeys();
+        const uint_t GetDescrExtraSize() const { return m_descr_extra.size(); };
+        const list<string> GetDescrExtraValues();
+        const pair<map<string,string>::iterator,bool> SetDescrExtra( string key, string value ) { return m_descr_extra.insert( pair<string,string>( key, value ) ); }
 
         // Level
         const uint_t GetExperience() const { return m_experience; };
@@ -30,15 +39,12 @@ class Thing {
         const uint_t SetExperience( const uint_t amount );
 
         // Name
-        const string AppendName( const char* name ) { return m_name.append( name ); };
         const string AppendName( const string name ) { return m_name.append( name ); };
-        const char* GetName_( Thing* looker = NULL ) const { return m_name.c_str(); };
         const string GetName( Thing* looker = NULL ) const { return m_name; };
+        const char* GetName_( Thing* looker = NULL ) const { return GetName().c_str(); };
 /*        bool IsWithinName( const char* word );
         bool IsWithinName( const string word );*/
-        const string PrefixName( const char* name ) { return m_name.insert( 0, name ); };
         const string PrefixName( const string name ) { return m_name.insert( 0, name ); };
-        const string SetName( const char* name ) { return m_name = name; };
         const string SetName( const string name ) { return m_name = name; };
 
         // 'Object' Manipulation
@@ -52,7 +58,10 @@ class Thing {
 
     protected:
         // Alignment
-        uint_t m_alignment;
+        sint_t m_alignment;
+
+        // Descriptions
+        map<string,string> m_descr_extra;
 
         // Level
         uint_t m_experience;

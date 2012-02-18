@@ -54,7 +54,7 @@ struct room_content_type
 
 struct room_content_type contents[MAX_MAP][MAX_MAP];
 
-int map[MAX_MAP][MAX_MAP];
+int imap[MAX_MAP][MAX_MAP];
 
 extern const char* compass_name[];
 

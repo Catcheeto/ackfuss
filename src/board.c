@@ -110,10 +110,38 @@
  * value 3: the vnum of the board...NOT the vnum of the room...           *
  **************************************************************************/
 
-/**************************************************************************
- * Ick ick ick!  Remove all the dammed builder functions, and use the     *
- * general merc memory functions.  -- Altrag                              *
- **************************************************************************/
+board_data::board_data()
+{
+    clan = -1;
+    expiry_time = 0;
+    messages.clear();
+    min_read_lev = 0;
+    min_write_lev = 0;
+    vnum = 0;
+
+    board_list.push_back(this);
+}
+
+board_data::~board_data()
+{
+    list<MESSAGE_DATA*>::iterator it = messages.begin();
+
+    while ( it++ != messages.end() )
+        delete *it;
+}
+
+message_data::message_data()
+{
+    author.clear();
+    board = NULL;
+    datetime = 0;
+    message.clear();
+    title.clear();
+}
+
+message_data::~message_data()
+{
+}
 
 void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
 {
@@ -122,13 +150,13 @@ void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
      * * looking at, indicated by board_vnum...
      */
 
-    MESSAGE_DATA *msg;
-    list<BOARD_DATA *>::iterator li;
+    MESSAGE_DATA *msg = NULL;
+    list<BOARD_DATA*>::iterator li;
+    list<MESSAGE_DATA*>::iterator mi;
     BOARD_DATA *board = NULL;
     OBJ_INDEX_DATA *pObj;
     char buf[MAX_STRING_LENGTH];
-    int cnt = 0;
-    int board_num;
+    uint_t board_num, cnt = 0;
 
     pObj = obj->pIndexData;
     board_num = pObj->value[3];
@@ -170,18 +198,16 @@ void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
     send_to_char( "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n", ch );
 
 
-    for ( msg = board->first_message; msg != NULL; msg = msg->next )
+    for ( mi = board->messages.begin(); mi != board->messages.end(); mi++ )
     {
-        cnt++;
-        snprintf( buf, MSL, "[%3d] %12s : %s", cnt, msg->author.c_str(), msg->title );
+        msg = *mi;
+        snprintf( buf, MSL, "[%3ld] %12s : %s", cnt, msg->author.c_str(), msg->title.c_str() );
         send_to_char( buf, ch );
 
     }
 
-    if ( cnt == 0 ) /* then there were no messages here */
-    {
+    if ( !board->messages.size() ) /* then there were no messages here */
         send_to_char( "         There are no messages right now!\r\n", ch );
-    }
 
     send_to_char( "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n", ch );
 
@@ -205,11 +231,8 @@ BOARD_DATA *load_board( OBJ_INDEX_DATA * pObj )
     board->min_read_lev = pObj->value[1];
     board->min_write_lev = pObj->value[2];
     board->vnum = pObj->value[3];
-    board->clan = 0;
-    board->first_message = NULL;
-    board->last_message = NULL;
 
-    snprintf( buf, 255, "%s/board.%i", BOARD_DIR, board->vnum );
+    snprintf( buf, 255, "%s/board.%ld", BOARD_DIR, board->vnum );
 
     if ( ( board_file = file_open( buf, "r" ) ) != NULL )
     {
@@ -297,8 +320,8 @@ BOARD_DATA *load_board( OBJ_INDEX_DATA * pObj )
                 message->author = fread_string( board_file );
                 message->title = fread_string( board_file );
                 message->message = fread_string( board_file );
-                LINK( message, board->first_message, board->last_message, next, prev );
                 message->board = board;
+                board->messages.push_back( message );
             }
         }
 
@@ -315,10 +338,11 @@ void save_board( BOARD_DATA * board, CHAR_DATA * ch )
 {
     char buf[MAX_STRING_LENGTH];
     FILE *board_file;
-    MESSAGE_DATA *message;
+    MESSAGE_DATA *msg = NULL;
+    list<MESSAGE_DATA*>::iterator mi;
 
 
-    snprintf( buf, MSL, "%s/board.%i", BOARD_DIR, board->vnum );
+    snprintf( buf, MSL, "%s/board.%ld", BOARD_DIR, board->vnum );
     if ( ( board_file = file_open( buf, "w" ) ) == NULL )
     {
         send_to_char( "Cannot save board, please contact an immortal.\r\n", ch );
@@ -327,29 +351,30 @@ void save_board( BOARD_DATA * board, CHAR_DATA * ch )
         return;
     }
 
-    fprintf( board_file, "ExpiryTime  %i\n", board->expiry_time );
-    fprintf( board_file, "MinReadLev  %i\n", board->min_read_lev );
-    fprintf( board_file, "MaxWriteLev %i\n", board->min_write_lev );
-    fprintf( board_file, "Clan        %i\n", board->clan );
+    fprintf( board_file, "ExpiryTime  %ld\n", board->expiry_time );
+    fprintf( board_file, "MinReadLev  %ld\n", board->min_read_lev );
+    fprintf( board_file, "MaxWriteLev %ld\n", board->min_write_lev );
+    fprintf( board_file, "Clan        %ld\n", board->clan );
 
     /*
      * Now print messages
      */
     fprintf( board_file, "Messages\n" );
 
-    for ( message = board->first_message; message; message = message->next )
+    for ( mi = board->messages.begin(); mi != board->messages.end(); mi++ )
     {
-        fprintf( board_file, "M%i\n", ( int )( message->datetime ) );
+        msg = *mi;
+        fprintf( board_file, "M%i\n", ( int )( msg->datetime ) );
 
-        strcpy( buf, message->author.c_str() );  /* Must do copy, not allowed to change string directly */
+        strcpy( buf, msg->author.c_str() );  /* Must do copy, not allowed to change string directly */
         smash_tilde( buf );
         fprintf( board_file, "%s~\n", buf );
 
-        strcpy( buf, message->title );
+        strcpy( buf, msg->title.c_str() );
         smash_tilde( buf );
         fprintf( board_file, "%s~\n", buf );
 
-        strcpy( buf, message->message );
+        strcpy( buf, msg->message.c_str() );
         smash_tilde( buf );
         fprintf( board_file, "%s~\n", buf );
 
@@ -366,10 +391,11 @@ DO_FUN(do_delete)
 {
     OBJ_DATA *object;
     BOARD_DATA *board = NULL;
-    list<BOARD_DATA *>::iterator li;
-    MESSAGE_DATA *msg;
+    list<BOARD_DATA*>::iterator li;
+    list<MESSAGE_DATA*>::iterator mi;
+    MESSAGE_DATA *msg = NULL;
     OBJ_INDEX_DATA *pObj;
-    int vnum;
+    uint_t vnum;
     int mess_num;
     int cnt = 0;
 
@@ -433,9 +459,12 @@ DO_FUN(do_delete)
     cnt = 0;
     mess_num = is_number( argument ) ? atoi( argument ) : 0;
 
-    for ( msg = board->first_message; msg != NULL; msg = msg->next )
-        if ( ++cnt == mess_num ) /* then this the message!!! */
+    for ( mi = board->messages.begin(); mi != board->messages.end(); mi++ )
+    {
+        msg = *mi;
+        if ( ++cnt == mess_num )
             break;
+    }
 
     if ( msg == NULL )
     {
@@ -457,8 +486,7 @@ DO_FUN(do_delete)
      * Now delete message
      */
 
-    UNLINK( msg, board->first_message, board->last_message, next, prev );
-
+    board->messages.remove( msg );
     delete msg;
 
     save_board( board, ch );
@@ -473,11 +501,12 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
      * * check that message vnum == board vnum
      */
 
-    list<BOARD_DATA *>::iterator li;
+    list<BOARD_DATA*>::iterator li;
+    list<MESSAGE_DATA*>::iterator mi;
     BOARD_DATA *board = NULL;
     OBJ_INDEX_DATA *pObj;
     int vnum;
-    MESSAGE_DATA *msg;
+    MESSAGE_DATA *msg = NULL;
     int cnt = 0;
     bool mfound = FALSE;
     char buf[MAX_STRING_LENGTH];
@@ -517,8 +546,9 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
         return;
     }
 
-    for ( msg = board->first_message; msg != NULL; msg = msg->next )
+    for ( mi = board->messages.begin(); mi != board->messages.end(); mi++ )
     {
+        msg = *mi;
         if ( ++cnt == mess_num ) /* then this the message!!! */
         {
             mfound = TRUE;
@@ -530,7 +560,7 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
                 send_to_char( "This is a private message.\r\n", ch );
                 break;
             }
-            snprintf( buf, MSL, "** [%d] %12s : %s ** \r\n\r\n%s\r\n", cnt, msg->author.c_str(), msg->title, msg->message );
+            snprintf( buf, MSL, "** [%d] %12s : %s ** \r\n\r\n%s\r\n", cnt, msg->author.c_str(), msg->title.c_str(), msg->message.c_str() );
             send_to_char( buf, ch );
             break;
         }
@@ -614,22 +644,19 @@ DO_FUN(do_write)
     msg = new MESSAGE_DATA;
     msg->datetime = time( NULL ); /* we are sure we can edit.          */
     snprintf( buf, MSL, "%s @@a%s@@N", argument, ( char * )ctime( &current_time ) );
-    if ( msg->title != NULL )
-        free_string( msg->title );
-    msg->title = str_dup( buf );
+    msg->title = buf;
     msg->author = ch->GetName();
-    msg->message = NULL;
     msg->board = board;
 
     /*
      * Now actually run the edit prog.
      */
-    write_start( &msg->message, finished_editing, msg, ch );
+    //FIXME write_start( &msg->message, finished_editing, msg, ch );
 
-    if ( msg->message != &str_empty[0] )
+    if ( !msg->message.empty() )
     {
         send_to_char( "Editing message. Type .help for help.\r\n", ch );
-        LINK( msg, board->first_message, board->last_message, next, prev );
+        board->messages.push_back( msg );
     }
     else
     {
@@ -646,7 +673,7 @@ void finished_editing( MESSAGE_DATA * msg, char **dest, CHAR_DATA * ch, bool sav
 {
     if ( !saved )
     {
-        UNLINK( msg, msg->board->first_message, msg->board->last_message, next, prev );
+        msg->board->messages.remove( msg );
         delete msg;
     }
     else
@@ -699,11 +726,12 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
      * * check that message vnum == board vnum
      */
 
-    list<BOARD_DATA *>::iterator li;
+    list<BOARD_DATA*>::iterator li;
+    list<MESSAGE_DATA*>::iterator mi;
     BOARD_DATA *board = NULL;
     OBJ_INDEX_DATA *pObj;
-    int vnum;
-    MESSAGE_DATA *msg;
+    uint_t vnum;
+    MESSAGE_DATA *msg = NULL;
     int cnt = 0;
     bool mfound = FALSE;
 
@@ -739,8 +767,9 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
         return;
     }
 
-    for ( msg = board->first_message; msg != NULL; msg = msg->next )
+    for ( mi = board->messages.begin(); mi != board->messages.end(); mi++ )
     {
+        msg = *mi;
         if ( ++cnt == mess_num ) /* then this the message!!! */
         {
             mfound = TRUE;
@@ -752,7 +781,7 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
             }
             else
             {
-                build_strdup( &msg->message, "$edit", TRUE, FALSE, ch );
+                //FIXME build_strdup( &msg->message, "$edit", TRUE, FALSE, ch );
             }
 
         }

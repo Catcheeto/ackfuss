@@ -37,6 +37,7 @@ char *center_text P_((char *text, int width));
 char *str_mod P_((char *mod_string, char *argument));
 void rand_arg P_((char *argument, char *output));
 int number_argument P_((char *argument, char *arg));
+char *one_argument P_(( string argument, char *arg_first ));
 char *one_argument P_((char *argument, char *arg_first));
 char *one_word P_((char *argument, char *arg_first));
 char *two_args P_((char *argument, char *arg_first, char *arg_second));

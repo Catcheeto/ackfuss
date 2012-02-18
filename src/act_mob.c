@@ -98,7 +98,7 @@ bool able_to_level( CHAR_DATA * ch )
 
 void gain_level( CHAR_DATA * ch )
 {
-    int cost;
+    uint_t cost;
     char buf[MAX_STRING_LENGTH];
 
     cost = 5 * exp_for_mobile( ch->level, ch );
@@ -108,7 +108,7 @@ void gain_level( CHAR_DATA * ch )
     ch->DecrExperience( cost );
     ch->level = UMIN( 140, ch->level++ );
 
-    snprintf( buf, MSL, "%s gains a level!", ch->get_name() );
+    snprintf( buf, MSL, "%s gains a level!", ch->GetName_() );
     info( buf, 1 );
     return;
 }

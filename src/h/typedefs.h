@@ -43,17 +43,21 @@
 #define DECLARE_TRIG_FUN( fun )         TRIG_FUN  fun
 
 #if __WORDSIZE == 64
- #ifndef UINT_64
- #define UINT_64
- #endif
+ typedef signed long int sint_t;
+ #define sintmax_t numeric_limits<signed long int>::max()
+ #define sintmin_t numeric_limits<signed long int>::min()
+
  typedef unsigned long int uint_t;
  #define uintmax_t numeric_limits<unsigned long int>::max()
+ #define uintmin_t numeric_limits<unsigned long int>::min()
 #else
- #ifndef UINT_32
- #define UINT_32
- #endif
+ typedef signed int sint_t;
+ #define sintmax_t numeric_limits<signed int>::max()
+ #define sintmin_t numeric_limits<signed int>::min()
+
  typedef unsigned int uint_t;
  #define uintmax_t numeric_limits<unsigned int>::max()
+ #define uintmin_t numeric_limits<unsigned int>::min()
 #endif
 
 /*
@@ -96,7 +100,6 @@ typedef struct char_data CHAR_DATA;
 typedef struct council_data COUNCIL_DATA;
 typedef struct descriptor_data DESCRIPTOR_DATA;
 typedef struct exit_data EXIT_DATA;
-typedef struct extra_descr_data EXTRA_DESCR_DATA;
 typedef struct kill_data KILL_DATA;
 typedef struct mob_index_data MOB_INDEX_DATA;
 typedef struct note_data NOTE_DATA;
@@ -120,8 +123,6 @@ typedef struct trigger_data TRIGGER_DATA;
 typedef struct mark_data MARK_DATA;
 typedef struct lookup_type LOOKUP_TYPE;
 typedef struct chan_type CHAN_TYPE;
-typedef struct message_data MESSAGE_DATA;
-typedef struct board_data BOARD_DATA;
 typedef struct ruler_data RULER_DATA;
 typedef struct influence_data INFLUENCE_DATA;
 typedef struct influence_list INFLUENCE_LIST;
@@ -148,6 +149,8 @@ typedef struct disabled_data DISABLED_DATA;
 typedef struct mudinfo MUDINFO;
 typedef struct monitor_type MONITOR_TYPE;
 typedef struct email_data EMAIL_DATA;
+typedef struct board_data BOARD_DATA;
+typedef struct message_data MESSAGE_DATA;
 
 typedef enum { exit_from, exit_to, exit_both } exit_status;
 /*

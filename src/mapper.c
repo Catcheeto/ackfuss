@@ -576,13 +576,13 @@ void MapArea( ROOM_INDEX_DATA * room, CHAR_DATA * ch, int x, int y, int min, int
     CHAR_DATA *victim;
     int door, looper;
     short door_type = 0;
-    if ( map[x][y] <= 0 )
+    if ( imap[x][y] <= 0 )
         return;  /* it's a door, not a room in the map */
 
     /*
      * marks the room as visited
      */
-    map[x][y] = room->sector_type;
+    imap[x][y] = room->sector_type;
 
     /* displays seen mobs nearby as numbers */
 
@@ -606,7 +606,7 @@ void MapArea( ROOM_INDEX_DATA * room, CHAR_DATA * ch, int x, int y, int min, int
             extern short rev_dir[];
             if ( ( prospect_room->exit[rev_dir[door]] ) && ( prospect_room->exit[rev_dir[door]]->to_room != room ) )
             {  /* if not two way */
-                map[x][y] = SECT_BLOCKED;  /* one way into area OR maze */
+                imap[x][y] = SECT_BLOCKED;  /* one way into area OR maze */
                 return;
             }  /* end two way */
 
@@ -639,10 +639,10 @@ void MapArea( ROOM_INDEX_DATA * room, CHAR_DATA * ch, int x, int y, int min, int
                               && ( (ch->pcdata->learned[gsn_find_doors] > number_percent(  )) || IS_IMMORTAL(ch) )
                               && ( !str_cmp( pexit->keyword, "" ) ) ) ) )
             {
-                map[x + door_marks[door][0]][y + door_marks[door][1]] = door_type;
+                imap[x + door_marks[door][0]][y + door_marks[door][1]] = door_type;
                 if ( ( door_type < DOOR_CLOSED )
                         && ( ( line_of_sight == LOS_INITIAL )
-                             || ( door == line_of_sight ) ) && ( map[x + offsets[door][0]][y + offsets[door][1]] == SECT_UNSEEN ) )
+                             || ( door == line_of_sight ) ) && ( imap[x + offsets[door][0]][y + offsets[door][1]] == SECT_UNSEEN ) )
                 {
                     MapArea( pexit->to_room, ch,
                              x + offsets[door][0], y + offsets[door][1], min, max,
@@ -678,25 +678,25 @@ void ShowRoom( CHAR_DATA * ch, int min, int max, int size, int center )
         strncat( outbuf, "@@W| ", MSL );
         for ( y = min; y <= max; ++y )
         {  /* every column */
-            if ( ( y == min ) || ( map[x][y - 1] != map[x][y] ) )
+            if ( ( y == min ) || ( imap[x][y - 1] != imap[x][y] ) )
             {
                 snprintf( colorbuf, MSL, "%s%s",
-                          ( ( map[x][y] <= 0 ) ?
-                            get_door_color( map[x][y] ) :
-                            get_sector_color( map[x][y] ) ),
-                          ( ( contents[x][y].string[0] == '\0' ) ? "" : get_invert_color( map[x][y] ) ) );
+                          ( ( imap[x][y] <= 0 ) ?
+                            get_door_color( imap[x][y] ) :
+                            get_sector_color( imap[x][y] ) ),
+                          ( ( contents[x][y].string[0] == '\0' ) ? "" : get_invert_color( imap[x][y] ) ) );
                 snprintf( displaybuf, MSL, "%s",
-                          ( ( map[x][y] <= 0 ) ?
-                            get_door_display( map[x][y] ) :
+                          ( ( imap[x][y] <= 0 ) ?
+                            get_door_display( imap[x][y] ) :
                             ( ( contents[x][y].string[0] == '\0' ) ?
-                              get_sector_display( map[x][y] ) : contents[x][y].string ) ) );
+                              get_sector_display( imap[x][y] ) : contents[x][y].string ) ) );
                 snprintf( catbuf, MSL, "%s%s", colorbuf, displaybuf );
                 strncat( outbuf, catbuf, MSL - 1 );
 
             }
             else
             {
-                snprintf( catbuf, MSL, "%s", ( map[x][y] <= 0 ) ? get_door_display( map[x][y] ) : get_sector_display( map[x][y] ) );
+                snprintf( catbuf, MSL, "%s", ( imap[x][y] <= 0 ) ? get_door_display( imap[x][y] ) : get_sector_display( imap[x][y] ) );
                 strncat( outbuf, catbuf, MSL - 1 );
             }
 
@@ -740,25 +740,25 @@ void ShowMap( CHAR_DATA * ch, int min, int max, int size, int center )
         strncat( outbuf, "@@W| ", MSL );
         for ( y = min; y <= max; ++y )
         {  /* every column */
-            if ( ( y == min ) || ( map[x][y - 1] != map[x][y] ) )
+            if ( ( y == min ) || ( imap[x][y - 1] != imap[x][y] ) )
             {
                 snprintf( colorbuf, MSL, "%s%s",
-                          ( ( map[x][y] <= 0 ) ?
-                            get_door_color( map[x][y] ) :
-                            get_sector_color( map[x][y] ) ),
-                          ( ( contents[x][y].string[0] == '\0' ) ? "" : get_invert_color( map[x][y] ) ) );
+                          ( ( imap[x][y] <= 0 ) ?
+                            get_door_color( imap[x][y] ) :
+                            get_sector_color( imap[x][y] ) ),
+                          ( ( contents[x][y].string[0] == '\0' ) ? "" : get_invert_color( imap[x][y] ) ) );
                 snprintf( displaybuf, MSL, "%s",
-                          ( ( map[x][y] <= 0 ) ?
-                            get_door_display( map[x][y] ) :
+                          ( ( imap[x][y] <= 0 ) ?
+                            get_door_display( imap[x][y] ) :
                             ( ( contents[x][y].string[0] == '\0' ) ?
-                              get_sector_display( map[x][y] ) : contents[x][y].string ) ) );
+                              get_sector_display( imap[x][y] ) : contents[x][y].string ) ) );
                 snprintf( catbuf, MSL, "%s%s", colorbuf, displaybuf );
                 strncat( outbuf, catbuf, MSL - 1 );
 
             }
             else
             {
-                snprintf( catbuf, MSL, "%s", ( map[x][y] <= 0 ) ? get_door_display( map[x][y] ) : get_sector_display( map[x][y] ) );
+                snprintf( catbuf, MSL, "%s", ( imap[x][y] <= 0 ) ? get_door_display( imap[x][y] ) : get_sector_display( imap[x][y] ) );
                 strncat( outbuf, catbuf, MSL - 1 );
             }
 
@@ -829,7 +829,7 @@ DO_FUN(do_mapper)
     for ( x = 0; x < MAX_MAP; ++x )
         for ( y = 0; y < MAX_MAP; ++y )
         {
-            map[x][y] = SECT_UNSEEN;
+            imap[x][y] = SECT_UNSEEN;
             contents[x][y].string[0] = '\0';
         }
 

@@ -38,7 +38,6 @@
 
 affect_data::~affect_data()
 {
-    is_free = true;
 }
 
 area_data::~area_data()
@@ -59,17 +58,6 @@ ban_data::~ban_data()
     free_string(banned_by);
 }
 
-board_data::~board_data()
-{
-    MESSAGE_DATA *p, *p_next;
-
-    for ( p = first_message; p != NULL; p = p_next )
-    {
-        p_next = p->next;
-        delete p;
-    }
-}
-
 brand_data::~brand_data()
 {
 }
@@ -81,7 +69,6 @@ buf_data_struct::~buf_data_struct()
 
 build_data_list::~build_data_list()
 {
-    is_free = true;
 }
 
 cast_data::~cast_data()
@@ -91,8 +78,6 @@ cast_data::~cast_data()
 
 char_data::~char_data()
 {
-    is_free = true;
-
     while ( first_carry != NULL )
         extract_obj(first_carry);
 
@@ -120,7 +105,6 @@ council_data::~council_data()
 
 descriptor_data::~descriptor_data()
 {
-    free(outbuf);
 }
 
 disabled_data::~disabled_data()
@@ -134,20 +118,11 @@ email_data::~email_data()
 exit_data::~exit_data()
 {
     free_string(description);
-    is_free = true;
-    free_string(keyword);
-}
-
-extra_descr_data::~extra_descr_data()
-{
-    free_string(description);
-    is_free = true;
     free_string(keyword);
 }
 
 hash_entry_tp::~hash_entry_tp()
 {
-    is_free = true;
 }
 
 help_data::~help_data()
@@ -161,7 +136,6 @@ lookup_data::~lookup_data()
 
 magic_shield::~magic_shield()
 {
-    is_free = true;
     free_string(absorb_message_room);
     free_string(absorb_message_victim);
     free_string(absorb_message_self);
@@ -176,16 +150,9 @@ mark_data::~mark_data()
     free_string(author);
 }
 
-message_data::~message_data()
-{
-    free_string(title);
-    free_string(message);
-}
-
 mob_index_data::~mob_index_data()
 {
     free_string(description);
-    is_free = true;
     free_string(long_descr);
     free_string(player_name);
     free_string(short_descr);
@@ -215,8 +182,6 @@ obj_data::~obj_data()
 {
     AFFECT_DATA *a, *a_next;
 
-    is_free = true;
-
     for ( a = first_apply; a != NULL; a = a_next )
     {
         a_next = a->next;
@@ -230,7 +195,6 @@ obj_data::~obj_data()
 
 obj_index_data::~obj_index_data()
 {
-    is_free = true;
     free_string(name);
     free_string(short_descr);
     free_string(long_descr);
@@ -285,7 +249,6 @@ record_data::~record_data()
 
 reset_data::~reset_data()
 {
-    is_free = true;
     free_string(notes);
 }
 

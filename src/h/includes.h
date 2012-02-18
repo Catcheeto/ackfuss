@@ -17,6 +17,8 @@
 #include <cstring>
 #include <ctime>
 #include <limits>
+#include <list>
+#include <map>
 #include <vector>
 
 #include <arpa/inet.h>

@@ -19,7 +19,6 @@ class hash_entry_tp
     public:
         hash_entry_tp();
         ~hash_entry_tp();
-        bool is_free;
         HASH_ENTRY *next;
         void *reference;
         int key;

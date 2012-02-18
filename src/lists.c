@@ -54,7 +54,6 @@ list<CHAR_DATA *> cast_list;
 list<CHAR_DATA *> char_list;
 list<OBJ_DATA *> corpse_list;
 list<DISABLED_DATA *> disabled_list;
-list<EXTRA_DESCR_DATA *> exdesc_list;
 list<EXIT_DATA *> exit_list;
 list<CHAR_DATA *> fight_list;
 list<FILE *> file_list;

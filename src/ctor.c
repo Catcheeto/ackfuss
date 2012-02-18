@@ -29,7 +29,6 @@ affect_data::affect_data()
     bitvector = 0;
     caster = NULL;
     duration = -1;
-    is_free = false;
     level = 0;
     location = -1;
     modifier = 0;
@@ -82,19 +81,6 @@ ban_data::ban_data()
     ban_list.push_back(this);
 }
 
-board_data::board_data()
-{
-    vnum = 0;
-    first_message = NULL;
-    last_message = NULL;
-    min_read_lev = 0;
-    min_write_lev = 0;
-    expiry_time = 0;
-    clan = -1;
-
-    board_list.push_back(this);
-}
-
 brand_data::brand_data()
 {
     branded.clear();
@@ -108,7 +94,6 @@ brand_data::brand_data()
 
 buf_data_struct::buf_data_struct()
 {
-    is_free = false;
     next = NULL;
     prev = NULL;
     ch = NULL;
@@ -121,7 +106,6 @@ buf_data_struct::buf_data_struct()
 
 build_data_list::build_data_list()
 {
-    is_free = false;
     next = NULL;
     prev = NULL;
     data = NULL;
@@ -163,7 +147,6 @@ char_data::char_data()
     hunt_flags = 0;
     hunt_obj = NULL;
     in_room = NULL;
-    is_free = false;
     is_quitting = false;
     last_affect = NULL;
     last_carry = NULL;
@@ -260,7 +243,6 @@ exit_data::exit_data()
 {
     description = &str_empty[0];
     exit_info.reset();
-    is_free = false;
     key = 0;
     keyword = &str_empty[0];
     next = NULL;
@@ -270,20 +252,8 @@ exit_data::exit_data()
     exit_list.push_back(this);
 }
 
-extra_descr_data::extra_descr_data()
-{
-    is_free = false;
-    description = &str_empty[0];
-    keyword = &str_empty[0];
-    next = NULL;
-    prev = NULL;
-
-    exdesc_list.push_back(this);
-}
-
 hash_entry_tp::hash_entry_tp()
 {
-    is_free = false;
     next = NULL;
     reference = NULL;
     key = 0;
@@ -307,7 +277,6 @@ lookup_data::lookup_data()
 
 magic_shield::magic_shield()
 {
-    is_free = false;
     next = NULL;
     prev = NULL;
     type = 0;
@@ -333,18 +302,6 @@ mark_data::mark_data()
     type = 0;
 }
 
-message_data::message_data()
-{
-    is_free = false;
-    next = NULL;
-    prev = NULL;
-    board = NULL;
-    datetime = 0;
-    author.clear();
-    title = &str_empty[0];
-    message = &str_empty[0];
-}
-
 mob_index_data::mob_index_data()
 {
     act.reset();
@@ -359,7 +316,6 @@ mob_index_data::mob_index_data()
     dr_mod = 0;
     hr_mod = 0;
     hunt_flags = 0;
-    is_free = false;
     killed = 0;
     for ( short i = 0; i < MAX_SKILL; i++ )
         learned[i] = 0;
@@ -441,7 +397,6 @@ npc_group_data::npc_group_data()
 
 obj_data::obj_data()
 {
-    is_free = false;
     extra_flags.reset();
     wear_flags.reset();
     reset = NULL;
@@ -460,8 +415,6 @@ obj_data::obj_data()
     in_obj = NULL;
     obj_fun = NULL;
     carried_by = NULL;
-    first_exdesc = NULL;
-    last_exdesc = NULL;
     first_apply = NULL;
     last_apply = NULL;
     pIndexData = NULL;
@@ -493,13 +446,10 @@ obj_index_data::obj_index_data()
     durability = max_durability;
     extra_flags.reset();
     first_apply = NULL;
-    first_exdesc = NULL;
     first_trigger = NULL;
-    is_free = false;
     item_apply = 1;
     item_type = 1;
     last_apply = NULL;
-    last_exdesc = NULL;
     last_trigger = NULL;
     level = 1;
     long_descr = &str_empty[0];
@@ -643,7 +593,6 @@ record_data::record_data()
 
 reset_data::reset_data()
 {
-    is_free = false;
     next = NULL;
     prev = NULL;
     command = '\0';
@@ -658,7 +607,6 @@ reset_data::reset_data()
 
 room_affect_data::room_affect_data()
 {
-    is_free = false;
     next = NULL;
     prev = NULL;
     duration = 0;
@@ -679,12 +627,10 @@ room_index_data::room_index_data()
     for ( short i = 0; i < MAX_DIR; i++ )
         exit[i] = 0;
     first_content = NULL;
-    first_exdesc = NULL;
     first_person = NULL;
     first_room_affect = NULL;
     first_room_reset = NULL;
     last_content = NULL;
-    last_exdesc = NULL;
     last_person = NULL;
     last_room_affect = NULL;
     last_room_reset = NULL;

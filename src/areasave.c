@@ -330,7 +330,6 @@ void build_save_objects(  )
 {
     OBJ_INDEX_DATA *pObjIndex;
     AFFECT_DATA *pAf;
-    EXTRA_DESCR_DATA *pEd;
     short i = 0;
     string outstr;
 
@@ -404,14 +403,20 @@ void build_save_objects(  )
         pAf = pAf->next;
     }
 
-    pEd = pObjIndex->first_exdesc;
-    while ( pEd )
+    if ( pObjIndex->GetDescrExtraSize() )
     {
-        fprintf( SaveFile, "#OEXTRA\n" );
-        fprintf( SaveFile, "Desc       %s~\n", pEd->description );
-        fprintf( SaveFile, "Keyword    %s~\n", pEd->keyword );
-        fprintf( SaveFile, "End\n" );
-        pEd = pEd->next;
+        list<string> keys = pObjIndex->GetDescrExtraKeys();
+        list<string>::iterator mi = keys.begin();
+        string value;
+
+        while ( mi++ != keys.end() )
+        {
+            value = *mi;
+            fprintf( SaveFile, "#OEXTRA\n" );
+            fprintf( SaveFile, "Desc       %s~\n", pObjIndex->GetDescrExtra_( value ) );
+            fprintf( SaveFile, "Keyword    %s~\n", value.c_str() );
+            fprintf( SaveFile, "End\n" );
+        }
     }
 
     Pointer = Pointer->next;
@@ -424,7 +429,6 @@ void build_save_objects(  )
 void build_save_rooms(  )
 {
     ROOM_INDEX_DATA *pRoomIndex;
-    EXTRA_DESCR_DATA *pEd;
     short d, i;
     EXIT_DATA *pexit;
     string outstr;
@@ -497,14 +501,20 @@ void build_save_rooms(  )
      * Now do extra descripts..
      */
 
-    pEd = pRoomIndex->first_exdesc;
-    while ( pEd )
+    if ( pRoomIndex->GetDescrExtraSize() )
     {
-        fprintf( SaveFile, "#REXTRA\n" );
-        fprintf( SaveFile, "Desc          %s~\n", pEd->description );
-        fprintf( SaveFile, "Keyword       %s~\n", pEd->keyword );
-        fprintf( SaveFile, "End\n" );
-        pEd = pEd->next;
+        list<string> keys = pRoomIndex->GetDescrExtraKeys();
+        list<string>::iterator mi = keys.begin();
+        string value;
+
+        while ( mi++ != keys.end() )
+        {
+            value = *mi;
+            fprintf( SaveFile, "#REXTRA\n" );
+            fprintf( SaveFile, "Desc       %s~\n", pRoomIndex->GetDescrExtra_( value ) );
+            fprintf( SaveFile, "Keyword    %s~\n", value.c_str() );
+            fprintf( SaveFile, "End\n" );
+        }
     }
 
     Pointer = Pointer->next;

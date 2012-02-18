@@ -14,6 +14,36 @@
 #define P_(s) ()
 #endif
 
+typedef struct board_data BOARD_DATA;
+typedef struct message_data MESSAGE_DATA;
+
+class board_data
+{
+    public:
+        board_data();
+        ~board_data();
+
+        sint_t clan;
+        uint_t expiry_time;
+        list<MESSAGE_DATA*> messages;
+        uint_t min_read_lev;
+        uint_t min_write_lev;
+        uint_t vnum;
+};
+
+class message_data
+{
+    public:
+        message_data();
+        ~message_data();
+
+        string author;
+        BOARD_DATA *board;
+        time_t datetime;
+        string message;
+        string title;
+};
+
 /* board.c */
 void show_contents P_((CHAR_DATA *ch, OBJ_DATA *obj));
 BOARD_DATA *load_board P_((OBJ_INDEX_DATA *pObj));

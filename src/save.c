@@ -313,7 +313,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "Position       %d\n", ch->position == POS_FIGHTING ? POS_STANDING : ch->position );
 
     fprintf( fp, "SavingThrow    %d\n", ch->saving_throw );
-    fprintf( fp, "Alignment      %d\n", ch->GetAlignment() );
+    fprintf( fp, "Alignment      %ld\n", ch->GetAlignment() );
     fprintf( fp, "Hitroll        %d\n", ch->hitroll );
     fprintf( fp, "Damroll        %d\n", ch->damroll );
     fprintf( fp, "Armor          %d\n", ch->armor );
@@ -479,9 +479,12 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
  */
 void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
 {
-    EXTRA_DESCR_DATA *ed;
     AFFECT_DATA *paf;
     short foo;
+    list<string> keys;
+    list<string>::iterator mi;
+    string value;
+
     /*
      * Slick recursion to write lists backwards,
      *   so loading them will load in forwards order.
@@ -493,10 +496,6 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
     }
     if ( obj->next_in_carry_list != NULL )
         fwrite_obj( ch, obj->next_in_carry_list, fp, iNest );
-
-    /*
-     * Castrate storage characters.
-     */
 
     /*
      * Also bypass no-save objects -S-
@@ -535,9 +534,6 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
         fprintf( fp, "Objfun       %s~\n", rev_obj_fun_lookup( obj->obj_fun ) );
 
     fprintf( fp, "ClassFlags   %d\n", obj->item_apply );
-    /*
-     * ClassFlags still used to save fucking with pfiles
-     */
     fprintf( fp, "ItemType     %d\n", obj->item_type );
     fprintf( fp, "Weight       %d\n", obj->weight );
     fprintf( fp, "Level        %d\n", obj->level );
@@ -585,9 +581,11 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
         fprintf( fp, "Affect       %d %d %d %d %d\n", paf->type, paf->duration, paf->modifier, paf->location, paf->bitvector );
     }
 
-    for ( ed = obj->first_exdesc; ed != NULL; ed = ed->next )
+    keys = obj->GetDescrExtraKeys();
+    for ( mi = keys.begin(); mi != keys.end(); mi++ )
     {
-        fprintf( fp, "ExtraDescr   %s~ %s~\n", ed->keyword, ed->description );
+        value = *mi;
+        fprintf( fp, "ExtraDescr   %s~ %s~\n", value.c_str(), obj->GetDescrExtra_( value ) );
     }
 
     fprintf( fp, "End\n\n" );
@@ -1471,12 +1469,10 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
 
                 if ( !str_cmp( word, "ExtraDescr" ) )
                 {
-                    EXTRA_DESCR_DATA *ed;
-
-                    ed = new EXTRA_DESCR_DATA;
-                    ed->keyword = fread_string( fp );
-                    ed->description = fread_string( fp );
-                    LINK( ed, obj->first_exdesc, obj->last_exdesc, next, prev );
+                    string key, value;
+                    key = fread_string( fp );
+                    value = fread_string( fp );
+                    obj->SetDescrExtra( key, value );
                     fMatch = TRUE;
                 }
 
@@ -1485,18 +1481,12 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                     if ( !fNest || !fVnum )
                     {
                         AFFECT_DATA *paf;
-                        EXTRA_DESCR_DATA *ed;
 
                         monitor_chan( "Fread_obj: incomplete object.", MONITOR_BAD );
                         while ( ( paf = obj->first_apply ) != NULL )
                         {
                             obj->first_apply = paf->next;
                             delete paf;
-                        }
-                        while ( ( ed = obj->first_exdesc ) != NULL )
-                        {
-                            obj->first_exdesc = ed->next;
-                            delete ed;
                         }
                         delete obj;
                         return;
@@ -1785,12 +1775,10 @@ void fread_corpse( FILE * fp )
 
                 if ( !str_cmp( word, "ExtraDescr" ) )
                 {
-                    EXTRA_DESCR_DATA *ed;
-
-                    ed = new EXTRA_DESCR_DATA;
-                    ed->keyword = fread_string( fp );
-                    ed->description = fread_string( fp );
-                    LINK( ed, obj->first_exdesc, obj->last_exdesc, next, prev );
+                    string key, value;
+                    key = fread_string( fp );
+                    value = fread_string( fp );
+                    obj->SetDescrExtra( key, value );
                     fMatch = TRUE;
                 }
 
@@ -1799,18 +1787,12 @@ void fread_corpse( FILE * fp )
                     if ( !fNest || !fVnum )
                     {
                         AFFECT_DATA *paf;
-                        EXTRA_DESCR_DATA *ed;
 
                         monitor_chan( "Fread_obj: incomplete object.", MONITOR_BAD );
                         while ( ( paf = obj->first_apply ) != NULL )
                         {
                             obj->first_apply = paf->next;
                             delete paf;
-                        }
-                        while ( ( ed = obj->first_exdesc ) != NULL )
-                        {
-                            obj->first_exdesc = ed->next;
-                            delete ed;
                         }
                         corpse_list.remove(obj);
                         delete obj;
@@ -2033,10 +2015,12 @@ void fread_corpse( FILE * fp )
 
 void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
 {
-    EXTRA_DESCR_DATA *ed;
     AFFECT_DATA *paf;
     int where_vnum = ROOM_VNUM_LIMBO;
     short foo;
+    list<string> keys;
+    list<string>::iterator mi;
+    string value;
     /*
      * Slick recursion to write lists backwards,
      *   so loading them will load in forwards order.
@@ -2129,9 +2113,11 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
         fprintf( fp, "Affect       %d %d %d %d %d\n", paf->type, paf->duration, paf->modifier, paf->location, paf->bitvector );
     }
 
-    for ( ed = obj->first_exdesc; ed != NULL; ed = ed->next )
+    keys = obj->GetDescrExtraKeys();
+    for ( mi = keys.begin(); mi != keys.end(); mi++ )
     {
-        fprintf( fp, "ExtraDescr   %s~ %s~\n", ed->keyword, ed->description );
+        value = *mi;
+        fprintf( fp, "ExtraDescr   %s~ %s~\n", value.c_str(), obj->GetDescrExtra_( value ) );
     }
 
     fprintf( fp, "End\n\n" );

@@ -497,10 +497,6 @@ void affect_to_room( ROOM_INDEX_DATA * room, ROOM_AFFECT_DATA * raf )
     char buf[MAX_STRING_LENGTH];
 
     raf_new = new ROOM_AFFECT_DATA;
-    /* Ramias... Don't copy uninitialized fields: next, prev, is_free */
-    /*
-       *raf_new = *raf;
-    */
     raf_new->duration = raf->duration;
     raf_new->level = raf->level;
     raf_new->type = raf->type;
@@ -1542,16 +1538,6 @@ void extract_obj( OBJ_DATA * obj )
         {
             obj->first_apply = paf->next;
             delete paf;
-        }
-    }
-
-    {
-        EXTRA_DESCR_DATA *ed;
-
-        while ( ( ed = obj->first_exdesc ) != NULL )
-        {
-            obj->first_exdesc = ed->next;
-            delete ed;
         }
     }
 

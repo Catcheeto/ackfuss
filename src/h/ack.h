@@ -72,20 +72,6 @@ struct DeleteObject
     template <typename T> void operator() (const T* ptr) const { delete ptr; };
 };
 
-class board_data
-{
-    public:
-        board_data();
-        ~board_data();
-        int vnum;
-        MESSAGE_DATA *first_message;
-        MESSAGE_DATA *last_message;
-        int min_read_lev;
-        int min_write_lev;
-        int expiry_time;
-        int clan;
-};
-
 class disabled_data
 {
     public:
@@ -94,21 +80,6 @@ class disabled_data
         struct cmd_type const *command;
         string disabled_by;
         short                 level;
-};
-
-class message_data
-{
-    public:
-        message_data();
-        ~message_data();
-        bool is_free;
-        MESSAGE_DATA *next;
-        MESSAGE_DATA *prev;  /* Only used in save_board */
-        BOARD_DATA *board;
-        time_t datetime;
-        string author;
-        char *title;
-        char *message;
 };
 
 /*
@@ -161,7 +132,6 @@ class buf_data_struct
     public:
         buf_data_struct();
         ~buf_data_struct();
-        bool is_free;
         BUF_DATA_STRUCT *next;
         BUF_DATA_STRUCT *prev;
         CHAR_DATA *ch;
@@ -223,7 +193,6 @@ class descriptor_data
     public:
         descriptor_data();
         ~descriptor_data();
-        bool is_free;  /* Ramias:for run-time checks of LINK/UNLINK */
         DESCRIPTOR_DATA *next;
         DESCRIPTOR_DATA *prev;
         DESCRIPTOR_DATA *snoop_by;
@@ -411,7 +380,6 @@ class affect_data
         int bitvector;
         CHAR_DATA *caster;
         short duration;
-        bool is_free;
         int level;
         short location;
         short modifier;
@@ -425,7 +393,6 @@ class room_affect_data
     public:
         room_affect_data();
         ~room_affect_data();
-        bool is_free;
         ROOM_AFFECT_DATA *next;
         ROOM_AFFECT_DATA *prev;
         short duration;
@@ -455,7 +422,6 @@ class magic_shield
     public:
         magic_shield();
         ~magic_shield();
-        bool is_free;  /* Ramias:for run-time checks of LINK/UNLINK */
         MAGIC_SHIELD *next;
         MAGIC_SHIELD *prev;
         short type;   /* what kind is it? Electric, Fire, etc... */
@@ -476,8 +442,7 @@ class magic_shield
  * Prototype for a mob.
  * This is the in-memory version of #MOBILES.
  */
-class mob_index_data
-{
+class mob_index_data : public Thing {
     public:
         mob_index_data();
         ~mob_index_data();
@@ -493,7 +458,6 @@ class mob_index_data
         short dr_mod;
         short hr_mod;
         int hunt_flags;
-        bool is_free;
         short killed;
         short learned[MAX_SKILL];
         short level;
@@ -560,7 +524,6 @@ class char_data : public Thing {
         int hunt_flags;   /* Action flags         */
         OBJ_DATA *hunt_obj;  /* Looking for objects     */
         ROOM_INDEX_DATA *in_room;
-        bool is_free; /* kept for room lists link/unlink */
         bool is_quitting;
         AFFECT_DATA *last_affect;
         OBJ_DATA *last_carry;
@@ -736,23 +699,8 @@ struct liq_type
     short liq_affect[3];
 };
 
-/*
- * Extra description data for a room or object.
- */
-class extra_descr_data : public Thing {
-    public:
-        extra_descr_data();
-        ~extra_descr_data();
-        char *description;   /* What to see                      */
-        char *keyword; /* Keyword in look/examine          */
-        bool is_free;
-        EXTRA_DESCR_DATA *next;
-        EXTRA_DESCR_DATA *prev;
-};
-
 struct trigger_data
 {
-    bool is_free;  /* Ramias:for run-time checks of LINK/UNLINK */
     TRIGGER_DATA *next;
     TRIGGER_DATA *prev;
     char *message; /* properly formatted act format string to use in a TO_ROOM */
@@ -768,8 +716,7 @@ struct trigger_data
 };
 
 
-class obj_index_data
-{
+class obj_index_data : public Thing {
     public:
         obj_index_data();
         ~obj_index_data();
@@ -778,13 +725,10 @@ class obj_index_data
         short durability;
         bitset<MAX_BITSET> extra_flags;
         AFFECT_DATA *first_apply;
-        EXTRA_DESCR_DATA *first_exdesc;
         TRIGGER_DATA *first_trigger;
-        bool is_free;
         int item_apply;
         int item_type;
         AFFECT_DATA *last_apply;
-        EXTRA_DESCR_DATA *last_exdesc;
         TRIGGER_DATA *last_trigger;
         short level;
         char *long_descr;
@@ -807,7 +751,6 @@ class obj_data : public Thing {
     public:
         obj_data();
         ~obj_data();
-        bool is_free;  /* Ramias:for run-time checks of LINK/UNLINK */
         OBJ_DATA *next_in_carry_list; /* carry list is the list on a char, or in a container */
         OBJ_DATA *prev_in_carry_list;
         OBJ_DATA *first_in_carry_list;
@@ -823,8 +766,6 @@ class obj_data : public Thing {
         OBJ_DATA *in_obj;
         OBJ_FUN *obj_fun;
         CHAR_DATA *carried_by;
-        EXTRA_DESCR_DATA *first_exdesc;
-        EXTRA_DESCR_DATA *last_exdesc;
         AFFECT_DATA *first_apply;
         AFFECT_DATA *last_apply;
         OBJ_INDEX_DATA *pIndexData;
@@ -858,7 +799,6 @@ class exit_data : public Thing {
         ~exit_data();
         char *description;
         bitset<MAX_BITSET> exit_info;
-        bool is_free;
         short key;
         char *keyword;
         EXIT_DATA *next;
@@ -887,7 +827,6 @@ class reset_data
     public:
         reset_data();
         ~reset_data();
-        bool is_free;  /* Ramias:for run-time checks of LINK/UNLINK */
         RESET_DATA *next;
         RESET_DATA *prev;
         char command;
@@ -962,8 +901,7 @@ class area_data
 /*
  * Room type.
  */
-class room_index_data
-{
+class room_index_data : public Thing {
     public:
         room_index_data();
         ~room_index_data();
@@ -972,12 +910,10 @@ class room_index_data
         char                    *description;
         EXIT_DATA               *exit[MAX_DIR];
         OBJ_DATA                *first_content;
-        EXTRA_DESCR_DATA        *first_exdesc;
         CHAR_DATA               *first_person;
         ROOM_AFFECT_DATA        *first_room_affect;
         BUILD_DATA_LIST         *first_room_reset;
         OBJ_DATA                *last_content;
-        EXTRA_DESCR_DATA        *last_exdesc;
         CHAR_DATA               *last_person;
         ROOM_AFFECT_DATA        *last_room_affect;
         BUILD_DATA_LIST         *last_room_reset;
@@ -999,7 +935,6 @@ class build_data_list  /* Used for storing area file data. */
     public:
         build_data_list();
         ~build_data_list();
-        bool is_free;
         BUILD_DATA_LIST *next;
         BUILD_DATA_LIST *prev;
         void *data;

@@ -50,6 +50,10 @@
 #include "h/act_wiz.h"
 #endif
 
+#ifndef DEC_BOARD_H
+#include "h/board.h"
+#endif
+
 #ifndef DEC_BUILDTAB_H
 #include "h/buildtab.h"
 #endif
@@ -120,6 +124,7 @@
 char bug_buf[2 * MAX_INPUT_LENGTH];
 char log_buf[2 * MAX_INPUT_LENGTH];
 char testerbuf[MSL];
+extern bool merc_down;
 extern int _filbuf args( ( FILE * ) );
 KILL_DATA kill_table[MAX_LEVEL];
 TIME_INFO_DATA time_info;
@@ -1392,17 +1397,15 @@ void load_object( FILE * fp )
 
 void load_oextra( FILE * fp )
 {
-    EXTRA_DESCR_DATA *pEd;
     const char *word;
     bool fMatch = false;
+    string key, value;
 
     if ( obj_load == NULL )
     {
         bug( "Load_oextra: no #OBJECT seen yet.", 0 );
         hang( "Loading Oextras in db.c" );
     }
-
-    pEd = new EXTRA_DESCR_DATA;
 
     for ( ;; )
     {
@@ -1420,11 +1423,11 @@ void load_oextra( FILE * fp )
                 break;
 
             case 'D':
-                SKEY("Desc", pEd->description, fread_string(fp));
+                KEY("Desc", value, fread_string(fp));
                 break;
 
             case 'K':
-                SKEY("Keyword", pEd->keyword, fread_string(fp));
+                KEY("Keyword", key, fread_string(fp));
                 break;
         }
     }
@@ -1436,8 +1439,7 @@ void load_oextra( FILE * fp )
         fread_to_eol( fp );
     }
 
-    LINK( pEd, obj_load->first_exdesc, obj_load->last_exdesc, next, prev );
-
+    obj_load->SetDescrExtra( key, value );
     return;
 }
 
@@ -1592,17 +1594,15 @@ void load_resets( FILE * fp )
 
 void load_rextra( FILE * fp )
 {
-    EXTRA_DESCR_DATA *pEd;
     const char *word;
     bool fMatch = false;
+    string key, value;
 
     if ( room_load == NULL )
     {
         bug( "Load_rextra: no #ROOM seen yet.", 0 );
         hang( "Loading Rextras in db.c" );
     }
-
-    pEd = new EXTRA_DESCR_DATA;
 
     for ( ;; )
     {
@@ -1620,11 +1620,11 @@ void load_rextra( FILE * fp )
                 break;
 
             case 'D':
-                SKEY("Desc", pEd->description, fread_string(fp));
+                KEY("Desc", value, fread_string(fp));
                 break;
 
             case 'K':
-                SKEY("Keyword", pEd->keyword, fread_string(fp));
+                KEY("Keyword", key, fread_string(fp));
                 break;
         }
     }
@@ -1636,8 +1636,7 @@ void load_rextra( FILE * fp )
         fread_to_eol( fp );
     }
 
-    LINK( pEd, room_load->first_exdesc, room_load->last_exdesc, next, prev );
-
+    room_load->SetDescrExtra( key, value );
     return;
 }
 
@@ -2936,22 +2935,6 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
     return obj;
 }
 
-
-/*
- * Get an extra description from a list.
- */
-char *get_extra_descr( const char *name, EXTRA_DESCR_DATA * ed )
-{
-    for ( ; ed != NULL; ed = ed->next )
-    {
-        if ( is_name( name, ed->keyword ) )
-            return ed->description;
-    }
-    return NULL;
-}
-
-
-
 /*
  * Translates mob virtual number to its mob index struct.
  * Hash table lookup.
@@ -3451,8 +3434,6 @@ DO_FUN(do_memory)
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Areas   %5d\r\n", static_cast<int>(area_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "ExDes   %5d\r\n", static_cast<int>(exdesc_list.size()) );
-    send_to_char( buf, ch );
     snprintf( buf, MSL, "Exits   %5d\r\n", static_cast<int>(exit_list.size()) );
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Helps   %5d\r\n", mudinfo.total_helpfiles );
@@ -3881,7 +3862,8 @@ void bug_string( const char *str, const char *str2 )
 void log_string( const char *str )
 {
     fprintf( stderr, "%s :: %s\n", current_time_str(), str );
-    monitor_chan(str, MONITOR_LOG);
+    if ( !merc_down )
+        monitor_chan(str, MONITOR_LOG);
 
     return;
 }
@@ -4193,7 +4175,6 @@ void clear_lists( void )
     for_each( build_dat_list.begin(),  build_dat_list.end(),  DeleteObject() );
     for_each( char_list.begin(),       char_list.end(),       DeleteObject() );
     for_each( disabled_list.begin(),   disabled_list.end(),   DeleteObject() );
-    for_each( exdesc_list.begin(),     exdesc_list.end(),     DeleteObject() );
     for_each( exit_list.begin(),       exit_list.end(),       DeleteObject() );
     for_each( file_list.begin(),       file_list.end(),       DeleteObject() );
     for_each( mob_index_list.begin(),  mob_index_list.end(),  DeleteObject() );

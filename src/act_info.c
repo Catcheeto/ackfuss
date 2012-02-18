@@ -1039,18 +1039,17 @@ DO_FUN(do_look)
     {
         if ( can_see_obj( ch, obj ) )
         {
-            snprintf( pdesc, MSL, "\r\n%s\r\n", get_extra_descr( arg1, obj->first_exdesc ) );
-            if ( str_cmp( pdesc, "\r\n(null)\r\n" ) )
+            if ( obj->GetDescrExtraSize() )
             {
+                snprintf( pdesc, MSL, "\r\n%s\r\n", obj->GetDescrExtra_( arg1 ) );
                 send_to_char( pdesc, ch );
                 act( "$L$n closely examines $p.", ch, obj, NULL, TO_ROOM );
                 return;
             }
 
-            snprintf( pdesc, MSL, "\r\n%s\r\n", get_extra_descr( arg1, obj->pIndexData->first_exdesc ) );
-
-            if ( str_cmp( pdesc, "\r\n(null)\r\n" ) )
+            if ( obj->pIndexData->GetDescrExtraSize() )
             {
+                snprintf( pdesc, MSL, "\r\n%s\r\n", obj->pIndexData->GetDescrExtra_( arg1 ) );
                 send_to_char( pdesc, ch );
                 act( "$L$n closely examines $p.", ch, obj, NULL, TO_ROOM );
                 return;
@@ -1068,18 +1067,17 @@ DO_FUN(do_look)
     {
         if ( can_see_obj( ch, obj ) )
         {
-            snprintf( pdesc, MSL, "\r\n%s\r\n", get_extra_descr( arg1, obj->first_exdesc ) );
-
-            if ( str_cmp( pdesc, "\r\n(null)\r\n" ) )
+            if ( obj->GetDescrExtraSize() )
             {
+                snprintf( pdesc, MSL, "\r\n%s\r\n", obj->GetDescrExtra_( arg1 ) );
                 send_to_char( pdesc, ch );
                 act( "$L$n closely examines $p.", ch, obj, NULL, TO_ROOM );
                 return;
             }
 
-            snprintf( pdesc, MSL, "\r\n%s\r\n", get_extra_descr( arg1, obj->pIndexData->first_exdesc ) );
-            if ( str_cmp( pdesc, "\r\n(null)\r\n" ) )
+            if ( obj->pIndexData->GetDescrExtraSize() )
             {
+                snprintf( pdesc, MSL, "\r\n%s\r\n", obj->pIndexData->GetDescrExtra_( arg1 ) );
                 send_to_char( pdesc, ch );
                 act( "$L$n closely examines $p.", ch, obj, NULL, TO_ROOM );
                 return;
@@ -1095,9 +1093,9 @@ DO_FUN(do_look)
         }
     }
 
-    snprintf( pdesc, MSL, "\r\n%s\r\n", get_extra_descr( arg1, ch->in_room->first_exdesc ) );
-    if ( str_cmp( pdesc, "\r\n(null)\r\n" ) )
+    if ( ch->in_room->GetDescrExtraSize() )
     {
+        snprintf( pdesc, MSL, "\r\n%s\r\n", ch->in_room->GetDescrExtra_( arg1 ) );
         send_to_char( pdesc, ch );
         act( "$L$n closely examines the $t.", ch, arg1, NULL, TO_ROOM );
         return;
@@ -1584,7 +1582,7 @@ DO_FUN(do_score)
     else
         strncat( buf, "@@ysatanic!", MSL );
 
-    snprintf( buf2, MSL, " @@WAlignment: @@y%5d.   %s", ch->GetAlignment(), buf );
+    snprintf( buf2, MSL, " @@WAlignment: @@y%5ld.   %s", ch->GetAlignment(), buf );
     snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
     send_to_char( buf, ch );
 
@@ -2304,7 +2302,8 @@ DO_FUN(do_description)
 
         if ( farg[0] == '+' )
         {
-            *farg++; *farg++; /* Skip '+' and ' '. */
+            *farg++; // Skip +
+            *farg++; // Skip ' '
             if ( strlen(ch->description.c_str()) + strlen(farg) >= MSL )
             {
                 send_to_char("Description too long.\r\n", ch);

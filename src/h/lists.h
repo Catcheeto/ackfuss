@@ -32,8 +32,6 @@
  * _/        _/_/_/_/  _/_/_/_/ _/_/_/_/ at www.ackmud.net -- check it out!*
  ***************************************************************************/
 
-#include <list>
-
 #define DEC_LISTS_H
 
 /*
@@ -52,7 +50,6 @@ extern list<CHAR_DATA*> cast_list;
 extern list<CHAR_DATA*> char_list;
 extern list<OBJ_DATA*> corpse_list;
 extern list<DISABLED_DATA*> disabled_list;
-extern list<EXTRA_DESCR_DATA*> exdesc_list;
 extern list<EXIT_DATA*> exit_list;
 extern list<CHAR_DATA*> fight_list;
 extern list<FILE*> file_list;
