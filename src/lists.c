@@ -69,6 +69,7 @@ list<RULER_DATA *> ruler_list;
 list<SHOP_DATA *> shop_list;
 list<SOCIAL_DATA *> social_list;
 list<HELP_DATA *> help_list;
+list<World*> world_list;
 
 DESCRIPTOR_DATA *first_desc = NULL;
 DESCRIPTOR_DATA *last_desc = NULL;

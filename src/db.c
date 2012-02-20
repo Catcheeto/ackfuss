@@ -4197,4 +4197,5 @@ void clear_lists( void )
     delete_hash_table(hash_changed_vnums);
     free(string_space);
     free_imcdata(true);
+    delete CoreWorld;
 }

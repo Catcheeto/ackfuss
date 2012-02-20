@@ -185,6 +185,7 @@ char hr[MAX_STRING_LENGTH];
 char dr[MAX_STRING_LENGTH];
 
 int global_port;
+World* CoreWorld;
 
 int main( int argc, char **argv )
 {
@@ -200,6 +201,8 @@ int main( int argc, char **argv )
     current_time = ( time_t ) now_time.tv_sec;
     strcpy( str_boot_time, ctime( &current_time ) );
     int_boot_time = now_time.tv_sec;
+    CoreWorld = new World();
+    CoreWorld->setName( "Core" );
 
     /*
      * Reserve one channel for our use.
@@ -498,7 +501,14 @@ void game_loop( int game_control )
                 else
                     nanny( d, d->incomm );
 
-                d->incomm[0] = '\0';
+                if ( d->remote_port == uintmin_t )
+                {
+                    delete d;
+                    continue;
+                }
+                else
+                    d->incomm[0] = '\0';
+
             }
         }
 
@@ -586,7 +596,7 @@ void *lookup_address( void *input )
 
     if ( from && from->h_name )
     {
-        ld->d->brain->SetHost( from->h_name );
+        ld->d->brain->setHost( from->h_name );
         snprintf( log_buf, (2 * MIL), "Hostname resolved to: %s.", from->h_name );
         monitor_chan( log_buf, MONITOR_CONNECT );
     }
@@ -630,7 +640,7 @@ void new_descriptor( int d_control )
     /*
      * Cons a new descriptor.
      */
-    dnew = new DESCRIPTOR_DATA;
+    dnew = new DESCRIPTOR_DATA();
     dnew->descriptor = desc;
     dnew->connected = CON_GET_NAME;
     dnew->showstr_head = NULL;
@@ -638,13 +648,12 @@ void new_descriptor( int d_control )
     dnew->outsize = 2000;
     dnew->flags = 0;
     dnew->childpid = 0;
-    dnew->brain = new Brain;
 
     size = sizeof( sock );
     if ( getpeername( desc, ( struct sockaddr * )&sock, &size ) < 0 )
     {
         perror( "New_descriptor: getpeername" );
-        dnew->brain->SetHost( "(unknown)" );
+        dnew->brain->setHost( "(unknown)" );
     }
     else
     {
@@ -664,7 +673,7 @@ void new_descriptor( int d_control )
         monitor_chan( log_buf, MONITOR_CONNECT );
 
         dnew->remote_port = ntohs( sock.sin_port );
-        dnew->brain->SetHost( buf );
+        dnew->brain->setHost( buf );
 
         LOOKUP_DATA *ld = new LOOKUP_DATA;
         ld->d = dnew;
@@ -751,6 +760,7 @@ void close_socket( DESCRIPTOR_DATA * dclose )
         if ( dclose->connected == CON_PLAYING )
         {
             act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
+            ch->desc->remote_port = uintmin_t;
             ch->desc = NULL;
         }
         else
@@ -768,14 +778,8 @@ void close_socket( DESCRIPTOR_DATA * dclose )
 
     UNLINK( dclose, first_desc, last_desc, next, prev );
     close( dclose->descriptor );
-    if ( dclose->outbuf )
-        dispose( dclose->outbuf, dclose->outsize );
-    if ( dclose->showstr_head )
-        free(dclose->showstr_head);
-    if ( dclose->brain )
-        delete dclose->brain;
+    dclose->remote_port = uintmin_t;
 
-    delete dclose;
     update_player_cnt( );
 
     return;
@@ -3825,10 +3829,9 @@ void copyover_recover(  )
             continue;
         }
 
-        d = new DESCRIPTOR_DATA;
+        d = new DESCRIPTOR_DATA();
         d->descriptor = desc;
-        d->brain = new Brain;
-        d->brain->SetHost( host );
+        d->brain->setHost( host );
         d->next = NULL;
         d->prev = NULL;
 

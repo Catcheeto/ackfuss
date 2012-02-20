@@ -39,6 +39,14 @@ using namespace std;
 #include "config.h"
 #endif
 
+#ifndef DEC_WORLD_H
+#include "world.h"
+#endif
+
+#ifndef DEC_BRAIN_H
+#include "brain.h"
+#endif
+
 #ifndef DEC_IMC_H
 #include "imc.h"
 #endif

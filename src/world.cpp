@@ -6,23 +6,25 @@
  * _/        _/_/_/_/  _/_/_/_/ _/_/_/_/ at www.ackmud.net -- check it out!*
  ***************************************************************************/
 
-#define DEC_BRAIN_H
+#include "h/globals.h"
 
-#ifndef DEC_WORLD_H
-#include "world.h"
+#ifndef DEC_DB_H
+#include "h/db.h"
 #endif
 
-class Brain {
-    public:
-        Brain();
-        ~Brain();
+World::World()
+{
+    bi = m_list_brain.begin();
+    m_list_brain.clear();
+    m_name.clear();
 
-        string GetHost() const { return m_host; }
-        char* GetHost_() const { return m_host; }
-        string setHost( const char* host ) { strcpy( m_host, host ); return m_host; }
-        World* setWorld( World* world ) { return m_world = world; }
+    world_list.push_back( this );
+    log_string("world ctor");
+}
 
-    private:
-        char*  m_host;
-        World* m_world;
-};
+World::~World()
+{
+    m_list_brain.clear();
+    m_name.clear();
+    log_string("world dtor");
+}

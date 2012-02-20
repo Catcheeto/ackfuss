@@ -983,7 +983,6 @@ void interpret( CHAR_DATA * ch, char *argument )
     int cmd;
     int trust;
     bool found;
-
     alias_call = FALSE;
 
     if ( ch->position == POS_WRITING )

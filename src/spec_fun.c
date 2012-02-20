@@ -407,7 +407,7 @@ SPEC_FUN(spec_cast_adept)
 
         case 5:
             {
-                time_t cur_time, xmas_time;
+                time_t cur_time = 0, xmas_time = 0;
                 struct tm tm_xmas, *tm_local;
                 int days;
                 char buffer[255];

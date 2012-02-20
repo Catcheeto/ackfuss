@@ -60,6 +60,10 @@
  #define uintmin_t numeric_limits<unsigned int>::min()
 #endif
 
+class World;
+class Brain;
+class Thing;
+
 /*
  * Short scalar types.
  */

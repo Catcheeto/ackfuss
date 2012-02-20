@@ -162,10 +162,10 @@ string Thing::GetDescrExtra( const string key ) const
 
 list<string> Thing::GetDescrExtraKeys() const
 {
-    map<string,string>::const_iterator it = m_descr_extra.begin();
+    map<string,string>::const_iterator it;
     list<string> value;;
 
-    while ( it++ != m_descr_extra.end() )
+    for ( it =  m_descr_extra.begin(); it != m_descr_extra.end(); it++ )
         value.push_back( it->first );
 
     return value;
@@ -173,10 +173,10 @@ list<string> Thing::GetDescrExtraKeys() const
 
 list<string> Thing::GetDescrExtraValues() const
 {
-    map<string,string>::const_iterator it = m_descr_extra.begin();
+    map<string,string>::const_iterator it;
     list<string> value;
 
-    while ( it++ != m_descr_extra.end() )
+    for ( it =  m_descr_extra.begin(); it != m_descr_extra.end(); it++ )
         value.push_back( it->second );
 
     return value;
@@ -293,6 +293,8 @@ Thing::Thing()
 
     // Combat Stats
     m_mod_ac = uintmin_t;
+    m_mod_dr = uintmin_t;
+    m_mod_hr = uintmin_t;
 
     // Descriptions
     m_descr_extra.clear();

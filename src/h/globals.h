@@ -169,6 +169,7 @@ extern MOB_INDEX_DATA *mob_index_hash[MAX_KEY_HASH];
 extern SYS_DATA_TYPE sysdata;
 extern MUDINFO mudinfo;
 extern CHAN_HISTORY chan_history;
+extern World* CoreWorld;
 
 /* YUCK! */
 extern char *target_name;

@@ -215,14 +215,25 @@ council_data::council_data()
 
 descriptor_data::descriptor_data()
 {
+    snoop_by = NULL;
+    character = NULL;
+    original = NULL;
+    next = NULL;
+    prev = NULL;
     descriptor = 0;
     connected = CON_GET_NAME;
     showstr_head = NULL;
     showstr_point = NULL;
-    outsize = 2000;
-    outbuf = (char *)getmem( outsize );
+    outsize = 2048;
+    outtop = 0;
+    fcommand = false;
+    outbuf = (char*)malloc(outsize);
     flags = 0;
     childpid = 0;
+    incomm[0] = '\0';
+    inlast[0] = '\0';
+    inbuf[0] = '\0';
+    brain = new Brain();
 }
 
 disabled_data::disabled_data()

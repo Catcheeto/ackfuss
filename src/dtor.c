@@ -105,6 +105,9 @@ council_data::~council_data()
 
 descriptor_data::~descriptor_data()
 {
+    delete brain;
+    free( outbuf );
+    free( showstr_head );
 }
 
 disabled_data::~disabled_data()

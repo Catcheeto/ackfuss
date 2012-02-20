@@ -8,12 +8,19 @@
 
 #include "h/globals.h"
 
+#ifndef DEC_DB_H
+#include "h/db.h"
+#endif
+
 Brain::Brain()
 {
-    // Remote Hostname
-    m_host.clear();
+    m_host = new char[256];
+    m_world = NULL;
+    log_string("brain ctor");
 }
 
 Brain::~Brain()
 {
+    delete[] m_host;
+    log_string("brain dtor");
 }
