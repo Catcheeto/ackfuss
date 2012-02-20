@@ -218,8 +218,6 @@ descriptor_data::descriptor_data()
     snoop_by = NULL;
     character = NULL;
     original = NULL;
-    next = NULL;
-    prev = NULL;
     descriptor = 0;
     connected = CON_GET_NAME;
     showstr_head = NULL;
@@ -235,6 +233,7 @@ descriptor_data::descriptor_data()
     inbuf[0] = '\0';
     brain = new Brain();
     brain->d = this;
+    CoreWorld->pushListBrain( brain );
 }
 
 disabled_data::disabled_data()

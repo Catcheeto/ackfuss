@@ -1962,7 +1962,8 @@ const char *who( const char *what, CHAR_DATA *looker )
     char arg1[MSL] = {'\0'}, arg2[MSL] = {'\0'}, buf1[MSL] = {'\0'}, buf2[MSL] = {'\0'};
     bool imm = false, apt = false, rmt = false, mrt = false;
     short found = 0;
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     CHAR_DATA *pers;
 
     output.clear();
@@ -1984,8 +1985,9 @@ const char *who( const char *what, CHAR_DATA *looker )
         output += "|---------------------------------+-------------------------------------------|\r\n";
 
         // Find what tiers to show
-        for ( d = first_desc; d != NULL; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                 continue;
             if ( d->character->get_level() >= LEVEL_HERO )
@@ -2002,8 +2004,9 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( imm ) //Display imms
         {
             output += "@@R|---------------------------------|----------@@lImmortals@@R------------------------|@@N\r\n";
-            for ( d = first_desc; d != NULL; d = d->next )
+            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
             {
+                d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level() < LEVEL_HERO )
@@ -2016,8 +2019,9 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( apt ) //Display adepts
         {
             output += "@@R|---------------------------------|------------@@WAdepts@@R-------------------------|@@N\r\n";
-            for ( d = first_desc; d != NULL; d = d->next )
+            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
             {
+                d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level("adept") < 1 || d->character->get_level() >= LEVEL_HERO )
@@ -2030,8 +2034,9 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( rmt ) //Display remorts
         {
             output += "@@R|---------------------------------|----------@@mRemortals@@R------------------------|@@N\r\n";
-            for ( d = first_desc; d != NULL; d = d->next )
+            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
             {
+                d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level("maxremortal") < 1 || d->character->get_level("adept") > 0 || d->character->get_level() >= LEVEL_HERO )
@@ -2044,8 +2049,9 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( mrt ) //Display morts
         {
             output += "@@R|---------------------------------|-----------@@cMortals@@R-------------------------|@@N\r\n";
-            for ( d = first_desc; d != NULL; d = d->next )
+            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
             {
+                d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level("maxremortal") > 0 || d->character->get_level("adept") > 0 || d->character->get_level() >= LEVEL_HERO )

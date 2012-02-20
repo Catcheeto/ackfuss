@@ -2368,26 +2368,34 @@ void notify( char *message, int lv )
      * * -- Stephen
      */
 
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     char buf[MAX_STRING_LENGTH];
 
     snprintf( buf, MSL, "[NOTE]: %s\r\n", message );
-    for ( d = first_desc; d; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    {
+        d = *di;
         if ( ( d->connected == CON_PLAYING )
                 && ( d->character->level >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_NOTIFY) )
             send_to_char( buf, d->character );
+    }
     return;
 }
 
 void auction( char *message )
 {
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     char buf[MAX_STRING_LENGTH];
 
     snprintf( buf, MSL, "[AUCTION]: %s\r\n", message );
-    for ( d = first_desc; d; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    {
+        d = *di;
         if ( ( d->connected == CON_PLAYING ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_AUCTION) )
             send_to_char( buf, d->character );
+    }
     return;
 }
 
@@ -2401,10 +2409,13 @@ void info( char *message, int lv )
      * * Used mainly to send level gain, death info, etc to mortals.
      * * - Stephen
      */
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     char buf[MAX_STRING_LENGTH];
 
-    for ( d = first_desc; d; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    {
+        d = *di;
         if ( ( d->connected == CON_PLAYING )
                 && ( d->character->level >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_INFO) )
         {
@@ -2412,6 +2423,7 @@ void info( char *message, int lv )
                       color_string( d->character, "info" ), message, color_string( d->character, "normal" ) );
             send_to_char( buf, d->character );
         }
+    }
     return;
 }
 
@@ -2422,15 +2434,19 @@ void log_chan( const char *message, int lv )
      * Used to send messages to Immortals.
      * * Level is used to determine WHO gets the message...
      */
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     char buf[MAX_STRING_LENGTH];
 
     snprintf( buf, MSL, "[LOG]: %s\r\n", message );
-    for ( d = first_desc; d; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    {
+        d = *di;
         if ( ( d->connected == CON_PLAYING )
                 && ( get_trust( d->character ) == MAX_LEVEL )
                 && ( !IS_NPC( d->character ) ) && ( d->character->level >= lv ) && ( !d->character->deaf.test(CHANNEL_LOG) ) )
             send_to_char( buf, d->character );
+    }
     return;
 }
 

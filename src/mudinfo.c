@@ -41,8 +41,6 @@ void load_mudinfo( void )
     snprintf(log_buf, (2 * MIL), "Loading %s", MUDINFO_FILE);
     log_f("%s", log_buf);
 
-    init_mudinfo(); /* Need to set some defaults --Kline */
-
     if ( (fp = file_open(MUDINFO_FILE, "r")) == NULL )
     {
         file_close(fp);
@@ -189,11 +187,14 @@ DO_FUN(do_mudinfo)
 void init_mudinfo( void )
 {
     mudinfo.cur_players = 0;
+    mudinfo.descriptor = 0;
     mudinfo.first_boot = 0;
+    mudinfo.max_descriptor = 0;
     mudinfo.max_players = 0;
     mudinfo.max_players_reboot = 0;
     mudinfo.mk_by_npc = 0;
     mudinfo.mk_by_pc = 0;
+    mudinfo.port = 1234;
     mudinfo.pk_by_npc = 0;
     mudinfo.pk_by_pc = 0;
     mudinfo.total_pfiles = 0;

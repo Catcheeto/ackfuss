@@ -31,8 +31,6 @@
  * _/        _/_/_/_/  _/_/_/_/ _/_/_/_/ at www.ackmud.net -- check it out!*
  ***************************************************************************/
 
-using namespace std;
-
 #define DEC_ACK_H
 
 #ifndef DEC_CONFIG_H
@@ -203,12 +201,10 @@ class descriptor_data
         ~descriptor_data();
         const void Destroy() { close(descriptor); delete this; }
         Brain* brain;
-        DESCRIPTOR_DATA *next;
-        DESCRIPTOR_DATA *prev;
         DESCRIPTOR_DATA *snoop_by;
         CHAR_DATA *character;
         CHAR_DATA *original;
-        short descriptor;
+        uint_t descriptor;
         short connected;
         bool fcommand;
         char inbuf[4 * MAX_INPUT_LENGTH];
@@ -1107,13 +1103,16 @@ class super_data
 struct mudinfo
 {
     unsigned int      cur_players;
+    uint_t            descriptor;
     time_t            first_boot;
+    uint_t            max_descriptor;
     unsigned int      max_players;
     unsigned int      max_players_reboot;
     unsigned long int mk_by_npc;
     unsigned long int mk_by_pc;
     unsigned long int pk_by_npc;
     unsigned long int pk_by_pc;
+    uint_t            port;
     unsigned int      total_helpfiles;
     unsigned int      total_pfiles;
 };

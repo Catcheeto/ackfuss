@@ -3477,6 +3477,12 @@ DO_FUN(do_memory)
     snprintf( buf, MSL, "File Streams: Opens: %5d Closes: %5d\r\n", fp_open, fp_close);
     send_to_char( buf, ch );
 
+    snprintf( buf, MSL, "Game Descriptor:  %5ld (max %ld)\r\n", mudinfo.descriptor, mudinfo.max_descriptor );
+    send_to_char( buf, ch );
+
+    snprintf( buf, MSL, "Game Port:        %5ld\r\n", mudinfo.port );
+    send_to_char( buf, ch );
+
     return;
 }
 
@@ -4162,14 +4168,7 @@ void file_close( FILE *file )
 
 void clear_lists( void )
 {
-    DESCRIPTOR_DATA *d, *d_next;
     extern hash_table *hash_changed_vnums;
-
-    for ( d = first_desc; d != NULL; d = d_next )
-    {
-        d_next = d->next;
-        delete d;
-    }
 
     for_each( affect_list.begin(),     affect_list.end(),     DeleteObject() );
     for_each( area_list.begin(),       area_list.end(),       DeleteObject() );
@@ -4178,6 +4177,7 @@ void clear_lists( void )
     for_each( brand_list.begin(),      brand_list.end(),      DeleteObject() );
     for_each( build_dat_list.begin(),  build_dat_list.end(),  DeleteObject() );
     for_each( char_list.begin(),       char_list.end(),       DeleteObject() );
+    for_each( descriptor_list.begin(), descriptor_list.end(), DeleteObject() );
     for_each( disabled_list.begin(),   disabled_list.end(),   DeleteObject() );
     for_each( exit_list.begin(),       exit_list.end(),       DeleteObject() );
     for_each( file_list.begin(),       file_list.end(),       DeleteObject() );

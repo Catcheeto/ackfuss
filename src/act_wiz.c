@@ -302,7 +302,8 @@ DO_FUN(do_deny)
 DO_FUN(do_disconnect)
 {
     char arg[MSL];
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     CHAR_DATA *victim;
 
     one_argument( argument, arg );
@@ -324,8 +325,9 @@ DO_FUN(do_disconnect)
         return;
     }
 
-    for ( d = first_desc; d != NULL; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        d = *di;
         if ( d == victim->desc )
         {
             close_socket( d );
@@ -399,7 +401,8 @@ DO_FUN(do_pardon)
 
 DO_FUN(do_echo)
 {
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
 
     if ( argument[0] == '\0' )
     {
@@ -407,8 +410,9 @@ DO_FUN(do_echo)
         return;
     }
 
-    for ( d = first_desc; d; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        d = *di;
         if ( d->connected == CON_PLAYING )
         {
             send_to_char( argument, d->character );
@@ -461,7 +465,8 @@ DO_FUN(do_transfer)
     char arg1[MSL];
     char arg2[MSL];
     ROOM_INDEX_DATA *location;
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     CHAR_DATA *victim;
 //    DESCRIPTOR_DATA df;
 //    bool found = FALSE;
@@ -476,8 +481,9 @@ DO_FUN(do_transfer)
 
     if ( !str_cmp( arg1, "all" ) )
     {
-        for ( d = first_desc; d != NULL; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( d->connected == CON_PLAYING
                     && !IS_IMMORTAL( d->character )
                     && d->character != ch && d->character->in_room != NULL && can_see( ch, d->character ) )
@@ -1584,7 +1590,8 @@ DO_FUN(do_shutdown)
 DO_FUN(do_snoop)
 {
     char arg[MSL];
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     CHAR_DATA *victim;
 
     one_argument( argument, arg );
@@ -1610,8 +1617,9 @@ DO_FUN(do_snoop)
     if ( victim == ch )
     {
         send_to_char( "Cancelling all snoops.\r\n", ch );
-        for ( d = first_desc; d != NULL; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( d->snoop_by == ch->desc )
                 d->snoop_by = NULL;
         }
@@ -3626,7 +3634,8 @@ DO_FUN(do_users)
     char buf[MSL];
     char buf2[MSL];
     char buf3[MSL];
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     int count;
 
 
@@ -3641,8 +3650,9 @@ DO_FUN(do_users)
         send_to_char( "\r\n", ch );
 
 
-    for ( d = first_desc; d != NULL; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        d = *di;
         count++;
         switch ( d->connected )
         {
@@ -4546,7 +4556,8 @@ DO_FUN(do_isnoop)
      */
 
 
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     char buf[MSL];
     int count = 0;
 
@@ -4554,8 +4565,9 @@ DO_FUN(do_isnoop)
     send_to_char( "Snoop List:\r\n-=-=-=-=-=-\r\n", ch );
 
 
-    for ( d = first_desc; d != NULL; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        d = *di;
         if ( d->snoop_by != NULL )
         {
             count++;
@@ -5122,7 +5134,8 @@ DO_FUN(do_monitor)
 void monitor_chan( const char *message, int channel )
 {
     char buf[MSL];
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     int a;
     int level = 85;
 
@@ -5138,8 +5151,9 @@ void monitor_chan( const char *message, int channel )
 
     snprintf( buf, MSL, "%s[%7s]@@N %s@@N\r\n", tab_monitor[a].col, tab_monitor[a].id, strip_out( message, "\r\n" ) );
 
-    for ( d = first_desc; d; d = d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        d = *di;
         if ( d->connected == CON_PLAYING
                 && !IS_NPC( d->character )
                 && d->character->pcdata->monitor.test(channel) && level <= get_trust( d->character ) )
@@ -6187,7 +6201,8 @@ DO_FUN(do_hotreboo)
 DO_FUN(do_hotreboot)
 {
     FILE *fp;
-    DESCRIPTOR_DATA *d, *d_next;
+    DESCRIPTOR_DATA *d = NULL, *d_next;
+    list<DESCRIPTOR_DATA*>::iterator di;
     char buf[256], buf2[256], buf3[256];
     extern int saving_area;
 
@@ -6218,10 +6233,10 @@ DO_FUN(do_hotreboot)
     /*
      * For each PLAYING descriptor( non-negative ), save its state
      */
-    for ( d = first_desc; d; d = d_next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        d = *di;
         CHAR_DATA *och = CH( d );
-        d_next = d->next; /* We delete from the list , so need to save this */
 
         if ( !d->character || d->connected < 0 )  /* drop those logging on */
         {
@@ -6250,8 +6265,8 @@ DO_FUN(do_hotreboot)
      * exec - descriptors are inherited
      */
 
-    snprintf( buf, 256, "%d", port );
-    snprintf( buf2, 256, "%d", control );
+    snprintf( buf, 256, "%d", mudinfo.port );
+    snprintf( buf2, 256, "%d", mudinfo.descriptor );
     if ( this_imcmud )
         snprintf( buf3, 256, "%d", this_imcmud->desc );
     else

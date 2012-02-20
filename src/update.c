@@ -977,7 +977,8 @@ void weather_update( void )
 {
     char buf[MSL];
     char buf2[MSL];
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     int diff;
     short x, y;
     REMOTEINFO *r, *rnext;
@@ -1175,8 +1176,9 @@ void weather_update( void )
 
     if ( buf[0] != '\0' )
     {
-        for ( d = first_desc; d != NULL; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( d->connected == CON_PLAYING
                     && IS_OUTSIDE( d->character ) && ( d->character->position != POS_WRITING ) && IS_AWAKE( d->character ) )
                 send_to_char( buf, d->character );

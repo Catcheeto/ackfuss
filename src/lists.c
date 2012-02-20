@@ -70,9 +70,8 @@ list<SHOP_DATA *> shop_list;
 list<SOCIAL_DATA *> social_list;
 list<HELP_DATA *> help_list;
 list<World*> world_list;
+list<DESCRIPTOR_DATA*> descriptor_list;
 
-DESCRIPTOR_DATA *first_desc = NULL;
-DESCRIPTOR_DATA *last_desc = NULL;
 BUILD_DATA_LIST *first_build = NULL;
 BUILD_DATA_LIST *last_build = NULL;
 BUF_DATA_STRUCT *first_buf = NULL;

@@ -49,3 +49,5 @@
 #else
 #include <endian.h>
 #endif
+
+using namespace std;

@@ -57,7 +57,11 @@ Brain* Thing::AttachBrain( Brain* brain )
     if ( brain )
         return m_brain = brain;
     else
-        return m_brain = new Brain;
+    {
+        m_brain = new Brain();
+        CoreWorld->pushListBrain( m_brain );
+        return m_brain;
+    }
 }
 
 // Combat Stats

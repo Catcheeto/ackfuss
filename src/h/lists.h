@@ -66,9 +66,8 @@ extern list<SHOP_DATA*> shop_list;
 extern list<SOCIAL_DATA*> social_list;
 extern list<HELP_DATA*> help_list;
 extern list<World*> world_list;
+extern list<DESCRIPTOR_DATA*> descriptor_list;
 
-extern DESCRIPTOR_DATA* first_desc;
-extern DESCRIPTOR_DATA* last_desc;
 extern BUILD_DATA_LIST* first_build;
 extern BUILD_DATA_LIST* last_build;
 extern BUF_DATA_STRUCT* first_buf;

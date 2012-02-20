@@ -297,7 +297,8 @@ DO_FUN(do_iquest)
 
     if ( !strcmp( argument, "start" ) )
     {
-        DESCRIPTOR_DATA *d;
+        DESCRIPTOR_DATA *d = NULL;
+        list<DESCRIPTOR_DATA*>::iterator di;
         int a = 80;
         int b = 0;
         short player_count = 0, average_level = 0, total_levels = 0;
@@ -320,8 +321,9 @@ DO_FUN(do_iquest)
         /*
          * Work out levels of currently playing folks
          */
-        for ( d = first_desc; d; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( ( d->connected != CON_PLAYING ) || ( IS_IMMORTAL( d->character ) ) )
                 continue;
             player_count += 1;
@@ -642,7 +644,8 @@ void clear_quest(  )
 
 void generate_auto_quest(  )
 {
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     int hunt_flags = 0;
     char new_long_desc[MAX_STRING_LENGTH];
     short loop_counter = 0;
@@ -662,9 +665,9 @@ void generate_auto_quest(  )
     /*
      * Work out levels of currently playing folks
      */
-    if ( first_desc && first_desc->connected == CON_PLAYING )
+    if ( !descriptor_list.empty() )
     {
-        for ( d = first_desc; d; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
             if ( d->connected != CON_PLAYING )
                 continue;

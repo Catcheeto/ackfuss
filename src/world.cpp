@@ -17,13 +17,10 @@ World::World()
     bi = m_list_brain.begin();
     m_list_brain.clear();
     m_name.clear();
-
-    world_list.push_back( this );
 }
 
 World::~World()
 {
     m_list_brain.clear();
     m_name.clear();
-    log_string("world dtor");
 }

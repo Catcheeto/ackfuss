@@ -16,13 +16,9 @@ Brain::Brain()
 {
     m_host = new char[256];
     m_world = NULL;
-    log_string("brain ctor");
-
-    CoreWorld->pushListBrain( this );
 }
 
 Brain::~Brain()
 {
     delete[] m_host;
-    log_string("brain dtor");
 }

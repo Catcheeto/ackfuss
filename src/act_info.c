@@ -1980,7 +1980,8 @@ DO_FUN(do_where)
     char arg[MSL];
     CHAR_DATA *victim;
     list<CHAR_DATA *>::iterator li;
-    DESCRIPTOR_DATA *d;
+    DESCRIPTOR_DATA *d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
     bool found;
     buf[0] = '\0';
 
@@ -1992,8 +1993,9 @@ DO_FUN(do_where)
         snprintf( buf, MSL, "In %s %s @@N:\r\n", ch->in_room->area->level_label, ch->in_room->area->name );
         send_to_char( buf, ch );
         found = FALSE;
-        for ( d = first_desc; d; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( d->connected == CON_PLAYING
                     && ( victim = d->character ) != NULL
                     && !IS_NPC( victim )

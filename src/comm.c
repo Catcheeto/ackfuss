@@ -140,9 +140,7 @@ const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
 /*
  * Global variables.
  */
-DESCRIPTOR_DATA *d_next;   /* Next descriptor in loop      */
 FILE *fpReserve;  /* Reserved file handle         */
-bool god;   /* All new chars are gods!      */
 bool merc_down;   /* Shutdown                     */
 bool wizlock;  /* Game is wizlocked            */
 extern bool deathmatch;  /* Deathmatch happening?        */
@@ -150,10 +148,6 @@ extern bool disable_timer_abort;
 char str_boot_time[MAX_INPUT_LENGTH];
 int int_boot_time;
 time_t current_time; /* Time of this pulse           */
-
-/* port and control moved from local to global for HOTreboot - Flar */
-int port;
-int control;
 
 /* -S- Mod: Some Globals for auctioning an item */
 OBJ_DATA *auction_item; /* Item being sold      */
@@ -184,7 +178,6 @@ COUNCIL_DATA super_councils[MAX_SUPER];   /* for supernatural council meetings  
 char hr[MAX_STRING_LENGTH];
 char dr[MAX_STRING_LENGTH];
 
-int global_port;
 World* CoreWorld;
 
 int main( int argc, char **argv )
@@ -200,6 +193,7 @@ int main( int argc, char **argv )
     gettimeofday( &now_time, NULL );
     current_time = ( time_t ) now_time.tv_sec;
     strcpy( str_boot_time, ctime( &current_time ) );
+    init_mudinfo( );
     int_boot_time = now_time.tv_sec;
     CoreWorld = new World();
     CoreWorld->setName( "Core" );
@@ -216,7 +210,6 @@ int main( int argc, char **argv )
     /*
      * Get the port number.
      */
-    port = 1234;
     if ( argc > 1 )
     {
         if ( !is_number( argv[1] ) )
@@ -224,7 +217,7 @@ int main( int argc, char **argv )
             fprintf( stderr, "Usage: %s [port #]\n", argv[0] );
             exit( 1 );
         }
-        else if ( ( port = atoi( argv[1] ) ) <= 1024 )
+        else if ( ( mudinfo.port = atoi( argv[1] ) ) <= 1024 )
         {
             fprintf( stderr, "Port number must be above 1024.\n" );
             exit( 1 );
@@ -233,7 +226,7 @@ int main( int argc, char **argv )
         if ( argv[2] && argv[2][0] )
         {
             fCopyOver = TRUE;
-            control = atoi( argv[3] );
+            mudinfo.descriptor = atoi( argv[3] );
             imcsocket = atoi( argv[4] );
         }
         else
@@ -248,14 +241,13 @@ int main( int argc, char **argv )
      */
     if ( !fCopyOver ) /* We already have the port if Copyovered. */
     {
-        control = init_socket( port );
+        mudinfo.descriptor = init_socket( mudinfo.port );
     }
-    global_port = port;
     if ( fCopyOver )
         abort_threshold = BOOT_DB_ABORT_THRESHOLD;
     boot_db(  );
 
-    snprintf( log_buf, (2 * MIL), "%s is ready on port %d.", VERS_STRING, port );
+    snprintf( log_buf, (2 * MIL), "%s is ready on port %d.", VERS_STRING, mudinfo.port );
     log_string( log_buf );
     log_string("Last compiled on " __DATE__ " at " __TIME__ ".");
     imc_startup( FALSE, imcsocket, fCopyOver );
@@ -265,8 +257,8 @@ int main( int argc, char **argv )
         copyover_recover(  );
         disable_timer_abort = FALSE;
     }
-    game_loop( control );
-    close( control );
+    game_loop( );
+    close( mudinfo.descriptor );
     imc_shutdown( FALSE );
 
     /*
@@ -351,7 +343,7 @@ void reopen_socket( int sig )
 
 /* + */
 
-void game_loop( int game_control )
+void game_loop( )
 {
     static struct timeval null_time;
     struct timeval last_time;
@@ -378,8 +370,8 @@ void game_loop( int game_control )
         fd_set in_set;
         fd_set out_set;
         fd_set exc_set;
-        DESCRIPTOR_DATA *d;
-        int maxdesc;
+        DESCRIPTOR_DATA *d = NULL;
+        list<DESCRIPTOR_DATA*>::iterator di, di_next;
 
         /*
          * handle reopening the control socket
@@ -389,8 +381,8 @@ void game_loop( int game_control )
         if ( reopen_flag )
         {
             log_string( "SIGUSR1 received, reopening control socket" );
-            close( game_control );
-            game_control = init_socket( global_port );
+            close( mudinfo.descriptor );
+            mudinfo.descriptor = init_socket( mudinfo.port );
             reopen_flag = 0;
         }
 
@@ -400,14 +392,16 @@ void game_loop( int game_control )
         FD_ZERO( &in_set );
         FD_ZERO( &out_set );
         FD_ZERO( &exc_set );
-        FD_SET( game_control, &in_set );
-        maxdesc = game_control;
+        FD_SET( mudinfo.descriptor, &in_set );
+        mudinfo.max_descriptor = mudinfo.descriptor;
 
-        for ( d = first_desc; d; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
         {
+            d = *di;
+            di_next = ++di;
             if ( ( d->flags && DESC_FLAG_PASSTHROUGH ) == 0 )
             {
-                maxdesc = UMAX( maxdesc, d->descriptor );
+                mudinfo.max_descriptor = std::max( mudinfo.max_descriptor, d->descriptor );
                 FD_SET( d->descriptor, &in_set );
                 FD_SET( d->descriptor, &out_set );
                 FD_SET( d->descriptor, &exc_set );
@@ -428,7 +422,7 @@ void game_loop( int game_control )
             }
         }
 
-        if ( select( maxdesc + 1, &in_set, &out_set, &exc_set, &null_time ) < 0 )
+        if ( select( mudinfo.max_descriptor + 1, &in_set, &out_set, &exc_set, &null_time ) < 0 )
         {
             perror( "Game_loop: select: poll" );
             exit( 1 );
@@ -437,15 +431,16 @@ void game_loop( int game_control )
         /*
          * New connection?
          */
-        if ( FD_ISSET( game_control, &in_set ) )
-            new_descriptor( game_control );
+        if ( FD_ISSET( mudinfo.descriptor, &in_set ) )
+            new_descriptor( mudinfo.descriptor );
 
         /*
          * Kick out the freaky folks.
          */
-        for ( d = first_desc; d != NULL; d = d_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
         {
-            d_next = d->next;
+            d = *di;
+            di_next = ++di;
             if ( FD_ISSET( d->descriptor, &exc_set ) )
             {
                 FD_CLR( d->descriptor, &in_set );
@@ -460,9 +455,10 @@ void game_loop( int game_control )
         /*
          * Process input.
          */
-        for ( d = first_desc; d != NULL; d = d_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
         {
-            d_next = d->next;
+            d = *di;
+            di_next = ++di;
             d->fcommand = FALSE;
 
             if ( FD_ISSET( d->descriptor, &in_set ) )
@@ -523,9 +519,10 @@ void game_loop( int game_control )
         /*
          * Output.
          */
-        for ( d = first_desc; d != NULL; d = d_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
         {
-            d_next = d->next;
+            d = *di;
+            di_next = ++di;
 
             /*
              * spec: disconnect people idling on login
@@ -642,18 +639,14 @@ void new_descriptor( int d_control )
      */
     dnew = new DESCRIPTOR_DATA();
     dnew->descriptor = desc;
-    dnew->connected = CON_GET_NAME;
-    dnew->showstr_head = NULL;
-    dnew->showstr_point = NULL;
-    dnew->outsize = 2000;
-    dnew->flags = 0;
-    dnew->childpid = 0;
+    descriptor_list.push_back( dnew );
 
     size = sizeof( sock );
     if ( getpeername( desc, ( struct sockaddr * )&sock, &size ) < 0 )
     {
         perror( "New_descriptor: getpeername" );
         dnew->brain->setHost( "(unknown)" );
+
     }
     else
     {
@@ -675,18 +668,13 @@ void new_descriptor( int d_control )
         dnew->remote_port = ntohs( sock.sin_port );
         dnew->brain->setHost( buf );
 
-        LOOKUP_DATA *ld = new LOOKUP_DATA;
+        LOOKUP_DATA *ld = new LOOKUP_DATA();
         ld->d = dnew;
         ld->buf = str_dup((char *) & sock.sin_addr);
         pthread_attr_init(&attr);
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
         pthread_create(&lookup_thread, &attr, &lookup_address, (void *)ld);
     }
-
-    /*
-     * Init descriptor data.
-     */
-    LINK( dnew, first_desc, last_desc, next, prev );
 
     /*
      * spec: set initial login timeout
@@ -731,10 +719,12 @@ void close_socket( DESCRIPTOR_DATA * dclose )
     }
 
     {
-        DESCRIPTOR_DATA *d;
+        DESCRIPTOR_DATA *d = NULL;
+        list<DESCRIPTOR_DATA*>::iterator di;
 
-        for ( d = first_desc; d != NULL; d = d->next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++)
         {
+            d = *di;
             if ( d->snoop_by == dclose )
                 d->snoop_by = NULL;
         }
@@ -773,10 +763,6 @@ void close_socket( DESCRIPTOR_DATA * dclose )
               extract_char( ch, TRUE );  */
     }
 
-    if ( d_next == dclose )
-        d_next = d_next->next;
-
-    UNLINK( dclose, first_desc, last_desc, next, prev );
     close( dclose->descriptor );
     dclose->remote_port = uintmin_t;
 
@@ -3343,11 +3329,14 @@ bool check_reconnect( DESCRIPTOR_DATA * d, bool fConn )
  */
 bool check_playing( DESCRIPTOR_DATA * d, string name )
 {
-    DESCRIPTOR_DATA *dold;
+    DESCRIPTOR_DATA *dold = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di, di_next;
     char buf[MAX_STRING_LENGTH];
 
-    for ( dold = first_desc; dold; dold = dold->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
     {
+        dold = *di;
+        di_next = ++di;
         if ( dold != d
                 && dold->character != NULL
                 && dold->connected != CON_GET_NAME
@@ -3745,13 +3734,15 @@ DO_FUN(do_finger)
     char buf[MAX_STRING_LENGTH];
     bool found = FALSE;
     DESCRIPTOR_DATA d;
-    DESCRIPTOR_DATA *this_d;
+    DESCRIPTOR_DATA *this_d = NULL;
+    list<DESCRIPTOR_DATA*>::iterator di;
 
 
     argument = one_argument( argument, name );
 
-    for ( this_d = first_desc; this_d != NULL; this_d = this_d->next )
+    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
     {
+        this_d = *di;
         if ( ( this_d->connected > 0 ) && !str_cmp( this_d->character->GetName(), name ) )
         {
             do_whois( ch, name );
@@ -3831,12 +3822,10 @@ void copyover_recover(  )
 
         d = new DESCRIPTOR_DATA();
         d->descriptor = desc;
+        descriptor_list.push_back( d );
         d->brain->setHost( host );
-        d->next = NULL;
-        d->prev = NULL;
 
         d->connected = CON_COPYOVER_RECOVER;   /* -15, so close_socket frees the char */
-        LINK( d, first_desc, last_desc, next, prev );
 
         /*
          * Now, find the pfile
@@ -3950,11 +3939,13 @@ void hang( const char *str )
 
 void update_player_cnt( void )
 {
- DESCRIPTOR_DATA *d;
+ DESCRIPTOR_DATA *d = NULL;
+ list<DESCRIPTOR_DATA*>::iterator di;
  int found = 0;
 
- for( d = first_desc; d != NULL; d = d->next )
+ for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
  {
+     d = *di;
      if( !d->character || d->character->GetName().empty() || (d->connected != CON_PLAYING) )
          continue;
      else
