@@ -234,6 +234,7 @@ descriptor_data::descriptor_data()
     inlast[0] = '\0';
     inbuf[0] = '\0';
     brain = new Brain();
+    brain->d = this;
 }
 
 disabled_data::disabled_data()

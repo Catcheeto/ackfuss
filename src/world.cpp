@@ -19,7 +19,6 @@ World::World()
     m_name.clear();
 
     world_list.push_back( this );
-    log_string("world ctor");
 }
 
 World::~World()

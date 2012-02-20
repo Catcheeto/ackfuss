@@ -16,6 +16,8 @@ class Brain {
     public:
         Brain();
         ~Brain();
+        DESCRIPTOR_DATA *d;
+
 
         string GetHost() const { return m_host; }
         char* GetHost_() const { return m_host; }

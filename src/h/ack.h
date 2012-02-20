@@ -201,6 +201,7 @@ class descriptor_data
     public:
         descriptor_data();
         ~descriptor_data();
+        const void Destroy() { close(descriptor); delete this; }
         Brain* brain;
         DESCRIPTOR_DATA *next;
         DESCRIPTOR_DATA *prev;
