@@ -1709,7 +1709,6 @@ DO_FUN(do_quit)
     DESCRIPTOR_DATA *d;
     DESCRIPTOR_DATA *other_logins = NULL;
     iterBrain di;
-    DESCRIPTOR_DATA *other_logins_next;
 
     if ( IS_NPC( ch ) )
         return;

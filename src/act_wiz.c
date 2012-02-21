@@ -3714,7 +3714,7 @@ DO_FUN(do_users)
                   d->connected,
                   buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->getHost_() );
         if ( get_trust( ch ) == 85 )
-            snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->remote_port );
+            snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->getPort() );
         else
             snprintf( buf + strlen( buf ), MSL, "\r\n" );
 

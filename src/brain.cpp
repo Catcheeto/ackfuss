@@ -31,8 +31,9 @@ Brain::Brain()
     inbuf[0] = '\0';
 
 
-    m_descriptor = 0;
+    m_descriptor = uintmin_t;;
     m_host = new char[256];
+    m_port = uintmin_t;
     m_world = NULL;
 }
 

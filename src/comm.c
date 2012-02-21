@@ -659,7 +659,7 @@ void new_descriptor( int d_control )
         snprintf( log_buf, (2 * MIL), "Connection formed from %s.", buf );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
-        dnew->remote_port = ntohs( sock.sin_port );
+        dnew->setPort( ntohs( sock.sin_port ) );
         dnew->setHost( buf );
 
         LOOKUP_DATA *ld = new LOOKUP_DATA();
@@ -744,7 +744,6 @@ void close_socket( DESCRIPTOR_DATA * dclose )
         if ( dclose->connected == CON_PLAYING )
         {
             act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
-            ch->desc->remote_port = uintmin_t;
             ch->desc = NULL;
         }
         else
