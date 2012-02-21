@@ -471,7 +471,7 @@ void show_char_to_char_0( CHAR_DATA * victim, CHAR_DATA * ch )
      * strncat to buf *linkdead* if not connected?
      */
     if ( !IS_NPC( victim ) )
-        if ( ( victim->desc ) != NULL && victim->desc->connected != CON_PLAYING )
+        if ( ( victim->desc ) != NULL && victim->desc->getConnectionState() != CON_PLAYING )
             strncat( buf, "(LINKDEAD)", MSL - 1 );
 
     if ( !IS_NPC(victim) && victim->act.test(ACT_RULER) )
@@ -1996,7 +1996,7 @@ DO_FUN(do_where)
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( d->connected == CON_PLAYING
+            if ( d->getConnectionState() == CON_PLAYING
                     && ( victim = d->character ) != NULL
                     && !IS_NPC( victim )
                     && victim->in_room != NULL

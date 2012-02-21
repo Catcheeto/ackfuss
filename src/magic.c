@@ -516,7 +516,7 @@ void cast( CHAR_DATA * ch, char *argument )
     bool multi_cast = FALSE;
     /* ZENFIX --ch's are surviving multiple kills per combat round */
 
-    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->connected == CON_SETTING_STATS ) )
+    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() == CON_SETTING_STATS ) )
         char_login = TRUE;
 
 
@@ -5190,7 +5190,7 @@ bool spell_fireshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
     AFFECT_DATA af;
     bool char_login = FALSE;
 
-    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->connected == CON_SETTING_STATS ) )
+    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() == CON_SETTING_STATS ) )
         char_login = TRUE;
 
     /* check to see if victim is already flaming
@@ -5244,7 +5244,7 @@ bool spell_iceshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
     AFFECT_DATA af;
     bool char_login = FALSE;
 
-    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->connected == CON_SETTING_STATS ) )
+    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() == CON_SETTING_STATS ) )
         char_login = TRUE;
 
     /* check to see if victim is already flaming
@@ -5298,7 +5298,7 @@ bool spell_shockshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     AFFECT_DATA af;
     bool char_login = FALSE;
 
-    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->connected == CON_SETTING_STATS ) )
+    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() == CON_SETTING_STATS ) )
         char_login = TRUE;
 
     /* check to see if victim is already flaming
@@ -5352,7 +5352,7 @@ bool spell_shadowshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     AFFECT_DATA af;
     bool char_login = FALSE;
 
-    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->connected == CON_SETTING_STATS ) )
+    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() == CON_SETTING_STATS ) )
         char_login = TRUE;
 
     /* check to see if victim is already flaming
@@ -5406,7 +5406,7 @@ bool spell_thoughtshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
     AFFECT_DATA af;
     bool char_login = FALSE;
 
-    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->connected == CON_SETTING_STATS ) )
+    if ( ( !IS_NPC( ch ) ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() == CON_SETTING_STATS ) )
         char_login = TRUE;
 
     /* check to see if victim is already flaming

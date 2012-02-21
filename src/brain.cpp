@@ -17,7 +17,6 @@ Brain::Brain()
     snoop_by = NULL;
     character = NULL;
     original = NULL;
-    connected = CON_GET_NAME;
     showstr_head = NULL;
     showstr_point = NULL;
     outsize = 2048;
@@ -31,6 +30,7 @@ Brain::Brain()
     inbuf[0] = '\0';
 
 
+    m_connection_state = CON_GET_NAME;
     m_descriptor = uintmin_t;;
     m_host = new char[256];
     m_port = uintmin_t;

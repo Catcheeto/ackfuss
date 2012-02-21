@@ -2633,7 +2633,7 @@ DESCRIPTOR_DATA *offline_load( char *name )
 
     if( load_char_obj( d, name, true ) )
     {
-        d->connected = CON_PLAYING;
+        d->setConnectionState( CON_PLAYING );
         d->character->desc = NULL;
         pload_list.push_back(d);
         return d;

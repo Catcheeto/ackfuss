@@ -648,7 +648,7 @@ CHAR_DATA *imc_find_user( char *name )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         if ( ( vch = d->character ? d->character : d->original ) != NULL && !strcasecmp( vch->GetName_(), name )
-                && d->connected == CON_PLAYING )
+                && d->getConnectionState() == CON_PLAYING )
             return vch;
     }
     return NULL;
@@ -1664,7 +1664,7 @@ PFUN( imc_recv_emote )
 
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
-        if ( d->connected == CON_PLAYING && ( ch = d->original ? d->original : d->character ) != NULL
+        if ( d->getConnectionState() == CON_PLAYING && ( ch = d->original ? d->original : d->character ) != NULL
                 && IMCPERM( ch ) >= level )
             imc_printf( ch, "~p[~GIMC~p] %s %s\r\n", imcgetname( q->from ), txt );
     }
@@ -1777,7 +1777,7 @@ void imc_display_channel( IMC_CHANNEL * c, const char *from, char *txt, int emot
     {
         ch = d->original ? d->original : d->character;
 
-        if ( !ch || d->connected != CON_PLAYING )
+        if ( !ch || d->getConnectionState() != CON_PLAYING )
             continue;
 
         /*
@@ -2032,7 +2032,7 @@ PFUN( imc_recv_channelnotify )
     {
         ch = d->original ? d->original : d->character;
 
-        if ( !ch || d->connected != CON_PLAYING )
+        if ( !ch || d->getConnectionState() != CON_PLAYING )
             continue;
 
         /*
@@ -2274,7 +2274,7 @@ char *imc_assemble_who( void )
     {
         person = d->original ? d->original : d->character;
 
-        if ( person && d->connected == CON_PLAYING )
+        if ( person && d->getConnectionState() == CON_PLAYING )
         {
             if ( IMCPERM( person ) <= IMCPERM_NONE || IMCPERM( person ) >= IMCPERM_IMM )
                 continue;
@@ -2309,7 +2309,7 @@ char *imc_assemble_who( void )
     {
         person = d->original ? d->original : d->character;
 
-        if ( person && d->connected == CON_PLAYING )
+        if ( person && d->getConnectionState() == CON_PLAYING )
         {
             if ( IMCPERM( person ) <= IMCPERM_NONE || IMCPERM( person ) < IMCPERM_IMM )
                 continue;

@@ -1988,7 +1988,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
+            if ( d->getConnectionState() != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                 continue;
             if ( d->character->get_level() >= LEVEL_HERO )
                 imm = true;
@@ -2007,7 +2007,7 @@ const char *who( const char *what, CHAR_DATA *looker )
             for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
-                if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
+                if ( d->getConnectionState() != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level() < LEVEL_HERO )
                     continue;
@@ -2022,7 +2022,7 @@ const char *who( const char *what, CHAR_DATA *looker )
             for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
-                if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
+                if ( d->getConnectionState() != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level("adept") < 1 || d->character->get_level() >= LEVEL_HERO )
                     continue;
@@ -2037,7 +2037,7 @@ const char *who( const char *what, CHAR_DATA *looker )
             for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
-                if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
+                if ( d->getConnectionState() != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level("maxremortal") < 1 || d->character->get_level("adept") > 0 || d->character->get_level() >= LEVEL_HERO )
                     continue;
@@ -2052,7 +2052,7 @@ const char *who( const char *what, CHAR_DATA *looker )
             for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
-                if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
+                if ( d->getConnectionState() != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
                 if ( d->character->get_level("maxremortal") > 0 || d->character->get_level("adept") > 0 || d->character->get_level() >= LEVEL_HERO )
                     continue;

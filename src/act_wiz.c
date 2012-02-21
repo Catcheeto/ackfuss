@@ -413,7 +413,7 @@ DO_FUN(do_echo)
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( d->connected == CON_PLAYING )
+        if ( d->getConnectionState() == CON_PLAYING )
         {
             send_to_char( argument, d->character );
             send_to_char( "@@g\r\n", d->character );
@@ -484,7 +484,7 @@ DO_FUN(do_transfer)
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( d->connected == CON_PLAYING
+            if ( d->getConnectionState() == CON_PLAYING
                     && !IS_IMMORTAL( d->character )
                     && d->character != ch && d->character->in_room != NULL && can_see( ch, d->character ) )
             {
@@ -3654,7 +3654,7 @@ DO_FUN(do_users)
     {
         d = *di;
         count++;
-        switch ( d->connected )
+        switch ( d->getConnectionState() )
         {
             case CON_PLAYING:
                 snprintf( buf3, MSL, "%s", "Playing         " );
@@ -3709,9 +3709,9 @@ DO_FUN(do_users)
                 break;
         }
 
-        snprintf( buf + strlen( buf ), MSL, "[%3ld %3d %18s] %-12s %-30s",
+        snprintf( buf + strlen( buf ), MSL, "[%3ld %3ld %18s] %-12s %-30s",
                   d->getDescriptor(),
-                  d->connected,
+                  d->getConnectionState(),
                   buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->getHost_() );
         if ( get_trust( ch ) == 85 )
             snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->getPort() );
@@ -5154,7 +5154,7 @@ void monitor_chan( const char *message, int channel )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( d->connected == CON_PLAYING
+        if ( d->getConnectionState() == CON_PLAYING
                 && !IS_NPC( d->character )
                 && d->character->pcdata->monitor.test(channel) && level <= get_trust( d->character ) )
         {
@@ -5431,7 +5431,7 @@ DO_FUN(do_gain_stat_reset)
 
     reset_gain_stats( victim );
 
-    victim->desc->connected = CON_SETTING_STATS;
+    victim->desc->setConnectionState( CON_SETTING_STATS );
     victim->hitroll = 0;
     victim->damroll = 0;
     victim->armor = 100;
@@ -5446,7 +5446,7 @@ DO_FUN(do_gain_stat_reset)
             equip_char( victim, wear_object, wear_object->wear_loc );
     }
 
-    victim->desc->connected = CON_PLAYING;
+    victim->desc->setConnectionState( CON_PLAYING );
 
     send_to_char( "Done!\r\n", ch );
     send_to_char( "Your stats have been reset.\r\n", victim );
@@ -6238,7 +6238,7 @@ DO_FUN(do_hotreboot)
         d = *di;
         CHAR_DATA *och = CH( d );
 
-        if ( !d->character || d->connected < 0 )  /* drop those logging on */
+        if ( !d->character || d->getConnectionState() < 0 )  /* drop those logging on */
         {
             write_to_descriptor( d->getDescriptor(), "\r\n@Sorry, " mudnamecolor " is rebooting. Come back in a few minutes.\r\n" );
             close_socket( d );   /* throw'em out */

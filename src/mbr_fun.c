@@ -267,7 +267,7 @@ void char_data::rsend( string txt, ... )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( d->connected == CON_PLAYING && d->character->in_room == this->in_room )
+        if ( d->getConnectionState() == CON_PLAYING && d->character->in_room == this->in_room )
             d->character->send(txt);
     }
 

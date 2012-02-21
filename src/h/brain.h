@@ -21,7 +21,6 @@ class Brain {
         Brain* snoop_by;
         CHAR_DATA *character;
         CHAR_DATA *original;
-        short connected;
         bool fcommand;
         char inbuf[4 * MAX_INPUT_LENGTH];
         char incomm[MAX_INPUT_LENGTH];
@@ -36,6 +35,9 @@ class Brain {
         int flags;
         int childpid;
 
+
+        uint_t getConnectionState( const uint_t state = MSL ) const { return state == MSL ? m_connection_state : m_connection_state == state; }
+        uint_t setConnectionState( const uint_t state ) { return m_connection_state = state; }
 
         uint_t getDescriptor() const { return m_descriptor; }
         uint_t setDescriptor( const uint_t descriptor ) { return  m_descriptor = descriptor; }
@@ -53,9 +55,10 @@ class Brain {
         World* setWorld( World* world ) { return m_world = world; }
 
     private:
-        uint_t m_descriptor; // File descriptor channel
-        char*  m_host;       // Remote hostname
-        uint_t m_port;       // Remote port
-        time_t m_timeout;    // Idle timeout
-        World* m_world;      // Game world
+        uint_t m_connection_state; // Connection state
+        uint_t m_descriptor;       // File descriptor channel
+        char*  m_host;             // Remote hostname
+        uint_t m_port;             // Remote port
+        time_t m_timeout;          // Idle timeout
+        World* m_world;            // Game world
 };

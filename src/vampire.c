@@ -321,7 +321,7 @@ void do_family( CHAR_DATA * ch, char *argument )
             for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
-                if ( d->connected == CON_PLAYING
+                if ( d->getConnectionState() == CON_PLAYING
                         && ( victim = d->character ) != NULL && !IS_NPC( victim ) && victim->in_room != NULL )
                 {
                     if ( IS_VAMP( victim ) && ( victim->pcdata->super->bloodline == index ) )
@@ -354,7 +354,7 @@ void do_family( CHAR_DATA * ch, char *argument )
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( d->connected == CON_PLAYING
+            if ( d->getConnectionState() == CON_PLAYING
                     && ( victim = d->character ) != NULL
                     && !IS_NPC( victim ) && victim->in_room != NULL && IS_VAMP( victim ) && !IS_IMMORTAL( victim ) )
             {

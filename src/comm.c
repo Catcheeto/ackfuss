@@ -489,7 +489,7 @@ void game_loop( )
                 stop_idling( d->character );
                 d->setTimeout( current_time + MAX_IDLE_TIME ); /* spec: stop idling */
 
-                if ( d->connected == CON_PLAYING )
+                if ( d->getConnectionState() == CON_PLAYING )
                     if ( d->showstr_point )
                         show_string( d, d->incomm );
                     else
@@ -521,7 +521,7 @@ void game_loop( )
             /*
              * spec: disconnect people idling on login
              */
-            if ( d->connected < 0 && d->getTimeout() < current_time )
+            if ( d->getConnectionState() < 0 && d->getTimeout() < current_time )
             {
                 char timeout[MSL];
                 snprintf( timeout, MSL, "Login timeout (%ds).\r\n", MAX_IDLE_TIME );
@@ -738,7 +738,7 @@ void close_socket( DESCRIPTOR_DATA * dclose )
         snprintf( log_buf, (2 * MIL), "Closing link to %s.", ch->GetName_() );
         log_string( log_buf );
         monitor_chan( log_buf, MONITOR_CONNECT );
-        if ( dclose->connected == CON_PLAYING )
+        if ( dclose->getConnectionState() == CON_PLAYING )
         {
             act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
             ch->desc = NULL;
@@ -882,7 +882,7 @@ void read_from_buffer( DESCRIPTOR_DATA * d )
         {
             if ( ++d->repeat >= 30 )
             {
-                if ( d->connected == CON_PLAYING )
+                if ( d->getConnectionState() == CON_PLAYING )
                 {
                     snprintf( log_buf, (2 * MIL), "%s input spamming!", d->character->GetName_() );
                     log_string( log_buf );
@@ -926,7 +926,7 @@ bool process_output( DESCRIPTOR_DATA * d, bool fPrompt )
     /*
      * Bust a prompt.
      */
-    if ( fPrompt && !merc_down && d->connected == CON_PLAYING )
+    if ( fPrompt && !merc_down && d->getConnectionState() == CON_PLAYING )
     {
         if ( d->showstr_point )
             write_to_buffer( d, "[Please type (c)ontinue, (r)efresh, (b)ack, (h)elp, (q)uit, or RETURN]:  " );
@@ -1933,7 +1933,7 @@ void show_amenu_to( DESCRIPTOR_DATA * d )
     {
         snprintf( menu, MSL, "\r\nYou must select a race first.\r\n" );
         write_to_buffer( d, menu );
-        d->connected = CON_MENU;
+        d->setConnectionState( CON_MENU );
         show_menu_to( d );
         return;
     }
@@ -2026,7 +2026,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
     ch = d->character;
 
-    if ( d->connected == CON_GET_NAME )
+    if ( d->getConnectionState() == CON_GET_NAME )
     {
         if ( argument[0] == '\0' )
         {
@@ -2127,7 +2127,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                     snprintf( buf, MSL, "Denying access to banned site %s", d->getHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
                     write_to_descriptor( d->getDescriptor(), "Your site has been banned from this Mud.  BYE BYE!\r\n" );
-                    d->connected = CON_QUITTING;
+                    d->setConnectionState( CON_QUITTING );
                     close_socket( d );
                     return;
                 }
@@ -2138,7 +2138,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
              */
             write_to_buffer( d, "\r\nPassword: " );
             write_to_buffer( d, echo_off_str );
-            d->connected = CON_GET_OLD_PASSWORD;
+            d->setConnectionState( CON_GET_OLD_PASSWORD );
             return;
         }
         else
@@ -2163,7 +2163,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                     snprintf( buf, MSL, "Denying access to banned site %s", d->getHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
                     write_to_descriptor( d->getDescriptor(), "Your site has been banned from this Mud.  BYE BYE!\r\n" );
-                    d->connected = CON_QUITTING;
+                    d->setConnectionState( CON_QUITTING );
                     close_socket( d );
                     return;
                 }
@@ -2171,12 +2171,12 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
             snprintf( buf, MSL, "Did I get that right, %s (Y/N)? ", argument );
             write_to_buffer( d, buf );
-            d->connected = CON_CONFIRM_NEW_NAME;
+            d->setConnectionState( CON_CONFIRM_NEW_NAME );
             return;
         }
     }
 
-    if ( d->connected == CON_GET_OLD_PASSWORD )
+    if ( d->getConnectionState() == CON_GET_OLD_PASSWORD )
     {
         write_to_buffer( d, "\r\n", 2 );
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
@@ -2225,10 +2225,10 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             do_help( ch, "motd" );
         }
         ch->pcdata->pagelen = lines;
-        d->connected = CON_READ_MOTD;
+        d->setConnectionState( CON_READ_MOTD );
     }
 
-    if ( d->connected == CON_CONFIRM_NEW_NAME )
+    if ( d->getConnectionState() == CON_CONFIRM_NEW_NAME )
     {
         switch ( *argument )
         {
@@ -2236,7 +2236,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             case 'Y':
                 snprintf( buf, MSL, "New character.\r\nGive me a password for %s: %s", ch->GetName_(), echo_off_str );
                 write_to_buffer( d, buf );
-                d->connected = CON_GET_NEW_PASSWORD;
+                d->setConnectionState( CON_GET_NEW_PASSWORD );
                 return;
 
             case 'n':
@@ -2244,7 +2244,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 write_to_buffer( d, "Ok, what IS it, then? " );
                 delete d->character;
                 d->character = NULL;
-                d->connected = CON_GET_NAME;
+                d->setConnectionState( CON_GET_NAME );
                 return;
 
             default:
@@ -2254,7 +2254,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->connected == CON_GET_NEW_PASSWORD )
+    if ( d->getConnectionState() == CON_GET_NEW_PASSWORD )
     {
         write_to_buffer( d, "\r\n", 2 );
 
@@ -2277,27 +2277,27 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         free_string( ch->pcdata->pwd );
         ch->pcdata->pwd = str_dup( pwdnew );
         write_to_buffer( d, "Please retype password: " );
-        d->connected = CON_CONFIRM_NEW_PASSWORD;
+        d->setConnectionState( CON_CONFIRM_NEW_PASSWORD );
         return;
     }
 
-    if ( d->connected == CON_CONFIRM_NEW_PASSWORD )
+    if ( d->getConnectionState() == CON_CONFIRM_NEW_PASSWORD )
     {
         write_to_buffer( d, "\r\n", 2 );
 
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
         {
             write_to_buffer( d, "Passwords don't match.\r\nRetype password: " );
-            d->connected = CON_GET_NEW_PASSWORD;
+            d->setConnectionState( CON_GET_NEW_PASSWORD );
             return;
         }
         write_to_buffer( d, echo_on_str );
         show_menu_to( d );
-        d->connected = CON_MENU;
+        d->setConnectionState( CON_MENU );
         return;
     }
 
-    if ( d->connected == CON_RESET_PASSWORD )
+    if ( d->getConnectionState() == CON_RESET_PASSWORD )
     {
         write_to_buffer( d, "\r\n", 2 );
 
@@ -2320,11 +2320,11 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         free_string( d->character->pcdata->pwd );
         d->character->pcdata->pwd = str_dup( pwdnew );
         write_to_buffer( d, "Please retype password: " );
-        d->connected = CON_CONFIRM_RESET_PASSWORD;
+        d->setConnectionState( CON_CONFIRM_RESET_PASSWORD );
         return;
     }
 
-    if ( d->connected == CON_CONFIRM_RESET_PASSWORD )
+    if ( d->getConnectionState() == CON_CONFIRM_RESET_PASSWORD )
     {
         iterBrain li;
         DESCRIPTOR_DATA *dp = NULL;
@@ -2334,7 +2334,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         if ( strcmp( crypt( argument, d->character->pcdata->pwd ), d->character->pcdata->pwd ) )
         {
             write_to_buffer( d, "Passwords don't match.\r\nRetype password: " );
-            d->connected = CON_RESET_PASSWORD;
+            d->setConnectionState( CON_RESET_PASSWORD );
             return;
         }
 
@@ -2354,7 +2354,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->connected == CON_MENU )
+    if ( d->getConnectionState() == CON_MENU )
     {
         int number;
 
@@ -2375,19 +2375,19 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         switch ( number )
         {
             case 1:
-                d->connected = CON_GET_NEW_SEX;
+                d->setConnectionState( CON_GET_NEW_SEX );
                 show_smenu_to( d );
                 break;
             case 2:
-                d->connected = CON_GET_RACE;
+                d->setConnectionState( CON_GET_RACE );
                 show_rmenu_to( d );
                 break;
             case 3:
-                d->connected = CON_GET_STATS;
+                d->setConnectionState( CON_GET_STATS );
                 show_amenu_to( d );
                 break;
             case 4:
-                d->connected = CON_GET_NEW_CLASS;
+                d->setConnectionState( CON_GET_NEW_CLASS );
                 show_cmenu_to( d );
                 break;
             case 5:
@@ -2407,7 +2407,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 do_save(ch, "auto");
                 do_help( ch, "newun" );
                 mudinfo.total_pfiles++;
-                d->connected = CON_READ_MOTD;
+                d->setConnectionState( CON_READ_MOTD );
                 /*
                  * Display motd, and all other malarky
                  */
@@ -2416,7 +2416,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->connected == CON_GET_STATS )
+    if ( d->getConnectionState() == CON_GET_STATS )
     {
         int total = (ch->pcdata->max_str + ch->pcdata->max_int + ch->pcdata->max_wis + ch->pcdata->max_dex + ch->pcdata->max_con);
 
@@ -2561,7 +2561,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 {
                     if ( !IS_SET( d->check, CHECK_STATS ) )
                         SET_BIT( d->check, CHECK_STATS );
-                    d->connected = CON_MENU;
+                    d->setConnectionState( CON_MENU );
                     show_menu_to( d );
                 }
                 break;
@@ -2577,7 +2577,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
     }
 
 
-    if ( d->connected == CON_GET_NEW_SEX )
+    if ( d->getConnectionState() == CON_GET_NEW_SEX )
     {
         switch ( argument[0] )
         {
@@ -2604,12 +2604,12 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         write_to_buffer( d, "\r\n\r\n" );
         if ( !IS_SET( d->check, CHECK_SEX ) )
             SET_BIT( d->check, CHECK_SEX );
-        d->connected = CON_MENU;
+        d->setConnectionState( CON_MENU );
         show_menu_to( d );
         return;
     }
 
-    if ( d->connected == CON_GET_NEW_CLASS )
+    if ( d->getConnectionState() == CON_GET_NEW_CLASS )
     {
         short classes[MAX_CLASS];
         short parity[MAX_CLASS];  /* Nowt to do with parity really */
@@ -2665,14 +2665,14 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
             ch->pcdata->order[cnt] = classes[cnt];
 
-        d->connected = CON_MENU;
+        d->setConnectionState( CON_MENU );
         if ( !IS_SET( d->check, CHECK_CLASS ) )
             SET_BIT( d->check, CHECK_CLASS );
         show_menu_to( d );
         return;
     }
 
-    if ( d->connected == CON_GET_RACE )
+    if ( d->getConnectionState() == CON_GET_RACE )
     {
         char arg1[MSL], arg2[MSL];
 
@@ -2708,11 +2708,11 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         if ( !IS_SET( d->check, CHECK_RACE ) )
             SET_BIT( d->check, CHECK_RACE );
         show_menu_to( d );
-        d->connected = CON_MENU;
+        d->setConnectionState( CON_MENU );
         return;
     }
 
-    if ( d->connected == CON_READ_MOTD )
+    if ( d->getConnectionState() == CON_READ_MOTD )
     {
         list<NOTE_DATA *>::iterator li;
         /*
@@ -2724,7 +2724,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             ch->lvl[ch->p_class] = 1;
         }
 
-        d->connected = CON_PLAYING;
+        d->setConnectionState( CON_PLAYING );
 
 
         if ( ch->act.test(ACT_FULL_ANSI) )
@@ -2992,7 +2992,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
 
         ch->is_quitting = false;
-        d->connected = CON_SETTING_STATS;
+        d->setConnectionState( CON_SETTING_STATS );
         {
             OBJ_DATA *wear_object;
             AFFECT_DATA *this_aff;
@@ -3038,7 +3038,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 delete this_aff;
             }
         }
-        d->connected = CON_PLAYING;
+        d->setConnectionState( CON_PLAYING );
 
         do_look( ch, "auto" );
 
@@ -3184,7 +3184,7 @@ bool check_login_cmd( DESCRIPTOR_DATA *d, char *cmd )
         snprintf( buf, MSL, "\r\nEnter a new password for %s: %s", who->character->GetName_(), echo_off_str );
         write_to_buffer( d, buf );
         d->character = who->character;
-        d->connected = CON_RESET_PASSWORD;
+        d->setConnectionState( CON_RESET_PASSWORD );
         return true;
     }
 
@@ -3291,7 +3291,7 @@ bool check_reconnect( DESCRIPTOR_DATA * d, bool fConn )
                 snprintf( log_buf, (2 * MIL), "%s@%s reconnected.", ch->GetName_(), d->getHost_() );
                 log_string( log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
-                d->connected = CON_PLAYING;
+                d->setConnectionState( CON_PLAYING );
 
                 /*
                  * Contributed by Gene Choi
@@ -3324,8 +3324,8 @@ bool check_playing( DESCRIPTOR_DATA * d, string name )
         di_next = ++di;
         if ( dold != d
                 && dold->character != NULL
-                && dold->connected != CON_GET_NAME
-                && dold->connected != CON_GET_OLD_PASSWORD
+                && dold->getConnectionState() != CON_GET_NAME
+                && dold->getConnectionState() != CON_GET_OLD_PASSWORD
                 && name == ( dold->original ? dold->original->GetName() : dold->character->GetName() ) )
         {
             snprintf( buf, MSL, "Player from site %s tried to login as %s (already playing) !", d->getHost_(), name.c_str() );
@@ -3335,10 +3335,10 @@ bool check_playing( DESCRIPTOR_DATA * d, string name )
                       if ( dold->character->fighting != NULL )
                         dold->character->fighting = NULL;
             */
-            d->connected = CON_RECONNECTING;
+            d->setConnectionState( CON_RECONNECTING );
             do_quit( dold->character, "" );
             write_to_buffer( d, "Already playing. If you were not fighting or dead, you were disconnected\r\nName: " );
-            d->connected = CON_GET_NAME;
+            d->setConnectionState( CON_GET_NAME );
             if ( d->character != NULL )
             {
                 delete d->character;
@@ -3357,7 +3357,7 @@ void stop_idling( CHAR_DATA * ch )
 {
     if ( ch == NULL
             || ch->desc == NULL
-            || ch->desc->connected != CON_PLAYING || ch->was_in_room == NULL || ch->in_room != get_room_index( ROOM_VNUM_LIMBO ) )
+            || ch->desc->getConnectionState() != CON_PLAYING || ch->was_in_room == NULL || ch->in_room != get_room_index( ROOM_VNUM_LIMBO ) )
         return;
 
     ch->timer = 0;
@@ -3728,7 +3728,7 @@ DO_FUN(do_finger)
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         this_d = *di;
-        if ( ( this_d->connected > 0 ) && !str_cmp( this_d->character->GetName(), name ) )
+        if ( ( this_d->getConnectionState() > 0 ) && !str_cmp( this_d->character->GetName(), name ) )
         {
             do_whois( ch, name );
             return;
@@ -3810,7 +3810,7 @@ void copyover_recover(  )
         brain_list.push_back( d );
         d->setHost( host );
 
-        d->connected = CON_COPYOVER_RECOVER;   /* -15, so close_socket frees the char */
+        d->setConnectionState( CON_COPYOVER_RECOVER );   /* -15, so close_socket frees the char */
 
         /*
          * Now, find the pfile
@@ -3846,17 +3846,12 @@ void copyover_recover(  )
                 d->character->position = POS_STANDING;
             do_look( d->character, "" );
             act( "$n's atoms materialize and reform.", d->character, NULL, NULL, TO_ROOM );
-            /*
-             * d->connected = CON_PLAYING;
-             */
 
             if ( this_char->pcdata->hp_from_gain < 0 )
                 reset_gain_stats( this_char );
-            /*       this_char->affected_by = 0;   */
-
 
             this_char->is_quitting = false;
-            d->connected = CON_SETTING_STATS;
+            d->setConnectionState( CON_SETTING_STATS );
             {
                 OBJ_DATA *wear_object;
                 AFFECT_DATA *this_aff;
@@ -3903,7 +3898,7 @@ void copyover_recover(  )
                     delete this_aff;
                 }
             }
-            d->connected = CON_PLAYING;
+            d->setConnectionState( CON_PLAYING );
 
 
         }
@@ -3931,7 +3926,7 @@ void update_player_cnt( void )
  for ( di = brain_list.begin(); di != brain_list.end(); di++ )
  {
      d = *di;
-     if( !d->character || d->character->GetName().empty() || (d->connected != CON_PLAYING) )
+     if( !d->character || d->character->GetName().empty() || (d->getConnectionState() != CON_PLAYING) )
          continue;
      else
          found++;

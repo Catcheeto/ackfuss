@@ -1179,7 +1179,7 @@ void weather_update( void )
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( d->connected == CON_PLAYING
+            if ( d->getConnectionState() == CON_PLAYING
                     && IS_OUTSIDE( d->character ) && ( d->character->position != POS_WRITING ) && IS_AWAKE( d->character ) )
                 send_to_char( buf, d->character );
         }
@@ -1319,7 +1319,7 @@ void char_update( void )
          * Find dude with oldest save time.
          */
         if ( !IS_NPC( ch )
-                && ( ch->desc == NULL || ch->desc->connected == CON_PLAYING ) && ch->level >= 2 && ch->pcdata->save_time < save_time )
+                && ( ch->desc == NULL || ch->desc->getConnectionState() == CON_PLAYING ) && ch->level >= 2 && ch->pcdata->save_time < save_time )
         {
             ch_save = ch;
             save_time = ch->pcdata->save_time;
