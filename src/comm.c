@@ -459,7 +459,7 @@ void game_loop( )
         {
             d = *di;
             mudinfo.mudNextDesc = ++di;
-            d->fcommand = FALSE;
+            /*d->fcommand = FALSE;*/
 
             if ( FD_ISSET( d->getDescriptor(), &in_set ) )
             {
@@ -485,7 +485,7 @@ void game_loop( )
             read_from_buffer( d );
             if ( d->incomm[0] != '\0' )
             {
-                d->fcommand = TRUE;
+                /*d->fcommand = TRUE;*/
                 stop_idling( d->character );
                 d->setTimeout( current_time + MAX_IDLE_TIME ); /* spec: stop idling */
 
@@ -525,12 +525,12 @@ void game_loop( )
             {
                 char timeout[MSL];
                 snprintf( timeout, MSL, "Login timeout (%ds).\r\n", MAX_IDLE_TIME );
-                write_to_descriptor( d->getDescriptor(), timeout );
+                d->Send( timeout );
                 close_socket( d );
                 continue;
             }
 
-            if ( ( d->fcommand || d->outtop > 0 ) && FD_ISSET( d->getDescriptor(), &out_set ) )
+            if ( /*( d->fcommand ||*/ d->outtop > 0/* ) */&& FD_ISSET( d->getDescriptor(), &out_set ) )
             {
                 if ( !process_output( d, TRUE ) )
                 {
@@ -776,7 +776,7 @@ bool read_from_descriptor( DESCRIPTOR_DATA * d )
         log_string( log_buf );
         snprintf( log_buf, (2 * MIL), "input overflow by %s (%s)", ( d->character == NULL ) ? "[login]" : d->character->GetName_(), d->getHost_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
-        write_to_descriptor( d->getDescriptor(), "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
+        d->Send( "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
         return FALSE;
     }
 
@@ -841,7 +841,7 @@ void read_from_buffer( DESCRIPTOR_DATA * d )
     {
         if ( k >= MAX_INPUT_LENGTH - 2 )
         {
-            write_to_descriptor( d->getDescriptor(), "Line too long.\r\n" );
+            d->Send( "Line too long.\r\n" );
 
             /*
              * skip the rest of the line
@@ -888,7 +888,7 @@ void read_from_buffer( DESCRIPTOR_DATA * d )
                     log_string( log_buf );
                     monitor_chan( log_buf, MONITOR_CONNECT );
                 }
-                write_to_descriptor( d->getDescriptor(), "\r\n***** SHUT UP!! *****\r\n" );
+                d->Send( "\r\n***** SHUT UP!! *****\r\n" );
                 close_socket( d );
                 /*
                  * old way: strcpy( d->incomm, "quit" );
@@ -967,7 +967,7 @@ bool process_output( DESCRIPTOR_DATA * d, bool fPrompt )
     /*
      * OS-dependent output.
      */
-    if ( !write_to_descriptor( d->getDescriptor(), d->outbuf, d->outtop ) )
+    if ( !d->Send( d->outbuf ) )
     {
         d->outtop = 0;
         return FALSE;
@@ -1587,7 +1587,7 @@ void write_to_buffer( DESCRIPTOR_DATA * d, const char *txt, int length )
     /*
      * Initial \r\n if needed.
      */
-    if ( d->outtop == 0 && !d->fcommand )
+    if ( d->outtop == 0 /*&& !d->fcommand*/ )
     {
         d->outbuf[0] = '\n';
         d->outbuf[1] = '\r';
@@ -1742,59 +1742,6 @@ void write_to_buffer( DESCRIPTOR_DATA * d, const char *txt, int length )
 
     d->outtop += length;
     return;
-}
-
-
-
-/*
- * Lowest level output function.
- * Write a block of text to the file descriptor.
- * If this gives errors on very long blocks (like 'ofind all'),
- *   try lowering the max block size.
- */
-/*
- *
- * Added block checking to prevent random booting of the descriptor. Thanks go
- * out to Rustry for his suggestions. -Orion
- */
-bool write_to_descriptor( int desc, char *txt, int length )
-{
-    int iStart = 0;
-    int nWrite = 0;
-    int nBlock = 0;
-    int iErr = 0;
-
-    if ( length <= 0 )
-        length = strlen( txt );
-
-    for ( iStart = 0; iStart < length; iStart += nWrite )
-    {
-        nBlock = UMIN( length - iStart, 4096 );
-        nWrite = send( desc, txt + iStart, nBlock, 0 );
-
-        if ( nWrite == -1 )
-        {
-            iErr = errno;
-
-            if ( iErr == EWOULDBLOCK )
-            {
-                /*
-                 * This is a SPAMMY little bug error. I would suggest
-                 * not using it, but I've included it in case. -Orion
-                 *
-                 * perror( "Write_to_descriptor: Send is blocking" );
-                 */
-                nWrite = 0;
-                continue;
-            }
-            else
-            {
-                perror( "Write_to_descriptor" );
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 void show_stotal_to( DESCRIPTOR_DATA * d )
@@ -2126,7 +2073,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 {
                     snprintf( buf, MSL, "Denying access to banned site %s", d->getHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
-                    write_to_descriptor( d->getDescriptor(), "Your site has been banned from this Mud.  BYE BYE!\r\n" );
+                    d->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
                     d->setConnectionState( CON_QUITTING );
                     close_socket( d );
                     return;
@@ -2162,7 +2109,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 {
                     snprintf( buf, MSL, "Denying access to banned site %s", d->getHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
-                    write_to_descriptor( d->getDescriptor(), "Your site has been banned from this Mud.  BYE BYE!\r\n" );
+                    d->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
                     d->setConnectionState( CON_QUITTING );
                     close_socket( d );
                     return;
@@ -3799,7 +3746,9 @@ void copyover_recover(  )
         /*
          * Write something, and check if it goes error-free
          */
-        if ( !write_to_descriptor( desc, "\r\nRestoring from HOTreboot...\r\n" ) )
+
+        string restoring = "\r\nRestoring from HOTreboot...\r\n";
+        if ( !send( desc, restoring.c_str(), restoring.length(), 0 ) )
         {
             close( desc ); /* nope */
             continue;
@@ -3809,7 +3758,6 @@ void copyover_recover(  )
         d->setDescriptor( desc );
         brain_list.push_back( d );
         d->setHost( host );
-
         d->setConnectionState( CON_COPYOVER_RECOVER );   /* -15, so close_socket frees the char */
 
         /*
@@ -3820,7 +3768,7 @@ void copyover_recover(  )
 
         if ( !fOld ) /* Player file not found?! */
         {
-            write_to_descriptor( desc, "\r\nSomehow, your character was lost in the HOTreboot. Sorry, you must relog in.\r\n" );
+            d->Send( "\r\nSomehow, your character was lost in the HOTreboot. Sorry, you must relog in.\r\n" );
             close_socket( d );
         }
         else  /* ok! */
@@ -3828,7 +3776,7 @@ void copyover_recover(  )
             CHAR_DATA *this_char;
 
 
-            write_to_descriptor( desc, "\r\nCopyover recovery complete.\r\n" );
+            d->Send( "\r\nCopyover recovery complete.\r\n" );
 
             /*
              * Just In Case

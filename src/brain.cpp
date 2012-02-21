@@ -12,6 +12,34 @@
 #include "h/db.h"
 #endif
 
+const bool Brain::Send( const string msg ) const
+{
+    ssize_t block = 0, length = msg.length(), max_size = MSL, sent = 0, start = 0;
+
+    for ( start = 0; start < length; start += sent )
+    {
+        block = std::min( length - start, max_size );
+        sent = send( m_descriptor, msg.c_str() + start, block, 0 );
+
+        if ( sent == -1 )
+        {
+            if ( errno == EWOULDBLOCK )
+            {
+                sent = 0;
+                continue;
+            }
+            else
+            {
+                perror( "Write_to_descriptor" );
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
 Brain::Brain()
 {
     snoop_by = NULL;

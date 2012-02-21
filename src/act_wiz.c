@@ -6240,14 +6240,14 @@ DO_FUN(do_hotreboot)
 
         if ( !d->character || d->getConnectionState() < 0 )  /* drop those logging on */
         {
-            write_to_descriptor( d->getDescriptor(), "\r\n@Sorry, " mudnamecolor " is rebooting. Come back in a few minutes.\r\n" );
+            d->Send( "\r\n@Sorry, " mudnamecolor " is rebooting. Come back in a few minutes.\r\n" );
             close_socket( d );   /* throw'em out */
         }
         else
         {
             fprintf( fp, "%ld %s %s\n", d->getDescriptor(), och->GetName_(), d->getHost_() );
             save_char_obj( och );
-            write_to_descriptor( d->getDescriptor(), buf );
+            d->Send( buf );
         }
     }
 
