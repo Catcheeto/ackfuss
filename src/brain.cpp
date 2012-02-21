@@ -17,7 +17,6 @@ Brain::Brain()
     snoop_by = NULL;
     character = NULL;
     original = NULL;
-    descriptor = 0;
     connected = CON_GET_NAME;
     showstr_head = NULL;
     showstr_point = NULL;
@@ -32,6 +31,7 @@ Brain::Brain()
     inbuf[0] = '\0';
 
 
+    m_descriptor = 0;
     m_host = new char[256];
     m_world = NULL;
 }

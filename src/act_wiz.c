@@ -3710,9 +3710,9 @@ DO_FUN(do_users)
         }
 
         snprintf( buf + strlen( buf ), MSL, "[%3ld %3d %18s] %-12s %-30s",
-                  d->descriptor,
+                  d->getDescriptor(),
                   d->connected,
-                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->GetHost_() );
+                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->getHost_() );
         if ( get_trust( ch ) == 85 )
             snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->remote_port );
         else
@@ -6201,7 +6201,7 @@ DO_FUN(do_hotreboo)
 DO_FUN(do_hotreboot)
 {
     FILE *fp;
-    DESCRIPTOR_DATA *d = NULL, *d_next;
+    DESCRIPTOR_DATA *d = NULL;
     iterBrain di;
     char buf[256], buf2[256], buf3[256];
     extern int saving_area;
@@ -6240,14 +6240,14 @@ DO_FUN(do_hotreboot)
 
         if ( !d->character || d->connected < 0 )  /* drop those logging on */
         {
-            write_to_descriptor( d->descriptor, "\r\n@Sorry, " mudnamecolor " is rebooting. Come back in a few minutes.\r\n" );
+            write_to_descriptor( d->getDescriptor(), "\r\n@Sorry, " mudnamecolor " is rebooting. Come back in a few minutes.\r\n" );
             close_socket( d );   /* throw'em out */
         }
         else
         {
-            fprintf( fp, "%ld %s %s\n", d->descriptor, och->GetName_(), d->GetHost_() );
+            fprintf( fp, "%ld %s %s\n", d->getDescriptor(), och->GetName_(), d->getHost_() );
             save_char_obj( och );
-            write_to_descriptor( d->descriptor, buf );
+            write_to_descriptor( d->getDescriptor(), buf );
         }
     }
 
@@ -6265,8 +6265,8 @@ DO_FUN(do_hotreboot)
      * exec - descriptors are inherited
      */
 
-    snprintf( buf, 256, "%d", mudinfo.port );
-    snprintf( buf2, 256, "%d", mudinfo.descriptor );
+    snprintf( buf, 256, "%ld", mudinfo.port );
+    snprintf( buf2, 256, "%ld", mudinfo.descriptor );
     if ( this_imcmud )
         snprintf( buf3, 256, "%d", this_imcmud->desc );
     else

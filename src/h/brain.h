@@ -21,7 +21,6 @@ class Brain {
         Brain* snoop_by;
         CHAR_DATA *character;
         CHAR_DATA *original;
-        uint_t descriptor;
         short connected;
         bool fcommand;
         char inbuf[4 * MAX_INPUT_LENGTH];
@@ -40,12 +39,15 @@ class Brain {
         time_t timeout;
 
 
-        string GetHost() const { return m_host; }
-        char* GetHost_() const { return m_host; }
+        uint_t getDescriptor() const { return m_descriptor; }
+        string getHost() const { return m_host; }
+        char* getHost_() const { return m_host; }
+        uint_t setDescriptor( const uint_t descriptor ) { return  m_descriptor = descriptor; }
         string setHost( const char* host ) { strcpy( m_host, host ); return m_host; }
         World* setWorld( World* world ) { return m_world = world; }
 
     private:
+        uint_t m_descriptor;
         char*  m_host;
         World* m_world;
 };
