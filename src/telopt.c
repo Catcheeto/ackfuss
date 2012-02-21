@@ -138,11 +138,11 @@ void mssp_reply( DESCRIPTOR_DATA* d, const char* key, int value )
 int process_do_mssp( DESCRIPTOR_DATA *d, unsigned char *src, int srclen )
 {
     DESCRIPTOR_DATA *dc = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     int cnt = 0;
     extern int int_boot_time;
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         dc = *di;
         if ( dc->character != NULL )

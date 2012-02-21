@@ -14,6 +14,24 @@
 
 Brain::Brain()
 {
+    snoop_by = NULL;
+    character = NULL;
+    original = NULL;
+    descriptor = 0;
+    connected = CON_GET_NAME;
+    showstr_head = NULL;
+    showstr_point = NULL;
+    outsize = 2048;
+    outtop = 0;
+    fcommand = false;
+    outbuf = (char*)malloc(outsize);
+    flags = 0;
+    childpid = 0;
+    incomm[0] = '\0';
+    inlast[0] = '\0';
+    inbuf[0] = '\0';
+
+
     m_host = new char[256];
     m_world = NULL;
 }

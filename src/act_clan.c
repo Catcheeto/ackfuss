@@ -661,7 +661,7 @@ DO_FUN(do_cwhere)
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     bool found;
     if ( IS_NPC( ch ) )
         return;
@@ -674,7 +674,7 @@ DO_FUN(do_cwhere)
 
     send_to_char( "Clan members visible to you:\r\n", ch );
     found = FALSE;
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( d->connected == CON_PLAYING

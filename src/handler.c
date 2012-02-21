@@ -2369,11 +2369,11 @@ void notify( char *message, int lv )
      */
 
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     char buf[MAX_STRING_LENGTH];
 
     snprintf( buf, MSL, "[NOTE]: %s\r\n", message );
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( ( d->connected == CON_PLAYING )
@@ -2386,11 +2386,11 @@ void notify( char *message, int lv )
 void auction( char *message )
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     char buf[MAX_STRING_LENGTH];
 
     snprintf( buf, MSL, "[AUCTION]: %s\r\n", message );
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( ( d->connected == CON_PLAYING ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_AUCTION) )
@@ -2410,10 +2410,10 @@ void info( char *message, int lv )
      * * - Stephen
      */
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     char buf[MAX_STRING_LENGTH];
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( ( d->connected == CON_PLAYING )
@@ -2435,11 +2435,11 @@ void log_chan( const char *message, int lv )
      * * Level is used to determine WHO gets the message...
      */
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     char buf[MAX_STRING_LENGTH];
 
     snprintf( buf, MSL, "[LOG]: %s\r\n", message );
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( ( d->connected == CON_PLAYING )

@@ -191,40 +191,6 @@ class council_data
         uint_t time;
 };
 
-/*
- * Descriptor (channel) structure.
- */
-class descriptor_data
-{
-    public:
-        descriptor_data();
-        ~descriptor_data();
-        const void Destroy() { close(descriptor); delete this; }
-        Brain* brain;
-        DESCRIPTOR_DATA *snoop_by;
-        CHAR_DATA *character;
-        CHAR_DATA *original;
-        uint_t descriptor;
-        short connected;
-        bool fcommand;
-        char inbuf[4 * MAX_INPUT_LENGTH];
-        char incomm[MAX_INPUT_LENGTH];
-        char inlast[MAX_INPUT_LENGTH];
-        short repeat;
-        char *showstr_head;
-        char *showstr_point;
-        char *outbuf;
-        int outsize;
-        int outtop;
-        unsigned int remote_port;  /* 'Pair Port' ? -S- */
-        int check;  /* For new players */
-        int flags;
-        int childpid;  /* Child process id */
-        time_t timeout;
-};
-
-#define DESC_FLAG_PASSTHROUGH 1  /* Used when data is being passed to another program */
-
 struct family_name_type
 {
     char *name;
@@ -1102,7 +1068,7 @@ class super_data
 
 struct mudinfo
 {
-    iterDescriptor    mudNextDesc;
+    iterBrain         mudNextDesc;
     unsigned int      cur_players;
     uint_t            descriptor;
     time_t            first_boot;

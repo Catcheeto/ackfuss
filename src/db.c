@@ -4175,9 +4175,9 @@ void clear_lists( void )
     for_each( ban_list.begin(),        ban_list.end(),        DeleteObject() );
     for_each( board_list.begin(),      board_list.end(),      DeleteObject() );
     for_each( brand_list.begin(),      brand_list.end(),      DeleteObject() );
+    for_each( brain_list.begin(),      brain_list.end(),      DeleteObject() );
     for_each( build_dat_list.begin(),  build_dat_list.end(),  DeleteObject() );
     for_each( char_list.begin(),       char_list.end(),       DeleteObject() );
-    for_each( descriptor_list.begin(), descriptor_list.end(), DeleteObject() );
     for_each( disabled_list.begin(),   disabled_list.end(),   DeleteObject() );
     for_each( exit_list.begin(),       exit_list.end(),       DeleteObject() );
     for_each( file_list.begin(),       file_list.end(),       DeleteObject() );
@@ -4191,11 +4191,13 @@ void clear_lists( void )
     for_each( shop_list.begin(),       shop_list.end(),       DeleteObject() );
     for_each( social_list.begin(),     social_list.end(),     DeleteObject() );
     for_each( help_list.begin(),       help_list.end(),       DeleteObject() );
+    for_each( world_list.begin(),      world_list.end(),      DeleteObject() );
 
     comlog(NULL, true, 0, NULL);
     fclose(fpReserve);
     delete_hash_table(hash_changed_vnums);
     free(string_space);
     free_imcdata(true);
-    delete CoreWorld;
+
+    return;
 }

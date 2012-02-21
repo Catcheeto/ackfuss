@@ -49,6 +49,7 @@ list<AREA_DATA *> area_list;
 list<BAN_DATA *> ban_list;
 list<BOARD_DATA *> board_list;
 list<BRAND_DATA*> brand_list;
+list<Brain*> brain_list;
 list<BUILD_DATA_LIST *> build_dat_list;
 list<CHAR_DATA *> cast_list;
 list<CHAR_DATA *> char_list;
@@ -70,7 +71,6 @@ list<SHOP_DATA *> shop_list;
 list<SOCIAL_DATA *> social_list;
 list<HELP_DATA *> help_list;
 list<World*> world_list;
-list<DESCRIPTOR_DATA*> descriptor_list;
 
 BUILD_DATA_LIST *first_build = NULL;
 BUILD_DATA_LIST *last_build = NULL;

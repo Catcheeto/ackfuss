@@ -102,7 +102,7 @@ typedef struct area_data AREA_DATA;
 typedef struct ban_data BAN_DATA;
 typedef struct char_data CHAR_DATA;
 typedef struct council_data COUNCIL_DATA;
-typedef struct descriptor_data DESCRIPTOR_DATA;
+typedef struct Brain DESCRIPTOR_DATA;
 typedef struct exit_data EXIT_DATA;
 typedef struct kill_data KILL_DATA;
 typedef struct mob_index_data MOB_INDEX_DATA;
@@ -156,7 +156,7 @@ typedef struct email_data EMAIL_DATA;
 typedef struct board_data BOARD_DATA;
 typedef struct message_data MESSAGE_DATA;
 
-typedef list<DESCRIPTOR_DATA*>::iterator iterDescriptor;
+typedef list<Brain*>::iterator iterBrain;
 
 typedef enum { exit_from, exit_to, exit_both } exit_status;
 /*

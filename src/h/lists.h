@@ -45,6 +45,7 @@ extern list<AREA_DATA*> area_list;
 extern list<BAN_DATA*> ban_list;
 extern list<BOARD_DATA*> board_list;
 extern list<BRAND_DATA*> brand_list;
+extern list<Brain*> brain_list;
 extern list<BUILD_DATA_LIST*> build_dat_list;
 extern list<CHAR_DATA*> cast_list;
 extern list<CHAR_DATA*> char_list;
@@ -66,7 +67,6 @@ extern list<SHOP_DATA*> shop_list;
 extern list<SOCIAL_DATA*> social_list;
 extern list<HELP_DATA*> help_list;
 extern list<World*> world_list;
-extern list<DESCRIPTOR_DATA*> descriptor_list;
 
 extern BUILD_DATA_LIST* first_build;
 extern BUILD_DATA_LIST* last_build;

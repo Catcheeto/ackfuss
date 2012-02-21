@@ -1963,7 +1963,7 @@ const char *who( const char *what, CHAR_DATA *looker )
     bool imm = false, apt = false, rmt = false, mrt = false;
     short found = 0;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *pers;
 
     output.clear();
@@ -1985,7 +1985,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         output += "|---------------------------------+-------------------------------------------|\r\n";
 
         // Find what tiers to show
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
@@ -2004,7 +2004,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( imm ) //Display imms
         {
             output += "@@R|---------------------------------|----------@@lImmortals@@R------------------------|@@N\r\n";
-            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+            for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
@@ -2019,7 +2019,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( apt ) //Display adepts
         {
             output += "@@R|---------------------------------|------------@@WAdepts@@R-------------------------|@@N\r\n";
-            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+            for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
@@ -2034,7 +2034,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( rmt ) //Display remorts
         {
             output += "@@R|---------------------------------|----------@@mRemortals@@R------------------------|@@N\r\n";
-            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+            for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
@@ -2049,7 +2049,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         if ( mrt ) //Display morts
         {
             output += "@@R|---------------------------------|-----------@@cMortals@@R-------------------------|@@N\r\n";
-            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+            for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
                 if ( d->connected != CON_PLAYING || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )

@@ -12,11 +12,32 @@
 #include "world.h"
 #endif
 
+#define DESC_FLAG_PASSTHROUGH 1
+
 class Brain {
     public:
         Brain();
         ~Brain();
-        DESCRIPTOR_DATA *d;
+        Brain* snoop_by;
+        CHAR_DATA *character;
+        CHAR_DATA *original;
+        uint_t descriptor;
+        short connected;
+        bool fcommand;
+        char inbuf[4 * MAX_INPUT_LENGTH];
+        char incomm[MAX_INPUT_LENGTH];
+        char inlast[MAX_INPUT_LENGTH];
+        short repeat;
+        char *showstr_head;
+        char *showstr_point;
+        char *outbuf;
+        int outsize;
+        int outtop;
+        uint_t remote_port;
+        int check;
+        int flags;
+        int childpid;
+        time_t timeout;
 
 
         string GetHost() const { return m_host; }

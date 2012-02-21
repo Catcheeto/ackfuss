@@ -42,7 +42,7 @@ bool check_reconnect P_((DESCRIPTOR_DATA *d, bool fConn));
 bool check_playing P_((DESCRIPTOR_DATA *d, string name));
 void stop_idling P_((CHAR_DATA *ch));
 void send_to_char P_((string txt, CHAR_DATA *ch));
-void show_string P_((struct descriptor_data *d, char *input));
+void show_string P_((DESCRIPTOR_DATA *d, char *input));
 void act P_((const char *format, CHAR_DATA *ch, const void *arg1, const void *arg2, int type));
 DECLARE_DO_FUN(do_finger);
 void send_to_descrips P_((const char *message));

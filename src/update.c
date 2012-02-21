@@ -978,7 +978,7 @@ void weather_update( void )
     char buf[MSL];
     char buf2[MSL];
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     int diff;
     short x, y;
     REMOTEINFO *r, *rnext;
@@ -1176,7 +1176,7 @@ void weather_update( void )
 
     if ( buf[0] != '\0' )
     {
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             if ( d->connected == CON_PLAYING

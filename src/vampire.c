@@ -283,7 +283,7 @@ void do_family( CHAR_DATA * ch, char *argument )
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     bool found;
     short index;
 
@@ -318,7 +318,7 @@ void do_family( CHAR_DATA * ch, char *argument )
 
             send_to_char( buf, ch );
             found = FALSE;
-            for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+            for ( di = brain_list.begin(); di != brain_list.end(); di++ )
             {
                 d = *di;
                 if ( d->connected == CON_PLAYING
@@ -351,7 +351,7 @@ void do_family( CHAR_DATA * ch, char *argument )
         snprintf( buf, MSL, "@@WMembers of the @@dKindred @@NFamily %s\r\n", get_family_name( ch ) );
         send_to_char( buf, ch );
         found = FALSE;
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             if ( d->connected == CON_PLAYING

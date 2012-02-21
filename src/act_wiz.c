@@ -303,7 +303,7 @@ DO_FUN(do_disconnect)
 {
     char arg[MSL];
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *victim;
 
     one_argument( argument, arg );
@@ -325,7 +325,7 @@ DO_FUN(do_disconnect)
         return;
     }
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( d == victim->desc )
@@ -402,7 +402,7 @@ DO_FUN(do_pardon)
 DO_FUN(do_echo)
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
 
     if ( argument[0] == '\0' )
     {
@@ -410,7 +410,7 @@ DO_FUN(do_echo)
         return;
     }
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( d->connected == CON_PLAYING )
@@ -466,7 +466,7 @@ DO_FUN(do_transfer)
     char arg2[MSL];
     ROOM_INDEX_DATA *location;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *victim;
 //    DESCRIPTOR_DATA df;
 //    bool found = FALSE;
@@ -481,7 +481,7 @@ DO_FUN(do_transfer)
 
     if ( !str_cmp( arg1, "all" ) )
     {
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             if ( d->connected == CON_PLAYING
@@ -1591,7 +1591,7 @@ DO_FUN(do_snoop)
 {
     char arg[MSL];
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *victim;
 
     one_argument( argument, arg );
@@ -1617,7 +1617,7 @@ DO_FUN(do_snoop)
     if ( victim == ch )
     {
         send_to_char( "Cancelling all snoops.\r\n", ch );
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             if ( d->snoop_by == ch->desc )
@@ -3635,7 +3635,7 @@ DO_FUN(do_users)
     char buf2[MSL];
     char buf3[MSL];
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     int count;
 
 
@@ -3650,7 +3650,7 @@ DO_FUN(do_users)
         send_to_char( "\r\n", ch );
 
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         count++;
@@ -3709,12 +3709,12 @@ DO_FUN(do_users)
                 break;
         }
 
-        snprintf( buf + strlen( buf ), MSL, "[%3d %3d %18s] %-12s %-30s",
+        snprintf( buf + strlen( buf ), MSL, "[%3ld %3d %18s] %-12s %-30s",
                   d->descriptor,
                   d->connected,
-                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->brain->GetHost_() );
+                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->GetHost_() );
         if ( get_trust( ch ) == 85 )
-            snprintf( buf + strlen( buf ), MSL, "  %5d\r\n", d->remote_port );
+            snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->remote_port );
         else
             snprintf( buf + strlen( buf ), MSL, "\r\n" );
 
@@ -4557,7 +4557,7 @@ DO_FUN(do_isnoop)
 
 
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     char buf[MSL];
     int count = 0;
 
@@ -4565,7 +4565,7 @@ DO_FUN(do_isnoop)
     send_to_char( "Snoop List:\r\n-=-=-=-=-=-\r\n", ch );
 
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( d->snoop_by != NULL )
@@ -5135,7 +5135,7 @@ void monitor_chan( const char *message, int channel )
 {
     char buf[MSL];
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     int a;
     int level = 85;
 
@@ -5151,7 +5151,7 @@ void monitor_chan( const char *message, int channel )
 
     snprintf( buf, MSL, "%s[%7s]@@N %s@@N\r\n", tab_monitor[a].col, tab_monitor[a].id, strip_out( message, "\r\n" ) );
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( d->connected == CON_PLAYING
@@ -6202,7 +6202,7 @@ DO_FUN(do_hotreboot)
 {
     FILE *fp;
     DESCRIPTOR_DATA *d = NULL, *d_next;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     char buf[256], buf2[256], buf3[256];
     extern int saving_area;
 
@@ -6233,7 +6233,7 @@ DO_FUN(do_hotreboot)
     /*
      * For each PLAYING descriptor( non-negative ), save its state
      */
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         CHAR_DATA *och = CH( d );
@@ -6245,7 +6245,7 @@ DO_FUN(do_hotreboot)
         }
         else
         {
-            fprintf( fp, "%d %s %s\n", d->descriptor, och->GetName_(), d->brain->GetHost_() );
+            fprintf( fp, "%ld %s %s\n", d->descriptor, och->GetName_(), d->GetHost_() );
             save_char_obj( och );
             write_to_descriptor( d->descriptor, buf );
         }

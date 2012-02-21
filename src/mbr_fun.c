@@ -259,12 +259,12 @@ const char *char_data::get_whoname( )
 void char_data::rsend( string txt, ... )
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
 
     if ( this->in_room == NULL )
         return;
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
         if ( d->connected == CON_PLAYING && d->character->in_room == this->in_room )

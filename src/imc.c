@@ -642,10 +642,10 @@ char *escape_string( const char *src )
 CHAR_DATA *imc_find_user( char *name )
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *vch = NULL;
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         if ( ( vch = d->character ? d->character : d->original ) != NULL && !strcasecmp( vch->GetName_(), name )
                 && d->connected == CON_PLAYING )
@@ -1650,7 +1650,7 @@ PFUN( imc_recv_tell )
 PFUN( imc_recv_emote )
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *ch;
     char txt[LGST], lvl[SMST];
     int level;
@@ -1662,7 +1662,7 @@ PFUN( imc_recv_emote )
     if ( level < 0 || level > IMCPERM_IMP )
         level = IMCPERM_IMM;
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         if ( d->connected == CON_PLAYING && ( ch = d->original ? d->original : d->character ) != NULL
                 && IMCPERM( ch ) >= level )
@@ -1761,7 +1761,7 @@ void update_imchistory( IMC_CHANNEL * channel, char *message )
 void imc_display_channel( IMC_CHANNEL * c, const char *from, char *txt, int emote )
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *ch;
     char buf[LGST], name[SMST];
 
@@ -1773,7 +1773,7 @@ void imc_display_channel( IMC_CHANNEL * c, const char *from, char *txt, int emot
     else
         snprintf( buf, LGST, c->socformat, txt );
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         ch = d->original ? d->original : d->character;
 
@@ -1902,7 +1902,7 @@ PFUN( imc_recv_chanwhoreply )
 char *get_local_chanwho( IMC_CHANNEL *c )
 {
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *person;
     static char buf[IMC_BUFF_SIZE];
     int count = 0, col = 0;
@@ -1910,7 +1910,7 @@ char *get_local_chanwho( IMC_CHANNEL *c )
     snprintf( buf, IMC_BUFF_SIZE, "The following people are listening to %s on %s:\r\n\r\n",
               c->local_name, this_imcmud->localname );
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         person = d->original ? d->original : d->character;
 
@@ -2007,7 +2007,7 @@ PFUN( imc_recv_channelnotify )
 {
     IMC_CHANNEL *c;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     CHAR_DATA *ch;
     char buf[LGST];
     char chan[SMST], cstat[SMST];
@@ -2028,7 +2028,7 @@ PFUN( imc_recv_channelnotify )
     else
         snprintf( buf, LGST, c->emoteformat, q->from, "has left the channel." );
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         ch = d->original ? d->original : d->character;
 
@@ -2258,7 +2258,7 @@ char *imc_assemble_who( void )
 {
     CHAR_DATA *person;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     int pcount = 0;
     bool plr = FALSE, imm = FALSE;
     char plrheader[SMST], immheader[SMST], rank[SMST], flags[SMST], name[SMST], title[SMST], plrline[SMST], immline[SMST];
@@ -2270,7 +2270,7 @@ char *imc_assemble_who( void )
     plrheader[0] = '\0';
     immheader[0] = '\0';
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         person = d->original ? d->original : d->character;
 
@@ -2305,7 +2305,7 @@ char *imc_assemble_who( void )
     }
 
     imm = FALSE;
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         person = d->original ? d->original : d->character;
 

@@ -489,7 +489,7 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     int position;
     char ansi[MAX_STRING_LENGTH];
 
@@ -669,7 +669,7 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
         bool has_howled = FALSE;
         extern CHAR_DATA *quest_mob;
 
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             CHAR_DATA *och;
@@ -1708,7 +1708,7 @@ DO_FUN(do_quit)
 {
     DESCRIPTOR_DATA *d;
     DESCRIPTOR_DATA *other_logins = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     DESCRIPTOR_DATA *other_logins_next;
 
     if ( IS_NPC( ch ) )
@@ -1749,7 +1749,7 @@ DO_FUN(do_quit)
      */
     d = ch->desc;
 
-    for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         other_logins = *di;
 

@@ -1981,7 +1981,7 @@ DO_FUN(do_where)
     CHAR_DATA *victim;
     list<CHAR_DATA *>::iterator li;
     DESCRIPTOR_DATA *d = NULL;
-    list<DESCRIPTOR_DATA*>::iterator di;
+    iterBrain di;
     bool found;
     buf[0] = '\0';
 
@@ -1993,7 +1993,7 @@ DO_FUN(do_where)
         snprintf( buf, MSL, "In %s %s @@N:\r\n", ch->in_room->area->level_label, ch->in_room->area->name );
         send_to_char( buf, ch );
         found = FALSE;
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
+        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
             if ( d->connected == CON_PLAYING
