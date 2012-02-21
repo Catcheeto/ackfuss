@@ -371,7 +371,7 @@ void game_loop( )
         fd_set out_set;
         fd_set exc_set;
         DESCRIPTOR_DATA *d = NULL;
-        list<DESCRIPTOR_DATA*>::iterator di, di_next;
+        list<DESCRIPTOR_DATA*>::iterator di;
 
         /*
          * handle reopening the control socket
@@ -395,10 +395,9 @@ void game_loop( )
         FD_SET( mudinfo.descriptor, &in_set );
         mudinfo.max_descriptor = mudinfo.descriptor;
 
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
             d = *di;
-            di_next = ++di;
             if ( ( d->flags && DESC_FLAG_PASSTHROUGH ) == 0 )
             {
                 mudinfo.max_descriptor = std::max( mudinfo.max_descriptor, d->descriptor );
@@ -437,10 +436,10 @@ void game_loop( )
         /*
          * Kick out the freaky folks.
          */
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = mudinfo.mudNextDesc )
         {
             d = *di;
-            di_next = ++di;
+            mudinfo.mudNextDesc = ++di;
             if ( FD_ISSET( d->descriptor, &exc_set ) )
             {
                 FD_CLR( d->descriptor, &in_set );
@@ -455,10 +454,10 @@ void game_loop( )
         /*
          * Process input.
          */
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = mudinfo.mudNextDesc )
         {
             d = *di;
-            di_next = ++di;
+            mudinfo.mudNextDesc = ++di;
             d->fcommand = FALSE;
 
             if ( FD_ISSET( d->descriptor, &in_set ) )
@@ -497,13 +496,7 @@ void game_loop( )
                 else
                     nanny( d, d->incomm );
 
-                if ( d->remote_port == uintmin_t )
-                {
-                    delete d;
-                    continue;
-                }
-                else
-                    d->incomm[0] = '\0';
+                d->incomm[0] = '\0';
 
             }
         }
@@ -519,10 +512,10 @@ void game_loop( )
         /*
          * Output.
          */
-        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = di_next )
+        for ( di = descriptor_list.begin(); di != descriptor_list.end(); di = mudinfo.mudNextDesc )
         {
             d = *di;
-            di_next = ++di;
+            mudinfo.mudNextDesc = ++di;
 
             /*
              * spec: disconnect people idling on login
@@ -754,17 +747,12 @@ void close_socket( DESCRIPTOR_DATA * dclose )
             ch->desc = NULL;
         }
         else
-        {
-            if ( dclose->connected > CON_RESET_PASSWORD )
-                delete dclose->character;
-        }
-        /*      stop_fighting( ch );
-              save_char_obj( ch );
-              extract_char( ch, TRUE );  */
+            delete dclose->character;
     }
 
+    mudinfo.mudNextDesc = descriptor_list.erase( find( descriptor_list.begin(), descriptor_list.end(), dclose ) );
     close( dclose->descriptor );
-    dclose->remote_port = uintmin_t;
+    delete dclose;
 
     update_player_cnt( );
 

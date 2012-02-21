@@ -669,6 +669,7 @@ void generate_auto_quest(  )
     {
         for ( di = descriptor_list.begin(); di != descriptor_list.end(); di++ )
         {
+            d = *di;
             if ( d->connected != CON_PLAYING )
                 continue;
             if ( IS_IMMORTAL(d->character) ) /* Imms shouldn't count against the quest level. --Kline */

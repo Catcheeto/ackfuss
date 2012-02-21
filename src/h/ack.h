@@ -1102,6 +1102,7 @@ class super_data
 
 struct mudinfo
 {
+    iterDescriptor    mudNextDesc;
     unsigned int      cur_players;
     uint_t            descriptor;
     time_t            first_boot;
