@@ -36,6 +36,7 @@ class Brain {
         int childpid;
 
 
+        const bool ProcessOutput( const bool prompt = true );
         const bool Send( const string msg ) const;
 
         uint_t getConnectionState( const uint_t state = MSL ) const { return state == MSL ? m_connection_state : m_connection_state == state; }

@@ -12,6 +12,60 @@
 #include "h/db.h"
 #endif
 
+const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
+void bust_a_prompt (DESCRIPTOR_DATA *d);
+void char_hunt (CHAR_DATA *ch);
+void write_to_buffer (DESCRIPTOR_DATA *d, const char *txt, int length = 0);
+
+const bool Brain::ProcessOutput( const bool prompt )
+{
+    if ( prompt && m_connection_state == CON_PLAYING )
+    {
+        if ( showstr_point )
+            write_to_buffer( this, "[Please type (c)ontinue, (r)efresh, (b)ack, (h)elp, (q)uit, or RETURN]:  " );
+        else
+        {
+            CHAR_DATA *ch;
+
+            ch = original ? original : character;
+            if ( !IS_NPC(ch) && ch->act.test(ACT_BLANK) && (ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test(ACT_AUTOBRIEF)) )
+                write_to_buffer( this, "\r\n", 2 );
+            if ( ch->hunting || ch->hunt_obj )
+                char_hunt( ch );
+            if ( !IS_NPC(ch) && (ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test(ACT_AUTOBRIEF)) )
+                bust_a_prompt( this );
+            if ( ch->act.test(ACT_TELNET_GA) )
+                write_to_buffer( this, go_ahead_str );
+        }
+    }
+
+    if ( outtop == 0 )
+        return TRUE;
+
+    if ( snoop_by != NULL )
+    {
+        char foo[MAX_STRING_LENGTH];
+        CHAR_DATA *snoop_ch;
+
+        snoop_ch = original != NULL ? original : character;
+        if ( snoop_ch != NULL )
+            snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->GetName_() );
+        write_to_buffer( snoop_by, foo );
+        write_to_buffer( snoop_by, outbuf, outtop );
+    }
+
+    if ( !Send( outbuf ) )
+    {
+        outtop = 0;
+        return FALSE;
+    }
+    else
+    {
+        outtop = 0;
+        return TRUE;
+    }
+}
+
 const bool Brain::Send( const string msg ) const
 {
     ssize_t block = 0, length = msg.length(), max_size = MSL, sent = 0, start = 0;

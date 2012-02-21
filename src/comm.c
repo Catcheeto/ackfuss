@@ -532,7 +532,7 @@ void game_loop( )
 
             if ( /*( d->fcommand ||*/ d->outtop > 0/* ) */&& FD_ISSET( d->getDescriptor(), &out_set ) )
             {
-                if ( !process_output( d, TRUE ) )
+                if ( !d->ProcessOutput() )
                 {
                     if ( d->character != NULL )
                         save_char_obj( d->character );
@@ -702,7 +702,7 @@ void close_socket( DESCRIPTOR_DATA * dclose )
     CHAR_DATA *ch;
 
     if ( dclose->outtop > 0 )
-        process_output( dclose, FALSE );
+        dclose->ProcessOutput( false );
 
     if ( dclose->snoop_by != NULL )
     {
@@ -913,70 +913,6 @@ void read_from_buffer( DESCRIPTOR_DATA * d )
     for ( j = 0; ( d->inbuf[j] = d->inbuf[i + j] ) != '\0'; j++ )
         ;
     return;
-}
-
-
-
-/*
- * Low level output function.
- */
-bool process_output( DESCRIPTOR_DATA * d, bool fPrompt )
-{
-
-    /*
-     * Bust a prompt.
-     */
-    if ( fPrompt && !merc_down && d->getConnectionState( CON_PLAYING ) )
-    {
-        if ( d->showstr_point )
-            write_to_buffer( d, "[Please type (c)ontinue, (r)efresh, (b)ack, (h)elp, (q)uit, or RETURN]:  " );
-        else
-        {
-            CHAR_DATA *ch;
-
-            ch = d->original ? d->original : d->character;
-            if ( !IS_NPC(ch) && ch->act.test(ACT_BLANK) && (ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test(ACT_AUTOBRIEF)) )
-                write_to_buffer( d, "\r\n", 2 );
-            if ( ch->hunting || ch->hunt_obj )
-                char_hunt( ch );
-            if ( !IS_NPC(ch) && (ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test(ACT_AUTOBRIEF)) )
-                bust_a_prompt( d );
-            if ( ch->act.test(ACT_TELNET_GA) )
-                write_to_buffer( d, go_ahead_str );
-        }
-    }
-    /*
-     * Short-circuit if nothing to write.
-     */
-    if ( d->outtop == 0 )
-        return TRUE;
-    /*
-     * Snoop-o-rama.
-     */
-    if ( d->snoop_by != NULL )
-    {
-        char foo[MAX_STRING_LENGTH];
-        CHAR_DATA *snoop_ch;
-
-        snoop_ch = d->original != NULL ? d->original : d->character;
-        if ( snoop_ch != NULL )
-            snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->GetName_() );
-        write_to_buffer( d->snoop_by, foo );
-        write_to_buffer( d->snoop_by, d->outbuf, d->outtop );
-    }
-    /*
-     * OS-dependent output.
-     */
-    if ( !d->Send( d->outbuf ) )
-    {
-        d->outtop = 0;
-        return FALSE;
-    }
-    else
-    {
-        d->outtop = 0;
-        return TRUE;
-    }
 }
 
 /*
