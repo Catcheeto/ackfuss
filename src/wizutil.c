@@ -297,7 +297,7 @@ DO_FUN(do_rename)
         return;
     }
 
-    if ( !victim->desc || ( victim->desc->getConnectionState() != CON_PLAYING ) )
+    if ( !victim->desc || !victim->desc->getConnectionState( CON_PLAYING ) )
     {
         send_to_char( "This player has lost his link or is inside a pager or the like.\r\n", ch );
         return;

@@ -678,7 +678,7 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
             och = ( d->original ) ? ( d->original ) : ( d->character );
             vch = d->character;
 
-            if ( d->getConnectionState() == CON_PLAYING && vch != ch && !och->deaf.test(channel) && !och->deaf.test(CHANNEL_HERMIT) )
+            if ( d->getConnectionState( CON_PLAYING ) && vch != ch && !och->deaf.test(channel) && !och->deaf.test(CHANNEL_HERMIT) )
             {
                 if ( vch->in_room->room_flags.test(RFLAG_QUIET) && !IS_IMMORTAL( ch ) )
                     continue;
@@ -1754,9 +1754,9 @@ DO_FUN(do_quit)
 
         if ( ( other_logins != d )
                 && ( other_logins->character != NULL )
-                && ( other_logins->getConnectionState() != CON_RECONNECTING ) && ( other_logins->character->GetName() == ch->GetName() ) )
+                && ( !other_logins->getConnectionState( CON_RECONNECTING ) ) && ( other_logins->character->GetName() == ch->GetName() ) )
         {
-            if ( other_logins->getConnectionState() == CON_GET_OLD_PASSWORD )
+            if ( other_logins->getConnectionState( CON_GET_OLD_PASSWORD ) )
             {
                 char logbuf[MSL];
                 snprintf( logbuf, MSL, "CHEATER!!! Possible attempt to utilize eq dup bug, %s", other_logins->character->GetName_() );

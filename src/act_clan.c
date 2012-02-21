@@ -677,7 +677,7 @@ DO_FUN(do_cwhere)
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( d->getConnectionState() == CON_PLAYING
+        if ( d->getConnectionState( CON_PLAYING )
                 && ( victim = d->character ) != NULL
                 && !IS_NPC( victim )
                 && victim->in_room != NULL && ( ch->act.test(ACT_CBOSS) || can_see( ch, victim ) ) )

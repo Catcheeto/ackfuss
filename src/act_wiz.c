@@ -413,7 +413,7 @@ DO_FUN(do_echo)
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( d->getConnectionState() == CON_PLAYING )
+        if ( d->getConnectionState( CON_PLAYING ) )
         {
             send_to_char( argument, d->character );
             send_to_char( "@@g\r\n", d->character );
@@ -484,7 +484,7 @@ DO_FUN(do_transfer)
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( d->getConnectionState() == CON_PLAYING
+            if ( d->getConnectionState( CON_PLAYING )
                     && !IS_IMMORTAL( d->character )
                     && d->character != ch && d->character->in_room != NULL && can_see( ch, d->character ) )
             {
@@ -5154,7 +5154,7 @@ void monitor_chan( const char *message, int channel )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( d->getConnectionState() == CON_PLAYING
+        if ( d->getConnectionState( CON_PLAYING )
                 && !IS_NPC( d->character )
                 && d->character->pcdata->monitor.test(channel) && level <= get_trust( d->character ) )
         {

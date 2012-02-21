@@ -464,7 +464,7 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
      * Check for weapon wielding.
      * Guard against recursion (for weapons with affects).
      */
-    if ( ( ch->is_quitting == false ) && ( ch->desc != NULL ) && ( ch->desc->getConnectionState() != CON_SETTING_STATS ) )
+    if ( ( ch->is_quitting == false ) && ( ch->desc != NULL ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) )
     {
         short i;
         for ( i = 0; i < MAX_WEAR; i++ )
@@ -1110,7 +1110,7 @@ void equip_char( CHAR_DATA * ch, OBJ_DATA * obj, int iWear )
     AFFECT_DATA *paf;
     char log[MAX_STRING_LENGTH];
 
-    if ( ( !IS_NPC( ch ) && ch->desc->getConnectionState() != CON_SETTING_STATS ) && ( get_eq_char( ch, iWear ) != NULL ) )
+    if ( !IS_NPC( ch ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) && ( get_eq_char( ch, iWear ) != NULL ) )
     {
         snprintf( log, MSL, "equip_char: %s (room %d) cannot be equiped with %s, as wear slot (%d) not empty.",
                   ch->get_name(), ch->in_room->vnum, obj->GetDescrShort_(), iWear );
@@ -1120,7 +1120,7 @@ void equip_char( CHAR_DATA * ch, OBJ_DATA * obj, int iWear )
         return;
     }
 
-    if ( ( !IS_NPC( ch ) && ch->desc->getConnectionState() != CON_SETTING_STATS )
+    if ( !IS_NPC( ch ) && !ch->desc->getConnectionState( CON_SETTING_STATS )
             && ( ( IS_OBJ_STAT( obj, ITEM_EXTRA_ANTI_EVIL ) && IS_EVIL( ch ) )
                  || ( IS_OBJ_STAT( obj, ITEM_EXTRA_ANTI_GOOD ) && IS_GOOD( ch ) )
                  || ( IS_OBJ_STAT( obj, ITEM_EXTRA_ANTI_NEUTRAL ) && IS_NEUTRAL( ch ) ) ) )
@@ -1153,7 +1153,7 @@ void equip_char( CHAR_DATA * ch, OBJ_DATA * obj, int iWear )
     /*
      * spec: light bugfix
      */
-    if ( ( IS_NPC( ch ) || !ch->desc || ch->desc->getConnectionState() != CON_SETTING_STATS )
+    if ( ( IS_NPC( ch ) || !ch->desc || !ch->desc->getConnectionState( CON_SETTING_STATS ) )
             && obj->item_type == ITEM_LIGHT && obj->value[2] != 0 && ch->in_room != NULL )
         ++ch->in_room->light;
 
@@ -2376,7 +2376,7 @@ void notify( char *message, int lv )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( ( d->getConnectionState() == CON_PLAYING )
+        if ( d->getConnectionState( CON_PLAYING )
                 && ( d->character->level >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_NOTIFY) )
             send_to_char( buf, d->character );
     }
@@ -2393,7 +2393,7 @@ void auction( char *message )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( ( d->getConnectionState() == CON_PLAYING ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_AUCTION) )
+        if ( d->getConnectionState( CON_PLAYING ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_AUCTION) )
             send_to_char( buf, d->character );
     }
     return;
@@ -2416,7 +2416,7 @@ void info( char *message, int lv )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( ( d->getConnectionState() == CON_PLAYING )
+        if ( d->getConnectionState( CON_PLAYING )
                 && ( d->character->level >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_INFO) )
         {
             snprintf( buf, MSL, "%s[INFO]: %s%s\r\n",
@@ -2442,7 +2442,7 @@ void log_chan( const char *message, int lv )
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         d = *di;
-        if ( ( d->getConnectionState() == CON_PLAYING )
+        if ( d->getConnectionState( CON_PLAYING )
                 && ( get_trust( d->character ) == MAX_LEVEL )
                 && ( !IS_NPC( d->character ) ) && ( d->character->level >= lv ) && ( !d->character->deaf.test(CHANNEL_LOG) ) )
             send_to_char( buf, d->character );

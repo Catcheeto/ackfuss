@@ -489,7 +489,7 @@ void game_loop( )
                 stop_idling( d->character );
                 d->setTimeout( current_time + MAX_IDLE_TIME ); /* spec: stop idling */
 
-                if ( d->getConnectionState() == CON_PLAYING )
+                if ( d->getConnectionState( CON_PLAYING ) )
                     if ( d->showstr_point )
                         show_string( d, d->incomm );
                     else
@@ -738,7 +738,7 @@ void close_socket( DESCRIPTOR_DATA * dclose )
         snprintf( log_buf, (2 * MIL), "Closing link to %s.", ch->GetName_() );
         log_string( log_buf );
         monitor_chan( log_buf, MONITOR_CONNECT );
-        if ( dclose->getConnectionState() == CON_PLAYING )
+        if ( dclose->getConnectionState( CON_PLAYING ) )
         {
             act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
             ch->desc = NULL;
@@ -882,7 +882,7 @@ void read_from_buffer( DESCRIPTOR_DATA * d )
         {
             if ( ++d->repeat >= 30 )
             {
-                if ( d->getConnectionState() == CON_PLAYING )
+                if ( d->getConnectionState( CON_PLAYING ) )
                 {
                     snprintf( log_buf, (2 * MIL), "%s input spamming!", d->character->GetName_() );
                     log_string( log_buf );
@@ -926,7 +926,7 @@ bool process_output( DESCRIPTOR_DATA * d, bool fPrompt )
     /*
      * Bust a prompt.
      */
-    if ( fPrompt && !merc_down && d->getConnectionState() == CON_PLAYING )
+    if ( fPrompt && !merc_down && d->getConnectionState( CON_PLAYING ) )
     {
         if ( d->showstr_point )
             write_to_buffer( d, "[Please type (c)ontinue, (r)efresh, (b)ack, (h)elp, (q)uit, or RETURN]:  " );
@@ -2026,7 +2026,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
     ch = d->character;
 
-    if ( d->getConnectionState() == CON_GET_NAME )
+    if ( d->getConnectionState( CON_GET_NAME ) )
     {
         if ( argument[0] == '\0' )
         {
@@ -2176,7 +2176,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         }
     }
 
-    if ( d->getConnectionState() == CON_GET_OLD_PASSWORD )
+    if ( d->getConnectionState( CON_GET_OLD_PASSWORD ) )
     {
         write_to_buffer( d, "\r\n", 2 );
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
@@ -2228,7 +2228,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         d->setConnectionState( CON_READ_MOTD );
     }
 
-    if ( d->getConnectionState() == CON_CONFIRM_NEW_NAME )
+    if ( d->getConnectionState( CON_CONFIRM_NEW_NAME ) )
     {
         switch ( *argument )
         {
@@ -2254,7 +2254,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_GET_NEW_PASSWORD )
+    if ( d->getConnectionState( CON_GET_NEW_PASSWORD ) )
     {
         write_to_buffer( d, "\r\n", 2 );
 
@@ -2281,7 +2281,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_CONFIRM_NEW_PASSWORD )
+    if ( d->getConnectionState( CON_CONFIRM_NEW_PASSWORD ) )
     {
         write_to_buffer( d, "\r\n", 2 );
 
@@ -2297,7 +2297,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_RESET_PASSWORD )
+    if ( d->getConnectionState( CON_RESET_PASSWORD ) )
     {
         write_to_buffer( d, "\r\n", 2 );
 
@@ -2324,7 +2324,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_CONFIRM_RESET_PASSWORD )
+    if ( d->getConnectionState( CON_CONFIRM_RESET_PASSWORD ) )
     {
         iterBrain li;
         DESCRIPTOR_DATA *dp = NULL;
@@ -2354,7 +2354,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_MENU )
+    if ( d->getConnectionState( CON_MENU ) )
     {
         int number;
 
@@ -2416,7 +2416,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_GET_STATS )
+    if ( d->getConnectionState( CON_GET_STATS ) )
     {
         int total = (ch->pcdata->max_str + ch->pcdata->max_int + ch->pcdata->max_wis + ch->pcdata->max_dex + ch->pcdata->max_con);
 
@@ -2577,7 +2577,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
     }
 
 
-    if ( d->getConnectionState() == CON_GET_NEW_SEX )
+    if ( d->getConnectionState( CON_GET_NEW_SEX ) )
     {
         switch ( argument[0] )
         {
@@ -2609,7 +2609,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_GET_NEW_CLASS )
+    if ( d->getConnectionState( CON_GET_NEW_CLASS ) )
     {
         short classes[MAX_CLASS];
         short parity[MAX_CLASS];  /* Nowt to do with parity really */
@@ -2672,7 +2672,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_GET_RACE )
+    if ( d->getConnectionState( CON_GET_RACE ) )
     {
         char arg1[MSL], arg2[MSL];
 
@@ -2712,7 +2712,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState() == CON_READ_MOTD )
+    if ( d->getConnectionState( CON_READ_MOTD ) )
     {
         list<NOTE_DATA *>::iterator li;
         /*
@@ -3324,8 +3324,8 @@ bool check_playing( DESCRIPTOR_DATA * d, string name )
         di_next = ++di;
         if ( dold != d
                 && dold->character != NULL
-                && dold->getConnectionState() != CON_GET_NAME
-                && dold->getConnectionState() != CON_GET_OLD_PASSWORD
+                && !dold->getConnectionState( CON_GET_NAME )
+                && !dold->getConnectionState( CON_GET_OLD_PASSWORD )
                 && name == ( dold->original ? dold->original->GetName() : dold->character->GetName() ) )
         {
             snprintf( buf, MSL, "Player from site %s tried to login as %s (already playing) !", d->getHost_(), name.c_str() );
@@ -3357,7 +3357,7 @@ void stop_idling( CHAR_DATA * ch )
 {
     if ( ch == NULL
             || ch->desc == NULL
-            || ch->desc->getConnectionState() != CON_PLAYING || ch->was_in_room == NULL || ch->in_room != get_room_index( ROOM_VNUM_LIMBO ) )
+            || !ch->desc->getConnectionState( CON_PLAYING ) || ch->was_in_room == NULL || ch->in_room != get_room_index( ROOM_VNUM_LIMBO ) )
         return;
 
     ch->timer = 0;
@@ -3926,7 +3926,7 @@ void update_player_cnt( void )
  for ( di = brain_list.begin(); di != brain_list.end(); di++ )
  {
      d = *di;
-     if( !d->character || d->character->GetName().empty() || (d->getConnectionState() != CON_PLAYING) )
+     if( !d->character || d->character->GetName().empty() || !d->getConnectionState( CON_PLAYING ) )
          continue;
      else
          found++;
