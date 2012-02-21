@@ -35,7 +35,6 @@ class Brain {
         int check;
         int flags;
         int childpid;
-        time_t timeout;
 
 
         uint_t getDescriptor() const { return m_descriptor; }
@@ -48,11 +47,15 @@ class Brain {
         uint_t getPort() const { return m_port; }
         uint_t setPort( const uint_t port ) { return m_port = port; }
 
+        uint_t getTimeout() const { return m_timeout; }
+        uint_t setTimeout( const time_t timeout ) { return m_timeout = timeout; }
+
         World* setWorld( World* world ) { return m_world = world; }
 
     private:
         uint_t m_descriptor; // File descriptor channel
         char*  m_host;       // Remote hostname
         uint_t m_port;       // Remote port
+        time_t m_timeout;    // Idle timeout
         World* m_world;      // Game world
 };

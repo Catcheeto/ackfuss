@@ -34,6 +34,7 @@ Brain::Brain()
     m_descriptor = uintmin_t;;
     m_host = new char[256];
     m_port = uintmin_t;
+    m_timeout = current_time + MAX_IDLE_TIME;
     m_world = NULL;
 }
 

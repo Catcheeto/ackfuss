@@ -487,7 +487,7 @@ void game_loop( )
             {
                 d->fcommand = TRUE;
                 stop_idling( d->character );
-                d->timeout = current_time + 180; /* spec: stop idling */
+                d->setTimeout( current_time + MAX_IDLE_TIME ); /* spec: stop idling */
 
                 if ( d->connected == CON_PLAYING )
                     if ( d->showstr_point )
@@ -521,9 +521,11 @@ void game_loop( )
             /*
              * spec: disconnect people idling on login
              */
-            if ( d->connected < 0 && d->timeout < current_time )
+            if ( d->connected < 0 && d->getTimeout() < current_time )
             {
-                write_to_descriptor( d->getDescriptor(), "Login timeout (180s)\r\n" );
+                char timeout[MSL];
+                snprintf( timeout, MSL, "Login timeout (%ds).\r\n", MAX_IDLE_TIME );
+                write_to_descriptor( d->getDescriptor(), timeout );
                 close_socket( d );
                 continue;
             }
@@ -669,11 +671,6 @@ void new_descriptor( int d_control )
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
         pthread_create(&lookup_thread, &attr, &lookup_address, (void *)ld);
     }
-
-    /*
-     * spec: set initial login timeout
-     */
-    dnew->timeout = current_time + 180;
 
     /*
      * Send the greeting.
