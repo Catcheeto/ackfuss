@@ -344,17 +344,16 @@ SPEC_FUN(spec_cast_adept)
 {
     CHAR_DATA *victim;
     int cl;  /* cast level */
+    static struct tm tm_zero;
 
     if ( !IS_AWAKE( ch ) )
         return FALSE;
-
 
     if ( ch->position == POS_FIGHTING )
         return FALSE;
 
     if ( number_percent() >= 15 ) /* Keep this from going off so often vs how the game ticks. --Kline */
         return FALSE;
-
 
     if ( ch->in_room != NULL )
     {
@@ -408,7 +407,7 @@ SPEC_FUN(spec_cast_adept)
         case 5:
             {
                 time_t cur_time = 0, xmas_time = 0;
-                struct tm tm_xmas, *tm_local;
+                struct tm tm_xmas = tm_zero, *tm_local;
                 int days;
                 char buffer[255];
 
@@ -440,8 +439,8 @@ SPEC_FUN(spec_cast_adept)
 
         case 6:
             {
-                time_t cur_time, bday_time;
-                struct tm tm_bday, *tm_local;
+                time_t cur_time = 0, bday_time = 0;
+                struct tm tm_bday = tm_zero, *tm_local;
                 int days;
                 char buffer[255];
 

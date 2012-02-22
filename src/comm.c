@@ -913,8 +913,8 @@ void read_from_buffer( DESCRIPTOR_DATA * d )
  */
 void bust_a_prompt( DESCRIPTOR_DATA * d )
 {
-    char buf[MSL];
-    char buf2[MSL];
+    char buf[MSL] = {'\0'};
+    char buf2[MSL] = {'\0'};
     const char *str;
     const char *i = " ";
     char *point;

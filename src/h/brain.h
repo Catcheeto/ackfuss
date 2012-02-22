@@ -32,11 +32,10 @@ class Brain {
         int childpid;
 
 
-        const string ProcessColors( const string msg ) const;
         const bool ProcessOutput( const bool prompt = true );
-        const bool Send( const string msg ) const;
+        const void Send( const string msg ) { m_output += msg; return; };
 
-        uint_t getConnectionState( const uint_t state = MSL ) const { return state == MSL ? m_connection_state : m_connection_state == state; }
+        sint_t getConnectionState( const sint_t state = MSL ) const { return state == MSL ? m_connection_state : m_connection_state == state; }
         uint_t setConnectionState( const uint_t state ) { return m_connection_state = state; }
 
         uint_t getDescriptor() const { return m_descriptor; }
@@ -55,9 +54,13 @@ class Brain {
         World* setWorld( World* world ) { return m_world = world; }
 
     private:
-        uint_t m_connection_state; // Connection state
+        const void ProcessColors();
+        const bool _Send();
+
+        sint_t m_connection_state; // Connection state
         uint_t m_descriptor;       // File descriptor channel
         char*  m_host;             // Remote hostname
+        string m_output;           // Output buffer
         uint_t m_port;             // Remote port
         time_t m_timeout;          // Idle timeout
         World* m_world;            // Game world
