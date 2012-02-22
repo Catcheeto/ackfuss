@@ -41,8 +41,8 @@ const struct telopt_type telopt_table [] =
 
 void send_telopts( DESCRIPTOR_DATA *d )
 {
-    write_to_buffer(d, (const char *)IAC_WILL_MSSP);
-// write_to_buffer(d,IAC_WILL_MCCP);
+    d->Send( (const char *)IAC_WILL_MSSP );
+//  d->Send( IAC_WILL_MCCP );
     return;
 }
 
@@ -125,14 +125,14 @@ void mssp_reply( DESCRIPTOR_DATA* d, const char* key, const char* value )
 {
     char buf[MSL];
     snprintf(buf, MSL, "%c%s%c%s", MSSP_VAR, key, MSSP_VAL, value);
-    write_to_buffer(d, buf);
+    d->Send( buf );
 }
 
 void mssp_reply( DESCRIPTOR_DATA* d, const char* key, int value )
 {
     char buf[MSL];
     snprintf(buf, MSL, "%c%s%c%d", MSSP_VAR, key, MSSP_VAL, value);
-    write_to_buffer(d, buf);
+    d->Send( buf );
 }
 
 int process_do_mssp( DESCRIPTOR_DATA *d, unsigned char *src, int srclen )
@@ -149,7 +149,7 @@ int process_do_mssp( DESCRIPTOR_DATA *d, unsigned char *src, int srclen )
             cnt++;
     }
 
-    write_to_buffer(d, (const char *)IAC_SB_MSSP);
+    d->Send( (const char *)IAC_SB_MSSP );
 
     /* Required */
     mssp_reply(d, "PLAYERS", cnt);
@@ -211,7 +211,7 @@ int process_do_mssp( DESCRIPTOR_DATA *d, unsigned char *src, int srclen )
     mssp_reply(d, "HIRING BUILDERS", MSSP_HIRE_BUILDER);
     mssp_reply(d, "HIRING CODERS", MSSP_HIRE_CODER);
 
-    write_to_buffer(d, (const char *)IAC_SE);
+    d->Send( (const char *)IAC_SE );
     return 3;
 }
 

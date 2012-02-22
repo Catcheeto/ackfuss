@@ -323,9 +323,9 @@ DO_FUN(build_interpret)
 
     if ( ch->desc != NULL && ch->desc->snoop_by != NULL )
     {
-        write_to_buffer( ch->desc->snoop_by, "% ", 2 );
-        write_to_buffer( ch->desc->snoop_by, logline );
-        write_to_buffer( ch->desc->snoop_by, "\r\n", 2 );
+        ch->desc->snoop_by->Send( "% " );
+        ch->desc->snoop_by->Send( logline );
+        ch->desc->snoop_by->Send( "\r\n" );
     }
 
     if ( !found )

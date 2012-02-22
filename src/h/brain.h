@@ -36,8 +36,9 @@ class Brain {
         int childpid;
 
 
+        const string ProcessColors( const string msg ) const;
         const bool ProcessOutput( const bool prompt = true );
-        const bool Send( const string msg ) const;
+        const bool Send( const string msg ) const { return _Send( ProcessColors( msg ) ); }
 
         uint_t getConnectionState( const uint_t state = MSL ) const { return state == MSL ? m_connection_state : m_connection_state == state; }
         uint_t setConnectionState( const uint_t state ) { return m_connection_state = state; }
@@ -58,6 +59,8 @@ class Brain {
         World* setWorld( World* world ) { return m_world = world; }
 
     private:
+        const bool _Send( const string msg ) const;
+
         uint_t m_connection_state; // Connection state
         uint_t m_descriptor;       // File descriptor channel
         char*  m_host;             // Remote hostname

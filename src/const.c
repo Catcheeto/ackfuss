@@ -111,38 +111,46 @@ const struct color_type color_table[MAX_COLOR] =
 
 const struct ansi_type ansi_table[MAX_ANSI] =
 {
-    {"gray",         "\033[0;37m",           0, 'g', 7},
-    {"red",          "\033[0;31m",           1, 'R', 7},
-    {"green",        "\033[0;32m",           2, 'G', 7},
-    {"brown",        "\033[0;33m",           3, 'b', 7},
-    {"blue",         "\033[0;34m",           4, 'B', 7},
-    {"magenta",      "\033[0;35m",           5, 'm', 7},
-    {"cyan",         "\033[0;36m",           6, 'c', 7},
-    {"black",        "\033[0;30m",           7, 'k', 7}, /* was 0;33 */
-    {"yellow",       "\033[1;33m",           8, 'y', 7},
-    {"white",        "\033[1;37m",           9, 'W', 7},
-    {"normal",       "\033[0;0m",           10, 'N', 6},
-    {"purple",       "\033[1;35m",          11, 'p', 7},
-    {"dark_grey",    "\033[1;30m",          12, 'd', 7},
-    {"light_blue",   "\033[1;34m",          13, 'l', 7},
-    {"light_green",  "\033[1;32m",          14, 'r', 7},
-    {"light_cyan",   "\033[1;36m",          15, 'a', 7},
-    {"light_red",    "\033[1;31m",          16, 'e', 7},
-    {"bold",         "\033[1m",             17, 'x', 4},
-    {"flashing",     "\033[5m",             18, 'f', 4},
-    {"inverse",      "\033[7m",             19, 'i', 4},
-    {"back_red",     "\033[41m",            20, '2', 5},
-    {"back_green",   "\033[42m",            21, '3', 5},
-    {"back_yellow",  "\033[43m",            22, '4', 5},
-    {"back_blue",    "\033[44m",            23, '1', 5},
-    {"back_magenta", "\033[45m",            24, '5', 5},
-    {"back_cyan",    "\033[46m",            25, '6', 5},
-    {"back_black",   "\033[40m",            26, '0', 5},
-    {"back_white",   "\033[1;47m",          27, '7', 7},
-
+    {"normal",       "@@N", "\033[0;0m",  },
+    {"gray",         "@@g", "\033[0;37m", },
+    {"red",          "@@R", "\033[0;31m", },
+    {"green",        "@@G", "\033[0;32m", },
+    {"brown",        "@@b", "\033[0;33m", },
+    {"blue",         "@@B", "\033[0;34m", },
+    {"magenta",      "@@m", "\033[0;35m", },
+    {"cyan",         "@@c", "\033[0;36m", },
+    {"black",        "@@k", "\033[0;30m", },
+    {"yellow",       "@@y", "\033[1;33m", },
+    {"white",        "@@W", "\033[1;37m", },
+    {"purple",       "@@p", "\033[1;35m", },
+    {"dark_gray",    "@@d", "\033[1;30m", },
+    {"light_blue",   "@@l", "\033[1;34m", },
+    {"light_green",  "@@r", "\033[1;32m", },
+    {"light_cyan",   "@@a", "\033[1;36m", },
+    {"light_red",    "@@e", "\033[1;31m", },
+    {"bold",         "@@x", "\033[1m",    },
+    {"flashing",     "@@f", "\033[5m",    },
+    {"inverse",      "@@i", "\033[7m",    },
+    {"back_red",     "@@2", "\033[41m",   },
+    {"back_green",   "@@3", "\033[42m",   },
+    {"back_yellow",  "@@4", "\033[43m",   },
+    {"back_blue",    "@@1", "\033[44m",   },
+    {"back_magenta", "@@5", "\033[45m",   },
+    {"back_cyan",    "@@6", "\033[46m",   },
+    {"back_black",   "@@0", "\033[40m",   },
+    {"back_white",   "@@7", "\033[1;47m"  }
 };
 
+const uint_t col_pos( const string key )
+{
+    uint_t i = 0;
 
+    for( i = 0; i < MAX_ANSI; i++ )
+        if( key == ansi_table[i].name )
+            return i;
+
+    return 0;
+}
 
 /*
  * Class table.

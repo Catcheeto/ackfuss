@@ -4516,7 +4516,7 @@ DO_FUN(do_alias)
     return;
 }
 
-DO_FUN(do_color)
+DO_FUN(do_color) //FIXME: This entire function --Kline
 {
     /*
      * Allow users to set which color they get certain texts in. -S-
@@ -4555,7 +4555,7 @@ DO_FUN(do_color)
         for ( cnt = 0; cnt < MAX_COLOR; cnt++ )
         {
             snprintf( buf, MSL, "@@W%8s: %s%-12s@@N   ",
-                      color_table[cnt].name, ansi_table[ch->pcdata->color[cnt]].value, ansi_table[ch->pcdata->color[cnt]].name );
+                      color_table[cnt].name, ansi_table[ch->pcdata->color[cnt]].value.c_str(), ansi_table[ch->pcdata->color[cnt]].name.c_str() );
             send_to_char( buf, ch );
             if ( ++col % 3 == 0 )
                 send_to_char( "\r\n", ch );
@@ -4570,7 +4570,7 @@ DO_FUN(do_color)
         for ( cnt = 0; cnt < MAX_ANSI; cnt++ )
         {
             snprintf( buf, MSL, "%s%-12s@@N  ",
-                      ch->act.test(ACT_COLOR) ? ansi_table[cnt].value : "", ansi_table[cnt].name );
+                      ch->act.test(ACT_COLOR) ? ansi_table[cnt].value.c_str() : "", ansi_table[cnt].name.c_str() );
             send_to_char( buf, ch );
             if ( ++col % 5 == 0 )
                 send_to_char( "\r\n", ch );
@@ -4624,9 +4624,9 @@ DO_FUN(do_color)
      * color (the name) is ok.  Now find the ansi (the color)
      */
     ansi_number = -1;
-    for ( cnt = 0; cnt < MAX_ANSI; cnt++ )
-        if ( !str_cmp( arg2, ansi_table[cnt].name ) )
-            ansi_number = ansi_table[cnt].index;
+//    for ( cnt = 0; cnt < MAX_ANSI; cnt++ )
+  //      if ( !str_cmp( arg2, ansi_table[cnt].name ) )
+    //        ansi_number = ansi_table[cnt].index;
 
     if ( ansi_number == -1 )
     {
@@ -4648,16 +4648,16 @@ DO_FUN(do_color)
 
     if ( color_number == -2 )
     {
-        ch->pcdata->hicol = ansi_table[ansi_number].letter;
+//        ch->pcdata->hicol = ansi_table[ansi_number].letter;
         return;
     }
     else if ( color_number == -3 )
     {
-        ch->pcdata->dimcol = ansi_table[ansi_number].letter;
+  //      ch->pcdata->dimcol = ansi_table[ansi_number].letter;
         return;
     }
 
-    ch->pcdata->color[color_number] = ansi_number;
+    //ch->pcdata->color[color_number] = ansi_number;
     send_to_char( "OK.\r\n", ch );
     return;
 }
@@ -4696,7 +4696,7 @@ char *color_string( CHAR_DATA * ch, char *argument )
     if ( num == -1 )  /* bug report? */
         return ( "" );
 
-    return ( ansi_table[ch->pcdata->color[num]].value );
+    return ( const_cast<char*>(ansi_table[ch->pcdata->color[num]].value.c_str()) );
 }
 
 DO_FUN(do_worth)
@@ -4896,9 +4896,9 @@ DO_FUN(do_colist)
 
     for ( col = 0; col < MAX_ANSI; col++ )
     {
-        snprintf( buf, MSL, "%c - %s%-14s@@N    ",
-                  ansi_table[col].letter,
-                  ch->act.test(ACT_COLOR) ? ansi_table[col].value : "", ansi_table[col].name );
+        snprintf( buf, MSL, "%s - %s%-14s@@N    ",
+                  ansi_table[col].key.c_str(),
+                  ch->act.test(ACT_COLOR) ? ansi_table[col].value.c_str() : "", ansi_table[col].name.c_str() );
         send_to_char( buf, ch );
         if ( ++n % 3 == 0 )
             send_to_char( "\r\n", ch );

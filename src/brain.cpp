@@ -15,58 +15,96 @@
 const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
 void bust_a_prompt (DESCRIPTOR_DATA *d);
 void char_hunt (CHAR_DATA *ch);
-void write_to_buffer (DESCRIPTOR_DATA *d, const char *txt, int length = 0);
+
+const string Brain::ProcessColors( const string msg ) const
+{
+    string output = msg;
+    size_t loc = 0;
+    uint_t i = 0, k = 0;
+
+    for ( i = 0; i < MAX_ANSI; i++ )
+    {
+        while ( ( loc = output.find( ansi_table[i].key ) ) != string::npos )
+        {
+            if ( CH( this ) && IS_GHOST( CH( this ) ) ) // No color for ghosts
+            {
+                switch( number_range( 1, 3 ) )
+                {
+                    case 1: k = col_pos( "white" );     break;
+                    case 2: k = col_pos( "gray" );      break;
+                    case 3: k = col_pos( "dark_gray" ); break;
+                }
+                output.replace( loc, ansi_table[k].key.length(), ansi_table[k].value );
+            }
+            if ( output[loc++] == 'z' ) // Random foreground color
+            {
+                k = number_range( 0, 16 );
+                output.replace( loc, ansi_table[k].key.length(), ansi_table[k].value );
+            }
+            else if ( output[loc++] == 'q' ) // Random background color
+            {
+                k = number_range( 20, 27 );
+                output.replace( loc, ansi_table[k].key.length(), ansi_table[k].value );
+            }
+            else // Process color without modification
+                output.replace( loc, ansi_table[i].key.length(), ansi_table[i].value );
+        }
+    }
+
+    return output;
+}
 
 const bool Brain::ProcessOutput( const bool prompt )
 {
     if ( prompt && m_connection_state == CON_PLAYING )
     {
         if ( showstr_point )
-            write_to_buffer( this, "[Please type (c)ontinue, (r)efresh, (b)ack, (h)elp, (q)uit, or RETURN]:  " );
+            Send( "[Please type (c)ontinue, (r)efresh, (b)ack, (h)elp, (q)uit, or RETURN]:  " );
         else
         {
             CHAR_DATA *ch;
 
             ch = original ? original : character;
-            if ( !IS_NPC(ch) && ch->act.test(ACT_BLANK) && (ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test(ACT_AUTOBRIEF)) )
-                write_to_buffer( this, "\r\n", 2 );
+            if ( !IS_NPC( ch ) && ( ch->act.test( ACT_BLANK ) && ( ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test( ACT_AUTOBRIEF ) ) ) )
+                Send( "\r\n" );
             if ( ch->hunting || ch->hunt_obj )
                 char_hunt( ch );
-            if ( !IS_NPC(ch) && (ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test(ACT_AUTOBRIEF)) )
+            if ( !IS_NPC( ch ) && ( ch->pcdata->movement <= sysdata.max_move_disp || !ch->act.test( ACT_AUTOBRIEF ) ) )
                 bust_a_prompt( this );
-            if ( ch->act.test(ACT_TELNET_GA) )
-                write_to_buffer( this, go_ahead_str );
+            if ( ch->act.test( ACT_TELNET_GA ) )
+                Send( go_ahead_str );
         }
     }
 
     if ( outtop == 0 )
-        return TRUE;
+        return true;
 
     if ( snoop_by != NULL )
     {
         char foo[MAX_STRING_LENGTH];
         CHAR_DATA *snoop_ch;
 
-        snoop_ch = original != NULL ? original : character;
+        snoop_ch = original ? original : character;
         if ( snoop_ch != NULL )
             snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->GetName_() );
-        write_to_buffer( snoop_by, foo );
-        write_to_buffer( snoop_by, outbuf, outtop );
+        snoop_by->Send( foo );
+        snoop_by->Send( outbuf );
     }
-
-    if ( !Send( outbuf ) )
+    string output;
+    output = ProcessColors( outbuf );
+    if ( !Send( output ) )
     {
         outtop = 0;
-        return FALSE;
+        return false;
     }
     else
     {
         outtop = 0;
-        return TRUE;
+        return true;
     }
 }
 
-const bool Brain::Send( const string msg ) const
+const bool Brain::_Send( const string msg ) const
 {
     ssize_t block = 0, length = msg.length(), max_size = MSL, sent = 0, start = 0;
 
@@ -84,7 +122,7 @@ const bool Brain::Send( const string msg ) const
             }
             else
             {
-                perror( "Write_to_descriptor" );
+                perror( "Brain::_Send" );
                 return false;
             }
         }
@@ -101,10 +139,7 @@ Brain::Brain()
     original = NULL;
     showstr_head = NULL;
     showstr_point = NULL;
-    outsize = 2048;
-    outtop = 0;
     fcommand = false;
-    outbuf = (char*)malloc(outsize);
     flags = 0;
     childpid = 0;
     incomm[0] = '\0';

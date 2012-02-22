@@ -99,14 +99,12 @@ struct color_type
 
 struct ansi_type
 {
-    char *name;
-    char *value;   /* escape sequence, or whatever */
-    int index;
-    char letter;
-    int stlen;
+    string name;  // color name
+    string key;   // prefix + letter
+    string value; // escape sequence
 };
 
-#define color_NORMAL "\033[0m"
+const uint_t col_pos( const string key );
 
 /*
  * Site ban structure.
