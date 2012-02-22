@@ -138,7 +138,9 @@ const struct ansi_type ansi_table[MAX_ANSI] =
     {"back_magenta", "@@5", "\033[45m",   },
     {"back_cyan",    "@@6", "\033[46m",   },
     {"back_black",   "@@0", "\033[40m",   },
-    {"back_white",   "@@7", "\033[1;47m"  }
+    {"back_white",   "@@7", "\033[1;47m"  },
+    {"random_fg",    "@@z", ""            },
+    {"random_bg",    "@@q", ""            }
 };
 
 const uint_t col_pos( const string key )

@@ -98,7 +98,7 @@
  */
 #define MAX_CLAN_EQ          6   /* Number of clan eq items */
 #define MAX_COLOR           22   /* eg look, prompt, shout */
-#define MAX_ANSI            28   /* eg red, black, etc (was 11) */
+#define MAX_ANSI            30   /* eg red, black, etc (was 11) */
 #define MAX_ALIASES          6
 #define MAX_HOSTS            3   /* number of login sites/whitelist */
 #define MAX_IGNORES          3

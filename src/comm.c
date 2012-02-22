@@ -447,7 +447,6 @@ void game_loop( )
                 FD_CLR( d->getDescriptor(), &out_set );
                 if ( d->character )
                     save_char_obj( d->character );
-                d->outtop = 0;
                 close_socket( d );
             }
         }
@@ -459,7 +458,6 @@ void game_loop( )
         {
             d = *di;
             mudinfo.mudNextDesc = ++di;
-            /*d->fcommand = FALSE;*/
 
             if ( FD_ISSET( d->getDescriptor(), &in_set ) )
             {
@@ -470,7 +468,6 @@ void game_loop( )
                     FD_CLR( d->getDescriptor(), &out_set );
                     if ( d->character != NULL )
                         save_char_obj( d->character );
-                    d->outtop = 0;
                     close_socket( d );
                     continue;
                 }
@@ -485,9 +482,8 @@ void game_loop( )
             read_from_buffer( d );
             if ( d->incomm[0] != '\0' )
             {
-                /*d->fcommand = TRUE;*/
                 stop_idling( d->character );
-                d->setTimeout( current_time + MAX_IDLE_TIME ); /* spec: stop idling */
+                d->setTimeout( current_time + MAX_IDLE_TIME );
 
                 if ( d->getConnectionState( CON_PLAYING ) )
                     if ( d->showstr_point )
@@ -530,13 +526,12 @@ void game_loop( )
                 continue;
             }
 
-            if ( /*( d->fcommand ||*/ d->outtop > 0/* ) */&& FD_ISSET( d->getDescriptor(), &out_set ) )
+            if ( FD_ISSET( d->getDescriptor(), &out_set ) )
             {
                 if ( !d->ProcessOutput() )
                 {
                     if ( d->character != NULL )
                         save_char_obj( d->character );
-                    d->outtop = 0;
                     close_socket( d );
                 }
             }
@@ -700,9 +695,6 @@ void new_descriptor( int d_control )
 void close_socket( DESCRIPTOR_DATA * dclose )
 {
     CHAR_DATA *ch;
-
-    if ( dclose->outtop > 0 )
-        dclose->ProcessOutput( false );
 
     if ( dclose->snoop_by != NULL )
     {

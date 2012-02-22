@@ -4896,14 +4896,11 @@ DO_FUN(do_colist)
 
     for ( col = 0; col < MAX_ANSI; col++ )
     {
-        snprintf( buf, MSL, "%s - %s%-14s@@N    ",
-                  ansi_table[col].key.c_str(),
-                  ch->act.test(ACT_COLOR) ? ansi_table[col].value.c_str() : "", ansi_table[col].name.c_str() );
+        snprintf( buf, MSL, "%c - %s%-14s@@N    ", ansi_table[col].key[2], ansi_table[col].key.c_str(), ansi_table[col].name.c_str() );
         send_to_char( buf, ch );
         if ( ++n % 3 == 0 )
             send_to_char( "\r\n", ch );
     }
-    send_to_char("z - @@zrandom color@@N      q - @@qrandom back color@@N\r\n", ch);
     if ( n % 3 != 0 )
         send_to_char( "\r\n", ch );
 

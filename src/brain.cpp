@@ -35,13 +35,14 @@ const string Brain::ProcessColors( const string msg ) const
                     case 3: k = col_pos( "dark_gray" ); break;
                 }
                 output.replace( loc, ansi_table[k].key.length(), ansi_table[k].value );
+                continue;
             }
-            if ( output[loc++] == 'z' ) // Random foreground color
+            if ( ansi_table[i].name == "random_fg" ) // Random foreground color
             {
                 k = number_range( 0, 16 );
                 output.replace( loc, ansi_table[k].key.length(), ansi_table[k].value );
             }
-            else if ( output[loc++] == 'q' ) // Random background color
+            else if ( ansi_table[i].name == "random_bg" ) // Random background color
             {
                 k = number_range( 20, 27 );
                 output.replace( loc, ansi_table[k].key.length(), ansi_table[k].value );
@@ -56,6 +57,7 @@ const string Brain::ProcessColors( const string msg ) const
 
 const bool Brain::ProcessOutput( const bool prompt )
 {
+return true;
     if ( prompt && m_connection_state == CON_PLAYING )
     {
         if ( showstr_point )
@@ -76,9 +78,6 @@ const bool Brain::ProcessOutput( const bool prompt )
         }
     }
 
-    if ( outtop == 0 )
-        return true;
-
     if ( snoop_by != NULL )
     {
         char foo[MAX_STRING_LENGTH];
@@ -88,30 +87,24 @@ const bool Brain::ProcessOutput( const bool prompt )
         if ( snoop_ch != NULL )
             snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->GetName_() );
         snoop_by->Send( foo );
-        snoop_by->Send( outbuf );
     }
     string output;
-    output = ProcessColors( outbuf );
+    output = "";
     if ( !Send( output ) )
-    {
-        outtop = 0;
         return false;
-    }
     else
-    {
-        outtop = 0;
         return true;
-    }
 }
 
-const bool Brain::_Send( const string msg ) const
+const bool Brain::Send( const string msg ) const
 {
-    ssize_t block = 0, length = msg.length(), max_size = MSL, sent = 0, start = 0;
+    string _msg = ProcessColors( msg );
+    ssize_t block = 0, length = _msg.length(), max_size = MSL, sent = 0, start = 0;
 
     for ( start = 0; start < length; start += sent )
     {
         block = std::min( length - start, max_size );
-        sent = send( m_descriptor, msg.c_str() + start, block, 0 );
+        sent = send( m_descriptor, _msg.c_str() + start, block, 0 );
 
         if ( sent == -1 )
         {
@@ -122,7 +115,7 @@ const bool Brain::_Send( const string msg ) const
             }
             else
             {
-                perror( "Brain::_Send" );
+                perror( "Brain::Send" );
                 return false;
             }
         }
@@ -139,7 +132,6 @@ Brain::Brain()
     original = NULL;
     showstr_head = NULL;
     showstr_point = NULL;
-    fcommand = false;
     flags = 0;
     childpid = 0;
     incomm[0] = '\0';
