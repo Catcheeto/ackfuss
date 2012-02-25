@@ -138,12 +138,13 @@ Brain::Brain()
     showstr_head = NULL;
     showstr_point = NULL;
     flags = 0;
-    childpid = 0;
     incomm[0] = '\0';
     inlast[0] = '\0';
     inbuf[0] = '\0';
 
 
+    m_child_pid = 0;
+    m_command_run = false;
     m_connection_state = CON_GET_NAME;
     m_descriptor = uintmin_t;
     m_host = new char[256];

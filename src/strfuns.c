@@ -1978,7 +1978,7 @@ const char *who( const char *what, CHAR_DATA *looker )
     else
     {
         // Default output
-        output += "\r\nWHO Listing: " mudnamecolor "\r\n";
+        output += "WHO Listing: " mudnamecolor "\r\n";
         output += "@@R+-----------------------------------------------------------------------------+\r\n";
         output += "| @@mSo Mo An Ki Ne@@R                                                              |\r\n";
         output += "| @@bMa Cl Th Wa Ps @@eRace Clan  ABJPW   Player     Title                  Flags   @@R|\r\n";

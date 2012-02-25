@@ -411,12 +411,12 @@ void game_loop( )
                 /*
                  * Check to see if child process has terminated
                  */
-                if ( waitpid( d->childpid, NULL, WNOHANG ) != 0 )
+                if ( waitpid( d->getChildPid(), NULL, WNOHANG ) != 0 )
                 {
                     /*
                      * Terminated or error
                      */
-                    d->childpid = 0;
+                    d->setChildPid( 0 );
                     REMOVE_BIT( d->flags, DESC_FLAG_PASSTHROUGH );
                 }
             }
@@ -458,6 +458,7 @@ void game_loop( )
         {
             d = *di;
             mudinfo.mudNextDesc = ++di;
+            d->togCommandRun();
 
             if ( FD_ISSET( d->getDescriptor(), &in_set ) )
             {
@@ -482,6 +483,7 @@ void game_loop( )
             read_from_buffer( d );
             if ( d->incomm[0] != '\0' )
             {
+                d->togCommandRun();
                 stop_idling( d->character );
                 d->setTimeout( current_time + MAX_IDLE_TIME );
 
