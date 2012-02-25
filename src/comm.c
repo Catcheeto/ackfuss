@@ -399,27 +399,10 @@ void game_loop( )
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( ( d->flags && DESC_FLAG_PASSTHROUGH ) == 0 )
-            {
-                mudinfo.max_descriptor = std::max( mudinfo.max_descriptor, d->getDescriptor() );
-                FD_SET( d->getDescriptor(), &in_set );
-                FD_SET( d->getDescriptor(), &out_set );
-                FD_SET( d->getDescriptor(), &exc_set );
-            }
-            else
-            {
-                /*
-                 * Check to see if child process has terminated
-                 */
-                if ( waitpid( d->getChildPid(), NULL, WNOHANG ) != 0 )
-                {
-                    /*
-                     * Terminated or error
-                     */
-                    d->setChildPid( 0 );
-                    REMOVE_BIT( d->flags, DESC_FLAG_PASSTHROUGH );
-                }
-            }
+            mudinfo.max_descriptor = std::max( mudinfo.max_descriptor, d->getDescriptor() );
+            FD_SET( d->getDescriptor(), &in_set );
+            FD_SET( d->getDescriptor(), &out_set );
+            FD_SET( d->getDescriptor(), &exc_set );
         }
 
         if ( select( mudinfo.max_descriptor + 1, &in_set, &out_set, &exc_set, &null_time ) < 0 )

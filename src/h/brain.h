@@ -12,8 +12,6 @@
 #include "world.h"
 #endif
 
-#define DESC_FLAG_PASSTHROUGH 1
-
 class Brain {
     public:
         Brain();
@@ -28,14 +26,9 @@ class Brain {
         char *showstr_head;
         char *showstr_point;
         int check;
-        int flags;
-
 
         const bool ProcessOutput( const bool prompt = true );
         const void Send( const string msg ) { if ( m_output.empty() && !m_command_run ) { m_output += "\r\n"; m_output += msg; } else m_output += msg; return; };
-
-        uint_t getChildPid() { return m_child_pid; }
-        uint_t setChildPid( uint_t pid ) { return m_child_pid = pid; }
 
         bool getCommandRun() { return m_command_run; }
         bool togCommandRun() { return m_command_run = !m_command_run; }
@@ -62,7 +55,6 @@ class Brain {
         const void ProcessColors();
         const bool _Send();
 
-        uint_t m_child_pid;        // Child PID if one is spawned
         bool   m_command_run;      // Found a command run, force output to socket
         sint_t m_connection_state; // Connection state
         uint_t m_descriptor;       // File descriptor channel
