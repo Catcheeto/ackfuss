@@ -1491,16 +1491,16 @@ void show_menu_to( DESCRIPTOR_DATA * d )
     strncat( menu, "Options:\r\n", MSL );
 
     snprintf( buf, MSL, "        1. Set Gender       Currently:%s\r\n",
-              !IS_SET( d->check, CHECK_SEX ) ? "Not Set" :
+              !d->getCreationCheck( CREATION_SEX_DONE ) ? "Not Set" :
               ch->sex == SEX_NEUTRAL ? "Neutral." : ch->sex == SEX_MALE ? "Male." : "Female." );
     strncat( menu, buf, MSL - 1 );
 
     snprintf( buf, MSL, "        2. Set Race         Currently:%s\r\n",
-              !IS_SET( d->check, CHECK_RACE ) ? "Not Set" : race_table[ch->race].race_title );
+              !d->getCreationCheck( CREATION_RACE_DONE ) ? "Not Set" : race_table[ch->race].race_title );
     strncat( menu, buf, MSL - 1 );
 
     strncat( menu, "        3. Roll Attributes  Currently:", MSL );
-    if ( IS_SET( d->check, CHECK_STATS ) )
+    if ( d->getCreationCheck( CREATION_STATS_DONE ) )
         snprintf( buf, MSL, "\r\n        Str: [%d]  Int: [%d]  Wis: [%d]\r\n        Dex: [%d]  Con: [%d]\r\n",
                   ch->pcdata->max_str, ch->pcdata->max_int, ch->pcdata->max_wis, ch->pcdata->max_dex, ch->pcdata->max_con );
     else
@@ -1510,7 +1510,7 @@ void show_menu_to( DESCRIPTOR_DATA * d )
     strncat( menu, buf, MSL - 1 );
 
     strncat( menu, "        4. Set Class Order  Currently:", MSL );
-    if ( IS_SET( d->check, CHECK_CLASS ) )
+    if ( d->getCreationCheck( CREATION_CLASS_DONE ) )
     {
         short i;
         snprintf( buf, MSL, "\r\n        " );
@@ -1544,7 +1544,7 @@ void show_smenu_to( DESCRIPTOR_DATA * d )
     strncat( menu, "              F : Female\r\n", MSL );
     strncat( menu, "              N : Neutral\r\n\r\n", MSL );
 
-    if ( IS_SET( d->check, CHECK_SEX ) )
+    if ( d->getCreationCheck( CREATION_SEX_DONE ) )
         snprintf( buf, MSL, "Current Choice: %s\r\n",
                   ch->sex == SEX_NEUTRAL ? "Neutral" : ch->sex == SEX_MALE ? "Male" : "Female" );
     else
@@ -1598,11 +1598,11 @@ void show_amenu_to( DESCRIPTOR_DATA * d )
     /*
      * Make the 'rolls', set ch->max_*, and display
      */
-    if ( !IS_SET( d->check, CHECK_RACE ) )
+    if ( !d->getCreationCheck( CREATION_RACE_DONE ) )
     {
         snprintf( menu, MSL, "\r\nYou must select a race first.\r\n" );
         d->Send( menu );
-        d->setConnectionState( CON_MENU );
+        d->setConnectionState( CON_CREATION_MENU );
         show_menu_to( d );
         return;
     }
@@ -1962,7 +1962,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         }
         d->Send( echo_on_str );
         show_menu_to( d );
-        d->setConnectionState( CON_MENU );
+        d->setConnectionState( CON_CREATION_MENU );
         return;
     }
 
@@ -2023,7 +2023,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState( CON_MENU ) )
+    if ( d->getConnectionState( CON_CREATION_MENU ) )
     {
         int number;
 
@@ -2034,7 +2034,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             return;
         }
         number = atoi( argument );
-        if ( number < 1 && number > 5 )
+        if ( number < 1 || number > 5 )
         {
             d->Send( "\r\nPlease Enter A Number Between 1 And 5.\r\n" );
             show_menu_to( d );
@@ -2044,28 +2044,30 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         switch ( number )
         {
             case 1:
-                d->setConnectionState( CON_GET_NEW_SEX );
+                d->setConnectionState( CON_CREATION_GET_SEX );
                 show_smenu_to( d );
                 break;
             case 2:
-                d->setConnectionState( CON_GET_RACE );
+                d->setConnectionState( CON_CREATION_GET_RACE );
                 show_rmenu_to( d );
                 break;
             case 3:
-                d->setConnectionState( CON_GET_STATS );
+                d->setConnectionState( CON_CREATION_GET_STATS );
                 show_amenu_to( d );
                 break;
             case 4:
-                d->setConnectionState( CON_GET_NEW_CLASS );
+                d->setConnectionState( CON_CREATION_GET_CLASS );
                 show_cmenu_to( d );
                 break;
             case 5:
-                if ( !IS_SET( d->check, CHECK_SEX ) || !IS_SET( d->check, CHECK_CLASS )
-                        || !IS_SET( d->check, CHECK_STATS ) || !IS_SET( d->check, CHECK_RACE ) )
+                for( uint_t i = 0; i < MAX_CREATION_CHECK; i++ )
                 {
-                    d->Send( "ALL Options Must Be Selected First.\r\n" );
-                    show_menu_to( d );
-                    return;
+                    if( !d->getCreationCheck( i ) )
+                    {
+                        d->Send( "All creation options must be selected first.\r\n" );
+                        show_menu_to( d );
+                        return;
+                    }
                 }
                 snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), d->getHost_() );
                 log_string( log_buf );
@@ -2085,7 +2087,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState( CON_GET_STATS ) )
+    if ( d->getConnectionState( CON_CREATION_GET_STATS ) )
     {
         int total = (ch->pcdata->max_str + ch->pcdata->max_int + ch->pcdata->max_wis + ch->pcdata->max_dex + ch->pcdata->max_con);
 
@@ -2228,9 +2230,8 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                     d->Send( "Please finish allocating your stats first." );
                 else
                 {
-                    if ( !IS_SET( d->check, CHECK_STATS ) )
-                        SET_BIT( d->check, CHECK_STATS );
-                    d->setConnectionState( CON_MENU );
+                    d->setCreationCheck( CREATION_STATS_DONE );
+                    d->setConnectionState( CON_CREATION_MENU );
                     show_menu_to( d );
                 }
                 break;
@@ -2246,7 +2247,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
     }
 
 
-    if ( d->getConnectionState( CON_GET_NEW_SEX ) )
+    if ( d->getConnectionState( CON_CREATION_GET_SEX ) )
     {
         switch ( argument[0] )
         {
@@ -2270,15 +2271,13 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 show_smenu_to( d );
                 return;
         }
-        d->Send( "\r\n\r\n" );
-        if ( !IS_SET( d->check, CHECK_SEX ) )
-            SET_BIT( d->check, CHECK_SEX );
-        d->setConnectionState( CON_MENU );
+        d->setCreationCheck( CREATION_SEX_DONE );
+        d->setConnectionState( CON_CREATION_MENU );
         show_menu_to( d );
         return;
     }
 
-    if ( d->getConnectionState( CON_GET_NEW_CLASS ) )
+    if ( d->getConnectionState( CON_CREATION_GET_CLASS ) )
     {
         short classes[MAX_CLASS];
         short parity[MAX_CLASS];  /* Nowt to do with parity really */
@@ -2334,19 +2333,20 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
             ch->pcdata->order[cnt] = classes[cnt];
 
-        d->setConnectionState( CON_MENU );
-        if ( !IS_SET( d->check, CHECK_CLASS ) )
-            SET_BIT( d->check, CHECK_CLASS );
+        d->setCreationCheck( CREATION_CLASS_DONE );
+        d->setConnectionState( CON_CREATION_MENU );
         show_menu_to( d );
         return;
     }
 
-    if ( d->getConnectionState( CON_GET_RACE ) )
+    if ( d->getConnectionState( CON_CREATION_GET_RACE ) )
     {
         char arg1[MSL], arg2[MSL];
 
         argument = one_argument(argument,arg1);
         argument = one_argument(argument,arg2);
+
+        d->remCreationCheck( CREATION_STATS_DONE ); // Maximum stats depend on race; so clear this if already selected
 
         for ( iClass = 0; iClass < MAX_RACE; iClass++ )
         {
@@ -2370,14 +2370,10 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             show_rmenu_to( d );
             return;
         }
-        if ( IS_SET( d->check, CHECK_STATS ) )
-            REMOVE_BIT( d->check, CHECK_STATS );
 
-
-        if ( !IS_SET( d->check, CHECK_RACE ) )
-            SET_BIT( d->check, CHECK_RACE );
+        d->setCreationCheck( CREATION_RACE_DONE );
+        d->setConnectionState( CON_CREATION_MENU );
         show_menu_to( d );
-        d->setConnectionState( CON_MENU );
         return;
     }
 

@@ -439,59 +439,6 @@
 #define MOON_WAN_CRE    7
 
 /*
- * Connected state for a channel.
- */
-
-/* These values referenced by users command, BTW */
-
-#define CON_SETTING_STATS                1
-#define CON_PLAYING                      0
-#define CON_GET_NAME                     -1
-/*
- * All non connected
- */
-#define CON_GET_OLD_PASSWORD             -2
-/*
- * states changed to
- */
-#define CON_CONFIRM_NEW_NAME             -3
-/*
- * negative so that
- */
-#define CON_GET_NEW_PASSWORD             -4
-/*
- * Hotboot can shut out
- */
-#define CON_CONFIRM_NEW_PASSWORD         -5
-/*
- * All nonplaying chars
- */
-#define CON_GET_NEW_SEX                  -6
-/*
- * ---Flar
- */
-#define CON_GET_NEW_CLASS                -7
-#define CON_GET_RACE                     -9
-#define CON_READ_MOTD                   -10
-#define CON_GET_STATS                   -11
-#define CON_FINISHED                    -12
-#define CON_MENU                        -13
-#define CON_COPYOVER_RECOVER            -14
-/*
- * For Hotreboot
- */
-#define CON_QUITTING                    -15
-#define CON_RECONNECTING                -16
-#define CON_RESET_PASSWORD              -17
-#define CON_CONFIRM_RESET_PASSWORD      -18
-
-/* values used to check a new player has selected all options.... */
-#define CHECK_RACE            BIT_1
-#define CHECK_CLASS           BIT_2
-#define CHECK_SEX             BIT_3
-#define CHECK_STATS           BIT_4
-
-/*
  * TO types for act.
  */
 #define TO_ROOM             0

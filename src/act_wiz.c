@@ -3656,17 +3656,26 @@ DO_FUN(do_users)
         count++;
         switch ( d->getConnectionState() )
         {
-            case CON_PLAYING:
-                snprintf( buf3, MSL, "%s", "Playing         " );
+            case CON_RESET_PASSWORD:
+                snprintf( buf3, MSL, "%s", "Rst Passwd      " );
+                break;
+            case CON_CONFIRM_RESET_PASSWORD:
+                snprintf( buf3, MSL, "%s", "Cnfm Rst Passwd " );
+                break;
+            case CON_QUITTING:
+                snprintf( buf3, MSL, "%s", "Quitting        " );
+                break;
+            case CON_RECONNECTING:
+                snprintf( buf3, MSL, "%s", "Reconnecting    " );
+                break;
+            case CON_COPYOVER_RECOVER:
+                snprintf( buf3, MSL, "%s", "Copyover Recover" );
                 break;
             case CON_GET_NAME:
                 snprintf( buf3, MSL, "%s", "Get Name        " );
                 break;
-            case CON_GET_OLD_PASSWORD:
-                snprintf( buf3, MSL, "%s", "Get Old Passwd  " );
-                break;
             case CON_CONFIRM_NEW_NAME:
-                snprintf( buf3, MSL, "%s", "Cnrm New Name   " );
+                snprintf( buf3, MSL, "%s", "Cnfm New Name   " );
                 break;
             case CON_GET_NEW_PASSWORD:
                 snprintf( buf3, MSL, "%s", "Get New Passwd  " );
@@ -3674,35 +3683,32 @@ DO_FUN(do_users)
             case CON_CONFIRM_NEW_PASSWORD:
                 snprintf( buf3, MSL, "%s", "Cnfm New Passwd " );
                 break;
-            case CON_GET_NEW_SEX:
+            case CON_CREATION_MENU:
+                snprintf( buf3, MSL, "%s", "Creation Menu   " );
+                break;
+            case CON_CREATION_GET_SEX:
                 snprintf( buf3, MSL, "%s", "Get New Sex     " );
                 break;
-            case CON_GET_NEW_CLASS:
+            case CON_CREATION_GET_RACE:
+                snprintf( buf3, MSL, "%s", "Get New Race    " );
+                break;
+            case CON_CREATION_GET_STATS:
+                snprintf( buf3, MSL, "%s", "Get New Stats   " );
+                break;
+            case CON_CREATION_GET_CLASS:
                 snprintf( buf3, MSL, "%s", "Get New Class   " );
                 break;
-            case CON_GET_RACE:
-                snprintf( buf3, MSL, "%s", "Get New Race    " );
+            case CON_GET_OLD_PASSWORD:
+                snprintf( buf3, MSL, "%s", "Get Old Passwd  " );
                 break;
             case CON_READ_MOTD:
                 snprintf( buf3, MSL, "%s", "Reading MOTD    " );
                 break;
-            case CON_GET_STATS:
-                snprintf( buf3, MSL, "%s", "Get New Stats   " );
+            case CON_SETTING_STATS:
+                snprintf( buf3, MSL, "%s", "Setting Stats   " );
                 break;
-            case CON_FINISHED:
-                snprintf( buf3, MSL, "%s", "Finish Creating " );
-                break;
-            case CON_MENU:
-                snprintf( buf3, MSL, "%s", "Creation Menu   " );
-                break;
-            case CON_COPYOVER_RECOVER:
-                snprintf( buf3, MSL, "%s", "Copyover Recover" );
-                break;
-            case CON_QUITTING:
-                snprintf( buf3, MSL, "%s", "Quitting        " );
-                break;
-            case CON_RECONNECTING:
-                snprintf( buf3, MSL, "%s", "Reconnecting    " );
+            case CON_PLAYING:
+                snprintf( buf3, MSL, "%s", "Playing         " );
                 break;
             default:
                 snprintf( buf3, MSL, "%s", "Unknown...      " );

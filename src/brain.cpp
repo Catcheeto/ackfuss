@@ -144,6 +144,7 @@ Brain::Brain()
 
     m_command_run = false;
     m_connection_state = CON_GET_NAME;
+    m_creation_check.reset();
     m_descriptor = uintmin_t;
     m_host = new char[256];
     m_output = "";

@@ -37,6 +37,10 @@
 #include "config.h"
 #endif
 
+#ifndef DEC_ENUM_H
+#include "enum.h"
+#endif
+
 #ifndef DEC_WORLD_H
 #include "world.h"
 #endif
