@@ -447,7 +447,7 @@ void game_loop( )
             {
                 if ( d->character != NULL )
                     d->character->timer = 0;
-                if ( !read_from_descriptor( d ) )
+                if ( !d->Read() )
                 {
                     FD_CLR( d->getDescriptor(), &out_set );
                     if ( d->character != NULL )
@@ -463,7 +463,7 @@ void game_loop( )
                 continue;
             }
 
-            read_from_buffer( d );
+            d->Read();
             if ( d->incomm[0] != '\0' )
             {
                 d->togCommandRun();
@@ -731,62 +731,6 @@ void close_socket( DESCRIPTOR_DATA * dclose )
     update_player_cnt( );
 
     return;
-}
-
-bool read_from_descriptor( DESCRIPTOR_DATA * d )
-{
-    int iStart;
-
-    /*
-     * Hold horses if pending command already.
-     */
-    if ( d->incomm[0] != '\0' )
-        return TRUE;
-
-    /*
-     * Check for overflow.
-     */
-    iStart = strlen( d->inbuf );
-    if ( iStart >= (int)sizeof( d->inbuf ) - 10 )
-    {
-        snprintf( log_buf, (2 * MIL), "%s input overflow!", d->getHost_() );
-        log_string( log_buf );
-        snprintf( log_buf, (2 * MIL), "input overflow by %s (%s)", ( d->character == NULL ) ? "[login]" : d->character->GetName_(), d->getHost_() );
-        monitor_chan( log_buf, MONITOR_CONNECT );
-        d->Send( "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
-        return FALSE;
-    }
-
-    /*
-     * Snarf input.
-     */
-    for ( ;; )
-    {
-        unsigned char tmp[MSL];
-        int nRead;
-
-        nRead = read( d->getDescriptor(), tmp, sizeof( tmp ) - 10 - iStart );
-        if ( nRead > 0 )
-        {
-            iStart += telopt_handler(d, tmp, nRead, (unsigned char *)(d->inbuf + iStart));
-            if ( d->inbuf[iStart - 1] == '\n' || d->inbuf[iStart - 1] == '\r' )
-                break;
-        }
-        else if ( nRead == 0 )
-        {
-            log_string( "EOF encountered on read." );
-            return FALSE;
-        }
-        else if ( errno == EWOULDBLOCK )
-            break;
-        else
-        {
-            perror( "Read_from_descriptor" );
-            return FALSE;
-        }
-    }
-    d->inbuf[iStart] = '\0';
-    return TRUE;
 }
 
 /*

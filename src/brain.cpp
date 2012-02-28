@@ -8,8 +8,16 @@
 
 #include "h/globals.h"
 
+#ifndef DEC_ACT_WIZ_H
+#include "h/act_wiz.h"
+#endif
+
 #ifndef DEC_DB_H
 #include "h/db.h"
+#endif
+
+#ifndef DEC_TELOPT_H
+#include "h/telopt.h"
 #endif
 
 const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
@@ -99,6 +107,62 @@ const bool Brain::ProcessOutput( const bool prompt )
         return false;
     else
         return true;
+}
+
+const bool Brain::Read()
+{
+    int iStart;
+
+    /*
+     * Hold horses if pending command already.
+     */
+    if ( incomm[0] != '\0' )
+        return TRUE;
+
+    /*
+     * Check for overflow.
+     */
+    iStart = strlen( inbuf );
+    if ( iStart >= (int)sizeof( inbuf ) - 10 )
+    {
+        snprintf( log_buf, (2 * MIL), "%s input overflow!", getHost_() );
+        log_string( log_buf );
+        snprintf( log_buf, (2 * MIL), "input overflow by %s (%s)", ( character == NULL ) ? "[login]" : character->GetName_(), getHost_() );
+        monitor_chan( log_buf, MONITOR_CONNECT );
+        Send( "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
+        return FALSE;
+    }
+
+    /*
+     * Snarf input.
+     */
+    for ( ;; )
+    {
+        unsigned char tmp[MSL];
+        int nRead;
+
+        nRead = read( getDescriptor(), tmp, sizeof( tmp ) - 10 - iStart );
+        if ( nRead > 0 )
+        {
+            iStart += telopt_handler(this, tmp, nRead, (unsigned char *)(inbuf + iStart));
+            if ( inbuf[iStart - 1] == '\n' || inbuf[iStart - 1] == '\r' )
+                break;
+        }
+        else if ( nRead == 0 )
+        {
+            log_string( "EOF encountered on read." );
+            return FALSE;
+        }
+        else if ( errno == EWOULDBLOCK )
+            break;
+        else
+        {
+            perror( "Read_from_descriptor" );
+            return FALSE;
+        }
+    }
+    inbuf[iStart] = '\0';
+    return TRUE;
 }
 
 const bool Brain::_Send()

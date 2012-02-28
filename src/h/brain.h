@@ -27,6 +27,7 @@ class Brain {
         char *showstr_point;
 
         const bool ProcessOutput( const bool prompt = true );
+        const bool Read();
         const void Send( const string msg ) { if ( m_output.empty() && !m_command_run ) { m_output += "\r\n"; m_output += msg; } else m_output += msg; return; };
 
         bool getCommandRun() const { return m_command_run; }

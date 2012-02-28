@@ -23,7 +23,6 @@ void *lookup_address P_((void *input));
 void new_descriptor P_((int d_control));
 void close_socket P_((DESCRIPTOR_DATA *dclose));
 bool read_from_descriptor P_((DESCRIPTOR_DATA *d));
-void read_from_buffer P_((DESCRIPTOR_DATA *d));
 void bust_a_prompt P_((DESCRIPTOR_DATA *d));
 void show_stotal_to P_((DESCRIPTOR_DATA *d));
 void show_menu_to P_((DESCRIPTOR_DATA *d));
