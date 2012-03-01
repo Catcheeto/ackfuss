@@ -114,12 +114,6 @@ const bool Brain::Read()
     int iStart;
 
     /*
-     * Hold horses if pending command already.
-     */
-    if ( incomm[0] != '\0' )
-        return TRUE;
-
-    /*
      * Check for overflow.
      */
     iStart = strlen( inbuf );
@@ -146,7 +140,12 @@ const bool Brain::Read()
         {
             iStart += telopt_handler(this, tmp, nRead, (unsigned char *)(inbuf + iStart));
             if ( inbuf[iStart - 1] == '\n' || inbuf[iStart - 1] == '\r' )
+            {
+                inbuf[iStart - 1] = '\0';
+                m_command_queue.push_back( inbuf );
+                inbuf[0] = '\0';
                 break;
+            }
         }
         else if ( nRead == 0 )
         {
@@ -161,7 +160,7 @@ const bool Brain::Read()
             return FALSE;
         }
     }
-    inbuf[iStart] = '\0';
+
     return TRUE;
 }
 
@@ -201,11 +200,11 @@ Brain::Brain()
     original = NULL;
     showstr_head = NULL;
     showstr_point = NULL;
-    incomm[0] = '\0';
     inlast[0] = '\0';
     inbuf[0] = '\0';
 
 
+    m_command_queue.clear();
     m_command_run = false;
     m_connection_state = CON_GET_NAME;
     m_creation_check.reset();
@@ -221,3 +220,87 @@ Brain::~Brain()
 {
     delete[] m_host;
 }
+
+/*
+ * Transfer one line from input buffer to input line.
+void read_from_buffer( DESCRIPTOR_DATA * d )
+{
+    int i, j, k;
+
+     * Hold horses if pending command already.
+    if ( d->incomm[0] != '\0' )
+        return;
+
+     * Look for at least one new line.
+    for ( i = 0; d->inbuf[i] != '\n' && d->inbuf[i] != '\r'; i++ )
+    {
+        if ( d->inbuf[i] == '\0' )
+            return;
+    }
+
+     * Canonical input processing.
+    for ( i = 0, k = 0; d->inbuf[i] != '\n' && d->inbuf[i] != '\r'; i++ )
+    {
+        if ( k >= MAX_INPUT_LENGTH - 2 )
+        {
+            d->Send( "Line too long.\r\n" );
+
+             * skip the rest of the line
+            for ( ; d->inbuf[i] != '\0'; i++ )
+            {
+                if ( d->inbuf[i] == '\n' || d->inbuf[i] == '\r' )
+                    break;
+            }
+            d->inbuf[i] = '\n';
+            d->inbuf[i + 1] = '\0';
+            break;
+        }
+
+        if ( d->inbuf[i] == '\b' && k > 0 )
+            --k;
+        else if ( isascii( d->inbuf[i] ) && isprint( d->inbuf[i] ) )
+            d->incomm[k++] = d->inbuf[i];
+    }
+
+     * Finish off the line.
+    if ( k == 0 )
+        d->incomm[k++] = ' ';
+    d->incomm[k] = '\0';
+
+     * Deal with bozos with #repeat 1000 ...
+    if ( k > 1 || d->incomm[0] == '!' )
+    {
+        if ( d->incomm[0] != '!' && strcmp( d->incomm, d->inlast ) )
+        {
+            d->repeat = 0;
+        }
+        else
+        {
+            if ( ++d->repeat >= 30 )
+            {
+                if ( d->getConnectionState( CON_PLAYING ) )
+                {
+                    snprintf( log_buf, (2 * MIL), "%s input spamming!", d->character->GetName_() );
+                    log_string( log_buf );
+                    monitor_chan( log_buf, MONITOR_CONNECT );
+                }
+                d->Send( "\r\n***** SHUT UP!! *****\r\n" );
+                close_socket( d );
+                 * old way: strcpy( d->incomm, "quit" );
+            }
+        }
+    }
+
+     * Do '!' substitution.
+    if ( d->incomm[0] == '!' )
+        strcpy( d->incomm, d->inlast );
+    else
+        strcpy( d->inlast, d->incomm );
+
+     * Shift the input buffer.
+    while ( d->inbuf[i] == '\n' || d->inbuf[i] == '\r' )
+        i++;
+    for ( j = 0; ( d->inbuf[j] = d->inbuf[i + j] ) != '\0'; j++ )
+        ;
+    return;
+} */

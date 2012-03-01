@@ -968,7 +968,7 @@ void comlog( CHAR_DATA * ch, bool cleanup, int cmd, char *args )
  * The main entry point for executing commands.
  * Can be recursively called from 'at', 'order', 'force'.
  */
-void interpret( CHAR_DATA * ch, char *argument )
+void interpret( CHAR_DATA * ch, const string input )
 {
     /*
      * BUG with aliases: they can call themselves, which is
@@ -984,6 +984,9 @@ void interpret( CHAR_DATA * ch, char *argument )
     int trust;
     bool found;
     alias_call = FALSE;
+    char *argument;
+
+    argument = const_cast<char*>( input.c_str() );
 
     if ( ch->position == POS_WRITING )
         /*

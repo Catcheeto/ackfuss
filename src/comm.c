@@ -464,22 +464,20 @@ void game_loop( )
             }
 
             d->Read();
-            if ( d->incomm[0] != '\0' )
+            if ( !d->getCommandQueue().empty() )
             {
+                string cmd = d->popCommandQueue();
                 d->togCommandRun();
                 stop_idling( d->character );
                 d->setTimeout( current_time + MAX_IDLE_TIME );
 
                 if ( d->getConnectionState( CON_PLAYING ) )
                     if ( d->showstr_point )
-                        show_string( d, d->incomm );
+                        show_string( d, cmd );
                     else
-                        interpret( d->character, d->incomm );
+                        interpret( d->character, cmd );
                 else
-                    nanny( d, d->incomm );
-
-                d->incomm[0] = '\0';
-
+                    nanny( d, cmd );
             }
         }
 
@@ -730,109 +728,6 @@ void close_socket( DESCRIPTOR_DATA * dclose )
 
     update_player_cnt( );
 
-    return;
-}
-
-/*
- * Transfer one line from input buffer to input line.
- */
-void read_from_buffer( DESCRIPTOR_DATA * d )
-{
-    int i, j, k;
-
-    /*
-     * Hold horses if pending command already.
-     */
-    if ( d->incomm[0] != '\0' )
-        return;
-
-    /*
-     * Look for at least one new line.
-     */
-    for ( i = 0; d->inbuf[i] != '\n' && d->inbuf[i] != '\r'; i++ )
-    {
-        if ( d->inbuf[i] == '\0' )
-            return;
-    }
-
-    /*
-     * Canonical input processing.
-     */
-    for ( i = 0, k = 0; d->inbuf[i] != '\n' && d->inbuf[i] != '\r'; i++ )
-    {
-        if ( k >= MAX_INPUT_LENGTH - 2 )
-        {
-            d->Send( "Line too long.\r\n" );
-
-            /*
-             * skip the rest of the line
-             */
-            for ( ; d->inbuf[i] != '\0'; i++ )
-            {
-                if ( d->inbuf[i] == '\n' || d->inbuf[i] == '\r' )
-                    break;
-            }
-            d->inbuf[i] = '\n';
-            d->inbuf[i + 1] = '\0';
-            break;
-        }
-
-        if ( d->inbuf[i] == '\b' && k > 0 )
-            --k;
-        else if ( isascii( d->inbuf[i] ) && isprint( d->inbuf[i] ) )
-            d->incomm[k++] = d->inbuf[i];
-    }
-
-    /*
-     * Finish off the line.
-     */
-    if ( k == 0 )
-        d->incomm[k++] = ' ';
-    d->incomm[k] = '\0';
-
-    /*
-     * Deal with bozos with #repeat 1000 ...
-     */
-    if ( k > 1 || d->incomm[0] == '!' )
-    {
-        if ( d->incomm[0] != '!' && strcmp( d->incomm, d->inlast ) )
-        {
-            d->repeat = 0;
-        }
-        else
-        {
-            if ( ++d->repeat >= 30 )
-            {
-                if ( d->getConnectionState( CON_PLAYING ) )
-                {
-                    snprintf( log_buf, (2 * MIL), "%s input spamming!", d->character->GetName_() );
-                    log_string( log_buf );
-                    monitor_chan( log_buf, MONITOR_CONNECT );
-                }
-                d->Send( "\r\n***** SHUT UP!! *****\r\n" );
-                close_socket( d );
-                /*
-                 * old way: strcpy( d->incomm, "quit" );
-                 */
-            }
-        }
-    }
-
-    /*
-     * Do '!' substitution.
-     */
-    if ( d->incomm[0] == '!' )
-        strcpy( d->incomm, d->inlast );
-    else
-        strcpy( d->inlast, d->incomm );
-
-    /*
-     * Shift the input buffer.
-     */
-    while ( d->inbuf[i] == '\n' || d->inbuf[i] == '\r' )
-        i++;
-    for ( j = 0; ( d->inbuf[j] = d->inbuf[i + j] ) != '\0'; j++ )
-        ;
     return;
 }
 
@@ -1620,13 +1515,12 @@ void show_cmenu_to( DESCRIPTOR_DATA * d )
 /*
  * Deal with sockets that haven't logged in yet.
  */
-void nanny( DESCRIPTOR_DATA * d, char *argument )
+void nanny( Brain *b, const string input )
 {
     char buf[MAX_STRING_LENGTH];
     char msg[MAX_STRING_LENGTH];
     CHAR_DATA *ch;
-    char *pwdnew;
-    char *p;
+    char *argument, *p, *pwdnew;
     int iClass;
     int lines;
     bool fOld;
@@ -1634,47 +1528,49 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
     NOTE_DATA *pnote;
     int notes;
 
+    argument = const_cast<char*>( input.c_str() );
+
     while ( isspace( *argument ) )
         argument++;
 
-    ch = d->character;
+    ch = b->character;
 
-    if ( d->getConnectionState( CON_GET_NAME ) )
+    if ( b->getConnectionState( CON_GET_NAME ) )
     {
         if ( argument[0] == '\0' )
         {
-            close_socket( d );
+            close_socket( b );
             return;
         }
 
         argument[0] = UPPER( argument[0] );
 
         /* Catch special commands, who, password recovery, etc --Kline */
-        if ( check_login_cmd( d, argument ) )
+        if ( check_login_cmd( b, argument ) )
             return;
 
-        snprintf( buf, MSL, "%s provided as name from login from site %s.", argument, d->getHost_() );
+        snprintf( buf, MSL, "%s provided as name from login from site %s.", argument, b->getHost_() );
         monitor_chan( buf, MONITOR_CONNECT );
 
         if ( !check_parse_name( argument ) )
         {
-            snprintf( buf, MSL, "Illegal name %s from site %s.", argument, d->getHost_() );
+            snprintf( buf, MSL, "Illegal name %s from site %s.", argument, b->getHost_() );
             monitor_chan( buf, MONITOR_CONNECT );
-            d->Send( "Illegal name, try another.\r\nName: " );
+            b->Send( "Illegal name, try another.\r\nName: " );
             return;
         }
 
-        fOld = load_char_obj( d, argument, FALSE );
-        ch = d->character;
-        char_list.remove(d->character); // ctor adds to list automatically, we need to exempt still-logging-in folks and re-add later --Kline
+        fOld = load_char_obj( b, argument, FALSE );
+        ch = b->character;
+        char_list.remove(b->character); // ctor adds to list automatically, we need to exempt still-logging-in folks and re-add later --Kline
 
         if ( ch->act.test(ACT_DENY) )
         {
-            snprintf( log_buf, (2 * MIL), "Denying access to %s@%s.", argument, d->getHost_() );
+            snprintf( log_buf, (2 * MIL), "Denying access to %s@%s.", argument, b->getHost_() );
             log_string( log_buf );
             monitor_chan( log_buf, MONITOR_CONNECT );
-            d->Send( "You are denied access.\r\n" );
-            close_socket( d );
+            b->Send( "You are denied access.\r\n" );
+            close_socket( b );
             return;
         }
         if ( ch->act.test(ACT_WHITELIST) )
@@ -1682,16 +1578,16 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             bool found = false;
 
             for ( short i = 0; i < MAX_HOSTS; i++ )
-                if ( ch->pcdata->whitelist[i] != str_empty && !str_prefix(ch->pcdata->whitelist[i], d->getHost_()) )
+                if ( ch->pcdata->whitelist[i] != str_empty && !str_prefix(ch->pcdata->whitelist[i], b->getHost_()) )
                     found = true;
 
             if ( !found )
             {
-                snprintf(log_buf, (2 * MIL), "Whitelist prohibited login %s@%s.", argument, d->getHost_());
+                snprintf(log_buf, (2 * MIL), "Whitelist prohibited login %s@%s.", argument, b->getHost_());
                 log_string(log_buf);
                 monitor_chan(log_buf, MONITOR_CONNECT);
-                d->Send( "This is not an approved connection domain for this character.\r\n" );
-                close_socket(d);
+                b->Send( "This is not an approved connection domain for this character.\r\n" );
+                close_socket( b );
                 return;
             }
         }
@@ -1699,7 +1595,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         if ( ch->act.test(ACT_JUSTIFY) )
             ch->act.reset(ACT_JUSTIFY);
 
-        if ( check_reconnect( d, FALSE ) )
+        if ( check_reconnect( b, FALSE ) )
         {
             fOld = TRUE;
         }
@@ -1707,23 +1603,23 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         {
             if ( wizlock && !IS_HERO( ch ) && !ch->wizbit && !is_name( argument, sysdata.playtesters ) )
             {
-                d->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
-                d->Send( "Please Try Connecting Again In A Little While, When Any Problems\r\n" );
-                d->Send( "       We Are Working On Have Been Solved.  Thank You.\r\n" );
-                close_socket( d );
+                b->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
+                b->Send( "Please Try Connecting Again In A Little While, When Any Problems\r\n" );
+                b->Send( "       We Are Working On Have Been Solved.  Thank You.\r\n" );
+                close_socket( b );
                 return;
             }
             if ( deathmatch && !IS_HERO( ch ) && !ch->wizbit )
             {
-                d->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
-                d->Send( "Sorry, The Players Connected At This Time Are Currently Participating\r\n" );
-                d->Send( "     In A DEATHMATCH Murder-Fest.  Please try later!\r\n" );
-                d->Send( "  Deathmatches are usually held on Thursdays and Sundays.  They\r\n" );
-                d->Send( " normally last about 30 minutes.  Please be patient!\r\n" );
-                close_socket( d );
+                b->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
+                b->Send( "Sorry, The Players Connected At This Time Are Currently Participating\r\n" );
+                b->Send( "     In A DEATHMATCH Murder-Fest.  Please try later!\r\n" );
+                b->Send( "  Deathmatches are usually held on Thursdays and Sundays.  They\r\n" );
+                b->Send( " normally last about 30 minutes.  Please be patient!\r\n" );
+                close_socket( b );
                 return;
             }
-            if ( check_playing( d, ch->GetName() ) )
+            if ( check_playing( b, ch->GetName() ) )
                 return;
         }
 
@@ -1735,13 +1631,13 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             for ( li = ban_list.begin(); li != ban_list.end(); li++ )
             {
                 pban = *li;
-                if ( !str_prefix( pban->name, d->getHost_() ) && ( pban->newbie == FALSE ) )
+                if ( !str_prefix( pban->name, b->getHost_() ) && ( pban->newbie == FALSE ) )
                 {
-                    snprintf( buf, MSL, "Denying access to banned site %s", d->getHost_() );
+                    snprintf( buf, MSL, "Denying access to banned site %s", b->getHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
-                    d->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
-                    d->setConnectionState( CON_QUITTING );
-                    close_socket( d );
+                    b->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
+                    b->setConnectionState( CON_QUITTING );
+                    close_socket( b );
                     return;
                 }
             }
@@ -1749,9 +1645,9 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             /*
              * Old player
              */
-            d->Send( "\r\nPassword: " );
-            d->Send( echo_off_str );
-            d->setConnectionState( CON_GET_OLD_PASSWORD );
+            b->Send( "\r\nPassword: " );
+            b->Send( echo_off_str );
+            b->setConnectionState( CON_GET_OLD_PASSWORD );
             return;
         }
         else
@@ -1764,57 +1660,57 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             /*
              * New characters with same name fix by Salem's Lot
              */
-            if ( check_playing( d, ch->GetName() ) )
+            if ( check_playing( b, ch->GetName() ) )
                 return;
 
             for ( li = ban_list.begin(); li != ban_list.end(); li++ )
             {
                 pban = *li;
-                if ( !str_prefix( pban->name, d->getHost_() ) )
+                if ( !str_prefix( pban->name, b->getHost_() ) )
 
                 {
-                    snprintf( buf, MSL, "Denying access to banned site %s", d->getHost_() );
+                    snprintf( buf, MSL, "Denying access to banned site %s", b->getHost_() );
                     monitor_chan( buf, MONITOR_CONNECT );
-                    d->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
-                    d->setConnectionState( CON_QUITTING );
-                    close_socket( d );
+                    b->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
+                    b->setConnectionState( CON_QUITTING );
+                    close_socket( b );
                     return;
                 }
             }
 
             snprintf( buf, MSL, "Did I get that right, %s (Y/N)? ", argument );
-            d->Send( buf );
-            d->setConnectionState( CON_CONFIRM_NEW_NAME );
+            b->Send( buf );
+            b->setConnectionState( CON_CONFIRM_NEW_NAME );
             return;
         }
     }
 
-    if ( d->getConnectionState( CON_GET_OLD_PASSWORD ) )
+    if ( b->getConnectionState( CON_GET_OLD_PASSWORD ) )
     {
-        d->Send( "\r\n" );
+        b->Send( "\r\n" );
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
         {
-            d->Send( "Wrong password.\r\n" );
-            snprintf( buf, MSL, "FAILED LOGIN for %s from site %s.", ch->GetName_(), d->getHost_() );
+            b->Send( "Wrong password.\r\n" );
+            snprintf( buf, MSL, "FAILED LOGIN for %s from site %s.", ch->GetName_(), b->getHost_() );
             monitor_chan( buf, MONITOR_CONNECT );
             ch->pcdata->failures++;
             save_char_obj( ch );
-            close_socket( d );
+            close_socket( b );
             return;
         }
 
-        d->Send( echo_on_str );
+        b->Send( echo_on_str );
 
-        if ( check_reconnect( d, TRUE ) )
+        if ( check_reconnect( b, TRUE ) )
             return;
 
-        if ( check_playing( d, ch->GetName() ) )
+        if ( check_playing( b, ch->GetName() ) )
             return;
 
         snprintf( log_buf, (2 * MIL), "%s has connected.", ch->GetName_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
-        snprintf( log_buf, (2 * MIL), "Site Name: %s.", d->getHost_() );
+        snprintf( log_buf, (2 * MIL), "Site Name: %s.", b->getHost_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
         log_string( log_buf );
@@ -1838,42 +1734,42 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             do_help( ch, "motd" );
         }
         ch->pcdata->pagelen = lines;
-        d->setConnectionState( CON_READ_MOTD );
+        b->setConnectionState( CON_READ_MOTD );
     }
 
-    if ( d->getConnectionState( CON_CONFIRM_NEW_NAME ) )
+    if ( b->getConnectionState( CON_CONFIRM_NEW_NAME ) )
     {
         switch ( *argument )
         {
             case 'y':
             case 'Y':
                 snprintf( buf, MSL, "New character.\r\nGive me a password for %s: %s", ch->GetName_(), echo_off_str );
-                d->Send( buf );
-                d->setConnectionState( CON_GET_NEW_PASSWORD );
+                b->Send( buf );
+                b->setConnectionState( CON_GET_NEW_PASSWORD );
                 return;
 
             case 'n':
             case 'N':
-                d->Send( "Ok, what IS it, then? " );
-                delete d->character;
-                d->character = NULL;
-                d->setConnectionState( CON_GET_NAME );
+                b->Send( "Ok, what IS it, then? " );
+                delete b->character;
+                b->character = NULL;
+                b->setConnectionState( CON_GET_NAME );
                 return;
 
             default:
-                d->Send( "Please type Yes or No? " );
+                b->Send( "Please type Yes or No? " );
                 return;
         }
         return;
     }
 
-    if ( d->getConnectionState( CON_GET_NEW_PASSWORD ) )
+    if ( b->getConnectionState( CON_GET_NEW_PASSWORD ) )
     {
-        d->Send( "\r\n" );
+        b->Send( "\r\n" );
 
         if ( strlen( argument ) < 5 )
         {
-            d->Send( "Password must be at least five characters long.\r\nPassword: " );
+            b->Send( "Password must be at least five characters long.\r\nPassword: " );
             return;
         }
 
@@ -1882,76 +1778,76 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         {
             if ( *p == '~' )
             {
-                d->Send( "New password not acceptable, try again.\r\nPassword: " );
+                b->Send( "New password not acceptable, try again.\r\nPassword: " );
                 return;
             }
         }
 
         free_string( ch->pcdata->pwd );
         ch->pcdata->pwd = str_dup( pwdnew );
-        d->Send( "Please retype password: " );
-        d->setConnectionState( CON_CONFIRM_NEW_PASSWORD );
+        b->Send( "Please retype password: " );
+        b->setConnectionState( CON_CONFIRM_NEW_PASSWORD );
         return;
     }
 
-    if ( d->getConnectionState( CON_CONFIRM_NEW_PASSWORD ) )
+    if ( b->getConnectionState( CON_CONFIRM_NEW_PASSWORD ) )
     {
-        d->Send( "\r\n" );
+        b->Send( "\r\n" );
 
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
         {
-            d->Send( "Passwords don't match.\r\nRetype password: " );
-            d->setConnectionState( CON_GET_NEW_PASSWORD );
+            b->Send( "Passwords don't match.\r\nRetype password: " );
+            b->setConnectionState( CON_GET_NEW_PASSWORD );
             return;
         }
-        d->Send( echo_on_str );
-        show_menu_to( d );
-        d->setConnectionState( CON_CREATION_MENU );
+        b->Send( echo_on_str );
+        show_menu_to( b );
+        b->setConnectionState( CON_CREATION_MENU );
         return;
     }
 
-    if ( d->getConnectionState( CON_RESET_PASSWORD ) )
+    if ( b->getConnectionState( CON_RESET_PASSWORD ) )
     {
-        d->Send( "\r\n" );
+        b->Send( "\r\n" );
 
         if ( strlen( argument ) < 5 )
         {
-            d->Send( "Password must be at least five characters long.\r\nPassword: " );
+            b->Send( "Password must be at least five characters long.\r\nPassword: " );
             return;
         }
 
-        pwdnew = crypt( argument, d->character->GetName_() );
+        pwdnew = crypt( argument, b->character->GetName_() );
         for ( p = pwdnew; *p != '\0'; p++ )
         {
             if ( *p == '~' )
             {
-                d->Send( "New password not acceptable, try again.\r\nPassword: " );
+                b->Send( "New password not acceptable, try again.\r\nPassword: " );
                 return;
             }
         }
 
-        free_string( d->character->pcdata->pwd );
-        d->character->pcdata->pwd = str_dup( pwdnew );
-        d->Send( "Please retype password: " );
-        d->setConnectionState( CON_CONFIRM_RESET_PASSWORD );
+        free_string( b->character->pcdata->pwd );
+        b->character->pcdata->pwd = str_dup( pwdnew );
+        b->Send( "Please retype password: " );
+        b->setConnectionState( CON_CONFIRM_RESET_PASSWORD );
         return;
     }
 
-    if ( d->getConnectionState( CON_CONFIRM_RESET_PASSWORD ) )
+    if ( b->getConnectionState( CON_CONFIRM_RESET_PASSWORD ) )
     {
         iterBrain li;
         DESCRIPTOR_DATA *dp = NULL;
 
-        d->Send( "\r\n" );
+        b->Send( "\r\n" );
 
-        if ( strcmp( crypt( argument, d->character->pcdata->pwd ), d->character->pcdata->pwd ) )
+        if ( strcmp( crypt( argument, b->character->pcdata->pwd ), b->character->pcdata->pwd ) )
         {
-            d->Send( "Passwords don't match.\r\nRetype password: " );
-            d->setConnectionState( CON_RESET_PASSWORD );
+            b->Send( "Passwords don't match.\r\nRetype password: " );
+            b->setConnectionState( CON_RESET_PASSWORD );
             return;
         }
 
-        d->character->pcdata->recovery_code.clear();
+        b->character->pcdata->recovery_code.clear();
         for ( li = pload_list.begin(); li != pload_list.end(); li++ )
         {
             dp = *li;
@@ -1961,68 +1857,68 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 break;
             }
         }
-        d->Send( echo_on_str );
-        d->Send( "Please login with your new password now. Goodbye.\r\n" );
-        close_socket( d );
+        b->Send( echo_on_str );
+        b->Send( "Please login with your new password now. Goodbye.\r\n" );
+        close_socket( b );
         return;
     }
 
-    if ( d->getConnectionState( CON_CREATION_MENU ) )
+    if ( b->getConnectionState( CON_CREATION_MENU ) )
     {
         int number;
 
         if ( !is_number( argument ) )
         {
-            d->Send( "\r\nPlease Enter A Number.\r\n" );
-            show_menu_to( d );
+            b->Send( "\r\nPlease Enter A Number.\r\n" );
+            show_menu_to( b );
             return;
         }
         number = atoi( argument );
         if ( number < 1 || number > 5 )
         {
-            d->Send( "\r\nPlease Enter A Number Between 1 And 5.\r\n" );
-            show_menu_to( d );
+            b->Send( "\r\nPlease Enter A Number Between 1 And 5.\r\n" );
+            show_menu_to( b );
             return;
         }
 
         switch ( number )
         {
             case 1:
-                d->setConnectionState( CON_CREATION_GET_SEX );
-                show_smenu_to( d );
+                b->setConnectionState( CON_CREATION_GET_SEX );
+                show_smenu_to( b );
                 break;
             case 2:
-                d->setConnectionState( CON_CREATION_GET_RACE );
-                show_rmenu_to( d );
+                b->setConnectionState( CON_CREATION_GET_RACE );
+                show_rmenu_to( b );
                 break;
             case 3:
-                d->setConnectionState( CON_CREATION_GET_STATS );
-                show_amenu_to( d );
+                b->setConnectionState( CON_CREATION_GET_STATS );
+                show_amenu_to( b );
                 break;
             case 4:
-                d->setConnectionState( CON_CREATION_GET_CLASS );
-                show_cmenu_to( d );
+                b->setConnectionState( CON_CREATION_GET_CLASS );
+                show_cmenu_to( b );
                 break;
             case 5:
                 for( uint_t i = 0; i < MAX_CREATION_CHECK; i++ )
                 {
-                    if( !d->getCreationCheck( i ) )
+                    if( !b->getCreationCheck( i ) )
                     {
-                        d->Send( "All creation options must be selected first.\r\n" );
-                        show_menu_to( d );
+                        b->Send( "All creation options must be selected first.\r\n" );
+                        show_menu_to( b );
                         return;
                     }
                 }
-                snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), d->getHost_() );
+                snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), b->getHost_() );
                 log_string( log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
-                d->Send( "\r\n" );
+                b->Send( "\r\n" );
                 ch->pcdata->pagelen = 20;
 
                 do_save(ch, "auto");
                 do_help( ch, "newun" );
                 mudinfo.total_pfiles++;
-                d->setConnectionState( CON_READ_MOTD );
+                b->setConnectionState( CON_READ_MOTD );
                 /*
                  * Display motd, and all other malarky
                  */
@@ -2031,7 +1927,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         return;
     }
 
-    if ( d->getConnectionState( CON_CREATION_GET_STATS ) )
+    if ( b->getConnectionState( CON_CREATION_GET_STATS ) )
     {
         int total = (ch->pcdata->max_str + ch->pcdata->max_int + ch->pcdata->max_wis + ch->pcdata->max_dex + ch->pcdata->max_con);
 
@@ -2042,51 +1938,51 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 if ( !str_prefix(argument, "str") )
                 {
                     if ( ch->pcdata->max_str <= 3 )
-                        d->Send( "You must have at least 3 Str." );
+                        b->Send( "You must have at least 3 Str." );
                     else
                     {
                         ch->pcdata->max_str--;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "int") )
                 {
                     if ( ch->pcdata->max_int <= 3 )
-                        d->Send( "You must have at least 3 Int." );
+                        b->Send( "You must have at least 3 Int." );
                     else
                     {
                         ch->pcdata->max_int--;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "wis") )
                 {
                     if ( ch->pcdata->max_wis <= 3 )
-                        d->Send( "You must have at least 3 Wis." );
+                        b->Send( "You must have at least 3 Wis." );
                     else
                     {
                         ch->pcdata->max_wis--;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "dex") )
                 {
                     if ( ch->pcdata->max_dex <= 3 )
-                        d->Send( "You must have at least 3 Dex." );
+                        b->Send( "You must have at least 3 Dex." );
                     else
                     {
                         ch->pcdata->max_dex--;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "con") )
                 {
                     if ( ch->pcdata->max_con <= 3 )
-                        d->Send( "You must have at least 3 Con." );
+                        b->Send( "You must have at least 3 Con." );
                     else
                     {
                         ch->pcdata->max_con--;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 break;
@@ -2095,103 +1991,103 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 if ( !str_prefix(argument, "str") )
                 {
                     if ( ch->pcdata->max_str >= race_table[ch->race].race_str )
-                        d->Send( "Your Str is already at max." );
+                        b->Send( "Your Str is already at max." );
                     else if ( total >= MAX_TOT_STATS )
                     {
                         snprintf(buf, MSL, "You already have %d total stat points allocated.", MAX_TOT_STATS);
-                        d->Send( buf );
+                        b->Send( buf );
                     }
                     else
                     {
                         ch->pcdata->max_str++;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "int") )
                 {
                     if ( ch->pcdata->max_int >= race_table[ch->race].race_int )
-                        d->Send( "Your Int is already at max." );
+                        b->Send( "Your Int is already at max." );
                     else if ( total >= MAX_TOT_STATS )
                     {
                         snprintf(buf, MSL, "You already have %d total stat points allocated.", MAX_TOT_STATS);
-                        d->Send( buf );
+                        b->Send( buf );
                     }
                     else
                     {
                         ch->pcdata->max_int++;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "wis") )
                 {
                     if ( ch->pcdata->max_wis >= race_table[ch->race].race_wis )
-                        d->Send( "Your Wis is already at max." );
+                        b->Send( "Your Wis is already at max." );
                     else if ( total >= MAX_TOT_STATS )
                     {
                         snprintf(buf, MSL, "You already have %d total stat points allocated.", MAX_TOT_STATS);
-                        d->Send( buf );
+                        b->Send( buf );
                     }
                     else
                     {
                         ch->pcdata->max_wis++;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "dex") )
                 {
                     if ( ch->pcdata->max_dex >= race_table[ch->race].race_dex )
-                        d->Send( "Your Dex is already at max." );
+                        b->Send( "Your Dex is already at max." );
                     else if ( total >= MAX_TOT_STATS )
                     {
                         snprintf(buf, MSL, "You already have %d total stat points allocated.", MAX_TOT_STATS);
-                        d->Send( buf );
+                        b->Send( buf );
                     }
                     else
                     {
                         ch->pcdata->max_dex++;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 if ( !str_prefix(argument, "con") )
                 {
                     if ( ch->pcdata->max_con >= race_table[ch->race].race_con )
-                        d->Send( "Your Con is already at max." );
+                        b->Send( "Your Con is already at max." );
                     else if ( total >= MAX_TOT_STATS )
                     {
                         snprintf(buf, MSL, "You already have %d total stat points allocated.", MAX_TOT_STATS);
-                        d->Send( buf );
+                        b->Send( buf );
                     }
                     else
                     {
                         ch->pcdata->max_con++;
-                        show_stotal_to(d);
+                        show_stotal_to( b );
                     }
                 }
                 break;
             case 'A':
             case 'a':
                 if ( total < MAX_TOT_STATS )
-                    d->Send( "Please finish allocating your stats first." );
+                    b->Send( "Please finish allocating your stats first." );
                 else
                 {
-                    d->setCreationCheck( CREATION_STATS_DONE );
-                    d->setConnectionState( CON_CREATION_MENU );
-                    show_menu_to( d );
+                    b->setCreationCheck( CREATION_STATS_DONE );
+                    b->setConnectionState( CON_CREATION_MENU );
+                    show_menu_to( b );
                 }
                 break;
             case 'H':
             case 'h':
-                show_ahelp_menu_to( d );
+                show_ahelp_menu_to( b );
                 break;
             default:
-                d->Send( "\r\nPlease Select: (A)ccept, return to menu, (H)elp stats, +(stat), or -(stat): " );
+                b->Send( "\r\nPlease Select: (A)ccept, return to menu, (H)elp stats, +(stat), or -(stat): " );
                 break;
         }
         return;
     }
 
 
-    if ( d->getConnectionState( CON_CREATION_GET_SEX ) )
+    if ( b->getConnectionState( CON_CREATION_GET_SEX ) )
     {
         switch ( argument[0] )
         {
@@ -2211,17 +2107,17 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 ch->pcdata->login_sex = SEX_NEUTRAL;
                 break;
             default:
-                d->Send( "That's not a sex.\r\nWhat IS your sex? " );
-                show_smenu_to( d );
+                b->Send( "That's not a sex.\r\nWhat IS your sex? " );
+                show_smenu_to( b );
                 return;
         }
-        d->setCreationCheck( CREATION_SEX_DONE );
-        d->setConnectionState( CON_CREATION_MENU );
-        show_menu_to( d );
+        b->setCreationCheck( CREATION_SEX_DONE );
+        b->setConnectionState( CON_CREATION_MENU );
+        show_menu_to( b );
         return;
     }
 
-    if ( d->getConnectionState( CON_CREATION_GET_CLASS ) )
+    if ( b->getConnectionState( CON_CREATION_GET_CLASS ) )
     {
         short classes[MAX_CLASS];
         short parity[MAX_CLASS];  /* Nowt to do with parity really */
@@ -2266,8 +2162,8 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
         if ( !ok )
         {
-            d->Send( "Invalid Order... Please Try Again. You must list each class, by abbreviation, such as CLE WAR MAG THI PSI.\r\n" );
-            show_cmenu_to( d );
+            b->Send( "Invalid Order... Please Try Again. You must list each class, by abbreviation, such as CLE WAR MAG THI PSI.\r\n" );
+            show_cmenu_to( b );
             return;
         }
 
@@ -2277,20 +2173,20 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
         for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
             ch->pcdata->order[cnt] = classes[cnt];
 
-        d->setCreationCheck( CREATION_CLASS_DONE );
-        d->setConnectionState( CON_CREATION_MENU );
-        show_menu_to( d );
+        b->setCreationCheck( CREATION_CLASS_DONE );
+        b->setConnectionState( CON_CREATION_MENU );
+        show_menu_to( b );
         return;
     }
 
-    if ( d->getConnectionState( CON_CREATION_GET_RACE ) )
+    if ( b->getConnectionState( CON_CREATION_GET_RACE ) )
     {
         char arg1[MSL], arg2[MSL];
 
         argument = one_argument(argument,arg1);
         argument = one_argument(argument,arg2);
 
-        d->remCreationCheck( CREATION_STATS_DONE ); // Maximum stats depend on race; so clear this if already selected
+        b->remCreationCheck( CREATION_STATS_DONE ); // Maximum stats depend on race; so clear this if already selected
 
         for ( iClass = 0; iClass < MAX_RACE; iClass++ )
         {
@@ -2303,25 +2199,25 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             else if ( !str_cmp( arg1, "info" ) )
             {
                 do_race_list( ch, arg2 );
-                d->Send( "Please Select Your Race (Abr), or type info <abr> for race info, ie \"info hmn\": " );
+                b->Send( "Please Select Your Race (Abr), or type info <abr> for race info, ie \"info hmn\": " );
                 return;
             }
         }
 
         if ( ( iClass == MAX_RACE ) || ( race_table[iClass].player_allowed == FALSE ) )
         {
-            d->Send( "Invalid Choice.\r\n" );
-            show_rmenu_to( d );
+            b->Send( "Invalid Choice.\r\n" );
+            show_rmenu_to( b );
             return;
         }
 
-        d->setCreationCheck( CREATION_RACE_DONE );
-        d->setConnectionState( CON_CREATION_MENU );
-        show_menu_to( d );
+        b->setCreationCheck( CREATION_RACE_DONE );
+        b->setConnectionState( CON_CREATION_MENU );
+        show_menu_to( b );
         return;
     }
 
-    if ( d->getConnectionState( CON_READ_MOTD ) )
+    if ( b->getConnectionState( CON_READ_MOTD ) )
     {
         list<NOTE_DATA *>::iterator li;
         /*
@@ -2333,7 +2229,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
             ch->lvl[ch->p_class] = 1;
         }
 
-        d->setConnectionState( CON_PLAYING );
+        b->setConnectionState( CON_PLAYING );
 
 
         if ( ch->act.test(ACT_FULL_ANSI) )
@@ -2454,9 +2350,9 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
             for ( short i = 0; i < MAX_HOSTS; i++ )
             {
-                if ( strcmp( d->getHost_(), ch->pcdata->host[i] ) )
+                if ( strcmp( b->getHost_(), ch->pcdata->host[i] ) )
                 {
-                    snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->GetName_(), d->getHost_(), ch->pcdata->host[0] );
+                    snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->GetName_(), b->getHost_(), ch->pcdata->host[0] );
                     log_string( msg );
                     monitor_chan( msg, MONITOR_CONNECT );
                     if ( ( ch->level > 80 ) )
@@ -2473,7 +2369,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 if ( !str_cmp(ch->pcdata->host[i], "Unknown!") )
                 {
                     free_string(ch->pcdata->host[i]);
-                    ch->pcdata->host[i] = str_dup(d->getHost_());
+                    ch->pcdata->host[i] = str_dup(b->getHost_());
                     break;
                 }
                 if ( i == (MAX_HOSTS - 1 ) )
@@ -2601,7 +2497,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
 
 
         ch->is_quitting = false;
-        d->setConnectionState( CON_SETTING_STATS );
+        b->setConnectionState( CON_SETTING_STATS );
         {
             OBJ_DATA *wear_object;
             AFFECT_DATA *this_aff;
@@ -2647,7 +2543,7 @@ void nanny( DESCRIPTOR_DATA * d, char *argument )
                 delete this_aff;
             }
         }
-        d->setConnectionState( CON_PLAYING );
+        b->setConnectionState( CON_PLAYING );
 
         do_look( ch, "auto" );
 
@@ -3021,7 +2917,7 @@ void send_to_char( string txt, CHAR_DATA *ch )
 /* Leak fixes.. alloc_mem'd stuff shouldnt be free_string'd. -- Altrag */
 /* Spec: buffer overflow fixes, internal buffer sizes increased */
 
-void show_string( DESCRIPTOR_DATA *d, char *input )
+void show_string( Brain* b, const string input )
 {
     char buffer[MSL * 2];
     char buf[MSL * 2];
@@ -3039,26 +2935,26 @@ void show_string( DESCRIPTOR_DATA *d, char *input )
             break;
 
         case 'R':  /* refresh current page of text */
-            lines = -1 - ( d->character->pcdata->pagelen );
+            lines = -1 - ( b->character->pcdata->pagelen );
             break;
 
         case 'B':  /* scroll back a page of text */
-            lines = -( 2 * d->character->pcdata->pagelen );
+            lines = -( 2 * b->character->pcdata->pagelen );
             break;
 
         case 'H':  /* Show some help */
-            d->Send( "C, or Return = continue, R = redraw this page,\r\n" );
-            d->Send( "B = back one page, H = this help, Q or other keys = exit.\r\n\r\n" );
-            lines = -1 - ( d->character->pcdata->pagelen );
+            b->Send( "C, or Return = continue, R = redraw this page,\r\n" );
+            b->Send( "B = back one page, H = this help, Q or other keys = exit.\r\n\r\n" );
+            lines = -1 - ( b->character->pcdata->pagelen );
             break;
 
         default:   /*otherwise, stop the text viewing */
-            if ( d->showstr_head )
+            if ( b->showstr_head )
             {
-                free(d->showstr_head);
-                d->showstr_head = 0;
+                free(b->showstr_head);
+                b->showstr_head = 0;
             }
-            d->showstr_point = 0;
+            b->showstr_point = 0;
             return;
 
     }
@@ -3068,7 +2964,7 @@ void show_string( DESCRIPTOR_DATA *d, char *input )
      */
     if ( lines < 0 )
     {
-        for ( scan = d->showstr_point; scan > d->showstr_head; scan-- )
+        for ( scan = b->showstr_point; scan > b->showstr_head; scan-- )
             if ( ( *scan == '\n' ) || ( *scan == '\r' ) )
             {
                 toggle = -toggle;
@@ -3076,7 +2972,7 @@ void show_string( DESCRIPTOR_DATA *d, char *input )
                     if ( !( ++lines ) )
                         break;
             }
-        d->showstr_point = scan;
+        b->showstr_point = scan;
     }
 
     /*
@@ -3086,29 +2982,29 @@ void show_string( DESCRIPTOR_DATA *d, char *input )
     toggle = 1;
 
     space = MAX_STRING_LENGTH * 2 - 100;
-    for ( scan = buffer;; scan++, d->showstr_point++ )
+    for ( scan = buffer;; scan++, b->showstr_point++ )
     {
         space--;
-        if ( ( ( *scan = *d->showstr_point ) == '\n' || *scan == '\r' ) && ( toggle = -toggle ) < 0 && space > 0 )
+        if ( ( ( *scan = *b->showstr_point ) == '\n' || *scan == '\r' ) && ( toggle = -toggle ) < 0 && space > 0 )
             lines++;
-        else if ( !*scan || ( d->character && !IS_NPC( d->character ) && lines >= d->character->pcdata->pagelen ) || space <= 0 )
+        else if ( !*scan || ( b->character && !IS_NPC( b->character ) && lines >= b->character->pcdata->pagelen ) || space <= 0 )
         {
 
             *scan = '\0';
-            d->Send( buffer );
+            b->Send( buffer );
 
             /*
              * See if this is the end (or near the end) of the string
              */
-            for ( chk = d->showstr_point; isspace( *chk ); chk++ );
+            for ( chk = b->showstr_point; isspace( *chk ); chk++ );
             if ( !*chk )
             {
-                if ( d->showstr_head )
+                if ( b->showstr_head )
                 {
-                    free(d->showstr_head);
-                    d->showstr_head = 0;
+                    free(b->showstr_head);
+                    b->showstr_head = 0;
                 }
-                d->showstr_point = 0;
+                b->showstr_point = 0;
             }
             return;
         }
