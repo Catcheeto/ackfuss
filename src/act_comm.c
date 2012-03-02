@@ -1763,7 +1763,7 @@ DO_FUN(do_quit)
 
                 log_string( logbuf );
             }
-            close_socket( other_logins );
+            other_logins->Disconnect();
         }
     }
 
@@ -1772,7 +1772,7 @@ DO_FUN(do_quit)
 
     extract_char( ch, TRUE );
     if ( d != NULL )
-        close_socket( d );
+        d->Disconnect();
 
     return;
 }

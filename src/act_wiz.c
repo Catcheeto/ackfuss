@@ -330,7 +330,7 @@ DO_FUN(do_disconnect)
         d = *di;
         if ( d == victim->desc )
         {
-            close_socket( d );
+            d->Disconnect();
             send_to_char( "Ok.\r\n", ch );
             return;
         }
@@ -6247,7 +6247,7 @@ DO_FUN(do_hotreboot)
         if ( !d->character || d->getConnectionState() < 0 )  /* drop those logging on */
         {
             d->Send( "\r\n@Sorry, " mudnamecolor " is rebooting. Come back in a few minutes.\r\n" );
-            close_socket( d );   /* throw'em out */
+            d->Disconnect();   /* throw'em out */
         }
         else
         {

@@ -108,6 +108,7 @@
 
 extern OBJ_DATA *quest_object;
 extern bool quest;
+extern bool merc_down;
 extern CHAR_DATA *quest_mob;
 extern CHAR_DATA *quest_target;
 extern COUNCIL_DATA super_councils[MAX_SUPER];
@@ -464,7 +465,7 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
      * Check for weapon wielding.
      * Guard against recursion (for weapons with affects).
      */
-    if ( ( ch->is_quitting == false ) && ( ch->desc != NULL ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) )
+    if ( !merc_down && ( ch->is_quitting == false ) && ( ch->desc != NULL ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) )
     {
         short i;
         for ( i = 0; i < MAX_WEAR; i++ )
@@ -487,6 +488,7 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
             }
         }
     }
+
     return;
 }
 

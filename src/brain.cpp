@@ -12,6 +12,10 @@
 #include "h/act_wiz.h"
 #endif
 
+#ifndef DEC_COMM_H
+#include "h/comm.h"
+#endif
+
 #ifndef DEC_DB_H
 #include "h/db.h"
 #endif
@@ -21,8 +25,59 @@
 #endif
 
 const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
-void bust_a_prompt (DESCRIPTOR_DATA *d);
 void char_hunt (CHAR_DATA *ch);
+
+const void Brain::Disconnect()
+{
+    char buf[MSL];
+    Brain* b = NULL;
+    iterBrain di;
+    CHAR_DATA *ch;
+
+    if ( snoop_by != NULL )
+        snoop_by->Send( "Your victim has left the game.\r\n" );
+
+    for ( di = brain_list.begin(); di != brain_list.end(); di++)
+    {
+        b = *di;
+        if ( b->snoop_by == this )
+            b->snoop_by = NULL;
+    }
+
+    if ( original )
+    {
+        if ( character )
+            do_return( character, "" );
+        else
+        {
+            bug( "Brain::Disconnect: original without ch", 0 );
+            character = original;
+            original = NULL;
+        }
+    }
+
+    if ( ( ch = character ) != NULL )
+    {
+        snprintf( buf, MSL, "Closing link to %s.", ch->GetName_() );
+        log_string( buf );
+        monitor_chan( buf, MONITOR_CONNECT );
+        if ( m_connection_state == CON_PLAYING )
+        {
+            act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
+            ch->desc = NULL;
+        }
+        else
+            delete character;
+    }
+
+    mudinfo.mudNextDesc = brain_list.erase( find( brain_list.begin(), brain_list.end(), this ) );
+    close( m_descriptor );
+    update_player_cnt();
+
+    delete this;
+
+    return;
+}
 
 const void Brain::ProcessColors()
 {
@@ -111,57 +166,49 @@ const bool Brain::ProcessOutput( const bool prompt )
 
 const bool Brain::Read()
 {
-    int iStart;
+    char buf[MSL], tmp[MSL];
+    ssize_t recvd = 0, start = 0;
 
-    /*
-     * Check for overflow.
-     */
-    iStart = strlen( inbuf );
-    if ( iStart >= (int)sizeof( inbuf ) - 10 )
+    start = strlen( inbuf );
+    if ( start >= MSL )
     {
-        snprintf( log_buf, (2 * MIL), "%s input overflow!", getHost_() );
-        log_string( log_buf );
-        snprintf( log_buf, (2 * MIL), "input overflow by %s (%s)", ( character == NULL ) ? "[login]" : character->GetName_(), getHost_() );
-        monitor_chan( log_buf, MONITOR_CONNECT );
+        snprintf( buf, MSL, "Input overflow by %s (%s)", ( character == NULL ) ? "[login]" : character->GetName_(), getHost_() );
+        log_string( buf );
+        monitor_chan( buf, MONITOR_CONNECT );
         Send( "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
-        return FALSE;
+        return false;
     }
 
-    /*
-     * Snarf input.
-     */
     for ( ;; )
     {
-        unsigned char tmp[MSL];
-        int nRead;
-
-        nRead = read( getDescriptor(), tmp, sizeof( tmp ) - 10 - iStart );
-        if ( nRead > 0 )
+        recvd = read( m_descriptor, tmp, sizeof( inbuf ) - start );
+        if ( recvd > 0 )
         {
-            iStart += telopt_handler(this, tmp, nRead, (unsigned char *)(inbuf + iStart));
-            if ( inbuf[iStart - 1] == '\n' || inbuf[iStart - 1] == '\r' )
+            start += telopt_handler(this, (unsigned char*)tmp, recvd, (unsigned char *)(inbuf + start)); //TODO: improve this
+            if ( inbuf[start - 1] == '\n' || inbuf[start - 1] == '\r' )
             {
-                inbuf[iStart - 1] = '\0';
+                inbuf[start - 1] = '\0';
                 pushCommandQueue( inbuf );
-                inbuf[0] = '\0';
                 break;
             }
         }
-        else if ( nRead == 0 )
+        else if ( recvd == 0 )
         {
             log_string( "EOF encountered on read." );
-            return FALSE;
+            return false;
         }
         else if ( errno == EWOULDBLOCK )
             break;
         else
         {
-            perror( "Read_from_descriptor" );
-            return FALSE;
+            perror( "Brain::Read" );
+            return false;
         }
     }
 
-    return TRUE;
+    inbuf[0] = '\0';
+
+    return true;
 }
 
 const bool Brain::_Send()
@@ -194,15 +241,38 @@ const bool Brain::_Send()
 
 string Brain::pushCommandQueue( const string cmd, const bool front )
 {
-    if ( front )
-        m_command_queue.push_front( cmd );
+    char buf[MSL];
+    string push = cmd;
+
+    if ( !push.compare( m_command_history.front() ) ) // Kick the repeat spammers
+    {
+        if ( m_command_repeat++ >= MAX_CMD_HISTORY )
+        {
+            if ( m_connection_state == CON_PLAYING )
+            {
+                snprintf( buf, MSL, "%s input spamming!", character->GetName_() );
+                log_string( buf );
+                monitor_chan( buf, MONITOR_CONNECT );
+            }
+            Send( "\r\n ***** SHUT UP!! ***** \r\n" );
+            Disconnect();
+            return push;
+        }
+    }
     else
-        m_command_queue.push_back( cmd );
+        m_command_repeat = 0;
+
+    if ( !push.compare( "!" ) && !m_command_history.empty() ) // Repeat previous cmd
+        push = m_command_history.front();
+    if ( front )
+        m_command_queue.push_front( push );
+    else
+        m_command_queue.push_back( push );
 
     while( m_command_history.size() >= MAX_CMD_HISTORY )
         m_command_history.pop_back();
 
-    return cmd;
+    return push;
 }
 
 Brain::Brain()
@@ -212,12 +282,12 @@ Brain::Brain()
     original = NULL;
     showstr_head = NULL;
     showstr_point = NULL;
-    inlast[0] = '\0';
     inbuf[0] = '\0';
 
 
     m_command_history.clear();
     m_command_queue.clear();
+    m_command_repeat = 0;
     m_command_run = false;
     m_connection_state = CON_GET_NAME;
     m_creation_check.reset();
@@ -233,87 +303,3 @@ Brain::~Brain()
 {
     delete[] m_host;
 }
-
-/*
- * Transfer one line from input buffer to input line.
-void read_from_buffer( DESCRIPTOR_DATA * d )
-{
-    int i, j, k;
-
-     * Hold horses if pending command already.
-    if ( d->incomm[0] != '\0' )
-        return;
-
-     * Look for at least one new line.
-    for ( i = 0; d->inbuf[i] != '\n' && d->inbuf[i] != '\r'; i++ )
-    {
-        if ( d->inbuf[i] == '\0' )
-            return;
-    }
-
-     * Canonical input processing.
-    for ( i = 0, k = 0; d->inbuf[i] != '\n' && d->inbuf[i] != '\r'; i++ )
-    {
-        if ( k >= MAX_INPUT_LENGTH - 2 )
-        {
-            d->Send( "Line too long.\r\n" );
-
-             * skip the rest of the line
-            for ( ; d->inbuf[i] != '\0'; i++ )
-            {
-                if ( d->inbuf[i] == '\n' || d->inbuf[i] == '\r' )
-                    break;
-            }
-            d->inbuf[i] = '\n';
-            d->inbuf[i + 1] = '\0';
-            break;
-        }
-
-        if ( d->inbuf[i] == '\b' && k > 0 )
-            --k;
-        else if ( isascii( d->inbuf[i] ) && isprint( d->inbuf[i] ) )
-            d->incomm[k++] = d->inbuf[i];
-    }
-
-     * Finish off the line.
-    if ( k == 0 )
-        d->incomm[k++] = ' ';
-    d->incomm[k] = '\0';
-
-     * Deal with bozos with #repeat 1000 ...
-    if ( k > 1 || d->incomm[0] == '!' )
-    {
-        if ( d->incomm[0] != '!' && strcmp( d->incomm, d->inlast ) )
-        {
-            d->repeat = 0;
-        }
-        else
-        {
-            if ( ++d->repeat >= 30 )
-            {
-                if ( d->getConnectionState( CON_PLAYING ) )
-                {
-                    snprintf( log_buf, (2 * MIL), "%s input spamming!", d->character->GetName_() );
-                    log_string( log_buf );
-                    monitor_chan( log_buf, MONITOR_CONNECT );
-                }
-                d->Send( "\r\n***** SHUT UP!! *****\r\n" );
-                close_socket( d );
-                 * old way: strcpy( d->incomm, "quit" );
-            }
-        }
-    }
-
-     * Do '!' substitution.
-    if ( d->incomm[0] == '!' )
-        strcpy( d->incomm, d->inlast );
-    else
-        strcpy( d->inlast, d->incomm );
-
-     * Shift the input buffer.
-    while ( d->inbuf[i] == '\n' || d->inbuf[i] == '\r' )
-        i++;
-    for ( j = 0; ( d->inbuf[j] = d->inbuf[i + j] ) != '\0'; j++ )
-        ;
-    return;
-} */

@@ -1287,7 +1287,7 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
      * Payoff for killing things.
      */
 
-    if ( victim->position == POS_DEAD && ( IS_NPC( victim ) || !IS_VAMP( victim ) || ( deathmatch ) ) )
+    if ( victim->position == POS_DEAD && ( !IS_VAMP( victim ) || ( deathmatch ) ) )
     {
         stop_fighting(ch);
         stop_casting(victim);

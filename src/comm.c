@@ -430,7 +430,7 @@ void game_loop( )
                 FD_CLR( d->getDescriptor(), &out_set );
                 if ( d->character )
                     save_char_obj( d->character );
-                close_socket( d );
+                d->Disconnect();
             }
         }
 
@@ -452,7 +452,7 @@ void game_loop( )
                     FD_CLR( d->getDescriptor(), &out_set );
                     if ( d->character != NULL )
                         save_char_obj( d->character );
-                    close_socket( d );
+                    d->Disconnect();
                     continue;
                 }
             }
@@ -505,7 +505,7 @@ void game_loop( )
                 char timeout[MSL];
                 snprintf( timeout, MSL, "Login timeout (%ds).\r\n", MAX_IDLE_TIME );
                 d->Send( timeout );
-                close_socket( d );
+                d->Disconnect();
                 continue;
             }
 
@@ -515,7 +515,7 @@ void game_loop( )
                 {
                     if ( d->character != NULL )
                         save_char_obj( d->character );
-                    close_socket( d );
+                    d->Disconnect();
                 }
             }
         }
@@ -671,62 +671,6 @@ void new_descriptor( int d_control )
 
     /* Write the login string; easier on triggers and to update for new features. --Kline */
     dnew->Send( LOGIN_STRING );
-
-    return;
-}
-
-void close_socket( DESCRIPTOR_DATA * dclose )
-{
-    CHAR_DATA *ch;
-
-    if ( dclose->snoop_by != NULL )
-    {
-        dclose->snoop_by->Send( "Your victim has left the game.\r\n" );
-    }
-
-    {
-        DESCRIPTOR_DATA *d = NULL;
-        iterBrain di;
-
-        for ( di = brain_list.begin(); di != brain_list.end(); di++)
-        {
-            d = *di;
-            if ( d->snoop_by == dclose )
-                d->snoop_by = NULL;
-        }
-    }
-
-    if ( dclose->original )
-    {
-        if ( dclose->character )
-            do_return( dclose->character, "" );
-        else
-        {
-            bug( "Close_socket: original without ch", 0 );
-            dclose->character = dclose->original;
-            dclose->original = NULL;
-        }
-    }
-
-    if ( ( ch = dclose->character ) != NULL )
-    {
-        snprintf( log_buf, (2 * MIL), "Closing link to %s.", ch->GetName_() );
-        log_string( log_buf );
-        monitor_chan( log_buf, MONITOR_CONNECT );
-        if ( dclose->getConnectionState( CON_PLAYING ) )
-        {
-            act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
-            ch->desc = NULL;
-        }
-        else
-            delete dclose->character;
-    }
-
-    mudinfo.mudNextDesc = brain_list.erase( find( brain_list.begin(), brain_list.end(), dclose ) );
-    close( dclose->getDescriptor() );
-    delete dclose;
-
-    update_player_cnt( );
 
     return;
 }
@@ -1539,7 +1483,7 @@ void nanny( Brain *b, const string input )
     {
         if ( argument[0] == '\0' )
         {
-            close_socket( b );
+            b->Disconnect();
             return;
         }
 
@@ -1570,7 +1514,7 @@ void nanny( Brain *b, const string input )
             log_string( log_buf );
             monitor_chan( log_buf, MONITOR_CONNECT );
             b->Send( "You are denied access.\r\n" );
-            close_socket( b );
+            b->Disconnect();
             return;
         }
         if ( ch->act.test(ACT_WHITELIST) )
@@ -1587,7 +1531,7 @@ void nanny( Brain *b, const string input )
                 log_string(log_buf);
                 monitor_chan(log_buf, MONITOR_CONNECT);
                 b->Send( "This is not an approved connection domain for this character.\r\n" );
-                close_socket( b );
+                b->Disconnect();
                 return;
             }
         }
@@ -1606,7 +1550,7 @@ void nanny( Brain *b, const string input )
                 b->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
                 b->Send( "Please Try Connecting Again In A Little While, When Any Problems\r\n" );
                 b->Send( "       We Are Working On Have Been Solved.  Thank You.\r\n" );
-                close_socket( b );
+                b->Disconnect();
                 return;
             }
             if ( deathmatch && !IS_HERO( ch ) && !ch->wizbit )
@@ -1616,7 +1560,7 @@ void nanny( Brain *b, const string input )
                 b->Send( "     In A DEATHMATCH Murder-Fest.  Please try later!\r\n" );
                 b->Send( "  Deathmatches are usually held on Thursdays and Sundays.  They\r\n" );
                 b->Send( " normally last about 30 minutes.  Please be patient!\r\n" );
-                close_socket( b );
+                b->Disconnect();
                 return;
             }
             if ( check_playing( b, ch->GetName() ) )
@@ -1637,7 +1581,7 @@ void nanny( Brain *b, const string input )
                     monitor_chan( buf, MONITOR_CONNECT );
                     b->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
                     b->setConnectionState( CON_QUITTING );
-                    close_socket( b );
+                    b->Disconnect();
                     return;
                 }
             }
@@ -1673,7 +1617,7 @@ void nanny( Brain *b, const string input )
                     monitor_chan( buf, MONITOR_CONNECT );
                     b->Send( "Your site has been banned from this Mud.  BYE BYE!\r\n" );
                     b->setConnectionState( CON_QUITTING );
-                    close_socket( b );
+                    b->Disconnect();
                     return;
                 }
             }
@@ -1695,7 +1639,7 @@ void nanny( Brain *b, const string input )
             monitor_chan( buf, MONITOR_CONNECT );
             ch->pcdata->failures++;
             save_char_obj( ch );
-            close_socket( b );
+            b->Disconnect();
             return;
         }
 
@@ -1859,7 +1803,7 @@ void nanny( Brain *b, const string input )
         }
         b->Send( echo_on_str );
         b->Send( "Please login with your new password now. Goodbye.\r\n" );
-        close_socket( b );
+        b->Disconnect();
         return;
     }
 
@@ -3313,7 +3257,7 @@ void copyover_recover(  )
         d->setDescriptor( desc );
         brain_list.push_back( d );
         d->setHost( host );
-        d->setConnectionState( CON_COPYOVER_RECOVER );   /* -15, so close_socket frees the char */
+        d->setConnectionState( CON_COPYOVER_RECOVER );   /* -15, so Brain->Disconnect() frees the char */
 
         /*
          * Now, find the pfile
@@ -3324,7 +3268,7 @@ void copyover_recover(  )
         if ( !fOld ) /* Player file not found?! */
         {
             d->Send( "\r\nSomehow, your character was lost in the HOTreboot. Sorry, you must relog in.\r\n" );
-            close_socket( d );
+            d->Disconnect();
         }
         else  /* ok! */
         {

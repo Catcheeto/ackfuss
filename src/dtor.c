@@ -82,7 +82,10 @@ char_data::~char_data()
         extract_obj(first_carry);
 
     while ( first_affect != NULL )
+    {
         affect_remove(this, first_affect);
+        delete first_affect;
+    }
 
     imc_freechardata(this);
 #ifdef I3

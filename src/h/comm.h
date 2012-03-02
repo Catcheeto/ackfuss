@@ -21,7 +21,6 @@ void reopen_socket P_((int sig));
 void game_loop P_((void));
 void *lookup_address P_((void *input));
 void new_descriptor P_((int d_control));
-void close_socket P_((DESCRIPTOR_DATA *dclose));
 void bust_a_prompt P_((DESCRIPTOR_DATA *d));
 void show_stotal_to P_((DESCRIPTOR_DATA *d));
 void show_menu_to P_((DESCRIPTOR_DATA *d));

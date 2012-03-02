@@ -99,5 +99,5 @@ DO_FUN(do_sdelete)
     d = ch->desc;
     extract_char( ch, TRUE );
     if ( d != NULL )
-        close_socket( d );
+        d->Disconnect();
 }
