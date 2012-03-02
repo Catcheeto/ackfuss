@@ -5168,3 +5168,23 @@ DO_FUN(do_logins)
 
     return;
 }
+
+DO_FUN(do_cmd_history)
+{
+    char buf[MSL];
+    uint_t i = 0;
+    list<string> hist = ch->desc->getCommandHistory();
+    iterString si;
+
+    snprintf( buf, MSL, "Last [%2d] commands:\r\n", MAX_CMD_HISTORY );
+    ch->desc->Send( buf );
+
+    for ( si = hist.begin(); si != hist.end(); si++ )
+    {
+        i++;
+        snprintf( buf, MSL, "  [%2ld] %s\r\n", i, (*si).c_str() );
+        ch->desc->Send( buf );
+    }
+
+    return;
+}

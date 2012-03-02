@@ -686,7 +686,9 @@ const struct cmd_type cmd_table[] =
      C_TYPE_COMM, C_SHOW_ALWAYS, true},
     {"togemail", do_tog_email, POS_RESTING, 0, LOG_NORMAL,
      C_TYPE_CONFIG, C_SHOW_ALWAYS, true},
-     
+    {"history", do_cmd_history, POS_DEAD, 0, LOG_NORMAL,
+     C_TYPE_INFO, C_SHOW_ALWAYS, true},
+
     /*
      *    Vampire and REMORT SKILLS Zen
      */
@@ -1129,6 +1131,9 @@ void interpret( CHAR_DATA * ch, const string input )
         snprintf( snp, MSL, "[Snoop:%s] %s\r\n", ch->GetName_(), logline );
         ch->desc->snoop_by->Send( snp );
     }
+
+    if ( cmd_table[cmd].log != LOG_NEVER )
+        ch->desc->pushCommandHistory( logline );
 
     if ( !found && !IS_NPC( ch ) && ( !alias_call ) )
     {

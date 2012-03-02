@@ -27,10 +27,14 @@ class Brain {
 
         const bool ProcessOutput( const bool prompt = true );
         const bool Read();
-        const void Send( const string msg ) { if ( m_output.empty() && !m_command_run ) { m_output += "\r\n"; m_output += msg; } else m_output += msg; return; };
+        const void Send( const string msg ) { if ( m_output.empty() && !m_command_run ) { m_output += "\r\n"; m_output += msg; } else m_output += msg; return; }
+
+        list<string> getCommandHistory() const { return m_command_history; }
+        string pushCommandHistory( const string cmd ) { m_command_history.push_front( cmd ); return cmd; }
 
         list<string> getCommandQueue() const { return m_command_queue; }
         string popCommandQueue() { string cmd = m_command_queue.front(); m_command_queue.pop_front(); return cmd; }
+        string pushCommandQueue( const string cmd, const bool front = false );
 
         bool getCommandRun() const { return m_command_run; }
         bool togCommandRun() { return m_command_run = !m_command_run; }
@@ -62,6 +66,7 @@ class Brain {
         const void ProcessColors();
         const bool _Send();
 
+        list<string> m_command_history; // Prev command history
         list<string> m_command_queue; // Command queue for processing
         bool   m_command_run;      // Found a command run, force output to socket
         sint_t m_connection_state; // Connection state

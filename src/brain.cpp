@@ -142,7 +142,7 @@ const bool Brain::Read()
             if ( inbuf[iStart - 1] == '\n' || inbuf[iStart - 1] == '\r' )
             {
                 inbuf[iStart - 1] = '\0';
-                m_command_queue.push_back( inbuf );
+                pushCommandQueue( inbuf );
                 inbuf[0] = '\0';
                 break;
             }
@@ -192,6 +192,18 @@ const bool Brain::_Send()
     return true;
 }
 
+string Brain::pushCommandQueue( const string cmd, const bool front )
+{
+    if ( front )
+        m_command_queue.push_front( cmd );
+    else
+        m_command_queue.push_back( cmd );
+
+    while( m_command_history.size() >= MAX_CMD_HISTORY )
+        m_command_history.pop_back();
+
+    return cmd;
+}
 
 Brain::Brain()
 {
@@ -204,6 +216,7 @@ Brain::Brain()
     inbuf[0] = '\0';
 
 
+    m_command_history.clear();
     m_command_queue.clear();
     m_command_run = false;
     m_connection_state = CON_GET_NAME;

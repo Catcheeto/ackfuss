@@ -157,6 +157,7 @@ typedef struct board_data BOARD_DATA;
 typedef struct message_data MESSAGE_DATA;
 
 typedef list<Brain*>::iterator iterBrain;
+typedef list<string>::iterator iterString;
 
 typedef enum { exit_from, exit_to, exit_both } exit_status;
 /*

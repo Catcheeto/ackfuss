@@ -123,6 +123,7 @@
 #define MAX_HISTORY                 20   /* History per channel */
 #define MAX_PEDIT                    5
 #define MAX_COND                     3
+#define MAX_CMD_HISTORY             25
 /*
  * total number of supernatural types in the game
  */
