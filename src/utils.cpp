@@ -41,7 +41,7 @@ const string Utils::FormatString( const bitset<MAX_BITSET> flags, const string f
     return output = &buf[0];
 }
 
-const void Utils::Logger( const bitset<MAX_BITSET> flags, const string fmt, ... )
+const void Utils::_Logger( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
     string output;
     va_list args;
@@ -51,7 +51,10 @@ const void Utils::Logger( const bitset<MAX_BITSET> flags, const string fmt, ... 
     output = FormatString( flags, fmt, args );
     va_end( args );
 
-    clog << current_time_str() << " :: " << output << endl;
+    if ( flags.test(UTILS_DEBUG) ) // output caller
+        clog << current_time_str() << " :: " << output << " [" << caller << "]" << endl;
+    else
+        clog << current_time_str() << " :: " << output << endl;
     if ( !server.shutdown )
         monitor_chan( &buf[0], MONITOR_LOG );
 

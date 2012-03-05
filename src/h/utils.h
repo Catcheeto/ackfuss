@@ -11,7 +11,8 @@
 namespace Utils {
     const string FormatString( const bitset<MAX_BITSET> flags, const string fmt, ... );
     const string FormatString( const bitset<MAX_BITSET> flags, const string fmt, va_list val );
-    const void Logger( const bitset<MAX_BITSET> flags, const string fmt, ... );
+    const void _Logger( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
+    #define Logger( flags, fmt, ... ) _Logger( flags, _caller, fmt, ##__VA_ARGS__ )
     const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
     const vector<string> StrTokens( const string input );
     template <class T> inline const string toLower( const T& t )  { stringstream ss; ss << nouppercase << t; return ss.str(); }
