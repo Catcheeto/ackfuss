@@ -60,7 +60,6 @@ const string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> 
 const void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
     va_list args;
-    vector<char> buf;
     string output;
 
     va_start( args, fmt );
@@ -75,7 +74,7 @@ const void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, co
     else
         clog << current_time_str() << " :: " << output << endl;
     if ( !server.shutdown )
-        monitor_chan( &buf[0], MONITOR_LOG );
+        monitor_chan( output.c_str(), MONITOR_LOG );
 
     return;
 }
