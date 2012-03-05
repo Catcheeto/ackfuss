@@ -39,7 +39,7 @@ const string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> 
             size++;                              // to ensure a matching narg : format specifier count
     }
 
-    if ( narg != 1 && narg != size )
+    if ( narg != 1 && narg != size ) // if narg == 1 invocation was func( flags, string )
     {
         Logger( flags, "ERROR: Number of arguments (%ld) did not match number of format specifiers (%ld) at: %s", narg, size, caller.c_str() );
         return output = "";
