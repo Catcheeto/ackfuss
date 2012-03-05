@@ -180,7 +180,7 @@ int process_do_mssp( DESCRIPTOR_DATA *d, unsigned char *src, int srclen )
 
     /* World */
     mssp_reply(d, "AREAS", area_list.size());
-    mssp_reply(d, "HELPFILES", mudinfo.total_helpfiles);
+    mssp_reply(d, "HELPFILES", server.total_helpfiles);
     mssp_reply(d, "MOBILES", mob_index_list.size());
     mssp_reply(d, "OBJECTS", obj_index_list.size());
     mssp_reply(d, "ROOMS", room_index_list.size());

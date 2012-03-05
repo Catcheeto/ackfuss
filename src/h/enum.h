@@ -30,9 +30,17 @@
 #define CON_PLAYING                  1  // was 0
 
 // bitset<MAX_CREATION_CHECK>    Brain->m_creation_check
-#define CREATION_RACE_DONE   0
-#define CREATION_CLASS_DONE  1
-#define CREATION_SEX_DONE    2
-#define CREATION_STATS_DONE  3
-#define MAX_CREATION_CHECK   4
+enum bitsBrain_m_creation_check {
+    CREATION_RACE_DONE  = 0,
+    CREATION_CLASS_DONE = 1,
+    CREATION_SEX_DONE   = 2,
+    CREATION_STATS_DONE = 3,
+    MAX_CREATION_CHECK  = 4
+};
 
+// bitset<MAX_BITSET>            Utils
+enum bitsUtils {
+    UTILS_DEBUG       = 0,
+    UTILS_IGNORE_CASE = 1,
+    MAX_UTILS         = 2
+};

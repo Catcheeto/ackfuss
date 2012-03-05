@@ -161,7 +161,7 @@ bool check_level_use( CHAR_DATA * ch, uint_t level )
             strncat( out, "Adepts or higher.\r\n", MSL );
             break;
         default:
-            snprintf( buf, MSL, "level %ld players and higher.\r\n", level );
+            snprintf( buf, MSL, "level %lu players and higher.\r\n", level );
             strncat( out, buf, MSL - 1 );
     }
     send_to_char( out, ch );

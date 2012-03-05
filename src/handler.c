@@ -108,7 +108,6 @@
 
 extern OBJ_DATA *quest_object;
 extern bool quest;
-extern bool merc_down;
 extern CHAR_DATA *quest_mob;
 extern CHAR_DATA *quest_target;
 extern COUNCIL_DATA super_councils[MAX_SUPER];
@@ -465,7 +464,7 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
      * Check for weapon wielding.
      * Guard against recursion (for weapons with affects).
      */
-    if ( !merc_down && ( ch->is_quitting == false ) && ( ch->desc != NULL ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) )
+    if ( !server.shutdown && ( ch->is_quitting == false ) && ( ch->desc != NULL ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) )
     {
         short i;
         for ( i = 0; i < MAX_WEAR; i++ )
@@ -632,9 +631,8 @@ void affect_remove( CHAR_DATA * ch, AFFECT_DATA * paf )
         {
             char buf1[MSL];
             char buf2[MSL];
-            extern bool merc_down;
 
-            if ( !merc_down ) // Don't send out messages on shutdown cleanup; it creates errors. --Kline
+            if ( !server.shutdown ) // Don't send out messages on shutdown cleanup; it creates errors. --Kline
             {
                 snprintf( buf1, MSL, "%s", this_shield->wearoff_room );
                 snprintf( buf2, MSL, "%s", this_shield->wearoff_self );
@@ -1498,7 +1496,6 @@ void extract_obj( OBJ_DATA * obj )
     CHAR_DATA *wch;
     OBJ_DATA *obj_content;
     ROOM_INDEX_DATA *drop_room = NULL;
-    extern bool merc_down;
 
     if ( ( obj == quest_object ) && quest )
     {
@@ -1543,7 +1540,7 @@ void extract_obj( OBJ_DATA * obj )
         }
     }
 
-    if ( !merc_down ) //Chars get cleaned before objs on shutdown; checking past this point creates errors. --Kline
+    if ( !server.shutdown ) //Chars get cleaned before objs on shutdown; checking past this point creates errors. --Kline
     {
         for ( li = char_list.begin(); li != char_list.end(); li++ )
         {

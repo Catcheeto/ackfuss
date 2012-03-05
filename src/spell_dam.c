@@ -1034,7 +1034,7 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
 
 
             snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->get_name(), ch->get_name(), victim->in_room->vnum );
-            log_string( log_buf );
+            Utils::Logger( 0, log_buf );
 
             notify( log_buf, 82 );
 

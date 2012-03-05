@@ -1410,12 +1410,12 @@ DO_FUN(do_score)
     send_to_char( buf, ch );
 
     snprintf( buf, MSL,
-              "X========= @@WExps: @@y%9ld @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->GetExperience(), IS_NPC(ch) ? 0 : ch->pcdata->quest_points );
+              "X========= @@WExps: @@y%9lu @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->GetExperience(), IS_NPC(ch) ? 0 : ch->pcdata->quest_points );
     send_to_char( buf, ch );
 
     if ( get_trust( ch ) != ch->level )
     {
-        snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2ld @@c=================X\r\n", get_trust( ch ) );
+        snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2lu @@c=================X\r\n", get_trust( ch ) );
         send_to_char( buf, ch );
     }
 
@@ -2341,12 +2341,12 @@ DO_FUN(do_report)
     char buf[MSL];
 
     snprintf( buf, MSL,
-              "You report: %d/%d hp %d/%d mana %d/%d mv %ld xp.\r\n",
+              "You report: %d/%d hp %d/%d mana %d/%d mv %lu xp.\r\n",
               ch->hit, ch->max_hit, ch->mana, ch->max_mana, ch->move, ch->max_move, ch->GetExperience() );
 
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, "$n reports: %d/%d hp %d/%d mana %d/%d mv %ld xp.",
+    snprintf( buf, MSL, "$n reports: %d/%d hp %d/%d mana %d/%d mv %lu xp.",
               ch->hit, ch->max_hit, ch->mana, ch->max_mana, ch->move, ch->max_move, ch->GetExperience() );
 
     act( buf, ch, NULL, NULL, TO_ROOM );
@@ -4055,7 +4055,7 @@ DO_FUN(do_gain)
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-                snprintf( buf, MSL, "%s : %ld Exp.\r\n", class_table[cnt].who_name, cost );
+                snprintf( buf, MSL, "%s : %lu Exp.\r\n", class_table[cnt].who_name, cost );
                 send_to_char( buf, ch );
             }
 
@@ -4064,14 +4064,14 @@ DO_FUN(do_gain)
             {
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, 5 );  /* 5 means remort */
-                snprintf( buf, MSL, "%s : %ld Exp.\r\n", remort_table[cnt].who_name, cost );
+                snprintf( buf, MSL, "%s : %lu Exp.\r\n", remort_table[cnt].who_name, cost );
                 send_to_char( buf, ch );
             }
         if ( IS_ADEPT(ch) && ch->get_level("adept") < 20 )
         {
             any = TRUE;
             cost = exp_to_level_adept( ch );
-            snprintf( buf, MSL, "@@WAdept@@N: %ld Exp.\r\n", cost );
+            snprintf( buf, MSL, "@@WAdept@@N: %lu Exp.\r\n", cost );
             send_to_char( buf, ch );
         }
         if ( allow_remort )
@@ -4192,7 +4192,7 @@ DO_FUN(do_gain)
 
     else if ( ch->GetExperience() < cost )
     {
-        snprintf( buf, MSL, "Cost is %ld Exp.  You only have %ld (%ld short).\r\n", cost, ch->GetExperience(), ( cost - ch->GetExperience() ) );
+        snprintf( buf, MSL, "Cost is %lu Exp.  You only have %lu (%lu short).\r\n", cost, ch->GetExperience(), ( cost - ch->GetExperience() ) );
         send_to_char( buf, ch );
         return;
     }
@@ -4725,7 +4725,7 @@ DO_FUN(do_worth)
     {
 
         cost = exp_to_level_adept( ch );
-        snprintf( buf, MSL, " %-14s  %9d %9ld.\r\n", ch->get_whoname(), cost, UMAX( 0, cost - ch->GetExperience() ) );
+        snprintf( buf, MSL, " %-14s  %9d %9lu.\r\n", ch->get_whoname(), cost, UMAX( 0, cost - ch->GetExperience() ) );
         send_to_char( buf, ch );
         return;
     }
@@ -4742,7 +4742,7 @@ DO_FUN(do_worth)
             any = TRUE;
             cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-            snprintf( buf, MSL, "%-14s  %9d %9ld.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
+            snprintf( buf, MSL, "%-14s  %9d %9lu.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
             send_to_char( buf, ch );
         }
         else if ( numclasses < race_table[ch->race].classes && ch->lvl[cnt] != -1 && ch->lvl[cnt] < ( LEVEL_HERO - 1 ) )
@@ -4762,7 +4762,7 @@ DO_FUN(do_worth)
         {
             any = TRUE;
             cost = exp_to_level( ch, cnt, 5 );  /* Pass 5 for remort */
-            snprintf( buf, MSL, "%-14s  %9d %9ld.\r\n", remort_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
+            snprintf( buf, MSL, "%-14s  %9d %9lu.\r\n", remort_table[cnt].who_name, cost, UMAX( 0, cost - ch->GetExperience() ) );
             send_to_char( buf, ch );
         }
 
@@ -5171,20 +5171,21 @@ DO_FUN(do_logins)
 
 DO_FUN(do_cmd_history)
 {
-    char buf[MSL];
     uint_t i = 0;
     list<string> hist = ch->desc->getCommandHistory();
     iterString si;
 
-    snprintf( buf, MSL, "Last [%2d] commands:\r\n", MAX_CMD_HISTORY );
-    ch->desc->Send( buf );
+    ch->desc->Send( Utils::FormatString( "Last [%2ld] commands:\r\n", MAX_CMD_HISTORY ) );
 
     for ( si = hist.begin(); si != hist.end(); si++ )
     {
         i++;
-        snprintf( buf, MSL, "  [%2ld] %s\r\n", i, (*si).c_str() );
-        ch->desc->Send( buf );
+        ch->desc->Send( Utils::FormatString(  "  [%2ld] %s\r\n", i, (*si).c_str() ) );
     }
-
+char buf[8192];
+sint_t tint = -5;
+snprintf( buf, 8192, "test %ld\r\n", tint );
+ch->desc->Send( buf );
+ch->desc->Send( Utils::FormatString( "test2 %ld and %lu\r\n", tint, tint ) );
     return;
 }

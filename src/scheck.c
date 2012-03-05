@@ -96,7 +96,7 @@ static void clear( void )
 
 static BufEntry *dump_ptr[2];
 
-static long dump( void )
+static uint_t dump( void )
 {
     /*
      * Dump strings that have ref!=usage
@@ -400,7 +400,7 @@ DO_FUN(do_scheck)
     walk_rulers(  );
     walk_sysdata(  );
 
-    snprintf( buf, MSL, "%ld leaks dumped to leaks.dmp\r\n", dump(  ) );
+    snprintf( buf, MSL, "%lu leaks dumped to leaks.dmp\r\n", dump(  ) );
     send_to_char( buf, ch );
     disable_timer_abort = FALSE;
 }

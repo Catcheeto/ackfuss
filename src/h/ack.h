@@ -41,6 +41,10 @@
 #include "enum.h"
 #endif
 
+#ifndef DEC_UTILS_H
+#include "utils.h"
+#endif
+
 #ifndef DEC_WORLD_H
 #include "world.h"
 #endif
@@ -71,10 +75,6 @@
 
 #ifndef DEC_TYPEDEFS_H
 #include "typedefs.h"
-#endif
-
-#ifndef DEC_UTILS_H
-#include "utils.h"
 #endif
 
 struct DeleteObject
@@ -896,7 +896,7 @@ class build_data_list  /* Used for storing area file data. */
 struct lookup_type
 {
     char *text;
-    unsigned long int value;
+    uint_t value;
     int cost;   /* if == NO_USE, only creators can set. */
 };
 
@@ -1082,6 +1082,7 @@ struct mudinfo
     unsigned long int pk_by_npc;
     unsigned long int pk_by_pc;
     uint_t            port;
+    bool              shutdown;
     unsigned int      total_helpfiles;
     unsigned int      total_pfiles;
 };
@@ -1109,8 +1110,8 @@ struct sysdata_type
     float mob_svs;
     short num_greeting;
     char *playtesters;
-    unsigned int pulse;
-    unsigned int pulse_cache;
+    uint_t pulse;
+    uint_t pulse_cache;
     bool shownumbers;
     bool w_lock;
 };

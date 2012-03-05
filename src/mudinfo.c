@@ -64,19 +64,19 @@ void load_mudinfo( void )
                 }
                 break;
             case 'F':
-                KEY("First_Boot",   mudinfo.first_boot,   fread_number(fp));
+                KEY("First_Boot",   server.first_boot,   fread_number(fp));
                 break;
             case 'M':
-                KEY("Max_Players",  mudinfo.max_players,  fread_number(fp));
-                KEY("MK_By_NPC",    mudinfo.mk_by_npc,    fread_number(fp));
-                KEY("MK_By_PC",     mudinfo.mk_by_pc,     fread_number(fp));
+                KEY("Max_Players",  server.max_players,  fread_number(fp));
+                KEY("MK_By_NPC",    server.mk_by_npc,    fread_number(fp));
+                KEY("MK_By_PC",     server.mk_by_pc,     fread_number(fp));
                 break;
             case 'P':
-                KEY("PK_By_NPC",    mudinfo.pk_by_npc,    fread_number(fp));
-                KEY("PK_By_PC",     mudinfo.pk_by_pc,     fread_number(fp));
+                KEY("PK_By_NPC",    server.pk_by_npc,    fread_number(fp));
+                KEY("PK_By_PC",     server.pk_by_pc,     fread_number(fp));
                 break;
             case 'T':
-                KEY("Total_Pfiles", mudinfo.total_pfiles, fread_number(fp));
+                KEY("Total_Pfiles", server.total_pfiles, fread_number(fp));
                 break;
         }
         if ( !fMatch )
@@ -101,13 +101,13 @@ void save_mudinfo( void )
         return;
     }
 
-    fprintf(fp, "First_Boot   %lu\n", mudinfo.first_boot);
-    fprintf(fp, "Max_Players  %d\n",  mudinfo.max_players);
-    fprintf(fp, "MK_By_NPC    %lu\n", mudinfo.mk_by_npc);
-    fprintf(fp, "MK_By_PC     %lu\n", mudinfo.mk_by_pc);
-    fprintf(fp, "PK_By_NPC    %lu\n", mudinfo.pk_by_npc);
-    fprintf(fp, "PK_By_PC     %lu\n", mudinfo.pk_by_pc);
-    fprintf(fp, "Total_Pfiles %d\n",  mudinfo.total_pfiles);
+    fprintf(fp, "First_Boot   %lu\n", server.first_boot);
+    fprintf(fp, "Max_Players  %d\n",  server.max_players);
+    fprintf(fp, "MK_By_NPC    %lu\n", server.mk_by_npc);
+    fprintf(fp, "MK_By_PC     %lu\n", server.mk_by_pc);
+    fprintf(fp, "PK_By_NPC    %lu\n", server.pk_by_npc);
+    fprintf(fp, "PK_By_PC     %lu\n", server.pk_by_pc);
+    fprintf(fp, "Total_Pfiles %d\n",  server.total_pfiles);
     fprintf(fp, "End\n\n");
 
     file_close(fp);
@@ -123,82 +123,83 @@ DO_FUN(do_mudinfo)
     ch->send("      MUD info for " mudnamecolor ":\r\n");
     ch->send("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
 
-    str = ctime(&mudinfo.first_boot);
+    str = ctime(&server.first_boot);
     str.erase(str.end() - 1, str.end());
     ch_printf(ch, "The MUD was first booted on: %s.\r\n", str.c_str());
 
-    if ( mudinfo.cur_players == 0 )
+    if ( server.cur_players == 0 )
         ch->send("No players are currently online!\r\n");
-    else if ( mudinfo.cur_players == 1 )
+    else if ( server.cur_players == 1 )
         ch->send("You are all alone in this world. How lonely :(.\r\n");
     else
-        ch_printf(ch, "%d players are currently online.\r\n", mudinfo.cur_players);
+        ch_printf(ch, "%d players are currently online.\r\n", server.cur_players);
 
-    if ( mudinfo.max_players == 0 )
+    if ( server.max_players == 0 )
         ch->send("No players have ever logged in!\r\n");
-    else if ( mudinfo.max_players == 1 )
+    else if ( server.max_players == 1 )
         ch->send("You are the only person to ever log in. How lonely :(.\r\n");
     else
-        ch_printf(ch, "The MUD has had %d players logged in at once.\r\n", mudinfo.max_players);
+        ch_printf(ch, "The MUD has had %d players logged in at once.\r\n", server.max_players);
 
-    if ( mudinfo.max_players_reboot == 0 )
+    if ( server.max_players_reboot == 0 )
         ch->send("No players have ever logged in this reboot!\r\n");
-    else if ( mudinfo.max_players_reboot == 1 )
+    else if ( server.max_players_reboot == 1 )
         ch->send("You are the only person to ever log in this reboot. How lonely :(.\r\n");
     else
-        ch_printf(ch, "The MUD has had %d players logged in this reboot.\r\n", mudinfo.max_players_reboot);
+        ch_printf(ch, "The MUD has had %d players logged in this reboot.\r\n", server.max_players_reboot);
 
-    if ( mudinfo.mk_by_npc == 0 )
+    if ( server.mk_by_npc == 0 )
         ch->send("No mobs have died to other mobs yet!\r\n");
-    else if ( mudinfo.mk_by_npc == 1 )
+    else if ( server.mk_by_npc == 1 )
         ch->send("1 mob has died to another mob. How sad :(.\r\n");
     else
-        ch_printf(ch, "%lu mobs have died to other mobs.\r\n", mudinfo.mk_by_npc);
+        ch_printf(ch, "%lu mobs have died to other mobs.\r\n", server.mk_by_npc);
 
-    if ( mudinfo.mk_by_pc == 0 )
+    if ( server.mk_by_pc == 0 )
         ch->send("No mobs have died to players yet!\r\n");
-    else if ( mudinfo.mk_by_pc == 1 )
+    else if ( server.mk_by_pc == 1 )
         ch->send("1 mob has died to a player. How sad :(.\r\n");
     else
-        ch_printf(ch, "%lu mobs have died to players.\r\n", mudinfo.mk_by_pc);
+        ch_printf(ch, "%lu mobs have died to players.\r\n", server.mk_by_pc);
 
-    if ( mudinfo.pk_by_npc == 0 )
+    if ( server.pk_by_npc == 0 )
         ch->send("No players have died to mobs yet!\r\n");
-    else if ( mudinfo.pk_by_npc == 1 )
+    else if ( server.pk_by_npc == 1 )
         ch->send("1 player has died to a mob. How sad :(.\r\n");
     else
-        ch_printf(ch, "%lu players have died to mobs.\r\n", mudinfo.pk_by_npc);
+        ch_printf(ch, "%lu players have died to mobs.\r\n", server.pk_by_npc);
 
-    if ( mudinfo.pk_by_pc == 0 )
+    if ( server.pk_by_pc == 0 )
         ch->send("No players have died to other players yet!\r\n");
-    else if ( mudinfo.pk_by_pc == 1 )
+    else if ( server.pk_by_pc == 1 )
         ch->send("1 player has died to another player. How sad :(.\r\n");
     else
-        ch_printf(ch, "%lu players have died to other players.\r\n", mudinfo.pk_by_pc);
+        ch_printf(ch, "%lu players have died to other players.\r\n", server.pk_by_pc);
 
-    if ( mudinfo.total_pfiles == 1 )
+    if ( server.total_pfiles == 1 )
         ch->send("There is only a single pfile. How lonely :(.\r\n");
     else
-        ch_printf(ch, "There are currently @@W%d @@Npfiles.\r\n", mudinfo.total_pfiles);
+        ch_printf(ch, "There are currently @@W%d @@Npfiles.\r\n", server.total_pfiles);
 
     return;
 }
 
 void init_mudinfo( void )
 {
-    mudinfo.cur_players = 0;
-    mudinfo.descriptor = 0;
-    mudinfo.first_boot = 0;
-    mudinfo.max_descriptor = 0;
-    mudinfo.max_players = 0;
-    mudinfo.max_players_reboot = 0;
-    mudinfo.mk_by_npc = 0;
-    mudinfo.mk_by_pc = 0;
-    mudinfo.port = 1234;
-    mudinfo.pk_by_npc = 0;
-    mudinfo.pk_by_pc = 0;
-    mudinfo.total_pfiles = 0;
-    mudinfo.total_helpfiles = count_helps();
+    server.cur_players = 0;
+    server.descriptor = 0;
+    server.first_boot = 0;
+    server.max_descriptor = 0;
+    server.max_players = 0;
+    server.max_players_reboot = 0;
+    server.mk_by_npc = 0;
+    server.mk_by_pc = 0;
+    server.port = 1234;
+    server.pk_by_npc = 0;
+    server.pk_by_pc = 0;
+    server.shutdown = false;
+    server.total_pfiles = 0;
+    server.total_helpfiles = count_helps();
 
     return;
 }

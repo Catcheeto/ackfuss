@@ -201,7 +201,7 @@ void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
     for ( mi = board->messages.begin(); mi != board->messages.end(); mi++ )
     {
         msg = *mi;
-        snprintf( buf, MSL, "[%3ld] %12s : %s", cnt, msg->author.c_str(), msg->title.c_str() );
+        snprintf( buf, MSL, "[%3lu] %12s : %s", cnt, msg->author.c_str(), msg->title.c_str() );
         send_to_char( buf, ch );
 
     }
@@ -232,7 +232,7 @@ BOARD_DATA *load_board( OBJ_INDEX_DATA * pObj )
     board->min_write_lev = pObj->value[2];
     board->vnum = pObj->value[3];
 
-    snprintf( buf, 255, "%s/board.%ld", BOARD_DIR, board->vnum );
+    snprintf( buf, 255, "%s/board.%lu", BOARD_DIR, board->vnum );
 
     if ( ( board_file = file_open( buf, "r" ) ) != NULL )
     {
@@ -342,7 +342,7 @@ void save_board( BOARD_DATA * board, CHAR_DATA * ch )
     list<MESSAGE_DATA*>::iterator mi;
 
 
-    snprintf( buf, MSL, "%s/board.%ld", BOARD_DIR, board->vnum );
+    snprintf( buf, MSL, "%s/board.%lu", BOARD_DIR, board->vnum );
     if ( ( board_file = file_open( buf, "w" ) ) == NULL )
     {
         send_to_char( "Cannot save board, please contact an immortal.\r\n", ch );
@@ -351,10 +351,10 @@ void save_board( BOARD_DATA * board, CHAR_DATA * ch )
         return;
     }
 
-    fprintf( board_file, "ExpiryTime  %ld\n", board->expiry_time );
-    fprintf( board_file, "MinReadLev  %ld\n", board->min_read_lev );
-    fprintf( board_file, "MaxWriteLev %ld\n", board->min_write_lev );
-    fprintf( board_file, "Clan        %ld\n", board->clan );
+    fprintf( board_file, "ExpiryTime  %lu\n", board->expiry_time );
+    fprintf( board_file, "MinReadLev  %lu\n", board->min_read_lev );
+    fprintf( board_file, "MaxWriteLev %lu\n", board->min_write_lev );
+    fprintf( board_file, "Clan        %lu\n", board->clan );
 
     /*
      * Now print messages

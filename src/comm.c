@@ -141,7 +141,6 @@ const char go_ahead_str[] = { char(IAC), char(GA), char('\0') };
  * Global variables.
  */
 FILE *fpReserve;  /* Reserved file handle         */
-bool merc_down;   /* Shutdown                     */
 bool wizlock;  /* Game is wizlocked            */
 extern bool deathmatch;  /* Deathmatch happening?        */
 extern bool disable_timer_abort;
@@ -218,7 +217,7 @@ int main( int argc, char **argv )
             fprintf( stderr, "Usage: %s [port #]\n", argv[0] );
             exit( 1 );
         }
-        else if ( ( mudinfo.port = atoi( argv[1] ) ) <= 1024 )
+        else if ( ( server.port = atoi( argv[1] ) ) <= 1024 )
         {
             fprintf( stderr, "Port number must be above 1024.\n" );
             exit( 1 );
@@ -227,7 +226,7 @@ int main( int argc, char **argv )
         if ( argv[2] && argv[2][0] )
         {
             fCopyOver = TRUE;
-            mudinfo.descriptor = atoi( argv[3] );
+            server.descriptor = atoi( argv[3] );
             imcsocket = atoi( argv[4] );
         }
         else
@@ -242,15 +241,15 @@ int main( int argc, char **argv )
      */
     if ( !fCopyOver ) /* We already have the port if Copyovered. */
     {
-        mudinfo.descriptor = init_socket( mudinfo.port );
+        server.descriptor = init_socket( server.port );
     }
     if ( fCopyOver )
         abort_threshold = BOOT_DB_ABORT_THRESHOLD;
     boot_db(  );
 
-    snprintf( log_buf, (2 * MIL), "%s is ready on port %ld.", VERS_STRING, mudinfo.port );
-    log_string( log_buf );
-    log_string("Last compiled on " __DATE__ " at " __TIME__ ".");
+    snprintf( log_buf, (2 * MIL), "%s is ready on port %lu.", VERS_STRING, server.port );
+    Utils::Logger( 0, log_buf );
+    Utils::Logger( 0, "Last compiled on " __DATE__ " at " __TIME__ ".");
     imc_startup( FALSE, imcsocket, fCopyOver );
     if ( fCopyOver )
     {
@@ -259,13 +258,13 @@ int main( int argc, char **argv )
         disable_timer_abort = FALSE;
     }
     game_loop( );
-    close( mudinfo.descriptor );
+    close( server.descriptor );
     imc_shutdown( FALSE );
 
     /*
      * That's all, folks.
      */
-    log_string( "Normal termination of game." );
+    Utils::Logger( 0, "Normal termination of game." );
     clear_lists();
     exit( 0 );
     return 0;
@@ -366,7 +365,7 @@ void game_loop( )
     /*
      * Main loop
      */
-    while ( !merc_down )
+    while ( !server.shutdown )
     {
         fd_set in_set;
         fd_set out_set;
@@ -381,9 +380,9 @@ void game_loop( )
          */
         if ( reopen_flag )
         {
-            log_string( "SIGUSR1 received, reopening control socket" );
-            close( mudinfo.descriptor );
-            mudinfo.descriptor = init_socket( mudinfo.port );
+            Utils::Logger( 0, "SIGUSR1 received, reopening control socket" );
+            close( server.descriptor );
+            server.descriptor = init_socket( server.port );
             reopen_flag = 0;
         }
 
@@ -393,19 +392,19 @@ void game_loop( )
         FD_ZERO( &in_set );
         FD_ZERO( &out_set );
         FD_ZERO( &exc_set );
-        FD_SET( mudinfo.descriptor, &in_set );
-        mudinfo.max_descriptor = mudinfo.descriptor;
+        FD_SET( server.descriptor, &in_set );
+        server.max_descriptor = server.descriptor;
 
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            mudinfo.max_descriptor = std::max( mudinfo.max_descriptor, d->getDescriptor() );
+            server.max_descriptor = std::max( server.max_descriptor, d->getDescriptor() );
             FD_SET( d->getDescriptor(), &in_set );
             FD_SET( d->getDescriptor(), &out_set );
             FD_SET( d->getDescriptor(), &exc_set );
         }
 
-        if ( select( mudinfo.max_descriptor + 1, &in_set, &out_set, &exc_set, &null_time ) < 0 )
+        if ( select( server.max_descriptor + 1, &in_set, &out_set, &exc_set, &null_time ) < 0 )
         {
             perror( "Game_loop: select: poll" );
             exit( 1 );
@@ -414,16 +413,16 @@ void game_loop( )
         /*
          * New connection?
          */
-        if ( FD_ISSET( mudinfo.descriptor, &in_set ) )
-            new_descriptor( mudinfo.descriptor );
+        if ( FD_ISSET( server.descriptor, &in_set ) )
+            new_descriptor( server.descriptor );
 
         /*
          * Kick out the freaky folks.
          */
-        for ( di = brain_list.begin(); di != brain_list.end(); di = mudinfo.mudNextDesc )
+        for ( di = brain_list.begin(); di != brain_list.end(); di = server.mudNextDesc )
         {
             d = *di;
-            mudinfo.mudNextDesc = ++di;
+            server.mudNextDesc = ++di;
             if ( FD_ISSET( d->getDescriptor(), &exc_set ) )
             {
                 FD_CLR( d->getDescriptor(), &in_set );
@@ -437,10 +436,10 @@ void game_loop( )
         /*
          * Process input.
          */
-        for ( di = brain_list.begin(); di != brain_list.end(); di = mudinfo.mudNextDesc )
+        for ( di = brain_list.begin(); di != brain_list.end(); di = server.mudNextDesc )
         {
             d = *di;
-            mudinfo.mudNextDesc = ++di;
+            server.mudNextDesc = ++di;
             d->togCommandRun();
 
             if ( FD_ISSET( d->getDescriptor(), &in_set ) )
@@ -492,10 +491,10 @@ void game_loop( )
         /*
          * Output.
          */
-        for ( di = brain_list.begin(); di != brain_list.end(); di = mudinfo.mudNextDesc )
+        for ( di = brain_list.begin(); di != brain_list.end(); di = server.mudNextDesc )
         {
             d = *di;
-            mudinfo.mudNextDesc = ++di;
+            server.mudNextDesc = ++di;
 
             /*
              * spec: disconnect people idling on login
@@ -540,7 +539,7 @@ void game_loop( )
             {
                 cur_hour = now_bd_time->tm_hour;
                 out_file = file_open( PLAYERNUM_FILE, "a" );
-                fprintf( out_file, "%i %i %i\n", now_bd_time->tm_mday, cur_hour, mudinfo.max_players_reboot );
+                fprintf( out_file, "%i %i %i\n", now_bd_time->tm_mday, cur_hour, server.max_players_reboot );
                 file_close( out_file );
                 update_player_cnt( );
             }
@@ -635,7 +634,7 @@ void new_descriptor( int d_control )
         addr = ntohl( sock.sin_addr.s_addr );
         snprintf( buf, MSL, "%d.%d.%d.%d", ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF, ( addr >> 8 ) & 0xFF, ( addr ) & 0xFF );
         snprintf( log_buf, (2 * MIL), "Sock.sinaddr:  %s (%d)", buf, ntohs( sock.sin_port ) );
-        log_string( log_buf );
+        Utils::Logger( 0, log_buf );
         snprintf( log_buf, (2 * MIL), "Connection formed from %s.", buf );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
@@ -951,7 +950,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                         cost = exp_to_level( ch, cl_index, 5 );
                     else
                         cost = exp_to_level( ch, cl_index, ch->pcdata->order[cl_index] );
-                    snprintf( buf2, MSL, "%ld", UMAX( 0, cost - ch->GetExperience() ) );
+                    snprintf( buf2, MSL, "%lu", UMAX( 0, cost - ch->GetExperience() ) );
                     i = buf2;
                     break;
                 }
@@ -1004,7 +1003,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case 'x':
-                snprintf( buf2, MSL, "%ld", ch->GetExperience() );
+                snprintf( buf2, MSL, "%lu", ch->GetExperience() );
                 i = buf2;
                 break;
             case 'X':
@@ -1079,7 +1078,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 if ( IS_NPC( ch ) )
                     break;
                 if ( IS_IMMORTAL( ch ) )
-                    snprintf( buf2, MSL, "INVIS: %ld", ch->act.test(ACT_WIZINVIS) ? ch->pcdata->invis : 0 );
+                    snprintf( buf2, MSL, "INVIS: %lu", ch->act.test(ACT_WIZINVIS) ? ch->pcdata->invis : 0 );
                 else
                 {
                     if ( ( IS_AFFECTED( ch, AFF_INVISIBLE ) )
@@ -1511,7 +1510,7 @@ void nanny( Brain *b, const string input )
         if ( ch->act.test(ACT_DENY) )
         {
             snprintf( log_buf, (2 * MIL), "Denying access to %s@%s.", argument, b->getHost_() );
-            log_string( log_buf );
+            Utils::Logger( 0, log_buf );
             monitor_chan( log_buf, MONITOR_CONNECT );
             b->Send( "You are denied access.\r\n" );
             b->Disconnect();
@@ -1528,7 +1527,7 @@ void nanny( Brain *b, const string input )
             if ( !found )
             {
                 snprintf(log_buf, (2 * MIL), "Whitelist prohibited login %s@%s.", argument, b->getHost_());
-                log_string(log_buf);
+                Utils::Logger( 0, log_buf);
                 monitor_chan(log_buf, MONITOR_CONNECT);
                 b->Send( "This is not an approved connection domain for this character.\r\n" );
                 b->Disconnect();
@@ -1657,7 +1656,7 @@ void nanny( Brain *b, const string input )
         snprintf( log_buf, (2 * MIL), "Site Name: %s.", b->getHost_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
-        log_string( log_buf );
+        Utils::Logger( 0, log_buf );
         lines = ch->pcdata->pagelen;
         ch->pcdata->pagelen = 20;
 
@@ -1669,7 +1668,7 @@ void nanny( Brain *b, const string input )
             uint_t numbrands = brand_list.size();
             char msgbuf[MSL];
             do_help( ch, "imotd" );
-            snprintf( msgbuf, MSL, "There are currently %ld outstanding brands.\r\n", numbrands );
+            snprintf( msgbuf, MSL, "There are currently %lu outstanding brands.\r\n", numbrands );
             send_to_char( msgbuf, ch );
 
         }
@@ -1854,14 +1853,14 @@ void nanny( Brain *b, const string input )
                     }
                 }
                 snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), b->getHost_() );
-                log_string( log_buf );
+                Utils::Logger( 0, log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
                 b->Send( "\r\n" );
                 ch->pcdata->pagelen = 20;
 
                 do_save(ch, "auto");
                 do_help( ch, "newun" );
-                mudinfo.total_pfiles++;
+                server.total_pfiles++;
                 b->setConnectionState( CON_READ_MOTD );
                 /*
                  * Display motd, and all other malarky
@@ -2220,7 +2219,7 @@ void nanny( Brain *b, const string input )
                 if ( cnt != ch->p_class )
                     ch->lvl[cnt] = 0;
 
-            if ( mudinfo.total_pfiles == 1 ) /* First user, grand full admin. --Kline */
+            if ( server.total_pfiles == 1 ) /* First user, grand full admin. --Kline */
             {
                 ch->level = MAX_LEVEL;
                 ch->lvl[ch->p_class] = MAX_LEVEL;;
@@ -2297,12 +2296,12 @@ void nanny( Brain *b, const string input )
                 if ( strcmp( b->getHost_(), ch->pcdata->host[i] ) )
                 {
                     snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->GetName_(), b->getHost_(), ch->pcdata->host[0] );
-                    log_string( msg );
+                    Utils::Logger( 0, msg );
                     monitor_chan( msg, MONITOR_CONNECT );
                     if ( ( ch->level > 80 ) )
                     {
                         snprintf( msg, MSL, "WARNING!!! %s logged in with level %d.", ch->GetName_(), ch->level );
-                        log_string( msg );
+                        Utils::Logger( 0, msg );
                     }
 
                 }
@@ -2738,7 +2737,7 @@ bool check_reconnect( DESCRIPTOR_DATA * d, bool fConn )
                 send_to_char( "Reconnecting.\r\n", ch );
                 act( "$n reconnects.", ch, NULL, NULL, TO_ROOM );
                 snprintf( log_buf, (2 * MIL), "%s@%s reconnected.", ch->GetName_(), d->getHost_() );
-                log_string( log_buf );
+                Utils::Logger( 0, log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
                 d->setConnectionState( CON_PLAYING );
 
@@ -3379,11 +3378,11 @@ void update_player_cnt( void )
          found++;
  }
 
- mudinfo.cur_players = found;
- if( mudinfo.cur_players > mudinfo.max_players_reboot )
-     mudinfo.max_players_reboot = mudinfo.cur_players;
- if( mudinfo.max_players_reboot > mudinfo.max_players )
-     mudinfo.max_players = mudinfo.max_players_reboot;
+ server.cur_players = found;
+ if( server.cur_players > server.max_players_reboot )
+     server.max_players_reboot = server.cur_players;
+ if( server.max_players_reboot > server.max_players )
+     server.max_players = server.max_players_reboot;
 
  return;
 }

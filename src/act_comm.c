@@ -145,7 +145,7 @@ void note_remove( CHAR_DATA * ch, NOTE_DATA * pnote )
             pnote = *li;
             fprintf( fp, "Sender  %s~\n", pnote->sender.c_str() );
             fprintf( fp, "Date    %s~\n", pnote->date );
-            fprintf( fp, "Stamp   %ld\n", pnote->date_stamp );
+            fprintf( fp, "Stamp   %lu\n", pnote->date_stamp );
             for ( it = pnote->to_list.begin(); it != pnote->to_list.end(); it++ )
                 to_list.append(*it+" ");
             fprintf( fp, "To      %s~\n", to_list.c_str() );
@@ -439,7 +439,7 @@ DO_FUN(do_note)
 
             fprintf( fp, "Sender  %s~\n", pnote->sender.c_str() );
             fprintf( fp, "Date    %s~\n", pnote->date );
-            fprintf( fp, "Stamp   %ld\n", pnote->date_stamp );
+            fprintf( fp, "Stamp   %lu\n", pnote->date_stamp );
             fprintf( fp, "To      %s~\n", fixme.c_str() );
             fprintf( fp, "Subject %s~\n", pnote->subject );
             fprintf( fp, "Text\n%s~\n\n", pnote->text );
@@ -1741,7 +1741,7 @@ DO_FUN(do_quit)
     snprintf( log_buf, (2 * MIL), "%s quits ACK!", ch->GetName_() );
     if ( ch->level != 85 )
         notify( log_buf, MAX_LEVEL - 2 );
-    log_string( log_buf );
+    Utils::Logger( 0, log_buf );
 
     /*
      * After extract_char the ch is no longer valid!
@@ -1761,7 +1761,7 @@ DO_FUN(do_quit)
                 char logbuf[MSL];
                 snprintf( logbuf, MSL, "CHEATER!!! Possible attempt to utilize eq dup bug, %s", other_logins->character->GetName_() );
 
-                log_string( logbuf );
+                Utils::Logger( 0, logbuf );
             }
             other_logins->Disconnect();
         }
@@ -2117,14 +2117,14 @@ DO_FUN(do_group)
                 if ( ch->act.test(ACT_BLIND_PLAYER) )
                 {
                     snprintf( buf, MSL,
-                              "%-16s %4d of %4d hp %4d of %4d mana %4d of %4d move %5ld xp %0.2f%% split\r\n",
+                              "%-16s %4d of %4d hp %4d of %4d mana %4d of %4d move %5lu xp %0.2f%% split\r\n",
                               capitalize( victim->get_name(ch) ),
                               victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->GetExperience(), percent );
                 }
                 else
                 {
                     snprintf( buf, MSL,
-                              "[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5ld xp [%0.2f%%]\r\n",
+                              "[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5lu xp [%0.2f%%]\r\n",
                               victim->level,
                               IS_NPC( victim ) ? "Mob" : class_table[victim->p_class].who_name,
                               capitalize( victim->get_name(ch) ),

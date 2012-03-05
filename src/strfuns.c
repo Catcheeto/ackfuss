@@ -2069,7 +2069,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         snprintf( buf1, MSL, " (*) Clan Boss  (L) Clan Leader  (!) Clan Armorer " );
         snprintf( buf2, MSL, "@@R|@@N %s @@R|\r\n", center_text( buf1, 75 ) );
         output += buf2;
-        snprintf( buf1, MSL, "There has been a maximum of %d player%s logged on this session.", mudinfo.max_players_reboot, mudinfo.max_players_reboot == 1 ? "" : "s" );
+        snprintf( buf1, MSL, "There has been a maximum of %d player%s logged on this session.", server.max_players_reboot, server.max_players_reboot == 1 ? "" : "s" );
         snprintf( buf2, MSL, "@@R|@@N %s @@R|\r\n", center_text( buf1, 75 ) );
         output += buf2;
         output += "@@R+-----------------------------------------------------------------------------+\r\n@@N";

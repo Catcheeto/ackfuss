@@ -249,7 +249,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     if ( !IS_NPC(ch) )
     {
         fprintf( fp, "Sentence       %d\n", ch->pcdata->sentence );
-        fprintf( fp, "Invis          %ld\n", ch->pcdata->invis );
+        fprintf( fp, "Invis          %lu\n", ch->pcdata->invis );
     }
 
     fprintf( fp, "m/c            " );
@@ -303,7 +303,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "\n" );
     }
 
-    fprintf( fp, "Exp            %ld\n", ch->GetExperience() );
+    fprintf( fp, "Exp            %lu\n", ch->GetExperience() );
 
     fprintf( fp, "AffectedBy     %d\n", ch->affected_by );
     /*

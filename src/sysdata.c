@@ -186,8 +186,8 @@ void save_sysdata( void )
     fprintf(fp, "Mob_SVS       %0.4f\n", sysdata.mob_svs);
     fprintf(fp, "Num_Greeting  %d\n",    sysdata.num_greeting);
     fprintf(fp, "Playtesters   %s~\n",   sysdata.playtesters);
-    fprintf(fp, "Pulse         %d\n",    sysdata.pulse);
-    fprintf(fp, "PulseCache    %d\n",    sysdata.pulse_cache);
+    fprintf(fp, "Pulse         %lu\n",   sysdata.pulse);
+    fprintf(fp, "PulseCache    %lu\n",   sysdata.pulse_cache);
     fprintf(fp, "Shownumbers   %d\n",    sysdata.shownumbers);
     fprintf(fp, "Wizlock       %d\n",    wizlock);
     fprintf(fp, "End\n\n");
@@ -262,9 +262,9 @@ void do_sysdata( CHAR_DATA * ch, char *argument )
         strncat(outbuf, catbuf, MSL - 1);
         snprintf(catbuf, MSL, "[Playtesters    ]       [%15s]\r\n", sysdata.playtesters);
         strncat(outbuf, catbuf, MSL - 1);
-        snprintf(catbuf, MSL, "[Pulse Per Sec  ]       [%15d]\r\n", sysdata.pulse);
+        snprintf(catbuf, MSL, "[Pulse Per Sec  ]       [%15lu]\r\n", sysdata.pulse);
         strncat(outbuf, catbuf, MSL - 1);
-        snprintf(catbuf, MSL, "[Pulse Cache    ]       [%15d]\r\n", sysdata.pulse_cache);
+        snprintf(catbuf, MSL, "[Pulse Cache    ]       [%15lu]\r\n", sysdata.pulse_cache);
         strncat(outbuf, catbuf, MSL -1);
         snprintf(catbuf, MSL, "[Show Damage    ]       [%15s]\r\n", (sysdata.shownumbers ? "Yes" : "No"));
         strncat(outbuf, catbuf, MSL - 1);

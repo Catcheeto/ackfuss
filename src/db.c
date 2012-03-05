@@ -124,13 +124,12 @@
 char bug_buf[2 * MAX_INPUT_LENGTH];
 char log_buf[2 * MAX_INPUT_LENGTH];
 char testerbuf[MSL];
-extern bool merc_down;
 extern int _filbuf args( ( FILE * ) );
 KILL_DATA kill_table[MAX_LEVEL];
 TIME_INFO_DATA time_info;
 WEATHER_DATA weather_info;
 SYS_DATA_TYPE sysdata;
-MUDINFO mudinfo;
+MUDINFO server;
 CHAN_HISTORY chan_history;
 
 bool booting_up;
@@ -226,11 +225,11 @@ ROOM_INDEX_DATA *room_load;
 MOB_INDEX_DATA *mob_load;
 OBJ_INDEX_DATA *obj_load;
 
-int fp_open;
-int fp_close;
+uint_t fp_open;
+uint_t fp_close;
 
-int nAllocPerm;
-int sAllocPerm;
+uint_t nAllocPerm;
+uint_t sAllocPerm;
 
 /*
  * Semi-locals.
@@ -443,8 +442,8 @@ void boot_db( void )
     load_corpses();
     load_disabled();
     load_mudinfo();
-    if ( mudinfo.first_boot == 0 ) /* First game boot, record it! */
-        mudinfo.first_boot = current_time;
+    if ( server.first_boot == 0 ) /* First game boot, record it! */
+        server.first_boot = current_time;
     /*
      * Fix up exits.
      * MAG Mod: Check resets. (Allows loading objects of later areas.)
@@ -511,7 +510,7 @@ void load_areas( void )
 
             if ( ( fpArea = file_open( file.c_str(), "r" ) ) == NULL )
             {
-                log_string( strArea );
+                Utils::Logger( 0, strArea );
                 kill( getpid(  ), SIGQUIT );
             }
         }
@@ -1101,7 +1100,7 @@ void load_mobile( FILE * fp )
                         if ( pMobIndex->spec_fun == NULL )
                         {
                             snprintf(buf, MSL, "Load_mobile: spec_fun invalid for mob %d in %s.", pMobIndex->vnum, area_load->filename);
-                            log_string(buf);
+                            Utils::Logger( 0, buf);
                         }
                     }
                     fMatch = true;
@@ -1117,7 +1116,7 @@ void load_mobile( FILE * fp )
                     if ( vnum < area_load->min_vnum || vnum > area_load->max_vnum )
                     {
                         snprintf(buf, MSL, "Load_mobile: vnum %d out of bounds for %s.", vnum, area_load->filename);
-                        log_string(buf);
+                        Utils::Logger( 0, buf);
                     }
                     fBootDb = FALSE;
                     if ( get_mob_index( vnum ) != NULL )
@@ -1306,7 +1305,7 @@ void load_object( FILE * fp )
                         if ( pObjIndex->obj_fun == NULL )
                         {
                             snprintf(buf, MSL, "Load_object: obj_fun invalid for item %d in %s.", pObjIndex->vnum, area_load->filename);
-                            log_string(buf);
+                            Utils::Logger( 0, buf);
                         }
                     }
                     fMatch = true;
@@ -1337,7 +1336,7 @@ void load_object( FILE * fp )
                     if ( vnum < area_load->min_vnum || vnum > area_load->max_vnum )
                     {
                         snprintf(buf, MSL, "Load_object: vnum %d out of bounds for %s.", vnum, area_load->filename);
-                        log_string(buf);
+                        Utils::Logger( 0, buf);
                     }
                     fBootDb = FALSE;
                     if ( get_obj_index( vnum ) != NULL )
@@ -1726,7 +1725,7 @@ void load_room( FILE * fp )
                     if ( vnum < area_load->min_vnum || vnum > area_load->max_vnum )
                     {
                         snprintf(buf, MSL, "Load_room: vnum %d out of bounds for %s.", vnum, area_load->filename);
-                        log_string(buf);
+                        Utils::Logger( 0, buf);
                     }
                     fBootDb = FALSE;
                     if ( get_room_index( vnum ) != NULL )
@@ -1824,12 +1823,12 @@ void load_shop( FILE * fp )
                     if ( keeper < area_load->min_vnum || keeper > area_load->max_vnum )
                     {
                         snprintf(buf, MSL, "Load_shop: keeper %d out of bounds for %s.", keeper, area_load->filename);
-                        log_string(buf);
+                        Utils::Logger( 0, buf);
                     }
                     if ( get_mob_index(keeper) == NULL )
                     {
                         snprintf(buf, MSL, "Load_shop: keeper %d not found in %s.", keeper, area_load->filename);
-                        log_string(buf);
+                        Utils::Logger( 0, buf);
                     }
                     pShop->keeper = keeper;
                     fMatch = true;
@@ -3377,7 +3376,7 @@ void perm_update(  )
     FILE *po;
     po = file_open( "perm.out", "a" );
 
-    fprintf( po, "%s :: Perms   %5d blocks  of %7d bytes.\r\n", current_time_str(), nAllocPerm, sAllocPerm );
+    fprintf( po, "%s :: Perms   %5lu blocks  of %7lu bytes.\r\n", current_time_str(), nAllocPerm, sAllocPerm );
     file_close( po );
     return;
 }
@@ -3427,7 +3426,7 @@ DO_FUN(do_memory)
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Exits   %5d\r\n", static_cast<int>(exit_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Helps   %5d\r\n", mudinfo.total_helpfiles );
+    snprintf( buf, MSL, "Helps   %5d\r\n", server.total_helpfiles );
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Mobs    %5d\r\n", static_cast<int>(mob_index_list.size()) );
     send_to_char( buf, ch );
@@ -3441,33 +3440,33 @@ DO_FUN(do_memory)
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Shared String Info:\r\n" );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Strings           %5ld strings of %7ld bytes (max %ld).\r\n", nAllocString, sAllocString, MAX_STRING );
+    snprintf( buf, MSL, "Strings           %5lu strings of %7lu bytes (max %lu).\r\n", nAllocString, sAllocString, MAX_STRING );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Overflow Strings  %5ld strings of %7ld bytes.\r\n", nOverFlowString, sOverFlowString );
+    snprintf( buf, MSL, "Overflow Strings  %5lu strings of %7lu bytes.\r\n", nOverFlowString, sOverFlowString );
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Cache Info:\r\n" );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Helps   %5d\r\n", static_cast<int>(help_list.size()) );
+    snprintf( buf, MSL, "Helps   %5lu\r\n", help_list.size() );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Socials %5d\r\n", static_cast<int>(social_list.size()) );
+    snprintf( buf, MSL, "Socials %5lu\r\n", social_list.size() );
     send_to_char( buf, ch );
     if ( Full )
     {
         send_to_char( "Shared String Heap is full, increase MAX_STRING.\r\n", ch );
-        snprintf( buf, MSL, "Overflow high-water-mark is %ld bytes.\r\n", hwOverFlow );
+        snprintf( buf, MSL, "Overflow high-water-mark is %lu bytes.\r\n", hwOverFlow );
         send_to_char( buf, ch );
     }
 
-    snprintf( buf, MSL, "Perms             %5d blocks  of %7d bytes.\r\n", nAllocPerm, sAllocPerm );
+    snprintf( buf, MSL, "Perms             %5lu blocks  of %7lu bytes.\r\n", nAllocPerm, sAllocPerm );
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, "File Streams: Opens: %5d Closes: %5d\r\n", fp_open, fp_close);
+    snprintf( buf, MSL, "File Streams: Opens: %5lu Closes: %5lu\r\n", fp_open, fp_close);
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, "Game Descriptor:  %5ld (max %ld)\r\n", mudinfo.descriptor, mudinfo.max_descriptor );
+    snprintf( buf, MSL, "Game Descriptor:  %5ld (max %ld)\r\n", server.descriptor, server.max_descriptor );
     send_to_char( buf, ch );
 
-    snprintf( buf, MSL, "Game Port:        %5ld\r\n", mudinfo.port );
+    snprintf( buf, MSL, "Game Port:        %5ld\r\n", server.port );
     send_to_char( buf, ch );
 
     return;
@@ -3487,7 +3486,7 @@ DO_FUN(do_status)
     send_to_char( "of how many are actually in the game at this time.\r\n", ch );
     snprintf( buf, MSL, "Areas   %5d\r\n", static_cast<int>(area_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Helps   %5d\r\n", mudinfo.total_helpfiles );
+    snprintf( buf, MSL, "Helps   %5d\r\n", server.total_helpfiles );
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Mobs    %5d\r\n", static_cast<int>(mob_index_list.size()) );
     send_to_char( buf, ch );
@@ -3746,7 +3745,7 @@ void log_f( char *fmt, ... )
     vsnprintf( buf, sizeof( buf ), fmt, args );
     va_end( args );
 
-    log_string( buf );
+    Utils::Logger( 0, buf );
 }
 
 /*
@@ -3779,7 +3778,7 @@ void bug( const char *str, int param )
         }
 
         snprintf( buf, MSL, "[*****] FILE: %s LINE: %d", strArea, iLine );
-        log_string( buf );
+        Utils::Logger( 0, buf );
 
         if ( ( fp = file_open( SHUTDOWN_FILE, "a" ) ) != NULL )
         {
@@ -3792,7 +3791,7 @@ void bug( const char *str, int param )
         snprintf( buf, MSL, "[*****] BUG: %s %d", str, param );
     else
         snprintf( buf, MSL, "[*****] BUG: %s", str );
-    log_string( buf );
+    Utils::Logger( 0, buf );
 
     if ( ( fp = file_open( BUG_FILE, "a" ) ) != NULL )
     {
@@ -3830,7 +3829,7 @@ void bug_string( const char *str, const char *str2 )
         }
 
         snprintf( buf, MSL, "[*****] FILE: %s LINE: %d", strArea, iLine );
-        log_string( buf );
+        Utils::Logger( 0, buf );
 
         if ( ( fp = file_open( SHUTDOWN_FILE, "a" ) ) != NULL )
         {
@@ -3840,27 +3839,13 @@ void bug_string( const char *str, const char *str2 )
     }
 
     snprintf( buf, MSL, "[*****] BUG: %s %s", str, str2 );
-    log_string( buf );
+    Utils::Logger( 0, buf );
 
     if ( ( fp = file_open( BUG_FILE, "a" ) ) != NULL )
     {
         fprintf( fp, "%s :: %s\n", current_time_str(), buf );
         file_close( fp );
     }
-
-    return;
-}
-
-
-
-/*
- * Writes a string to the log.
- */
-void log_string( const char *str )
-{
-    fprintf( stderr, "%s :: %s\n", current_time_str(), str );
-    if ( !merc_down )
-        monitor_chan(str, MONITOR_LOG);
 
     return;
 }

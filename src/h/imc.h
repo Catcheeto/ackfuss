@@ -364,7 +364,7 @@ struct imc_siteinfo
     char incomm[IMC_BUFF_SIZE];
     char *outbuf;  /* output buffer */
     char *versionid;  /* Transient version id for the imclist */
-    unsigned long outsize;
+    uint_t outsize;
     int outtop;
     int desc;   /* descriptor */
     unsigned short state;   /* connection state */

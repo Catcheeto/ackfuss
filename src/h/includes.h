@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <iostream>
 #include <limits>
 #include <list>
 #include <map>

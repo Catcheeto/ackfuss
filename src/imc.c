@@ -1437,7 +1437,7 @@ void imc_write_buffer( const char *txt )
              * empty buffer
              */
             this_imcmud->outtop = 0;
-            imcbug( "Buffer overflow: %ld. Purging.", this_imcmud->outsize );
+            imcbug( "Buffer overflow: %lu. Purging.", this_imcmud->outsize );
             return;
         }
         this_imcmud->outsize *= 2;
@@ -5040,7 +5040,7 @@ bool imc_startup_network( bool connected )
     if ( connected )
     {
         FILE *fp;
-        char netname[SMST], server[SMST];
+        char netname[SMST], servern[SMST];
 
         if ( !( fp = fopen( IMC_HOTBOOT_FILE, "r" ) ) )
             imcbug( "%s: Unable to load IMC hotboot file.", __FUNCTION__ );
@@ -5048,13 +5048,13 @@ bool imc_startup_network( bool connected )
         {
             unlink( IMC_HOTBOOT_FILE );
 
-            if ( fscanf( fp, "%s %s\n", netname, server ) < 1 )
+            if ( fscanf( fp, "%s %s\n", netname, servern ) < 1 )
                 bugf("Didn't read anything during IMC2 bootup, this is bad!");
 
             IMCSTRFREE( this_imcmud->network );
             this_imcmud->network = IMCSTRALLOC( netname );
             IMCSTRFREE( this_imcmud->servername );
-            this_imcmud->servername = IMCSTRALLOC( server );
+            this_imcmud->servername = IMCSTRALLOC( servern );
             IMCFCLOSE( fp );
         }
         this_imcmud->state = IMC_ONLINE;
@@ -6789,24 +6789,24 @@ IMC_CMD( imcchanwho )
 IMC_CMD( imcremoteadmin )
 {
     REMOTEINFO *r;
-    char server[SMST], cmd[SMST], to[SMST];
+    char servern[SMST], cmd[SMST], to[SMST];
     char pwd[LGST];
     IMC_PACKET *p;
 
-    argument = imcone_argument( argument, server );
+    argument = imcone_argument( argument, servern );
     argument = imcone_argument( argument, pwd );
     argument = imcone_argument( argument, cmd );
 
-    if ( server[0] == '\0' || cmd[0] == '\0' )
+    if ( servern[0] == '\0' || cmd[0] == '\0' )
     {
         imc_to_char( "Syntax: imcadmin <server> <password> <command> [<data..>]\r\n", ch );
         imc_to_char( "You must be an approved server administrator to use remote commands.\r\n", ch );
         return;
     }
 
-    if ( !( r = imc_find_reminfo( server ) ) )
+    if ( !( r = imc_find_reminfo( servern ) ) )
     {
-        imc_printf( ch, "~W%s ~cis not a valid mud name.\r\n", server );
+        imc_printf( ch, "~W%s ~cis not a valid mud name.\r\n", servern );
         return;
     }
 

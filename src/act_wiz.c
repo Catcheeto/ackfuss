@@ -138,7 +138,6 @@
 #include "h/update.h"
 #endif
 
-extern bool merc_down;
 extern int saving_area;
 extern bool deathmatch;
 extern bool wizlock;
@@ -1000,7 +999,7 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL,
-              "Lv: %d.  Class: %d.  Align: %ld.  AC: %ld.  Exp: %ld.\r\n",
+              "Lv: %d.  Class: %d.  Align: %ld.  AC: %ld.  Exp: %lu.\r\n",
               victim->get_level(), victim->p_class, victim->GetAlignment(), GET_AC( victim ), victim->GetExperience() );
     strncat( buf1, buf, MSL - 1 );
 
@@ -1549,7 +1548,7 @@ DO_FUN(do_reboot)
 
     snprintf( buf, MSL, "Reboot by %s.", ch->GetName_() );
     do_echo( ch, buf );
-    merc_down = TRUE;
+    server.shutdown = true;
     return;
 }
 
@@ -1581,7 +1580,7 @@ DO_FUN(do_shutdown)
     append_file( ch, SHUTDOWN_FILE, buf );
     strncat( buf, "\r\n", MSL );
     do_echo( ch, buf );
-    merc_down = TRUE;
+    server.shutdown = true;
     return;
 }
 
@@ -4206,7 +4205,7 @@ DO_FUN(do_iscore)
 
     if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) )
     {
-        snprintf( buf, MSL, "You are wizinvis at level %ld.\r\n", ch->pcdata->invis );
+        snprintf( buf, MSL, "You are wizinvis at level %lu.\r\n", ch->pcdata->invis );
         send_to_char( buf, ch );
     }
 
@@ -6271,8 +6270,8 @@ DO_FUN(do_hotreboot)
      * exec - descriptors are inherited
      */
 
-    snprintf( buf, 256, "%ld", mudinfo.port );
-    snprintf( buf2, 256, "%ld", mudinfo.descriptor );
+    snprintf( buf, 256, "%ld", server.port );
+    snprintf( buf2, 256, "%ld", server.descriptor );
     if ( this_imcmud )
         snprintf( buf3, 256, "%d", this_imcmud->desc );
     else

@@ -101,7 +101,7 @@ void init_string_space(  )
     string_space = ( char * )malloc( MAX_STRING );
     if ( !string_space )
     {
-        bugf( "SSM: Can't allocate %ld bytes shared string space.", MAX_STRING );
+        bugf( "SSM: Can't allocate %lu bytes shared string space.", MAX_STRING );
         raise( SIGSEGV );
     }
 

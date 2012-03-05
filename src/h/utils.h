@@ -1,29 +1,4 @@
 /***************************************************************************
- *  Original Diku Mud copyright (C) 1990, 1991 by Sebastian Hammer,        *
- *  Michael Seifert, Hans Henrik St{rfeldt, Tom Madsen, and Katja Nyboe.   *
- *                                                                         *
- *  Merc Diku Mud improvments copyright (C) 1992, 1993 by Michael          *
- *  Chastain, Michael Quan, and Mitchell Tse.                              *
- *                                                                         *
- *  Ack 2.2 improvements copyright (C) 1994 by Stephen Dooley              *
- *                                                                         *
- *  In order to use any part of this Merc Diku Mud, you must comply with   *
- *  both the original Diku license in 'license.doc' as well the Merc       *
- *  license in 'license.txt'.  In particular, you may not remove either of *
- *  these copyright notices.                                               *
- *                                                                         *
- *       _/          _/_/_/     _/    _/     _/    ACK! MUD is modified    *
- *      _/_/        _/          _/  _/       _/    Merc2.0/2.1/2.2 code    *
- *     _/  _/      _/           _/_/         _/    (c)Stephen Zepp 1998    *
- *    _/_/_/_/      _/          _/  _/             Version #: 4.3          *
- *   _/      _/      _/_/_/     _/    _/     _/                            *
- *                                                                         *
- *                                                                         *
- *  Much time and thought has gone into this software and you are          *
- *  benefitting.  We hope that you share your changes too.  What goes      *
- *  around, comes around.                                                  *
- ***************************************************************************/
-/***************************************************************************
  * _/_/_/_/  _/    _/  _/_/_/_/ _/_/_/_/ AckFUSS is modified ACK!MUD 4.3.1 *
  * _/        _/    _/  _/       _/       copyright Matt Goff (Kline) 2008  *
  * _/_/      _/    _/  _/_/_/_/ _/_/_/_/                                   *
@@ -33,8 +8,40 @@
 
 #define DEC_UTILS_H
 
-/* Use these for bitvectors..saves having to recalculate each time :) Zen */
+namespace Utils {
+    #define FormatString( ... ) _FormatString( PP_NARG( __VA_ARGS__ ), __VA_ARGS__ )
+    const string _FormatString( const uint_t narg, const string fmt, ... );
+    const void Logger( const bitset<MAX_BITSET> flags, const string fmt, ... );
+    const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
+    const string StrLower( const string input );
+    const string StrUpper( const string input );
+    const vector<string> StrTokens( const string input );
+};
 
+// Thanks to Laurent Deniau @ https://groups.google.com/d/msg/comp.std.c/d-6Mj5Lko_s/5R6bMWTEbzQJ
+#define PP_NARG(...) \
+         PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
+#define PP_NARG_(...) \
+         PP_ARG_N(__VA_ARGS__)
+#define PP_ARG_N( \
+         _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
+         _11,_12,_13,_14,_15,_16,_17,_18,_19,_20, \
+         _21,_22,_23,_24,_25,_26,_27,_28,_29,_30, \
+         _31,_32,_33,_34,_35,_36,_37,_38,_39,_40, \
+         _41,_42,_43,_44,_45,_46,_47,_48,_49,_50, \
+         _51,_52,_53,_54,_55,_56,_57,_58,_59,_60, \
+         _61,_62,_63,N,...) N
+#define PP_RSEQ_N() \
+         63,62,61,60,                   \
+         59,58,57,56,55,54,53,52,51,50, \
+         49,48,47,46,45,44,43,42,41,40, \
+         39,38,37,36,35,34,33,32,31,30, \
+         29,28,27,26,25,24,23,22,21,20, \
+         19,18,17,16,15,14,13,12,11,10, \
+         9,8,7,6,5,4,3,2,1,0
+
+
+// Soon to be deprecated and removed
 #define     BIT_0       0
 #define     BIT_1       1
 #define     BIT_2       2
@@ -182,34 +189,6 @@
         (first) = (link); \
     } while(0)
 
-/* Insert link before ref link */
-#define LINK_BEFORE(link, ref, first, last, next, prev) \
-    do { \
-        if ( (link)->prev || (link)->next ) hang("LINK_BEFORE: link already in list?"); \
-        if ( !(ref) ) hang("LINK_BEFORE: ref is NULL!"); \
-        (link)->next = (ref); \
-        (link)->prev = (ref)->prev; \
-        if ( !(ref)->prev ) \
-            (first) = (link); \
-        else \
-            ((ref)->prev)->next = (link); \
-        (ref)->prev = (link); \
-    } while (0)
-
-/* Insert link after ref link */
-#define LINK_AFTER(link, ref, first, last, next, prev) \
-    do { \
-        if ( (link)->prev || (link)->next ) hang("LINK_AFTER: link already in list?"); \
-        if ( !(ref) ) hang("LINK_AFTER: ref is NULL!"); \
-        (link)->prev = (ref); \
-        (link)->next = (ref)->next; \
-        if ( !(ref)->next ) \
-            (last) = (link); \
-        else \
-            ((ref)->next)->prev = (link); \
-        (ref)->next = (link); \
-    } while (0)
-
 /* Unlink a double linked list */
 #define UNLINK(link, first, last, next, prev) \
     do { \
@@ -343,7 +322,3 @@
 
 #define dispose(mem,size) _dispose(mem,size,1)
 #define qdispose(mem,size) _dispose(mem,size,0)
-
-/*
- * Miscellaneous macros.
- */

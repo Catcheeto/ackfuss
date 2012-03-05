@@ -317,7 +317,7 @@ DO_FUN(build_interpret)
     if ( ( !IS_NPC( ch ) && ch->act.test(ACT_LOG) ) || fLogAll || build_cmd_table[cmd].log == LOG_ALWAYS )
     {
         snprintf( log_buf, (2 * MIL),  "Log %s: %s", ch->GetName_(), logline );
-        log_string( log_buf );
+        Utils::Logger( 0, log_buf );
         monitor_chan( log_buf, MONITOR_BUILD );
     }
 
@@ -5182,7 +5182,7 @@ DO_FUN(build_listweapons)
      */
     for ( foo = 0; tab_weapon_types[foo].text != NULL; foo++ )
     {
-        snprintf( buf, MSL, "@@W%2ld - @@y%10s.   ", tab_weapon_types[foo].value, tab_weapon_types[foo].text );
+        snprintf( buf, MSL, "@@W%2lu - @@y%10s.   ", tab_weapon_types[foo].value, tab_weapon_types[foo].text );
         send_to_char( buf, ch );
         if ( ( foo + 1 ) % 2 == 0 )
             send_to_char( "\r\n", ch );
@@ -5204,7 +5204,7 @@ DO_FUN(build_listliquids)
      */
     for ( foo = 0; tab_drink_types[foo].text != NULL; foo++ )
     {
-        snprintf( buf, MSL, "%2ld - %12s.   ", tab_drink_types[foo].value, tab_drink_types[foo].text );
+        snprintf( buf, MSL, "%2lu - %12s.   ", tab_drink_types[foo].value, tab_drink_types[foo].text );
         send_to_char( buf, ch );
         if ( ( foo + 1 ) % 2 == 0 )
             send_to_char( "\r\n", ch );

@@ -26,7 +26,7 @@ class Brain {
         const void Disconnect();
         const bool ProcessOutput( const bool prompt = true );
         const bool Read();
-        const void Send( const string msg ) { if ( m_output.empty() && !m_command_run ) { m_output += "\r\n"; m_output += msg; } else m_output += msg; return; }
+        const void Send( const string msg );
 
         list<string> getCommandHistory() const { return m_command_history; }
         string pushCommandHistory( const string cmd ) { m_command_history.push_front( cmd ); return cmd; }

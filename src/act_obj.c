@@ -2488,7 +2488,7 @@ DO_FUN(do_steal)
                 send_to_char( "*** You are now a THIEF!! ***\r\n", ch );
                 ch->pcdata->sentence += diff;
                 save_char_obj( ch );
-                log_string( buf );
+                Utils::Logger( 0, buf );
             }
         }
         return;

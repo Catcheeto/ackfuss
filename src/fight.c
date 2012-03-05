@@ -1300,13 +1300,13 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
          * Sort out kill counts.....
          */
         if ( IS_NPC(victim) && IS_NPC(ch) )
-            mudinfo.mk_by_npc++;
+            server.mk_by_npc++;
         if ( IS_NPC(victim) && !IS_NPC(ch) )
-            mudinfo.mk_by_pc++;
+            server.mk_by_pc++;
         if ( !IS_NPC(victim) && IS_NPC(ch) )
-            mudinfo.pk_by_npc++;
+            server.pk_by_npc++;
         if ( !IS_NPC(victim) && !IS_NPC(ch) )
-            mudinfo.pk_by_pc++;
+            server.pk_by_pc++;
 
         if ( !IS_NPC( ch ) )
         {
@@ -1345,7 +1345,7 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
 
 
             snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->get_name(), ch->get_name(), victim->in_room->vnum );
-            log_string( log_buf );
+            Utils::Logger( 0, log_buf );
 
             notify( log_buf, 82 );
 
@@ -4808,7 +4808,7 @@ void obj_damage( OBJ_DATA * obj, CHAR_DATA * victim, float dam )
         {
 
             snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->GetName_(), obj->GetDescrShort_(), victim->in_room->vnum );
-            log_string( log_buf );
+            Utils::Logger( 0, log_buf );
 
             notify( log_buf, 82 );
 

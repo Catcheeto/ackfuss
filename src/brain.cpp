@@ -59,7 +59,7 @@ const void Brain::Disconnect()
     if ( ( ch = character ) != NULL )
     {
         snprintf( buf, MSL, "Closing link to %s.", ch->GetName_() );
-        log_string( buf );
+        Utils::Logger( 0, buf );
         monitor_chan( buf, MONITOR_CONNECT );
         if ( m_connection_state == CON_PLAYING )
         {
@@ -70,7 +70,7 @@ const void Brain::Disconnect()
             delete character;
     }
 
-    mudinfo.mudNextDesc = brain_list.erase( find( brain_list.begin(), brain_list.end(), this ) );
+    server.mudNextDesc = brain_list.erase( find( brain_list.begin(), brain_list.end(), this ) );
     close( m_descriptor );
     update_player_cnt();
 
@@ -173,7 +173,7 @@ const bool Brain::Read()
     if ( start >= MSL )
     {
         snprintf( buf, MSL, "Input overflow by %s (%s)", ( character == NULL ) ? "[login]" : character->GetName_(), getHost_() );
-        log_string( buf );
+        Utils::Logger( 0, buf );
         monitor_chan( buf, MONITOR_CONNECT );
         Send( "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
         return false;
@@ -194,7 +194,7 @@ const bool Brain::Read()
         }
         else if ( recvd == 0 )
         {
-            log_string( "EOF encountered on read." );
+            Utils::Logger( 0, "EOF encountered on read." );
             return false;
         }
         else if ( errno == EWOULDBLOCK )
@@ -209,6 +209,19 @@ const bool Brain::Read()
     inbuf[0] = '\0';
 
     return true;
+}
+
+const void Brain::Send( const string msg )
+{
+    if ( m_output.empty() && !m_command_run )
+    {
+        m_output += "\r\n";
+        m_output += msg;
+    }
+    else
+        m_output += msg;
+
+    return;
 }
 
 const bool Brain::_Send()
@@ -251,7 +264,7 @@ string Brain::pushCommandQueue( const string cmd, const bool front )
             if ( m_connection_state == CON_PLAYING )
             {
                 snprintf( buf, MSL, "%s input spamming!", character->GetName_() );
-                log_string( buf );
+                Utils::Logger( 0, buf );
                 monitor_chan( buf, MONITOR_CONNECT );
             }
             Send( "\r\n ***** SHUT UP!! ***** \r\n" );

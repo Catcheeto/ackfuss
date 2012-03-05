@@ -93,7 +93,7 @@ DO_FUN(do_sdelete)
 
 
     unlink( strsave );
-    mudinfo.total_pfiles--;
+    server.total_pfiles--;
     send_to_char( "Character deleted.\r\n", ch );
 
     d = ch->desc;

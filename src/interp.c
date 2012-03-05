@@ -1115,7 +1115,7 @@ void interpret( CHAR_DATA * ch, const string input )
     if ( ( !IS_NPC( ch ) && ch->act.test(ACT_LOG) ) || fLogAll || cmd_table[cmd].log == LOG_ALWAYS )
     {
         snprintf( log_buf, (2 * MIL), "Log %s: %s", ch->GetName_(), logline );
-        log_string( log_buf );
+        Utils::Logger( 0, log_buf );
         if ( ch->act.test(ACT_LOG) )
             monitor_chan( log_buf, MONITOR_BAD );
         else if ( cmd_table[cmd].level > LEVEL_HERO )

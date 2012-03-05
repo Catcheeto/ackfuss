@@ -296,7 +296,7 @@ void stop_riding( CHAR_DATA * ch )
             char buf[MAX_STRING_LENGTH];
 
             snprintf( buf, MSL, "NPC %s got on a mount somehow", t_ch->get_name() );
-            log_string( buf );
+            Utils::Logger( 0, buf );
             t_ch->rider = NULL;
             update_pos( t_ch );
             if ( mount )
@@ -320,7 +320,7 @@ void stop_riding( CHAR_DATA * ch )
             {
                 char buf[MAX_STRING_LENGTH];
                 snprintf( buf, MSL, "%s on mount, but not RIDING", t_ch->GetName_() );
-                log_string( buf );
+                Utils::Logger( 0, buf );
                 t_ch->position = POS_RIDING;
             }
             else
