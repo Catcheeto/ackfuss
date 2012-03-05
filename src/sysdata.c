@@ -73,7 +73,7 @@ void load_sysdata( void )
     const char *word;
     bool fMatch;
 
-    Utils::Logger( 0, "Loading %s", SYSDAT_FILE );
+    Utils::Logger( 0, "Loading " SYSDAT_FILE );
 
     init_sysdata(); /* Need to set some defaults --Kline */
 

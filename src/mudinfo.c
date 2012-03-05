@@ -38,7 +38,7 @@ void load_mudinfo( void )
     const char *word;
     bool fMatch;
 
-    Utils::Logger( 0, "Loading %s", MUDINFO_FILE );
+    Utils::Logger( 0, "Loading " MUDINFO_FILE );
 
     if ( (fp = file_open(MUDINFO_FILE, "r")) == NULL )
     {

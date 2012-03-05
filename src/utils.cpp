@@ -7,48 +7,34 @@
  ***************************************************************************/
 
 #include "h/globals.h"
-#include <typeinfo>
 
 void monitor_chan (const char *message, int channel);
 
-const string Utils::_FormatString( const uint_t narg, const string fmt, ... ) // Thanks go to Darien @ MudBytes.net
+const string Utils::FormatString( const bitset<MAX_BITSET> flags, const string fmt, ... )
 {
-    string input, output;
+    string output;
     va_list args;
-    sint_t size;
-    vector<char> buf;
-    vector<string> arguments = StrTokens( fmt );
-    vector<string>::iterator si;
-/*
-    for ( si = arguments.begin(); si != arguments.end(); si++ )
-    {
-        input = *si;
-        if ( input.find( "%" ) != string::npos )
-        {
-            if ( input.find( "ld" ) != string::npos )
-            {
-                sint_t ld = va_arg( args, sint_t );
-                clog << "arg: " << input << " typeid: " << typeid(input).name() << " value: " << ld << endl;
-            }
-            else if ( input.find( "lu" ) != string::npos )
-            {
-                uint_t lu = va_arg( args, uint_t );
-                clog << "arg: " << input << " typeid: " << typeid(input).name() << " value: " << lu << endl;
-            }
-            else if ( input.find( "s" ) != string::npos )
-            {
-                const char* c = va_arg( args, const char* );
-                clog << "arg: " << input << " typeid: " << typeid(input).name() << " value: " << c << endl;
-            }
-        }
-    }
-*/
+
     va_start( args, fmt );
+    output = FormatString( flags, fmt, args );
+    va_end( args );
+
+    return output;
+}
+
+const string Utils::FormatString( const bitset<MAX_BITSET> flags, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net
+{
+    string output;
+    sint_t size = 0;
+    vector<char> buf;
+    va_list args;
+
+    va_copy( args, val );
     size = vsnprintf( NULL, 0, fmt.c_str(), args );
     va_end( args );
 
+    va_copy( args, val );
     buf.resize( size + 1 );
-    va_start( args, fmt );
     vsnprintf( &buf[0], ( size + 1 ), fmt.c_str(), args );
     va_end( args );
 
@@ -57,19 +43,17 @@ const string Utils::_FormatString( const uint_t narg, const string fmt, ... ) //
 
 const void Utils::Logger( const bitset<MAX_BITSET> flags, const string fmt, ... )
 {
-    string str;
-    char buf[MSL];
+    string output;
     va_list args;
+    vector<char> buf;
 
     va_start( args, fmt );
-//    str = FormatString( fmt, args );
-    vsnprintf( buf, MSL, fmt.c_str(), args );
-    str = buf;
+    output = FormatString( flags, fmt, args );
     va_end( args );
 
-    clog << current_time_str() << " :: " << str << endl;
+    clog << current_time_str() << " :: " << output << endl;
     if ( !server.shutdown )
-        monitor_chan( str.c_str(), MONITOR_LOG );
+        monitor_chan( &buf[0], MONITOR_LOG );
 
     return;
 }

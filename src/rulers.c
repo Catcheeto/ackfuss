@@ -122,18 +122,12 @@ void save_rulers(  )
 
 void load_rulers( void )
 {
-
     FILE *rulersfp;
-    char rulers_file_name[MAX_STRING_LENGTH];
     RULER_DATA *ruler;
 
+    Utils::Logger( 0, "Loading " RULERS_FILE );
 
-    snprintf( rulers_file_name, MSL, "%s", RULERS_FILE );
-
-
-    Utils::Logger( 0, "Loading %s", RULERS_FILE );
-
-    if ( ( rulersfp = file_open( rulers_file_name, "r" ) ) == NULL )
+    if ( ( rulersfp = file_open( RULERS_FILE, "r" ) ) == NULL )
     {
         bug( "Load rulers Table: file_open", 0 );
         perror( "failed open of rulers_table.dat in load_rulers_table" );

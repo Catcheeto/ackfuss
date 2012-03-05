@@ -9,8 +9,8 @@
 #define DEC_UTILS_H
 
 namespace Utils {
-    #define FormatString( ... ) _FormatString( PP_NARG( __VA_ARGS__ ), __VA_ARGS__ )
-    const string _FormatString( const uint_t narg, const string fmt, ... );
+    const string FormatString( const bitset<MAX_BITSET> flags, const string fmt, ... );
+    const string FormatString( const bitset<MAX_BITSET> flags, const string fmt, va_list val );
     const void Logger( const bitset<MAX_BITSET> flags, const string fmt, ... );
     const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
     const vector<string> StrTokens( const string input );
@@ -43,6 +43,7 @@ namespace Utils {
          29,28,27,26,25,24,23,22,21,20, \
          19,18,17,16,15,14,13,12,11,10, \
          9,8,7,6,5,4,3,2,1,0
+
 
 
 // Soon to be deprecated and removed

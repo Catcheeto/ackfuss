@@ -380,22 +380,18 @@ void boot_db( void )
         extern POL_DATA politics_data;
 
         FILE *clanfp;
-        char clan_file_name[MAX_STRING_LENGTH];
         short x, y;
 
-        snprintf( clan_file_name, MSL, "%s", CLAN_FILE );
+        Utils::Logger( 0, "Loading " CLAN_FILE );
 
-
-        Utils::Logger( 0, "Loading %s", clan_file_name );
-
-        if ( ( clanfp = file_open( clan_file_name, "r" ) ) == NULL )
+        if ( ( clanfp = file_open( CLAN_FILE, "r" ) ) == NULL )
         {
             Utils::Logger( 0, "failed open of clan_table.dat in load_clan_table" );
         }
         else
         {
             fpArea = clanfp;
-            snprintf( strArea, MSL, "%s", clan_file_name );
+            snprintf( strArea, MSL, "%s", CLAN_FILE );
 
             for ( x = 1; x < MAX_CLAN; x++ )
             {
@@ -781,15 +777,11 @@ void load_door( FILE *fp )
 
 void load_corpses( void )
 {
-
     FILE *corpsefp;
-    char corpse_file_name[MAX_STRING_LENGTH];
 
-    snprintf( corpse_file_name, MSL, "%s", CORPSE_FILE );
+    Utils::Logger( 0, "Loading " CORPSE_FILE );
 
-    Utils::Logger( 0, "Loading %s", CORPSE_FILE );
-
-    if ( ( corpsefp = file_open( corpse_file_name, "r" ) ) == NULL )
+    if ( ( corpsefp = file_open( CORPSE_FILE, "r" ) ) == NULL )
     {
         Utils::Logger( 0, "Load corpse Table: file_open" );
         perror( "failed open of corpse_table.dat in load_corpse_table" );
@@ -798,7 +790,7 @@ void load_corpses( void )
     else
     {
         fpArea = corpsefp;
-        snprintf( strArea, MSL, "%s", corpse_file_name );
+        snprintf( strArea, MSL, "%s", CORPSE_FILE );
 
         for ( ;; )
 
@@ -846,7 +838,7 @@ void load_marks( void )
 {
     FILE *fp;
 
-    Utils::Logger( 0, "Loading %s", MARKS_FILE );
+    Utils::Logger( 0, "Loading " MARKS_FILE );
 
     if ( (fp = file_open(MARKS_FILE, "r")) == NULL )
     {
@@ -912,19 +904,11 @@ void load_marks( void )
 
 void load_bans( void )
 {
-
     FILE *bansfp;
-    char bans_file_name[MAX_STRING_LENGTH];
-    char buf[MAX_STRING_LENGTH];
 
+    Utils::Logger( 0, "Loading " BANS_FILE );
 
-    snprintf( bans_file_name, MSL, "%s", BANS_FILE );
-    snprintf( buf, MSL, "Loading %s", BANS_FILE);
-    Utils::Logger( 0, "%s", buf );
-
-
-
-    if ( ( bansfp = file_open( bans_file_name, "r" ) ) == NULL )
+    if ( ( bansfp = file_open( BANS_FILE, "r" ) ) == NULL )
     {
         Utils::Logger( 0, "Load bans Table: file_open" );
         perror( "failed open of bans_table.dat in load_bans_table" );
@@ -932,7 +916,7 @@ void load_bans( void )
     else
     {
         fpArea = bansfp;
-        snprintf( strArea, MSL, "%s", bans_file_name );
+        snprintf( strArea, MSL, "%s", BANS_FILE );
 
         for ( ;; )
         {
@@ -1856,7 +1840,7 @@ void load_notes( void )
 {
     FILE *fp;
 
-    Utils::Logger( 0, "Loading %s", NOTE_FILE );
+    Utils::Logger( 0, "Loading " NOTE_FILE );
 
     if ( ( fp = file_open( NOTE_FILE, "r" ) ) == NULL )
     {
@@ -1975,7 +1959,7 @@ void load_disabled( void )
     const char *word;
     short i;
 
-    Utils::Logger( 0, "Loading %s", DISABLED_FILE );
+    Utils::Logger( 0, "Loading " DISABLED_FILE );
 
     if ( (fp = file_open(DISABLED_FILE, "r")) == NULL )
     {
@@ -4093,7 +4077,7 @@ FILE *file_open( const char *file, const char *opt )
     }
     if( (fp = fopen(file, opt)) == NULL )
     {
-        Utils::Logger( 0, "ERROR: file_open returned NULL when attempting to read (%s) with opt (%c).", Utils::toString_( file ), opt);
+        Utils::Logger( 0, "ERROR: file_open returned NULL when attempting to read (%s) with opt (%s).", file, opt );
         return NULL;
     }
 

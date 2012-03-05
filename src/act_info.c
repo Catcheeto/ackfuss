@@ -5175,12 +5175,12 @@ DO_FUN(do_cmd_history)
     list<string> hist = ch->desc->getCommandHistory();
     iterString si;
 
-    ch->desc->Send( Utils::FormatString( "Last [%2s] commands:\r\n", Utils::toString_( MAX_CMD_HISTORY ) ) );
+    ch->desc->Send( Utils::FormatString( 0, "Last [%2s] commands:\r\n", Utils::toString_( MAX_CMD_HISTORY ) ) );
 
     for ( si = hist.begin(); si != hist.end(); si++ )
     {
         i++;
-        ch->desc->Send( Utils::FormatString(  "  [%2s] %s\r\n", Utils::toString_( i ), (*si).c_str() ) );
+        ch->desc->Send( Utils::FormatString( 0, "  [%2s] %s\r\n", Utils::toString_( i ), (*si).c_str() ) );
     }
     return;
 }

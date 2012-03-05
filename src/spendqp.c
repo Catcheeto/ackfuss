@@ -109,17 +109,12 @@ void save_brands(  )
 
 void load_brands( void )
 {
-
     FILE *brandsfp;
-    char brands_file_name[MAX_STRING_LENGTH];
     BRAND_DATA *brand = NULL;
 
-    snprintf( brands_file_name, MSL, "%s", BRANDS_FILE );
+    Utils::Logger( 0, "Loading " BRANDS_FILE );
 
-
-    Utils::Logger( 0, "Loading %s", BRANDS_FILE );
-
-    if ( ( brandsfp = file_open( brands_file_name, "r" ) ) == NULL )
+    if ( ( brandsfp = file_open( BRANDS_FILE, "r" ) ) == NULL )
     {
         bug( "Load brands Table: file_open", 0 );
         perror( "failed open of brands_table.dat in load_brands_table" );
