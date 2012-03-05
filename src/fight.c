@@ -5937,7 +5937,7 @@ float combat_damcap( CHAR_DATA *ch, CHAR_DATA *victim, float dam, int dt )
         if ( ch->level < 82 )
         {
             monitor_chan( buf, MONITOR_COMBAT );
-            log_f( "%s", buf );
+            Utils::Logger( 0, buf );
         }
         dam = sysdata.damcap;
     }

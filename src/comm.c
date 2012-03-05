@@ -3222,13 +3222,13 @@ void copyover_recover(  )
     int desc;
     bool fOld;
     disable_timer_abort = TRUE;
-    log_f( "Copyover recovery initiated" );
+    Utils::Logger( 0, "Copyover recovery initiated" );
     fp = fopen( COPYOVER_FILE, "r" );
 
     if ( !fp )  /* there are some descriptors open which will hang forever then ? */
     {
         perror( "copyover_recover:file_open" );
-        log_f( "Copyover file not found. Exitting.\r\n" );
+        Utils::Logger( 0, "Copyover file not found. Exitting.\r\n" );
         exit( 1 );
     }
 

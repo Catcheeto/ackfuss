@@ -112,14 +112,12 @@ void load_brands( void )
 
     FILE *brandsfp;
     char brands_file_name[MAX_STRING_LENGTH];
-    char buf[MAX_STRING_LENGTH];
     BRAND_DATA *brand = NULL;
 
     snprintf( brands_file_name, MSL, "%s", BRANDS_FILE );
 
 
-    snprintf( buf, MSL, "Loading %s", BRANDS_FILE);
-    log_f("%s", buf);
+    Utils::Logger( 0, "Loading %s", BRANDS_FILE );
 
     if ( ( brandsfp = file_open( brands_file_name, "r" ) ) == NULL )
     {
@@ -159,7 +157,7 @@ void load_brands( void )
 
         file_close( brandsfp );
 
-        log_f("Done.");
+        Utils::Logger( 0, "Done." );
 
     }
 }

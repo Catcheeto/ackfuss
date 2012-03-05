@@ -42,5 +42,6 @@ enum bitsBrain_m_creation_check {
 enum bitsUtils {
     UTILS_DEBUG       = 0,
     UTILS_IGNORE_CASE = 1,
-    MAX_UTILS         = 2
+    UTILS_RAW         = 3,
+    MAX_UTILS         = 4
 };

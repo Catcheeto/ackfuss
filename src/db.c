@@ -326,7 +326,7 @@ void boot_db( void )
     {
         short index;
         char buf[MAX_STRING_LENGTH];
-        log_f( "Initializing supernatural councils..." );
+        Utils::Logger( 0, "Initializing supernatural councils..." );
         for ( index = SUPER_NONE; index < MAX_SUPER; index++ )
         {
             super_councils[index].quorum = false;
@@ -347,7 +347,7 @@ void boot_db( void )
             super_councils[index].name = buf;
 
         }
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
     }
 
     /*
@@ -382,18 +382,15 @@ void boot_db( void )
         FILE *clanfp;
         char clan_file_name[MAX_STRING_LENGTH];
         short x, y;
-        char buf[MAX_STRING_LENGTH];
 
         snprintf( clan_file_name, MSL, "%s", CLAN_FILE );
 
 
-        snprintf( buf, MSL, "Loading %s", clan_file_name );
-        log_f("%s", buf);
-
+        Utils::Logger( 0, "Loading %s", clan_file_name );
 
         if ( ( clanfp = file_open( clan_file_name, "r" ) ) == NULL )
         {
-            log_f( "failed open of clan_table.dat in load_clan_table" );
+            Utils::Logger( 0, "failed open of clan_table.dat in load_clan_table" );
         }
         else
         {
@@ -425,7 +422,7 @@ void boot_db( void )
             file_close( clanfp );
         }
         fpArea = NULL;
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
 
     }
 
@@ -452,16 +449,16 @@ void boot_db( void )
      * Load up the notes file.
      */
     {
-        log_f( "Fixing exits..." );
+        Utils::Logger( 0, "Fixing exits..." );
         fix_exits(  );
-        log_f( "Done." );
+        Utils::Logger( 0, "Done." );
         fBootDb = FALSE;
-        log_f( "Checking resets..." );
+        Utils::Logger( 0, "Checking resets..." );
         check_resets(  );
-        log_f( "Done.");
-        log_f( "Updating areas..." );
+        Utils::Logger( 0, "Done.");
+        Utils::Logger( 0, "Updating areas..." );
         area_update(  );
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
         booting_up = FALSE;
     }
     boot_done();
@@ -482,12 +479,12 @@ void boot_db( void )
 void load_areas( void )
 {
     FILE *fpList;
-    log_f( "Loading area files..." );
+    Utils::Logger( 0, "Loading area files..." );
 
     if ( ( fpList = file_open( AREA_LIST, "r" ) ) == NULL )
     {
         perror( AREA_LIST );
-        log_f( "Unable to open area.lst, aborting bootup." );
+        Utils::Logger( 0, "Unable to open area.lst, aborting bootup." );
         kill( getpid(  ), SIGQUIT );
     }
 
@@ -562,7 +559,7 @@ void load_areas( void )
         fpArea = NULL;
     }
     file_close( fpList );
-    log_f("Done.");
+    Utils::Logger( 0, "Done.");
     return;
 }
 
@@ -787,20 +784,14 @@ void load_corpses( void )
 
     FILE *corpsefp;
     char corpse_file_name[MAX_STRING_LENGTH];
-    char buf[MAX_STRING_LENGTH];
-
 
     snprintf( corpse_file_name, MSL, "%s", CORPSE_FILE );
 
-
-    snprintf( buf, MSL, "Loading %s", CORPSE_FILE);
-    log_f( "%s", buf );
-
-
+    Utils::Logger( 0, "Loading %s", CORPSE_FILE );
 
     if ( ( corpsefp = file_open( corpse_file_name, "r" ) ) == NULL )
     {
-        log_f( "Load corpse Table: file_open" );
+        Utils::Logger( 0, "Load corpse Table: file_open" );
         perror( "failed open of corpse_table.dat in load_corpse_table" );
     }
 
@@ -824,7 +815,7 @@ void load_corpses( void )
 
             if ( letter != '#' )
             {
-                log_f( "Load_char_obj: # not found." );
+                Utils::Logger( 0, "Load_char_obj: # not found." );
                 break;
             }
 
@@ -835,14 +826,14 @@ void load_corpses( void )
                 break;
             else
             {
-                log_f( "Load_char_obj: bad section." );
+                Utils::Logger( 0, "Load_char_obj: bad section." );
                 break;
             }
         }
     }
     file_close( corpsefp );
     fpArea = NULL;
-    log_f("Done.");
+    Utils::Logger( 0, "Done.");
 
 }
 
@@ -855,13 +846,12 @@ void load_marks( void )
 {
     FILE *fp;
 
-    snprintf(log_buf, (2 * MIL), "Loading %s", MARKS_FILE);
-    log_f("%s", log_buf);
+    Utils::Logger( 0, "Loading %s", MARKS_FILE );
 
     if ( (fp = file_open(MARKS_FILE, "r")) == NULL )
     {
         file_close(fp);
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
         return;
     }
 
@@ -878,7 +868,7 @@ void load_marks( void )
             if ( feof(fp) )
             {
                 file_close(fp);
-                log_f("Done.");
+                Utils::Logger( 0, "Done.");
                 return;
             }
         }
@@ -896,7 +886,7 @@ void load_marks( void )
             bug("NULL room %d loading marks!", mark->room_vnum);
             delete mark;
             file_close(fp);
-            log_f("Done.");
+            Utils::Logger( 0, "Done.");
             return;
         }
 
@@ -930,13 +920,13 @@ void load_bans( void )
 
     snprintf( bans_file_name, MSL, "%s", BANS_FILE );
     snprintf( buf, MSL, "Loading %s", BANS_FILE);
-    log_f( "%s", buf );
+    Utils::Logger( 0, "%s", buf );
 
 
 
     if ( ( bansfp = file_open( bans_file_name, "r" ) ) == NULL )
     {
-        log_f( "Load bans Table: file_open" );
+        Utils::Logger( 0, "Load bans Table: file_open" );
         perror( "failed open of bans_table.dat in load_bans_table" );
     }
     else
@@ -971,14 +961,14 @@ void load_bans( void )
             else
             {
                 free_string( word );
-                log_f( "Load_bans: bad section." );
+                Utils::Logger( 0, "Load_bans: bad section." );
                 break;
             }
         }
 
         file_close( bansfp );
         fpArea = NULL;
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
 
     }
 }
@@ -1866,13 +1856,12 @@ void load_notes( void )
 {
     FILE *fp;
 
-    snprintf(log_buf, (2 * MIL), "Loading %s", NOTE_FILE);
-    log_f("%s", log_buf);
+    Utils::Logger( 0, "Loading %s", NOTE_FILE );
 
     if ( ( fp = file_open( NOTE_FILE, "r" ) ) == NULL )
     {
         file_close(fp);
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
         return;
     }
 
@@ -1886,7 +1875,7 @@ void load_notes( void )
             if ( feof( fp ) )
             {
                 file_close( fp );
-                log_f("Done.");
+                Utils::Logger( 0, "Done.");
                 return;
             }
         }
@@ -1986,13 +1975,12 @@ void load_disabled( void )
     const char *word;
     short i;
 
-    snprintf( log_buf, (2 * MIL), "Loading %s", DISABLED_FILE);
-    log_f( "%s", log_buf );
+    Utils::Logger( 0, "Loading %s", DISABLED_FILE );
 
     if ( (fp = file_open(DISABLED_FILE, "r")) == NULL )
     {
         file_close(fp);
-        log_f("Done.");
+        Utils::Logger( 0, "Done.");
         return;
     }
 
@@ -2003,7 +1991,7 @@ void load_disabled( void )
         if ( !str_cmp(word, "End") )
         {
             file_close(fp);
-            log_f("Done.");
+            Utils::Logger( 0, "Done.");
             return;
         }
 
@@ -2014,7 +2002,7 @@ void load_disabled( void )
         if ( cmd_table[i].name[0] == '\0' ) // Old command now removed?
         {
             snprintf(log_buf, (2 * MIL), "Skipping unknown command (%s) in disabled commands.", word);
-            log_f("%", log_buf);
+            Utils::Logger( 0, "%", log_buf);
             fread_number(fp); // Level
             fread_word(fp); // Disabled by
         }
@@ -2027,7 +2015,7 @@ void load_disabled( void )
         }
     }
 
-    log_f("Done.");
+    Utils::Logger( 0, "Done.");
     file_close(fp);
 
     return;
@@ -3323,7 +3311,7 @@ void *_getmem( int size, const char *caller, int log )
     memset( mem, 0, size );
 
     if ( log && mem_log )
-        log_f( "getmem(%d)=%p from %s", size, mem, caller );
+        Utils::Logger( 0, "getmem(%d)=%p from %s", size, mem, caller );
 
     return mem;
 }
@@ -3389,7 +3377,7 @@ DO_FUN(do_memory)
     if ( !str_cmp( argument, "defrag" ) )
     {
         send_to_char( "Defragmenting SSM heap.", ch );
-        log_f( "SSM: %s called defrag_heap.", ch->GetName_() );
+        Utils::Logger( 0, "SSM: %s called defrag_heap.", ch->GetName_() );
         defrag_heap(  );
         return;
     }
@@ -3406,14 +3394,14 @@ DO_FUN(do_memory)
         {
             mem_log = FALSE;
             send_to_char( "Memory logging is now OFF.\r\n", ch );
-            log_f( "%s turned off memory logging", ch->GetName_() );
+            Utils::Logger( 0, "%s turned off memory logging", ch->GetName_() );
             return;
         }
         else
         {
             mem_log = TRUE;
             send_to_char( "Memory logging is now ON.. remember to turn it off!\r\n", ch );
-            log_f( "%s turned on memory logging", ch->GetName_() );
+            Utils::Logger( 0, "%s turned on memory logging", ch->GetName_() );
             return;
         }
     }
@@ -3735,17 +3723,6 @@ void bugf( char *fmt, ... )
     va_end( args );
 
     bug( buf, 0 );
-}
-
-void log_f( char *fmt, ... )
-{
-    char buf[2 * MSL];
-    va_list args;
-    va_start( args, fmt );
-    vsnprintf( buf, sizeof( buf ), fmt, args );
-    va_end( args );
-
-    Utils::Logger( 0, buf );
 }
 
 /*
@@ -4116,7 +4093,7 @@ FILE *file_open( const char *file, const char *opt )
     }
     if( (fp = fopen(file, opt)) == NULL )
     {
-        log_f("ERROR: file_open returned NULL when attempting to read (%s) with opt (%s).", file, opt);
+        Utils::Logger( 0, "ERROR: file_open returned NULL when attempting to read (%s) with opt (%c).", Utils::toString_( file ), opt);
         return NULL;
     }
 

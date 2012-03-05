@@ -73,15 +73,14 @@ void load_sysdata( void )
     const char *word;
     bool fMatch;
 
-    snprintf(log_buf, (2 * MIL), "Loading %s", SYSDAT_FILE);
-    log_f("%s", log_buf);
+    Utils::Logger( 0, "Loading %s", SYSDAT_FILE );
 
     init_sysdata(); /* Need to set some defaults --Kline */
 
     if ( (fp = file_open(SYSDAT_FILE, "r")) == NULL )
     {
         file_close(fp);
-        log_f("Failed to load system data.");
+        Utils::Logger( 0, "Failed to load system data." );
         return;
     }
 
@@ -109,7 +108,7 @@ void load_sysdata( void )
                 {
                     file_close(fp);
                     wizlock = sysdata.w_lock;
-                    log_f("Done.");
+                    Utils::Logger( 0, "Done." );
                     return;
                 }
                 KEY("Expmult",       sysdata.expmult,       fread_float(fp));
@@ -161,7 +160,7 @@ void save_sysdata( void )
     if ( (fp = file_open(SYSDAT_FILE, "w")) == NULL )
     {
         file_close(fp);
-        log_f("Failed to save system data.");
+        Utils::Logger( 0, "Failed to save system data." );
         return;
     }
 

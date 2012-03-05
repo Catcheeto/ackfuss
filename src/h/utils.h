@@ -13,9 +13,13 @@ namespace Utils {
     const string _FormatString( const uint_t narg, const string fmt, ... );
     const void Logger( const bitset<MAX_BITSET> flags, const string fmt, ... );
     const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
-    const string StrLower( const string input );
-    const string StrUpper( const string input );
     const vector<string> StrTokens( const string input );
+    template <class T> inline const string toLower( const T& t )  { stringstream ss; ss << nouppercase << t; return ss.str(); }
+    #define toLower_( T ) toLower( T ).c_str()
+    template <class T> inline const string toString( const T& t ) { stringstream ss; ss << t; return ss.str(); }
+    #define toString_( T ) toString( T ).c_str()
+    template <class T> inline const string toUpper( const T& t )  { stringstream ss; ss << uppercase << t; return ss.str(); }
+    #define toUpper_( T ) toUpper( T ).c_str()
 };
 
 // Thanks to Laurent Deniau @ https://groups.google.com/d/msg/comp.std.c/d-6Mj5Lko_s/5R6bMWTEbzQJ
@@ -315,7 +319,7 @@ namespace Utils {
             bug("Disposing NULL memory",0); \
             return; \
         } \
-        if (log&&mem_log) log_f("dispose(%p) from %s:%d", (mem), __FILE__, __LINE__); \
+        if (log&&mem_log) Utils::Logger( 0, "dispose(%p) from %s:%d", (mem), __FILE__, __LINE__); \
         free((mem)); \
         (mem) = NULL; \
     } while(0)

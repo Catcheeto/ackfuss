@@ -211,8 +211,8 @@ void alarm_handler( int signo )
         /*
          * spec: log usage values
          */
-        log_f( "current usage: %d, last checkpoint: %d", usage_now, last_checkpoint );
-        log_f( "SSM dups: %d, loops: %d, recent: %d", ssm_dup_count, ssm_loops, ssm_recent_loops );
+        Utils::Logger( 0, "current usage: %d, last checkpoint: %d", usage_now, last_checkpoint );
+        Utils::Logger( 0, "SSM dups: %d, loops: %d, recent: %d", ssm_dup_count, ssm_loops, ssm_recent_loops );
 
         snprintf( buf, MSL, "%s\r\n", szFrozenMessage );
         bug( buf, 0 );
@@ -1375,7 +1375,7 @@ void char_update( void )
                                       "ERROR in expiring item %s(%s %d): item has a replace vnum set (%d), but that is not a valid item.",
                                       obj->GetName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
                             monitor_chan( bug_buf, MONITOR_OBJ );
-                            log_f( "%s", bug_buf );
+                            Utils::Logger( 0, bug_buf );
                         }
                         else
                         {
@@ -1750,7 +1750,7 @@ void obj_update( void )
                           "ERROR in expiring item %s(%s %d): item has a replace vnum set (%d), but that is not a valid item.",
                           obj->GetName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
                 monitor_chan( bug_buf, MONITOR_OBJ );
-                log_f( "%s", bug_buf );
+                Utils::Logger( 0, bug_buf );
             }
             else
             {

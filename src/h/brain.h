@@ -49,7 +49,7 @@ class Brain {
         uint_t setDescriptor( const uint_t descriptor ) { return  m_descriptor = descriptor; }
 
         string getHost() const { return m_host; }
-        char* getHost_() const { return m_host; }
+        #define getHost_() getHost().c_str()
         string setHost( const char* host ) { strcpy( m_host, host ); return m_host; }
 
         uint_t getPort() const { return m_port; }

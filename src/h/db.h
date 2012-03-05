@@ -68,7 +68,6 @@ int dice P_((int number, int size));
 int interpolate P_((int level, int value_00, int value_32));
 void append_file P_((CHAR_DATA *ch, char *file, char *str));
 void bugf P_((char *fmt, ...));
-void log_f P_((char *fmt, ...));
 void bug P_((const char *str, int param));
 void bug_string P_((const char *str, const char *str2));
 void message_update P_((void));

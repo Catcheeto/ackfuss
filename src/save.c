@@ -2172,7 +2172,7 @@ void save_marks( void )
     if ( (fp = file_open(MARKS_FILE, "w")) == NULL )
     {
         file_close(fp);
-        log_f("Failed to save marks.");
+        Utils::Logger( 0, "Failed to save marks." );
         return;
     }
 

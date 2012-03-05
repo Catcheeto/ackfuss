@@ -928,7 +928,7 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
             snprintf( buf, MSL, "Spell: %d damage by %s, spell %s", dam, ( obj == NULL ) ? ch->get_name() : obj->GetDescrShort_(), skill_table[sn].name );
             if ( ch->level < 82 )
                 monitor_chan( buf, MONITOR_MAGIC );
-            log_f( "%s", buf );
+            Utils::Logger( 0, buf );
             dam = sysdata.damcap;
         }
 

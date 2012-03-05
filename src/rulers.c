@@ -125,15 +125,13 @@ void load_rulers( void )
 
     FILE *rulersfp;
     char rulers_file_name[MAX_STRING_LENGTH];
-    char buf[MAX_STRING_LENGTH];
     RULER_DATA *ruler;
 
 
     snprintf( rulers_file_name, MSL, "%s", RULERS_FILE );
 
 
-    snprintf( buf, MSL, "Loading %s", RULERS_FILE);
-    log_f("%s", buf);
+    Utils::Logger( 0, "Loading %s", RULERS_FILE );
 
     if ( ( rulersfp = file_open( rulers_file_name, "r" ) ) == NULL )
     {
@@ -182,7 +180,7 @@ void load_rulers( void )
 
         file_close( rulersfp );
 
-        log_f("Done.");
+        Utils::Logger( 0, "Done." );
 
     }
 }

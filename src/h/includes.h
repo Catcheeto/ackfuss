@@ -20,6 +20,7 @@
 #include <limits>
 #include <list>
 #include <map>
+#include <sstream>
 #include <vector>
 
 #include <arpa/inet.h>

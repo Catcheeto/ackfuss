@@ -6224,7 +6224,7 @@ DO_FUN(do_hotreboot)
     if ( !fp )
     {
         send_to_char( "Copyover file not writeable, aborted.\r\n", ch );
-        log_f( "Could not write to copyover file: %s", COPYOVER_FILE );
+        Utils::Logger( 0, "Could not write to copyover file: %s", COPYOVER_FILE );
         perror( "do_copyover:file_open" );
         return;
     }

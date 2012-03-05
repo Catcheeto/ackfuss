@@ -19,14 +19,9 @@ const string Utils::_FormatString( const uint_t narg, const string fmt, ... ) //
     vector<char> buf;
     vector<string> arguments = StrTokens( fmt );
     vector<string>::iterator si;
-
-bitset<MAX_BITSET> bs;
-//bs.set(UTILS_DEBUG);
-clog << "narg: " << narg << " -- " << "arguments: " << arguments.size() << endl;
-    va_start( args, fmt );
+/*
     for ( si = arguments.begin(); si != arguments.end(); si++ )
     {
-clog << "input: " << input << endl;
         input = *si;
         if ( input.find( "%" ) != string::npos )
         {
@@ -47,8 +42,7 @@ clog << "input: " << input << endl;
             }
         }
     }
-    va_end( args );
-
+*/
     va_start( args, fmt );
     size = vsnprintf( NULL, 0, fmt.c_str(), args );
     va_end( args );
@@ -64,13 +58,13 @@ clog << "input: " << input << endl;
 const void Utils::Logger( const bitset<MAX_BITSET> flags, const string fmt, ... )
 {
     string str;
-char buf[8192];
+    char buf[MSL];
     va_list args;
 
     va_start( args, fmt );
 //    str = FormatString( fmt, args );
-    vsnprintf( buf, 8192, fmt.c_str(), args );
-str = buf;
+    vsnprintf( buf, MSL, fmt.c_str(), args );
+    str = buf;
     va_end( args );
 
     clog << current_time_str() << " :: " << str << endl;
@@ -161,28 +155,6 @@ const bool Utils::PatternMatch( const bitset<MAX_BITSET> flags, const string pat
         Logger( 0, "patternmatch -- pat: %s -- str %s -- found: %d", pat.c_str(), str.c_str(), found );
 
     return found;
-}
-
-const string Utils::StrLower( const string input )
-{
-    int i = 0;
-    string output;
-
-    while ( input[i] != '\0' )
-        output += tolower( input[i] );
-
-    return output;
-}
-
-const string Utils::StrUpper( const string input )
-{
-    int i = 0;
-    string output;
-
-    while ( input[i] != '\0' )
-        output += toupper( input[i] );
-
-    return output;
 }
 
 const vector<string> Utils::StrTokens( const string input )

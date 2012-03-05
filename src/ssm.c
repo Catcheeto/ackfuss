@@ -185,9 +185,9 @@ int defrag_heap(  )
     }
 
     if ( merges )
-        log_f( "SSM: defrag_heap: made %d block merges.", merges );
+        Utils::Logger( 0, "SSM: defrag_heap: made %d block merges.", merges );
     else
-        log_f( "SSM: defrag_heap: resulted in 0 merges." );
+        Utils::Logger( 0, "SSM: defrag_heap: resulted in 0 merges." );
 
     /*
      * Start count over again
@@ -268,7 +268,7 @@ RETRY:
         if ( numFree >= MAX_FREE )
         {
             int merges;
-            log_f( "SSM: Attempting to optimize shared string heap." );
+            Utils::Logger( 0, "SSM: Attempting to optimize shared string heap." );
             merges = defrag_heap(  );
 
             /*

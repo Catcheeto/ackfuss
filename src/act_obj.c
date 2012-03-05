@@ -3277,8 +3277,7 @@ DO_FUN(do_donate)
         place_to_put_it = ROOM_VNUM_ARMOR_DONATE;
     if ( ( room = get_room_index( place_to_put_it ) ) == NULL )
     {
-        snprintf( log_buf, (2 * MIL), "No valid donation room: %d", place_to_put_it );
-        log_f( "%s", log_buf );
+        Utils::Logger( 0, "No valid donation room: %d", place_to_put_it );
         send_to_char( "System Error.  Contact an Administrator.\r\n", ch );
         return;
     }
@@ -3552,8 +3551,7 @@ DO_FUN(do_cdonate)
     place_to_put_it = clan_table[ch->clan].donat_room;
     if ( ( room = get_room_index( place_to_put_it ) ) == NULL )
     {
-        snprintf( log_buf, (2 * MIL), "Cdonate: no valid room for vnum %d", place_to_put_it );
-        log_f( "%s", log_buf );
+        Utils::Logger( 0, "Cdonate: no valid room for vnum %d", place_to_put_it );
         send_to_char( "Invalid Clan Donation Room.  Please contact an Administrator.\r\n", ch );
         return;
     }

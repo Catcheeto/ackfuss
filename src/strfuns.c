@@ -913,10 +913,7 @@ char *strip_out( const char *orig, const char *strip )
     int slen;
 
     if ( !orig || !strip )
-    {
-        /*    log_f("strip_out called with NULL param");  */
         return "!!OUT!!";
-    }
     slen = strlen( strip );
     for ( i = strstr( orig, strip ); i; i = strstr( orig, strip ) )
     {
@@ -938,10 +935,7 @@ char *strip_color( const char *orig, const char *strip )
     int slen;
 
     if ( !orig || !strip )
-    {
-        /*    log_f("strip_out called with NULL param");  */
         return "!!OUT!!";
-    }
     slen = strlen( strip ) + 1;
     for ( i = strstr( orig, strip ); i; i = strstr( orig, strip ) )
     {
@@ -1654,8 +1648,7 @@ char *tagline_format( const char *txt, CHAR_DATA *ch )
         {
             if ( *desc == '\0' )
             {
-                snprintf(log_buf, (2 * MIL), "Error: tag has no parser ':'. Room: %d.", ch->in_room->vnum);
-                log_f(log_buf);
+                Utils::Logger( 0, "Error: tag has no parser ':'. Room: %d.", ch->in_room->vnum);
                 *common = *desc;
                 break;
             }
@@ -1673,8 +1666,7 @@ char *tagline_format( const char *txt, CHAR_DATA *ch )
         {
             if ( *desc == '\0' )
             {
-                snprintf(log_buf, (2 * MIL), "Error: tag has no ending ']'. Room: %d.", ch->in_room->vnum);
-                log_f(log_buf);
+                Utils::Logger( 0, "Error: tag has no ending ']'. Room: %d.", ch->in_room->vnum);
                 *common = *desc;
                 break;
             }
@@ -1691,10 +1683,7 @@ char *tagline_format( const char *txt, CHAR_DATA *ch )
         if ( is_number(common) )
             value = atoi(common);
         else if ( strlen(common) > 0 )
-        {
-            snprintf(log_buf, (2 * MIL), "Tag in room %d is odd: %s %s %s.", ch->in_room->vnum, arg1, arg2, common);
-            log_f(log_buf);
-        }
+            Utils::Logger( 0, "Tag in room %d is odd: %s %s %s.", ch->in_room->vnum, arg1, arg2, common);
 
         if ( !str_cmp(arg1, "name") ) /* Special exception so we can search and replace */
         {

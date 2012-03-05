@@ -38,13 +38,12 @@ void load_mudinfo( void )
     const char *word;
     bool fMatch;
 
-    snprintf(log_buf, (2 * MIL), "Loading %s", MUDINFO_FILE);
-    log_f("%s", log_buf);
+    Utils::Logger( 0, "Loading %s", MUDINFO_FILE );
 
     if ( (fp = file_open(MUDINFO_FILE, "r")) == NULL )
     {
         file_close(fp);
-        log_f("Failed to load mudinfo data.");
+        Utils::Logger( 0, "Failed to load mudinfo data." );
         return;
     }
 
@@ -59,7 +58,7 @@ void load_mudinfo( void )
                 if ( !str_cmp(word, "End") )
                 {
                     file_close(fp);
-                    log_f("Done.");
+                    Utils::Logger( 0, "Done." );
                     return;
                 }
                 break;
@@ -97,7 +96,7 @@ void save_mudinfo( void )
     if ( (fp = file_open(MUDINFO_FILE, "w")) == NULL )
     {
         file_close(fp);
-        log_f("Failed to save mudinfo data.");
+        Utils::Logger( 0, "Failed to save mudinfo data." );
         return;
     }
 
