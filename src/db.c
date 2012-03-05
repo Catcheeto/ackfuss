@@ -4066,7 +4066,7 @@ char *_popen( const char *search )
     return ret;
 }
 
-FILE *file_open( const char *file, const char *opt )
+FILE *file_open( const string file, const string opt )
 {
     FILE *fp;
 
@@ -4075,9 +4075,9 @@ FILE *file_open( const char *file, const char *opt )
         fclose(fpReserve);
         fpReserve = NULL;
     }
-    if( (fp = fopen(file, opt)) == NULL )
+    if( (fp = fopen(file.c_str(), opt.c_str())) == NULL )
     {
-        Utils::Logger( 0, "ERROR: file_open returned NULL when attempting to read (%s) with opt (%s).", file, opt );
+        Utils::Logger( 0, "ERROR: file_open returned NULL when attempting to read (%s) with opt (%s).", file.c_str(), opt.c_str() );
         return NULL;
     }
 

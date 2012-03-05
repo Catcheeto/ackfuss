@@ -77,7 +77,7 @@ void check_chistory P_((CHAR_DATA *ch, int channel));
 void update_chistory P_((CHAR_DATA *ch, char *argument, int channel));
 int count_skills P_((void));
 char *_popen P_((const char *search));
-FILE *file_open P_((const char *file, const char *opt));
+FILE *file_open P_((const string file, const string opt));
 void file_close P_((FILE *file));
 void clear_lists P_((void));
 

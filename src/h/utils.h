@@ -9,8 +9,9 @@
 #define DEC_UTILS_H
 
 namespace Utils {
-    const string FormatString( const bitset<MAX_BITSET> flags, const string fmt, ... );
-    const string FormatString( const bitset<MAX_BITSET> flags, const string fmt, va_list val );
+    const string _FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
+    const string __FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val );
+    #define FormatString( flags, fmt, ... ) _FormatString( flags, _caller, fmt, ##__VA_ARGS__ )
     const void _Logger( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
     #define Logger( flags, fmt, ... ) _Logger( flags, _caller, fmt, ##__VA_ARGS__ )
     const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );

@@ -70,12 +70,9 @@ void save_clan_table(  )
 {
 
     FILE *fp;
-    char clan_file_name[MAX_STRING_LENGTH];
     short x, y;
 
-    snprintf( clan_file_name, MSL, "%s", CLAN_FILE );
-
-    if ( ( fp = file_open( clan_file_name, "w" ) ) == NULL )
+    if ( ( fp = file_open( CLAN_FILE, "w" ) ) == NULL )
     {
         bug( "Save Clan Table: file_open", 0 );
         perror( "failed open of clan_table.dat in save_clan_table" );

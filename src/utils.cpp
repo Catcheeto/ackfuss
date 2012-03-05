@@ -10,19 +10,19 @@
 
 void monitor_chan (const char *message, int channel);
 
-const string Utils::FormatString( const bitset<MAX_BITSET> flags, const string fmt, ... )
+const string Utils::_FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
     string output;
     va_list args;
 
     va_start( args, fmt );
-    output = FormatString( flags, fmt, args );
+    output = __FormatString( flags, caller, fmt, args );
     va_end( args );
 
     return output;
 }
 
-const string Utils::FormatString( const bitset<MAX_BITSET> flags, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net
+const string Utils::__FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net
 {
     string output;
     sint_t size = 0;
@@ -48,7 +48,7 @@ const void Utils::_Logger( const bitset<MAX_BITSET> flags, const string caller, 
     vector<char> buf;
 
     va_start( args, fmt );
-    output = FormatString( flags, fmt, args );
+    output = __FormatString( flags, caller, fmt, args );
     va_end( args );
 
     if ( flags.test(UTILS_DEBUG) ) // output caller

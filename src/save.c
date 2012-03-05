@@ -2132,13 +2132,10 @@ void save_corpses(  )
 {
 
     FILE *fp;
-    char corpse_file_name[MAX_STRING_LENGTH];
     OBJ_DATA *this_corpse;
     list<OBJ_DATA *>::iterator li;
 
-    snprintf( corpse_file_name, MSL, "%s", CORPSE_FILE );
-
-    if ( ( fp = file_open( corpse_file_name, "w" ) ) == NULL )
+    if ( ( fp = file_open( CORPSE_FILE, "w" ) ) == NULL )
     {
         bug( "Save Corpses: file_open", 0 );
         perror( "failed open of corpse_file in save_corpses" );
@@ -2203,13 +2200,10 @@ void save_bans(  )
 {
 
     FILE *fp;
-    char ban_file_name[MAX_STRING_LENGTH];
     BAN_DATA *pban;
     list<BAN_DATA *>::iterator li;
 
-    snprintf( ban_file_name, MSL, "%s", BANS_FILE );
-
-    if ( ( fp = file_open( ban_file_name, "w" ) ) == NULL )
+    if ( ( fp = file_open( BANS_FILE, "w" ) ) == NULL )
     {
         bug( "Save ban list: file_open", 0 );
         perror( "failed open of bans.lst in save_ban" );

@@ -84,13 +84,10 @@ void save_rulers(  )
 {
 
     FILE *fp;
-    char ruler_file_name[MAX_STRING_LENGTH];
     list<RULER_DATA *>::iterator li;
     RULER_DATA *ruler = NULL;
 
-    snprintf( ruler_file_name, MSL, "%s", RULERS_FILE );
-
-    if ( ( fp = file_open( ruler_file_name, "w" ) ) == NULL )
+    if ( ( fp = file_open( RULERS_FILE, "w" ) ) == NULL )
     {
         bug( "Save ruler list: file_open", 0 );
         perror( "failed open of rulers.lst in save_ruler" );
