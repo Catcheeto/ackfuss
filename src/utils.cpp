@@ -10,24 +10,40 @@
 
 void monitor_chan (const char *message, int channel);
 
-const string Utils::_FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
+const string Utils::_FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
-    string output;
     va_list args;
+    string output;
 
     va_start( args, fmt );
-    output = __FormatString( flags, caller, fmt, args );
+    output = __FormatString( narg, flags, caller, fmt, args );
     va_end( args );
 
     return output;
 }
 
-const string Utils::__FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net
+const string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net for the start of this
 {
-    string output;
-    sint_t size = 0;
-    vector<char> buf;
     va_list args;
+    vector<string> arguments;
+    vector<string>::iterator si;
+    vector<char> buf;
+    string output, token;
+    sint_t size = 0;
+
+    arguments = StrTokens( fmt );
+    for ( si = arguments.begin(); si != arguments.end(); si++ )
+    {
+        token = *si;
+        if ( token.find( "%" ) != string::npos ) // not foolproof, but it should catch some worst cases by attempting
+            size++;                              // to ensure a matching narg : format specifier count
+    }
+
+    if ( narg != 1 && narg != size )
+    {
+        Logger( flags, "ERROR: Number of arguments (%ld) did not match number of format specifiers (%ld) at: %s", narg, size, caller.c_str() );
+        return output = "";
+    }
 
     va_copy( args, val );
     size = vsnprintf( NULL, 0, fmt.c_str(), args );
@@ -41,15 +57,18 @@ const string Utils::__FormatString( const bitset<MAX_BITSET> flags, const string
     return output = &buf[0];
 }
 
-const void Utils::_Logger( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
+const void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
-    string output;
     va_list args;
     vector<char> buf;
+    string output;
 
     va_start( args, fmt );
-    output = __FormatString( flags, caller, fmt, args );
+    output = __FormatString( narg, flags, caller, fmt, args );
     va_end( args );
+
+    if ( output.empty() )
+        return;
 
     if ( flags.test(UTILS_DEBUG) ) // output caller
         clog << current_time_str() << " :: " << output << " [" << caller << "]" << endl;
@@ -146,22 +165,10 @@ const bool Utils::PatternMatch( const bitset<MAX_BITSET> flags, const string pat
 
 const vector<string> Utils::StrTokens( const string input )
 {
-    vector<string> output;
-    string tok;
-    uint_t i = 0;
-
-    while ( i < input.length() )
-    {
-        if ( isgraph( input[i] ) )
-            tok += input[i];
-        else if ( tok.length() > 0 )
-        {
-            output.push_back( tok );
-            tok.clear();
-        }
-
-        i++;
-    }
+    stringstream ss( input );
+    istream_iterator<string> si( ss );
+    istream_iterator<string> end;
+    vector<string> output( si, end );
 
     return output;
 }

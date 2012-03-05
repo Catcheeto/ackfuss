@@ -9,11 +9,11 @@
 #define DEC_UTILS_H
 
 namespace Utils {
-    const string _FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
-    const string __FormatString( const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val );
-    #define FormatString( flags, fmt, ... ) _FormatString( flags, _caller, fmt, ##__VA_ARGS__ )
-    const void _Logger( const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
-    #define Logger( flags, fmt, ... ) _Logger( flags, _caller, fmt, ##__VA_ARGS__ )
+    const string _FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
+    const string __FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val );
+    #define FormatString( flags, fmt, ... ) _FormatString( PP_NARG( __VA_ARGS__ ), flags, _caller, fmt, ##__VA_ARGS__ )
+    const void _Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
+    #define Logger( flags, fmt, ... ) _Logger( PP_NARG( __VA_ARGS__ ), flags, _caller, fmt, ##__VA_ARGS__ )
     const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
     const vector<string> StrTokens( const string input );
     template <class T> inline const string toLower( const T& t )  { stringstream ss; ss << nouppercase << t; return ss.str(); }
@@ -30,7 +30,7 @@ namespace Utils {
 #define PP_NARG_(...) \
          PP_ARG_N(__VA_ARGS__)
 #define PP_ARG_N( \
-         _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
+         _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
          _11,_12,_13,_14,_15,_16,_17,_18,_19,_20, \
          _21,_22,_23,_24,_25,_26,_27,_28,_29,_30, \
          _31,_32,_33,_34,_35,_36,_37,_38,_39,_40, \

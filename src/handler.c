@@ -327,6 +327,9 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
     OBJ_DATA *wield;
     int mod;
 
+    if ( paf == NULL )
+        return;
+
     mod = paf->modifier;
 
     if ( fAdd )
