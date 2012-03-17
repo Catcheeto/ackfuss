@@ -267,7 +267,7 @@ DO_FUN(do_iquest)
         else
             send_to_char( "The target mobile is dead!\r\n", ch );
 
-        snprintf( buf, MSL, "Target Object is: %s.\r\n", quest_object->GetDescrShort_() );
+        snprintf( buf, MSL, "Target Object is: %s.\r\n", quest_object->getDescrShort_() );
         send_to_char( buf, ch );
 
         snprintf( buf, MSL, "Quest Object is worth: %d QP, %d Prac, %d to %d Exp, %s\r\n",
@@ -373,16 +373,16 @@ DO_FUN(do_iquest)
         quest = TRUE;
         new_long_desc[0] = '\0';
 
-        snprintf( new_long_desc, MSL, "%s @@Nsays have you found my %s ?", quest_mob->get_name(), quest_object->GetDescrShort_() );
-        quest_mob->SetDescrLong( new_long_desc );
+        snprintf( new_long_desc, MSL, "%s @@Nsays have you found my %s ?", quest_mob->get_name(), quest_object->getDescrShort_() );
+        quest_mob->setDescrLong( new_long_desc );
         quest_mob->act.set(ACT_NO_SUMMON );
         quest_mob->act.set(ACT_NO_VISIT );
         quest_mob->act.set(ACT_NO_BLOOD );
 
         new_long_desc[0] = '\0';
 
-        snprintf( new_long_desc, MSL, "%s @@Nsays I stole the %s !!!", quest_target->get_name(), quest_object->GetDescrShort_() );
-        quest_target->SetDescrLong( new_long_desc );
+        snprintf( new_long_desc, MSL, "%s @@Nsays I stole the %s !!!", quest_target->get_name(), quest_object->getDescrShort_() );
+        quest_target->setDescrLong( new_long_desc );
 
         quest_target->act.set(ACT_NO_SUMMON );
         quest_target->act.set(ACT_NO_VISIT );
@@ -396,7 +396,7 @@ DO_FUN(do_iquest)
         snprintf( buf, MSL, "Target Mobile is: %s [In Room %d]\r\n", quest_target->get_name(), quest_target->in_room->vnum );
         send_to_char( buf, ch );
 
-        snprintf( buf, MSL, "Target Object is: %s.\r\n", quest_object->GetDescrShort_() );
+        snprintf( buf, MSL, "Target Object is: %s.\r\n", quest_object->getDescrShort_() );
         send_to_char( buf, ch );
 
         snprintf( buf, MSL, "Quest Object is worth: %d QP, %d Prac, %d to %d Exp, %s\r\n",
@@ -570,15 +570,15 @@ void quest_inform( void )
      */
     if ( quest_timer < 7 )
     {
-        snprintf( buf, MSL, qmessages[quest_personality][quest_timer].message1, quest_object->GetDescrShort_() );
+        snprintf( buf, MSL, qmessages[quest_personality][quest_timer].message1, quest_object->getDescrShort_() );
     }
     else
     {
         if ( quest_target )
             snprintf( buf, MSL, qmessages[quest_personality][quest_timer].message1,
-                      quest_target->get_name(), quest_object->GetDescrShort_() );
+                      quest_target->get_name(), quest_object->getDescrShort_() );
         else
-            snprintf( buf, MSL, qmessages[quest_personality][quest_timer].message2, quest_object->GetDescrShort_() );
+            snprintf( buf, MSL, qmessages[quest_personality][quest_timer].message2, quest_object->getDescrShort_() );
     }
 
 
@@ -588,7 +588,7 @@ void quest_inform( void )
         do_crusade( quest_mob, buf );
     if ( quest_timer == 1 )
     {
-        snprintf( buf, MSL, "%s is crusading for %s ", quest_mob->get_name(), quest_object->GetDescrShort_() );
+        snprintf( buf, MSL, "%s is crusading for %s ", quest_mob->get_name(), quest_object->getDescrShort_() );
         info( buf, 5 );
     }
     if ( !quest_mob )
@@ -602,7 +602,7 @@ void quest_complete( CHAR_DATA * ch )
 {
     char buf[MAX_STRING_LENGTH];
 
-    snprintf( buf, MSL, qmessages[quest_personality][16].message1, ch->get_name(), quest_object->GetDescrShort_() );
+    snprintf( buf, MSL, qmessages[quest_personality][16].message1, ch->get_name(), quest_object->getDescrShort_() );
     do_crusade( quest_mob, buf );
     clear_quest(  );
     return;
@@ -627,9 +627,9 @@ void clear_quest(  )
     quest = FALSE;
     extract_obj( quest_object );
     if ( quest_mob )
-        quest_mob->SetDescrLong( quest_mob->npcdata->pIndexData->GetDescrLong() );
+        quest_mob->setDescrLong( quest_mob->npcdata->pIndexData->getDescrLong() );
     if ( quest_target )
-        quest_target->SetDescrLong( quest_target->npcdata->pIndexData->GetDescrLong() );
+        quest_target->setDescrLong( quest_target->npcdata->pIndexData->getDescrLong() );
 
 
     quest_mob = NULL;
@@ -768,8 +768,8 @@ void generate_auto_quest(  )
         quest = TRUE;
         new_long_desc[0] = '\0';
 
-        snprintf( new_long_desc, MSL, "%s @@Nsays have you found my %s ?", quest_mob->get_name(), quest_object->GetDescrShort_() );
-        quest_mob->SetDescrLong( new_long_desc );
+        snprintf( new_long_desc, MSL, "%s @@Nsays have you found my %s ?", quest_mob->get_name(), quest_object->getDescrShort_() );
+        quest_mob->setDescrLong( new_long_desc );
         quest_mob->act.set(ACT_NO_SUMMON );
         quest_mob->act.set(ACT_NO_VISIT );
         quest_mob->act.set(ACT_NO_BLOOD );
@@ -777,8 +777,8 @@ void generate_auto_quest(  )
 
         new_long_desc[0] = '\0';
 
-        snprintf( new_long_desc, MSL, "%s @@Nsays I stole the %s !!!", quest_target->get_name(), quest_object->GetDescrShort_() );
-        quest_target->SetDescrLong( new_long_desc );
+        snprintf( new_long_desc, MSL, "%s @@Nsays I stole the %s !!!", quest_target->get_name(), quest_object->getDescrShort_() );
+        quest_target->setDescrLong( new_long_desc );
 
         quest_target->act.set(ACT_NO_SUMMON );
         quest_target->act.set(ACT_NO_VISIT );
@@ -815,7 +815,7 @@ void crusade_reward( CHAR_DATA *ch )
     reward = number_range(static_cast<int>(reward * 0.02), static_cast<int>(reward * 0.04));
     snprintf( buf, MSL, "You receive %d experience points!\r\n", reward );
     send_to_char( buf, ch );
-    ch->IncrExperience( reward );
+    ch->incrExperience( reward );
 
     reward = quest_object->value[2];
     snprintf( buf, MSL, "You receive %s!\r\n", cost_to_money( reward ) );
@@ -845,12 +845,12 @@ void ask_quest_question( CHAR_DATA *ch, char *argument )
             }
             else if ( quest_object && quest_target )
             {
-                snprintf( buf, MSL, "@@NIt was %s @@N who stole my %s@@N.", quest_target->get_name(), quest_object->GetDescrShort_() );
+                snprintf( buf, MSL, "@@NIt was %s @@N who stole my %s@@N.", quest_target->get_name(), quest_object->getDescrShort_() );
             }
         }
         else if ( quest_object )
         {
-            snprintf( buf, MSL, "@@NDon't worry about who stole my %s@@N, he has recieved his just reward!", quest_object->GetDescrShort_() );
+            snprintf( buf, MSL, "@@NDon't worry about who stole my %s@@N, he has recieved his just reward!", quest_object->getDescrShort_() );
         }
         if ( quest_mob != NULL )
             do_crusade( quest_mob, buf );
@@ -861,7 +861,7 @@ void ask_quest_question( CHAR_DATA *ch, char *argument )
     {
         if ( quest_mob && quest_object )
         {
-            snprintf( buf, MSL, "@@NMy %s @@Nwas stolen from me.", quest_object->GetDescrShort_() );
+            snprintf( buf, MSL, "@@NMy %s @@Nwas stolen from me.", quest_object->getDescrShort_() );
             do_crusade( quest_mob, buf );
             return;
         }
@@ -898,7 +898,7 @@ void ask_quest_question( CHAR_DATA *ch, char *argument )
             }
             else
             {
-                snprintf( buf, MSL, "@@NDon't worry about where the thief who stole my %s@@N is, he has recieved his just reward", quest_object->GetDescrShort_() );
+                snprintf( buf, MSL, "@@NDon't worry about where the thief who stole my %s@@N is, he has recieved his just reward", quest_object->getDescrShort_() );
             }
             do_crusade( quest_mob, buf );
         }

@@ -151,7 +151,7 @@ DO_FUN(do_mquest)
             send_to_char("You do not have enough gold to give up on this quest!\r\n", ch);
             return;
         }
-        if ( (ch->GetExperience() - pexp) < 0 )
+        if ( (ch->getExperience() - pexp) < 0 )
         {
             send_to_char("You do not have enough experience to give up on this quest!\r\n", ch);
             return;
@@ -172,7 +172,7 @@ DO_FUN(do_mquest)
             if ( m_number > 0 )
                 snprintf(mbuf, MSL, "%s %s", m_number, m_name);
         }
-        ch->DecrExperience( pexp );
+        ch->decrExperience( pexp );
 
         snprintf(buf, MSL, "Giving up on this quest has cost you %d qp, %d exp, %s.\r\n", pqp, pexp, cost_to_money(money_to_value(ch, mbuf)));
         send_to_char(buf, ch);
@@ -224,7 +224,7 @@ DO_FUN(do_mquest)
         if ( ch->pcdata->quest_info->quest_type == QUEST_MULTI_KILL || ch->pcdata->quest_info->quest_type == QUEST_KILLING )
         {
             MOB_INDEX_DATA *imob = get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[hint-1]);
-            snprintf(buf, MSL, "%s can be found somewhere in %s.\r\n", imob->GetDescrShort_(), imob->area->name);
+            snprintf(buf, MSL, "%s can be found somewhere in %s.\r\n", imob->getDescrShort_(), imob->area->name);
             send_to_char(buf, ch);
         }
         else if ( ch->pcdata->quest_info->quest_type == QUEST_MULTI_KILL_R || ch->pcdata->quest_info->quest_type == QUEST_KILLING_R )
@@ -246,7 +246,7 @@ DO_FUN(do_mquest)
         else if ( ch->pcdata->quest_info->quest_type == QUEST_MULTI_RETRIEVE || ch->pcdata->quest_info->quest_type == QUEST_RETRIEVAL )
         {
             OBJ_INDEX_DATA *ob = get_obj_index(ch->pcdata->quest_info->quest_item_vnum[hint-1]);
-            snprintf(buf, MSL, "%s can be found somewhere in %s.\r\n", ob->GetDescrShort_(), ob->area->name);
+            snprintf(buf, MSL, "%s can be found somewhere in %s.\r\n", ob->getDescrShort_(), ob->area->name);
             send_to_char(buf, ch);
         }
         ch->pcdata->quest_info->quest_hint[hint-1] = TRUE;
@@ -312,14 +312,14 @@ DO_FUN(do_mquest)
                                 ch->pcdata->quest_info->amount[i]--;
                                 if ( ch->pcdata->quest_info->amount[i] == 0 )
                                 {
-                                    snprintf(buf, MSL, "You have now handed in all the %s you needed for your quest.\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->GetDescrShort_());
+                                    snprintf(buf, MSL, "You have now handed in all the %s you needed for your quest.\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->getDescrShort_());
                                     send_to_char(buf, ch);
                                 }
                             }
                         }
                         if ( x > 0 && ch->pcdata->quest_info->amount[i] != 0 )
                         {
-                            snprintf(buf, MSL, "%s (%d) was handed into the questmaster.\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->GetDescrShort_(), x);
+                            snprintf(buf, MSL, "%s (%d) was handed into the questmaster.\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->getDescrShort_(), x);
                             send_to_char(buf, ch);
                         }
                     }
@@ -382,7 +382,7 @@ DO_FUN(do_qstat)
         return;
     }
 
-    snprintf(buf, MSL, "@@y%s@@b's current quest status:@@N\r\n", victim->GetName_());
+    snprintf(buf, MSL, "@@y%s@@b's current quest status:@@N\r\n", victim->getName_());
     send_to_char(buf, ch);
 
     switch ( victim->pcdata->quest_info->quest_type )
@@ -393,7 +393,7 @@ DO_FUN(do_qstat)
         case QUEST_RETRIEVAL:
             if ( victim->pcdata->quest_info->quest_item_vnum[0] > -1 )
             {
-                snprintf(buf, MSL, "%s is seeking item %d-%s...\r\n", victim->get_name(ch), victim->pcdata->quest_info->quest_item_vnum[0], get_obj_index(victim->pcdata->quest_info->quest_item_vnum[0])->GetDescrShort_());
+                snprintf(buf, MSL, "%s is seeking item %d-%s...\r\n", victim->get_name(ch), victim->pcdata->quest_info->quest_item_vnum[0], get_obj_index(victim->pcdata->quest_info->quest_item_vnum[0])->getDescrShort_());
                 send_to_char(buf, ch);
 
                 if ( victim->pcdata->quest_info->amount[0] > 0 )
@@ -408,7 +408,7 @@ DO_FUN(do_qstat)
         case QUEST_KILLING:
             if ( victim->pcdata->quest_info->quest_mob_vnum[0] > -1 )
             {
-                snprintf(buf, MSL, "%s is seeking mob %d-%s...\r\n", victim->get_name(ch), victim->pcdata->quest_info->quest_mob_vnum[0], get_mob_index(victim->pcdata->quest_info->quest_mob_vnum[0])->GetDescrShort_());
+                snprintf(buf, MSL, "%s is seeking mob %d-%s...\r\n", victim->get_name(ch), victim->pcdata->quest_info->quest_mob_vnum[0], get_mob_index(victim->pcdata->quest_info->quest_mob_vnum[0])->getDescrShort_());
                 send_to_char(buf, ch);
 
                 if ( victim->pcdata->quest_info->amount[0] > 0 )
@@ -426,7 +426,7 @@ DO_FUN(do_qstat)
             {
                 if ( victim->pcdata->quest_info->quest_mob_vnum[i] > -1 )
                 {
-                    snprintf(buf, MSL, "Target #%d: %5d-%s (%d)\r\n", i + 1, victim->pcdata->quest_info->quest_mob_vnum[i], get_mob_index(victim->pcdata->quest_info->quest_mob_vnum[i])->GetDescrShort_(), victim->pcdata->quest_info->amount[i]);
+                    snprintf(buf, MSL, "Target #%d: %5d-%s (%d)\r\n", i + 1, victim->pcdata->quest_info->quest_mob_vnum[i], get_mob_index(victim->pcdata->quest_info->quest_mob_vnum[i])->getDescrShort_(), victim->pcdata->quest_info->amount[i]);
                     send_to_char(buf, ch);
                 }
             }
@@ -437,7 +437,7 @@ DO_FUN(do_qstat)
             {
                 if ( victim->pcdata->quest_info->quest_item_vnum[i] > -1 )
                 {
-                    snprintf(buf, MSL, "Item #%d: %5d-%s (%d)\r\n", i + 1, victim->pcdata->quest_info->quest_item_vnum[i], get_obj_index(victim->pcdata->quest_info->quest_item_vnum[i])->GetDescrShort_(), victim->pcdata->quest_info->amount[i]);
+                    snprintf(buf, MSL, "Item #%d: %5d-%s (%d)\r\n", i + 1, victim->pcdata->quest_info->quest_item_vnum[i], get_obj_index(victim->pcdata->quest_info->quest_item_vnum[i])->getDescrShort_(), victim->pcdata->quest_info->amount[i]);
                     send_to_char(buf, ch);
                 }
             }
@@ -488,7 +488,7 @@ void mquest_info( CHAR_DATA *ch )
         case QUEST_RETRIEVAL:
             if ( ch->pcdata->quest_info->quest_item_vnum[0] > -1 )
             {
-                snprintf(buf, MSL, "You are seeking the item known as %s@@N.\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[0])->GetDescrShort_());
+                snprintf(buf, MSL, "You are seeking the item known as %s@@N.\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[0])->getDescrShort_());
                 send_to_char(buf, ch);
 
                 if ( ch->pcdata->quest_info->amount[0] > 0 )
@@ -506,7 +506,7 @@ void mquest_info( CHAR_DATA *ch )
         case QUEST_KILLING:
             if ( ch->pcdata->quest_info->quest_mob_vnum[0] > -1 )
             {
-                snprintf(buf, MSL, "You are seeking out the creature known as %s@@N.\r\n", get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[0])->GetDescrShort_());
+                snprintf(buf, MSL, "You are seeking out the creature known as %s@@N.\r\n", get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[0])->getDescrShort_());
                 send_to_char(buf, ch);
 
                 if ( ch->pcdata->quest_info->amount[0] > 0 )
@@ -529,7 +529,7 @@ void mquest_info( CHAR_DATA *ch )
             {
                 if ( ch->pcdata->quest_info->quest_mob_vnum[i] > -1 )
                 {
-                    snprintf(buf, MSL, "Target #%d: %s (%d)", i + 1, get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->GetDescrShort_(), ch->pcdata->quest_info->amount[i]);
+                    snprintf(buf, MSL, "Target #%d: %s (%d)", i + 1, get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->getDescrShort_(), ch->pcdata->quest_info->amount[i]);
                     send_to_char(buf, ch);
                     if ( ch->pcdata->quest_info->quest_hint[i] )
                         snprintf(buf, MSL, " [%s]\r\n", get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->area->name);
@@ -545,7 +545,7 @@ void mquest_info( CHAR_DATA *ch )
             {
                 if ( ch->pcdata->quest_info->quest_item_vnum[i] > -1 )
                 {
-                    snprintf(buf, MSL, "Item #%d: %s (%d)", i + 1, get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->GetDescrShort_(), ch->pcdata->quest_info->amount[i]);
+                    snprintf(buf, MSL, "Item #%d: %s (%d)", i + 1, get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->getDescrShort_(), ch->pcdata->quest_info->amount[i]);
                     send_to_char(buf, ch);
                     if ( ch->pcdata->quest_info->quest_hint[i] )
                         snprintf(buf, MSL, " [%s]\r\n", get_obj_index(ch->pcdata->quest_info->quest_item_vnum[i])->area->name);
@@ -663,7 +663,7 @@ void mquest_complete_message( CHAR_DATA *ch )
 
         ch->pcdata->quest_points += ch->pcdata->quest_info->quest_reward[QUEST_REWARD_QP];
         join_money(round_money(ch->pcdata->quest_info->quest_reward[QUEST_REWARD_GOLD], TRUE), ch->money);
-        ch->IncrExperience( ch->pcdata->quest_info->quest_reward[QUEST_REWARD_EXP] );
+        ch->incrExperience( ch->pcdata->quest_info->quest_reward[QUEST_REWARD_EXP] );
 
         ch->pcdata->records->mquest_c++;
         ch->pcdata->records->qp_tot += ch->pcdata->quest_info->quest_reward[QUEST_REWARD_QP];
@@ -1132,7 +1132,7 @@ char *display_mob_target( CHAR_DATA *ch, CHAR_DATA *victim )
             if ( ch->pcdata->quest_info->quest_mob_vnum[i] > -1
                     && ch->pcdata->quest_info->amount[i] > 0
                     && (ch->pcdata->quest_info->quest_mob_vnum[i] == victim->npcdata->pIndexData->vnum
-                        || (!str_cmp(get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->GetDescrShort_(), victim->GetDescrShort_())
+                        || (!str_cmp(get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->getDescrShort_(), victim->getDescrShort_())
                             && get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->area == victim->in_room->area)) )
                 return "@@e[@@yTARGET@@e] @@N";
     }
@@ -1194,7 +1194,7 @@ void update_mquest_kill( CHAR_DATA *ch, CHAR_DATA *victim )
                 continue;
             if ( ch->pcdata->quest_info->amount[i] > 0
                     && (ch->pcdata->quest_info->quest_mob_vnum[i] == victim->npcdata->pIndexData->vnum
-                        || (!str_cmp(get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->GetDescrShort_(), victim->GetDescrShort_())
+                        || (!str_cmp(get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->getDescrShort_(), victim->getDescrShort_())
                             && get_mob_index(ch->pcdata->quest_info->quest_mob_vnum[i])->area == victim->in_room->area)) )
             {
                 ch->pcdata->quest_info->amount[i]--;

@@ -143,7 +143,7 @@ void save_char_obj( CHAR_DATA * ch )
      */
     if ( IS_NPC( ch ) )  /* convert spaces to . */
     {
-        for ( nmptr = const_cast<char *>(ch->GetName_()), bufptr = buf; *nmptr != 0; nmptr++ )
+        for ( nmptr = const_cast<char *>(ch->getName_()), bufptr = buf; *nmptr != 0; nmptr++ )
         {
             if ( *nmptr == ' ' )
                 *( bufptr++ ) = '.';
@@ -153,7 +153,7 @@ void save_char_obj( CHAR_DATA * ch )
         *( bufptr ) = *nmptr;
     }
     else
-        strcpy( buf, ch->GetName_() );
+        strcpy( buf, ch->getName_() );
     snprintf( strsave, MIL, "%s%s%s%s", PLAYER_DIR, initial( buf ), "/", cap_nocol( buf ) );
 
     /*
@@ -209,7 +209,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "#%s\n", IS_NPC( ch ) ? "MOB" : "PLAYER" );
 
     fprintf( fp, "Revision       %d\n", SAVE_REVISION );
-    fprintf( fp, "Name           %s~\n", ch->GetName_() );
+    fprintf( fp, "Name           %s~\n", ch->getName_() );
 
     outstr.clear();
     fprintf( fp, "Act            " );
@@ -235,8 +235,8 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     }
     fprintf( fp, "%sEOL\n", outstr.c_str() );
 
-    fprintf( fp, "ShortDescr     %s~\n", ch->GetDescrShort_() );
-    fprintf( fp, "LongDescr      %s~\n", ch->GetDescrLong_() );
+    fprintf( fp, "ShortDescr     %s~\n", ch->getDescrShort_() );
+    fprintf( fp, "LongDescr      %s~\n", ch->getDescrLong_() );
     fprintf( fp, "Description    %s~\n", ch->description.c_str() );
     fprintf( fp, "Prompt         %s~\n", ch->prompt.c_str() );
     fprintf( fp, "Sex            %d\n", ch->sex );
@@ -303,7 +303,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "\n" );
     }
 
-    fprintf( fp, "Exp            %lu\n", ch->GetExperience() );
+    fprintf( fp, "Exp            %lu\n", ch->getExperience() );
 
     fprintf( fp, "AffectedBy     %d\n", ch->affected_by );
     /*
@@ -312,7 +312,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "Position       %d\n", ch->position == POS_FIGHTING ? POS_STANDING : ch->position );
 
     fprintf( fp, "SavingThrow    %d\n", ch->saving_throw );
-    fprintf( fp, "Alignment      %ld\n", ch->GetAlignment() );
+    fprintf( fp, "Alignment      %ld\n", ch->getAlignment() );
     fprintf( fp, "Hitroll        %d\n", ch->hitroll );
     fprintf( fp, "Damroll        %d\n", ch->damroll );
     fprintf( fp, "Armor          %d\n", ch->armor );
@@ -506,9 +506,9 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
 
     fprintf( fp, "#OBJECT\n" );
     fprintf( fp, "Nest         %d\n", iNest );
-    fprintf( fp, "Name         %s~\n", obj->GetName_() );
-    fprintf( fp, "ShortDescr   %s~\n", obj->GetDescrShort_() );
-    fprintf( fp, "LongDescr    %s~\n", obj->GetDescrLong_() );
+    fprintf( fp, "Name         %s~\n", obj->getName_() );
+    fprintf( fp, "ShortDescr   %s~\n", obj->getDescrShort_() );
+    fprintf( fp, "LongDescr    %s~\n", obj->getDescrLong_() );
     fprintf( fp, "Durability   %d %d\n", obj->durability, obj->max_durability );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );
 
@@ -580,11 +580,11 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
         fprintf( fp, "Affect       %d %d %d %d %d\n", paf->type, paf->duration, paf->modifier, paf->location, paf->bitvector );
     }
 
-    keys = obj->GetDescrExtraKeys();
+    keys = obj->getDescrExtraKeys();
     for ( mi = keys.begin(); mi != keys.end(); mi++ )
     {
         value = *mi;
-        fprintf( fp, "ExtraDescr   %s~ %s~\n", value.c_str(), obj->GetDescrExtra_( value ) );
+        fprintf( fp, "ExtraDescr   %s~ %s~\n", value.c_str(), obj->getDescrExtra_( value ) );
     }
 
     fprintf( fp, "End\n\n" );
@@ -671,7 +671,7 @@ bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
     }
 
     ch->desc = d;
-    ch->SetName( name );
+    ch->setName( name );
     ch->prompt = DEFAULT_PROMPT;
     if ( is_npc )
         ch->npc = true;
@@ -821,7 +821,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     break;
                 }
                 KEY( "AffectedBy", ch->affected_by, fread_number( fp ) );
-                KEY_( "Alignment", ch->SetAlignment, fread_number( fp ) );
+                KEY_( "Alignment", ch->setAlignment, fread_number( fp ) );
                 KEY( "Armor", ch->armor, fread_number( fp ) );
                 if ( !IS_NPC(ch) )
                 {
@@ -980,7 +980,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                         ch->pcdata->login_sex = ch->sex;
                     return;
                 }
-                KEY_( "Exp", ch->SetExperience, fread_number( fp ) );
+                KEY_( "Exp", ch->setExperience, fread_number( fp ) );
                 if ( !IS_NPC( ch ) )
                 {
                     KEY( "Email", ch->pcdata->email->address, fread_string( fp ) );
@@ -1075,7 +1075,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
 
             case 'L':
                 KEY( "Level", ch->level, fread_number( fp ) );
-                KEY_( "LongDescr", ch->SetDescrLong, fread_string( fp ) );
+                KEY_( "LongDescr", ch->setDescrLong, fread_string( fp ) );
 
                 if ( !IS_NPC( ch ) )
                 {
@@ -1278,7 +1278,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 if ( !IS_NPC(ch ) )
                     KEY( "Sentence", ch->pcdata->sentence, fread_number( fp ) );
                 KEY( "Sex", ch->sex, fread_number( fp ) );
-                KEY_( "ShortDescr", ch->SetDescrShort, fread_string( fp ) );
+                KEY_( "ShortDescr", ch->setDescrShort, fread_string( fp ) );
 
                 if ( !str_cmp( word, "Skill" ) && !IS_NPC( ch ) )
                 {
@@ -1290,7 +1290,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     sn = skill_lookup( skill_word );
                     if ( sn < 0 )
                     {
-                        snprintf( log_buf, (2 * MIL), "Loading pfile %s, unknown skill %s.", ch->GetName_(), skill_word );
+                        snprintf( log_buf, (2 * MIL), "Loading pfile %s, unknown skill %s.", ch->getName_(), skill_word );
                         monitor_chan( log_buf, MONITOR_BAD );
                     }
                     else
@@ -1378,7 +1378,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
 
         if ( !fMatch )
         {
-            snprintf( log_buf, (2 * MIL), "Loading in pfile :%s, no match for ( %s ).", ch->GetName_(), word );
+            snprintf( log_buf, (2 * MIL), "Loading in pfile :%s, no match for ( %s ).", ch->getName_(), word );
             monitor_chan( log_buf, MONITOR_BAD );
             fread_to_eol( fp );
         }
@@ -1469,7 +1469,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                     string key, value;
                     key = fread_string( fp );
                     value = fread_string( fp );
-                    obj->SetDescrExtra( key, value );
+                    obj->setDescrExtra( key, value );
                     fMatch = TRUE;
                 }
 
@@ -1531,7 +1531,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                                     if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
                                     {
                                         nMatch++;
-                                        if ( obj->GetDescrShort() == pObjIndex->GetDescrShort() )
+                                        if ( obj->getDescrShort() == pObjIndex->getDescrShort() )
                                         {
                                             obj->pIndexData = pObjIndex;
                                             break;
@@ -1560,7 +1560,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
 
             case 'L':
                 KEY( "Level", obj->level, fread_number( fp ) );
-                KEY_( "LongDescr", obj->SetDescrLong, fread_string( fp ) );
+                KEY_( "LongDescr", obj->setDescrLong, fread_string( fp ) );
                 break;
 
             case 'M':
@@ -1577,7 +1577,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                     break;
                 }
             case 'N':
-                KEY_( "Name", obj->SetName, fread_string( fp ) );
+                KEY_( "Name", obj->setName, fread_string( fp ) );
 
                 if ( !str_cmp( word, "Nest" ) )
                 {
@@ -1608,7 +1608,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                 break;
 
             case 'S':
-                KEY_( "ShortDescr", obj->SetDescrShort, fread_string( fp ) );
+                KEY_( "ShortDescr", obj->setDescrShort, fread_string( fp ) );
                 KEY( "Speed", obj->speed, fread_float( fp ) );
 
                 if ( !str_cmp( word, "Spell" ) )
@@ -1775,7 +1775,7 @@ void fread_corpse( FILE * fp )
                     string key, value;
                     key = fread_string( fp );
                     value = fread_string( fp );
-                    obj->SetDescrExtra( key, value );
+                    obj->setDescrExtra( key, value );
                     fMatch = TRUE;
                 }
 
@@ -1838,7 +1838,7 @@ void fread_corpse( FILE * fp )
                                     if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
                                     {
                                         nMatch++;
-                                        if ( obj->GetDescrShort() == pObjIndex->GetDescrShort() )
+                                        if ( obj->getDescrShort() == pObjIndex->getDescrShort() )
                                         {
                                             obj->pIndexData = pObjIndex;
                                             break;
@@ -1864,7 +1864,7 @@ void fread_corpse( FILE * fp )
 
             case 'L':
                 KEY( "Level", obj->level, fread_number( fp ) );
-                KEY_( "LongDescr", obj->SetDescrLong, fread_string( fp ) );
+                KEY_( "LongDescr", obj->setDescrLong, fread_string( fp ) );
                 break;
 
             case 'M':
@@ -1881,7 +1881,7 @@ void fread_corpse( FILE * fp )
                     break;
                 }
             case 'N':
-                KEY_( "Name", obj->SetName, fread_string( fp ) );
+                KEY_( "Name", obj->setName, fread_string( fp ) );
 
                 if ( !str_cmp( word, "Nest" ) )
                 {
@@ -1912,7 +1912,7 @@ void fread_corpse( FILE * fp )
                 break;
 
             case 'S':
-                KEY_( "ShortDescr", obj->SetDescrShort, fread_string( fp ) );
+                KEY_( "ShortDescr", obj->setDescrShort, fread_string( fp ) );
                 KEY( "Speed", obj->speed, fread_float( fp ) );
 
                 if ( !str_cmp( word, "Spell" ) )
@@ -2036,9 +2036,9 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
     fprintf( fp, "WhereVnum    %d\n", where_vnum );
 
     fprintf( fp, "Nest         %d\n", iNest );
-    fprintf( fp, "Name         %s~\n", obj->GetName_() );
-    fprintf( fp, "ShortDescr   %s~\n", obj->GetDescrShort_() );
-    fprintf( fp, "LongDescr    %s~\n", obj->GetDescrLong_() );
+    fprintf( fp, "Name         %s~\n", obj->getName_() );
+    fprintf( fp, "ShortDescr   %s~\n", obj->getDescrShort_() );
+    fprintf( fp, "LongDescr    %s~\n", obj->getDescrLong_() );
     fprintf( fp, "Vnum         %d\n", obj->pIndexData->vnum );
 
     fprintf( fp, "ExtraFlags   " );
@@ -2110,11 +2110,11 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
         fprintf( fp, "Affect       %d %d %d %d %d\n", paf->type, paf->duration, paf->modifier, paf->location, paf->bitvector );
     }
 
-    keys = obj->GetDescrExtraKeys();
+    keys = obj->getDescrExtraKeys();
     for ( mi = keys.begin(); mi != keys.end(); mi++ )
     {
         value = *mi;
-        fprintf( fp, "ExtraDescr   %s~ %s~\n", value.c_str(), obj->GetDescrExtra_( value ) );
+        fprintf( fp, "ExtraDescr   %s~ %s~\n", value.c_str(), obj->getDescrExtra_( value ) );
     }
 
     fprintf( fp, "End\n\n" );

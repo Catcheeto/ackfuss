@@ -392,7 +392,7 @@ void affect_modify( CHAR_DATA * ch, AFFECT_DATA * paf, bool fAdd )
     {
         default:
             bug( "Affect_modify: unknown location %d.", paf->location );
-            snprintf( buf, MSL, "Affect_modify: called for %s - unknown location %d.", ch->GetName_(), paf->location );
+            snprintf( buf, MSL, "Affect_modify: called for %s - unknown location %d.", ch->getName_(), paf->location );
             monitor_chan( buf, MONITOR_OBJ );
             return;
 
@@ -515,7 +515,7 @@ void affect_to_room( ROOM_INDEX_DATA * room, ROOM_AFFECT_DATA * raf )
     SET_BIT( room->affected_by, raf->bitvector );
 
     snprintf( buf, MSL, "@@e%s@@N has cast @@d%s@@N in @@Narea: @@r%s@@N, @@Nroom: @@r%d@@N.",
-              raf->caster->GetName_(), raffect_bit_name( raf->bitvector ), room->area->name, room->vnum );
+              raf->caster->getName_(), raffect_bit_name( raf->bitvector ), room->area->name, room->vnum );
     monitor_chan( buf, MONITOR_GEN_MORT );
 
 
@@ -986,11 +986,11 @@ void obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch )
             }
             if ( armor != NULL )
             {
-                ch->EquipThing(armor);
+                ch->equipThing(armor);
             }
             else
             {
-                ch->DropThing(obj);
+                ch->dropThing(obj);
             }
         }
 // else if light
@@ -1011,7 +1011,7 @@ void obj_from_char( OBJ_DATA * obj )
     if ( ( ch = obj->carried_by ) == NULL )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "obj_from_char: NULL ch to remove %s from.", obj->GetDescrShort_() );
+        snprintf( buf, MSL, "obj_from_char: NULL ch to remove %s from.", obj->getDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
 
         bug( "Obj_from_char: null ch.", 0 );
@@ -1116,7 +1116,7 @@ void equip_char( CHAR_DATA * ch, OBJ_DATA * obj, int iWear )
     if ( !IS_NPC( ch ) && !ch->desc->getConnectionState( CON_SETTING_STATS ) && ( get_eq_char( ch, iWear ) != NULL ) )
     {
         snprintf( log, MSL, "equip_char: %s (room %d) cannot be equiped with %s, as wear slot (%d) not empty.",
-                  ch->get_name(), ch->in_room->vnum, obj->GetDescrShort_(), iWear );
+                  ch->get_name(), ch->in_room->vnum, obj->getDescrShort_(), iWear );
         monitor_chan( log, MONITOR_OBJ );
 
         bug( log, 0 );
@@ -1231,7 +1231,7 @@ void unequip_char( CHAR_DATA * ch, OBJ_DATA * obj )
     if ( obj->wear_loc == WEAR_NONE )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "unequip_char: %s is not wearing %s.", ch->get_name(), obj->GetDescrShort_() );
+        snprintf( buf, MSL, "unequip_char: %s is not wearing %s.", ch->get_name(), obj->getDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
 
         bug( "Unequip_char: already unequipped.", 0 );
@@ -1366,7 +1366,7 @@ void obj_from_room( OBJ_DATA * obj )
     if ( ( in_room = obj->in_room ) == NULL )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "obj_from_room: %s in NULL room.", obj->GetDescrShort_() );
+        snprintf( buf, MSL, "obj_from_room: %s in NULL room.", obj->getDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
 
         bug( "obj_from_room: NULL.", 0 );
@@ -1379,7 +1379,7 @@ void obj_from_room( OBJ_DATA * obj )
         obj_to_room( obj, get_room_index( ROOM_VNUM_LIMBO ) );
         if ( ( in_room = obj->in_room ) == NULL )
         {
-            snprintf( buf, MSL, "obj_from_room, %s really screwed up, failed attempts to move to Limbo.", obj->GetDescrShort_() );
+            snprintf( buf, MSL, "obj_from_room, %s really screwed up, failed attempts to move to Limbo.", obj->getDescrShort_() );
             monitor_chan( buf, MONITOR_OBJ );
             return;
         }
@@ -1459,7 +1459,7 @@ void obj_from_obj( OBJ_DATA * obj )
     if ( ( obj_from = obj->in_obj ) == NULL )
     {
         char buf[MAX_STRING_LENGTH];
-        snprintf( buf, MSL, "obj_from_obj: %s not in another object.", obj->GetDescrShort_() );
+        snprintf( buf, MSL, "obj_from_obj: %s not in another object.", obj->getDescrShort_() );
         monitor_chan( buf, MONITOR_OBJ );
         bug( "Obj_from_obj: null obj_from.", 0 );
         return;
@@ -1661,7 +1661,7 @@ void extract_char( CHAR_DATA * ch, bool fPull )
              */
             if ( IS_NPC( wch ) )
             {
-                wch->searching = ch->GetName();
+                wch->searching = ch->getName();
             }
             else
                 send_to_char("@@RYou seem to have lost your prey.@@N\r\n", wch);
@@ -1671,12 +1671,12 @@ void extract_char( CHAR_DATA * ch, bool fPull )
             do_return(wch, "");
             wch->old_body = NULL;
         }
-        if ( wch->target.find(ch->GetName()) != string::npos )
+        if ( wch->target.find(ch->getName()) != string::npos )
         {
             int first = 0, last = 0;
 
-            first = static_cast<int>(wch->target.find(ch->GetName()));
-            last = (strlen(ch->GetName_()) + 1);
+            first = static_cast<int>(wch->target.find(ch->getName()));
+            last = (strlen(ch->getName_()) + 1);
             wch->target.erase(first, last);
         }
         if ( wch->riding == ch )
@@ -1833,7 +1833,7 @@ CHAR_DATA *get_char_room( CHAR_DATA * ch, char *argument )
 
     for ( rch = ch->in_room->first_person; rch != NULL; rch = rch->next_in_room )
     {
-        if ( !can_see( ch, rch ) || !is_name( arg, const_cast<char *>(rch->GetName_()) ) )
+        if ( !can_see( ch, rch ) || !is_name( arg, const_cast<char *>(rch->getName_()) ) )
             continue;
         if ( ++count == number )
             return rch;
@@ -1853,7 +1853,7 @@ bool char_exists_world( const char *who )
     {
         pers = *li;
 
-        if ( is_name( who, const_cast<char *>(pers->GetName_()) ) )
+        if ( is_name( who, const_cast<char *>(pers->getName_()) ) )
             return true;
     }
 
@@ -1879,7 +1879,7 @@ CHAR_DATA *get_char_world( CHAR_DATA * ch, char *argument )
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         wch = *li;
-        if ( !can_see( ch, wch ) || !is_name( arg, const_cast<char *>(wch->GetName_()) ) )
+        if ( !can_see( ch, wch ) || !is_name( arg, const_cast<char *>(wch->getName_()) ) )
             continue;
         if ( ++count == number )
             return wch;
@@ -1904,7 +1904,7 @@ CHAR_DATA *get_char_area( CHAR_DATA * ch, char *argument )
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         ach = *li;
-        if ( ach->in_room->area != ch->in_room->area || !can_see( ch, ach ) || !is_name( arg, const_cast<char *>(ach->GetName_()) ) )
+        if ( ach->in_room->area != ch->in_room->area || !can_see( ch, ach ) || !is_name( arg, const_cast<char *>(ach->getName_()) ) )
             continue;
         if ( ++count == number )
             return ach;
@@ -1957,7 +1957,7 @@ OBJ_DATA *get_obj_room( CHAR_DATA * ch, char *argument, OBJ_DATA * list )
     count = 0;
     for ( obj = list; obj != NULL; obj = obj->next_in_room )
     {
-        if ( can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
+        if ( can_see_obj( ch, obj ) && is_name( arg, obj->getName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -1981,7 +1981,7 @@ OBJ_DATA *get_obj_list( CHAR_DATA * ch, char *argument, OBJ_DATA * list )
     count = 0;
     for ( obj = list; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
+        if ( can_see_obj( ch, obj ) && is_name( arg, obj->getName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2008,7 +2008,7 @@ OBJ_DATA *get_obj_carry( CHAR_DATA * ch, char *argument )
     count = 0;
     for ( obj = ch->first_carry; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( obj->wear_loc == WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
+        if ( obj->wear_loc == WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->getName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2034,7 +2034,7 @@ OBJ_DATA *get_obj_wear( CHAR_DATA * ch, char *argument )
     count = 0;
     for ( obj = ch->first_carry; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( obj->wear_loc != WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
+        if ( obj->wear_loc != WEAR_NONE && can_see_obj( ch, obj ) && is_name( arg, obj->getName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2087,7 +2087,7 @@ OBJ_DATA *get_obj_world( CHAR_DATA * ch, char *argument )
     for ( li = obj_list.begin(); li != obj_list.end(); li++ )
     {
         obj = *li;
-        if ( can_see_obj( ch, obj ) && is_name( arg, obj->GetName() ) )
+        if ( can_see_obj( ch, obj ) && is_name( arg, obj->getName() ) )
         {
             if ( ++count == number )
                 return obj;
@@ -2123,8 +2123,8 @@ OBJ_DATA *create_money( int amount )
     else
     {
         obj = create_object( get_obj_index( OBJ_VNUM_MONEY_SOME ), 0 );
-        snprintf( buf, MSL, obj->GetDescrShort_(), amount );
-        obj->SetDescrShort( buf );
+        snprintf( buf, MSL, obj->getDescrShort_(), amount );
+        obj->setDescrShort( buf );
         obj->value[0] = amount;
     }
 
@@ -2516,7 +2516,7 @@ CHAR_DATA *switch_char( CHAR_DATA * victim, int mvnum, int poly_level )
         case 3: /* Level 3 */
             mob->level = victim->level;
             mob->money = victim->money;
-            mob->SetExperience( victim->GetExperience() );
+            mob->setExperience( victim->getExperience() );
             for ( foo = 0; foo < MAX_CLASS; foo++ )
                 mob->lvl[foo] = victim->lvl[foo];
 
@@ -2590,7 +2590,7 @@ CHAR_DATA *unswitch_char( CHAR_DATA * victim )
 
         case 3:
             original->level = victim->level;
-            original->SetExperience( victim->GetExperience() );
+            original->setExperience( victim->getExperience() );
             original->money = victim->money;
             for ( foo = 0; foo < MAX_CLASS; foo++ )
                 original->lvl[foo] = victim->lvl[foo];

@@ -1703,7 +1703,7 @@ char *tagline_format( const char *txt, CHAR_DATA *ch )
                     continue;
                 }
 
-                snprintf(p_name, 128, "%s", ch->GetName_());
+                snprintf(p_name, 128, "%s", ch->getName_());
                 n = p_name;
 
                 while ( *n != '\0' )
@@ -1756,7 +1756,7 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
                 if ( !str_cmp(arg2, "good") && IS_GOOD(ch) )       { retval = true; break; }
                 if ( !str_cmp(arg2, "neutral") && IS_NEUTRAL(ch) ) { retval = true; break; }
                 if ( !str_cmp(arg2, "evil") && IS_EVIL(ch) )       { retval = true; break; }
-                if ( evaluate_tag(arg2, ch->GetAlignment(), value) )     { retval = true; break; }
+                if ( evaluate_tag(arg2, ch->getAlignment(), value) )     { retval = true; break; }
                 break;
             }
             break;
@@ -1783,7 +1783,7 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
         case 'I':
             if ( !str_cmp(arg1, "immortal") && IS_IMMORTAL(ch) )                                 { retval = true; break; }
             if ( !str_cmp(arg1, "int") && evaluate_tag(arg2, get_curr_int(ch), value) )            { retval = true; break; }
-            if ( !str_cmp(arg1, "isname") && !str_cmp(arg2, ch->GetName()) )                           { retval = true; break; }
+            if ( !str_cmp(arg1, "isname") && !str_cmp(arg2, ch->getName()) )                           { retval = true; break; }
             if ( !str_cmp(arg1, "istitle") && !str_cmp(arg2, strip_color(ch->get_title(), "@@")) ) { retval = true; break; }
             break;
 

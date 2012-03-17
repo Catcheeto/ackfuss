@@ -135,13 +135,13 @@ void get_obj( CHAR_DATA * ch, OBJ_DATA * obj, OBJ_DATA * container )
 
     if ( ch->carry_number + get_obj_number( obj ) > can_carry_n( ch ) )
     {
-        act( "$d: you can't carry that many items.", ch, NULL, obj->GetName_(), TO_CHAR );
+        act( "$d: you can't carry that many items.", ch, NULL, obj->getName_(), TO_CHAR );
         return;
     }
 
     if ( ch->carry_weight + get_obj_weight( obj ) > can_carry_w( ch ) )
     {
-        act( "$d: you can't carry that much weight.", ch, NULL, obj->GetName_(), TO_CHAR );
+        act( "$d: you can't carry that much weight.", ch, NULL, obj->getName_(), TO_CHAR );
         return;
     }
 
@@ -233,18 +233,18 @@ DO_FUN(do_get)
             send_to_char( "You can't do that.\r\n", ch );
             return;
         }
-        pd = container->GetName();
+        pd = container->getName();
         pd = one_argument( pd, name );
         pd = one_argument( pd, name );
         pd = one_argument( pd, name );
-        if ( str_cmp( name, ch->GetName() ) && !IS_IMMORTAL( ch ) )
+        if ( str_cmp( name, ch->getName() ) && !IS_IMMORTAL( ch ) )
         {
             bool fGroup = FALSE;
             victim = NULL;
             for ( li = char_list.begin(); li != char_list.end(); li++ )
             {
                 gch = *li;
-                if ( !IS_NPC( gch ) && !str_cmp( name, gch->GetName() ) )
+                if ( !IS_NPC( gch ) && !str_cmp( name, gch->getName() ) )
                 {
                     victim = gch;
                     break;
@@ -269,7 +269,7 @@ DO_FUN(do_get)
     {
         if ( IS_SET( container->value[1], CONT_CLOSED ) )
         {
-            act( "The $d is closed.", ch, NULL, container->GetName_(), TO_CHAR );
+            act( "The $d is closed.", ch, NULL, container->getName_(), TO_CHAR );
             return;
         }
         if ( ( !str_prefix( "1 all", object_list ) ) || ( !str_cmp( "coinsonly", object_list ) ) )
@@ -493,7 +493,7 @@ DO_FUN(do_put)
     }
     if ( IS_SET( container_obj->value[1], CONT_CLOSED ) )
     {
-        act( "The $d is closed.", ch, NULL, container_obj->GetName_(), TO_CHAR );
+        act( "The $d is closed.", ch, NULL, container_obj->getName_(), TO_CHAR );
         return;
     }
 
@@ -536,7 +536,7 @@ DO_FUN(do_put)
                 }
                 if ( !can_drop_obj( ch, obj ) )
                 {
-                    act( "You can't let go of $d.", ch, NULL, obj->GetName_(), TO_CHAR );
+                    act( "You can't let go of $d.", ch, NULL, obj->getName_(), TO_CHAR );
 
                     if ( looper < 10 )
                     {
@@ -850,7 +850,7 @@ DO_FUN(do_give)
                     /*
                      * Then ch has recovered the quest object!!!!!
                      */
-                    snprintf( buf, MSL, "Oh! %s you found %s for me!  Thank You!", ch->get_name(), obj->GetDescrShort_() );
+                    snprintf( buf, MSL, "Oh! %s you found %s for me!  Thank You!", ch->get_name(), obj->getDescrShort_() );
                     do_say( victim, buf );
                     interpret( victim, "hop" );
 
@@ -1931,7 +1931,7 @@ DO_FUN(do_sacrifice)
     double obj_value = 0 ;
     argument = one_argument( argument, arg );
     argument = one_argument( argument, arg2 );
-    if ( arg[0] == '\0' || !str_cmp( arg, ch->GetName_() ) )
+    if ( arg[0] == '\0' || !str_cmp( arg, ch->getName_() ) )
     {
         act( "@@N$n offers $mself to @@e" sacgodname "@@N, who graciously declines.", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@e" sacgodname "@@N appreciates your offer and may accept it later.\r\n", ch );
@@ -2029,8 +2029,8 @@ DO_FUN(do_sacrifice)
         if ( ch->pcdata->sentence > 0 )
         {
 
-            snprintf( buf, MSL, "%s: Sentence reduced to %d ( - %.0f ) by sacrificing %s.", ch->GetName_(),
-                      ch->pcdata->sentence, obj_value, obj->GetDescrShort_() );
+            snprintf( buf, MSL, "%s: Sentence reduced to %d ( - %.0f ) by sacrificing %s.", ch->getName_(),
+                      ch->pcdata->sentence, obj_value, obj->getDescrShort_() );
             monitor_chan( buf, MONITOR_OBJ );
             act( "The judge accepts $p as partial payment of your fine.", ch, obj, 0, TO_CHAR );
         }
@@ -2040,7 +2040,7 @@ DO_FUN(do_sacrifice)
             ch->pcdata->sentence = 0;
             ch->act.reset(ACT_KILLER | ACT_THIEF);
             send_to_char( "Your debt to society has been paid!  Please more careful in the future.\r\n", ch );
-            snprintf( monbuf, MSL, "%s has had a WANTED flag removed by the judge.\r\n", ch->GetName_() );
+            snprintf( monbuf, MSL, "%s has had a WANTED flag removed by the judge.\r\n", ch->getName_() );
             monitor_chan( monbuf, MONITOR_GEN_MORT );
         }
 
@@ -2096,9 +2096,9 @@ DO_FUN(do_sacrifice)
         }
         if ( align_direction == 0 )
         {
-            if ( ch->GetAlignment() > 200 )
+            if ( ch->getAlignment() > 200 )
                 align_direction = -1;
-            else if ( ch->GetAlignment() < -200 )
+            else if ( ch->getAlignment() < -200 )
                 align_direction = 1;
             if (  IS_OBJ_STAT(obj, ITEM_EXTRA_ANTI_GOOD) )
                 align_change *= 1.5;
@@ -2113,7 +2113,7 @@ DO_FUN(do_sacrifice)
         if ( obj->item_type == ITEM_BEACON || obj->item_type == ITEM_LIGHT
                 || obj->item_type == ITEM_PORTAL || obj->item_type == ITEM_FOOD )
             align_change /= 10;
-        ch->SetAlignment( URANGE( -1000, ( ch->GetAlignment() + align_direction * (short)align_change ), 1000 ) );
+        ch->setAlignment( URANGE( -1000, ( ch->getAlignment() + align_direction * (short)align_change ), 1000 ) );
     }
 
     if ( !change_align )
@@ -2471,7 +2471,7 @@ DO_FUN(do_steal)
         if ( !IS_NPC( ch ) && !IS_NPC( victim )
                 && ch->act.test(ACT_PKOK) && victim->act.test(ACT_PKOK) )
             return;
-        snprintf( buf, MSL, "%s is a bloody thief!", ch->GetName_() );
+        snprintf( buf, MSL, "%s is a bloody thief!", ch->getName_() );
         do_yell( victim, buf );
         if ( !IS_NPC( ch ) )
         {
@@ -2555,7 +2555,7 @@ CHAR_DATA *find_keeper( CHAR_DATA * ch )
     if ( !IS_NPC( ch ) && ch->act.test(ACT_KILLER) )
     {
         do_say( keeper, "Killers are not welcome!" );
-        snprintf( buf, MSL, "%s the KILLER is over here!", ch->GetName_() );
+        snprintf( buf, MSL, "%s the KILLER is over here!", ch->getName_() );
         do_shout( keeper, buf );
         check_guards( ch );
         return NULL;
@@ -2564,7 +2564,7 @@ CHAR_DATA *find_keeper( CHAR_DATA * ch )
     if ( !IS_NPC( ch ) && ch->act.test(ACT_THIEF) )
     {
         do_say( keeper, "Thieves are not welcome!" );
-        snprintf( buf, MSL, "%s the THIEF is over here!", ch->GetName_() );
+        snprintf( buf, MSL, "%s the THIEF is over here!", ch->getName_() );
         do_shout( keeper, buf );
         check_guards( ch );
         return NULL;
@@ -2644,12 +2644,12 @@ void check_guards( CHAR_DATA * ch )
                         interpret( guard, "grin" );
                         break;
                     case 4:
-                        snprintf( buf, MSL, "leaves in search of %s.", ch->GetName_() );
+                        snprintf( buf, MSL, "leaves in search of %s.", ch->getName_() );
                         do_emote( guard, buf );
                         break;
                     case 5:
                         interpret( guard, "wave" );
-                        snprintf( buf, MSL, "Laters... i'm off to get %s.", ch->GetName_() );
+                        snprintf( buf, MSL, "Laters... i'm off to get %s.", ch->getName_() );
                         do_say( guard, buf );
                         break;
                     case 6:
@@ -2657,7 +2657,7 @@ void check_guards( CHAR_DATA * ch )
                         do_say( guard, "Yes!  Someone to go kill!" );
                         break;
                     case 7:
-                        snprintf( buf, MSL, "%s Watch it mate... i'm after you!", ch->GetName_() );
+                        snprintf( buf, MSL, "%s Watch it mate... i'm after you!", ch->getName_() );
                         do_tell( guard, buf );
                         break;
                 }
@@ -2787,7 +2787,7 @@ DO_FUN(do_buy)
         cost_string = take_best_coins( ch->money, 10 * pet->level * pet->level );
         cost_string = one_argument( cost_string, changebuf );
         change = is_number( changebuf ) ? atoi( changebuf ) : 0;
-        snprintf( givebuf, MSL, "%s to %s", cost_string, keeper->GetName_() );
+        snprintf( givebuf, MSL, "%s to %s", cost_string, keeper->getName_() );
         do_give( ch, givebuf );
         if ( change > 0 )
         {
@@ -2812,11 +2812,11 @@ DO_FUN(do_buy)
         argument = one_argument( argument, arg );
         if ( arg[0] != '\0' )
         {
-            snprintf( buf, MSL, "%s %s", pet->GetName_(), arg );
-            pet->SetName(buf);
+            snprintf( buf, MSL, "%s %s", pet->getName_(), arg );
+            pet->setName(buf);
         }
 
-        snprintf( buf, MSL, "%sA neck tag says 'I belong to %s'.\r\n", pet->description.c_str(), ch->GetName_() );
+        snprintf( buf, MSL, "%sA neck tag says 'I belong to %s'.\r\n", pet->description.c_str(), ch->getName_() );
         pet->description = buf;
         char_to_room( pet, ch->in_room );
         add_follower( pet, ch );
@@ -2870,7 +2870,7 @@ DO_FUN(do_buy)
         cost_string = take_best_coins( ch->money, cost );
         cost_string = one_argument( cost_string, changebuf );
         change = is_number( changebuf ) ? atoi( changebuf ) : 0;
-        snprintf( givebuf, MSL, "%s to %s", cost_string, keeper->GetName_() );
+        snprintf( givebuf, MSL, "%s to %s", cost_string, keeper->getName_() );
         do_give( ch, givebuf );
         act( "$n buys $p.", ch, obj, NULL, TO_ROOM );
         act( "You buy $p.", ch, obj, NULL, TO_CHAR );
@@ -2957,8 +2957,8 @@ DO_FUN(do_list)
                 stopcounter++;
                 rounded_cost = round_money_off( 10 * pet->level * pet->level, 1 );
                 snprintf( costbuf, MSL, "%s", money_string( rounded_cost ) );
-                snprintf( buf, MSL, "[ @@W%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", pet->level, ccode_len( pet->GetDescrShort_(), 30 ),
-                          capitalize( pet->GetDescrShort_() ), ccode_len( costbuf, 35 ), costbuf );
+                snprintf( buf, MSL, "[ @@W%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", pet->level, ccode_len( pet->getDescrShort_(), 30 ),
+                          capitalize( pet->getDescrShort_() ), ccode_len( costbuf, 35 ), costbuf );
                 delete rounded_cost;
                 strncat( buf1, buf, MSL - 1 );
                 if ( stopcounter > 45 )
@@ -2983,7 +2983,7 @@ DO_FUN(do_list)
         {
             if ( obj->wear_loc == WEAR_NONE
                     && can_see_obj( ch, obj )
-                    && ( cost = get_cost( keeper, obj, TRUE ) ) > 0 && ( arg[0] == '\0' || is_name( arg, obj->GetName() ) ) )
+                    && ( cost = get_cost( keeper, obj, TRUE ) ) > 0 && ( arg[0] == '\0' || is_name( arg, obj->getName() ) ) )
             {
                 if ( !found )
                 {
@@ -2995,7 +2995,7 @@ DO_FUN(do_list)
                 rounded_cost = round_money_off( cost, 1 );
                 snprintf( costbuf, MSL, "%s", money_string( rounded_cost ) );
                 snprintf( buf, MSL, "@@g[%s%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", ( IS_OBJ_STAT(obj, ITEM_EXTRA_REMORT) ? "@@m" : "@@a" ),
-                          obj->level, ccode_len( obj->GetDescrShort_(), 30 ), capitalize( obj->GetDescrShort_() ), ccode_len( costbuf, 30 ),
+                          obj->level, ccode_len( obj->getDescrShort_(), 30 ), capitalize( obj->getDescrShort_() ), ccode_len( costbuf, 30 ),
                           costbuf );
                 delete rounded_cost;
                 strncat( buf1, buf, MSL - 1 );
@@ -3448,10 +3448,10 @@ DO_FUN(do_adapt)
     money_to_value(ch, mbuf);
 
     obj->level = ch->level; /* Allow ch to use the eq... */
-    snprintf( buf, MSL, "%s <adapted>", obj->GetDescrShort_() );
-    obj->SetDescrShort( buf );
-    snprintf( buf, MSL, "<adapted> %s", obj->GetDescrLong_() );
-    obj->SetDescrLong( buf );
+    snprintf( buf, MSL, "%s <adapted>", obj->getDescrShort_() );
+    obj->setDescrShort( buf );
+    snprintf( buf, MSL, "<adapted> %s", obj->getDescrLong_() );
+    obj->setDescrLong( buf );
     send_to_char( "Your weapon is now adapted.\r\n", ch );
     return;
 }
@@ -3858,11 +3858,11 @@ DO_FUN(do_auction)
                     good_buyer = TRUE;
             }
 
-            snprintf( buf, MSL, "The auction of %s has been stopped by an @@mImmortal@@N.\r\n", auction_item->GetDescrShort_() );
+            snprintf( buf, MSL, "The auction of %s has been stopped by an @@mImmortal@@N.\r\n", auction_item->getDescrShort_() );
             if ( !str_cmp( arg, "take" ) )
             {
                 char buf2[MSL];
-                snprintf( buf2, MSL, " The item has been taken by %s.\r\n", ch->GetName_() );
+                snprintf( buf2, MSL, " The item has been taken by %s.\r\n", ch->getName_() );
                 strncat( buf, buf2, MSL - 1 );
             }
             do_echo( ch, buf );
@@ -3907,9 +3907,9 @@ DO_FUN(do_auction)
     if ( auction_item != NULL )
     {
         char lastbidbuf[MSL];
-        snprintf( buf, MSL, "The current object being auctioned is: %s\r\n", auction_item->GetDescrShort_() );
+        snprintf( buf, MSL, "The current object being auctioned is: %s\r\n", auction_item->getDescrShort_() );
         send_to_char( buf, ch );
-        snprintf( buf, MSL, "Item was offered for sale by %s.\r\n", auction_owner->GetName_() );
+        snprintf( buf, MSL, "Item was offered for sale by %s.\r\n", auction_owner->getName_() );
         send_to_char( buf, ch );
         snprintf( lastbidbuf, MSL, "%s", cost_to_money( auction_bid ) );
         snprintf( buf, MSL, "The estimated value is %s, and last bid was for %s.\r\n",
@@ -3987,7 +3987,7 @@ DO_FUN(do_auction)
     }
 
     snprintf( buf, MSL, "You have placed %s up for auction.  %s @@Whas been charged for these services.\r\n",
-              auction_item->GetName_(), cost_to_money( (int)(reserve * .1) ) );
+              auction_item->getName_(), cost_to_money( (int)(reserve * .1) ) );
     send_to_char( buf, ch );
     auction_owner = ch;
     auction_bidder = NULL;
@@ -4120,7 +4120,7 @@ DO_FUN(do_repair)
                 cbuf = take_best_coins(ch->money, cost); /* Gives a string of the coins we need to steal. */
                 cbuf = one_argument(cbuf, changebuf);
                 change = is_number(changebuf) ? atoi(changebuf) : 0;
-                snprintf(changebuf, MSL, "%s to %s", cbuf, mob->GetName_());
+                snprintf(changebuf, MSL, "%s to %s", cbuf, mob->getName_());
                 do_give(ch, changebuf);
                 act("$N repairs $p.", ch, obj, mob, TO_CHAR);
                 if ( change > 0 )
@@ -4156,7 +4156,7 @@ DO_FUN(do_repair)
     cbuf = take_best_coins(ch->money, cost); /* Gives a string of the coins we need to steal. */
     cbuf = one_argument(cbuf, changebuf);
     change = is_number(changebuf) ? atoi(changebuf) : 0;
-    snprintf(changebuf, MSL, "%s to %s", cbuf, mob->GetName_());
+    snprintf(changebuf, MSL, "%s to %s", cbuf, mob->getName_());
     do_give(ch, changebuf);
     act("$N repairs $p.", ch, obj, mob, TO_CHAR);
     if ( change > 0 )

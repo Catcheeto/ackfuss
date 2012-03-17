@@ -22,69 +22,69 @@ class Thing {
         ~Thing();
 
         // Alignment
-        sint_t GetAlignment() const { return m_alignment; }
-        sint_t DecrAlignment( const sint_t amount );
-        sint_t IncrAlignment( const sint_t amount );
-        sint_t SetAlignment( const sint_t amount );
+        sint_t getAlignment() const { return m_alignment; }
+        sint_t decrAlignment( const sint_t amount );
+        sint_t incrAlignment( const sint_t amount );
+        sint_t setAlignment( const sint_t amount );
 
         // Brain
-        Brain* AttachBrain( Brain* brain = NULL );
-        Brain* GetBrain() const { return m_brain; }
+        Brain* attachBrain( Brain* brain = NULL );
+        Brain* getBrain() const { return m_brain; }
 
         // Combat Stats
-        sint_t GetModAC() const { return m_mod_ac; }
-        sint_t DecrModAC( const sint_t amount );
-        sint_t IncrModAC( const sint_t amount );
-        sint_t SetModAC( const sint_t amount );
-        sint_t GetModDR() const { return m_mod_dr; }
-        sint_t DecrModDR( const sint_t amount );
-        sint_t IncrModDR( const sint_t amount );
-        sint_t SetModDR( const sint_t amount );
-        sint_t GetModHR() const { return m_mod_hr; }
-        sint_t DecrModHR( const sint_t amount );
-        sint_t IncrModHR( const sint_t amount );
-        sint_t SetModHR( const sint_t amount );
+        sint_t getModAC() const { return m_mod_ac; }
+        sint_t decrModAC( const sint_t amount );
+        sint_t incrModAC( const sint_t amount );
+        sint_t setModAC( const sint_t amount );
+        sint_t getModDR() const { return m_mod_dr; }
+        sint_t decrModDR( const sint_t amount );
+        sint_t incrModDR( const sint_t amount );
+        sint_t setModDR( const sint_t amount );
+        sint_t getModHR() const { return m_mod_hr; }
+        sint_t decrModHR( const sint_t amount );
+        sint_t incrModHR( const sint_t amount );
+        sint_t setModHR( const sint_t amount );
 
         // Descriptions
-        string AppendDescrLong( const string descr ) { return m_descr_long.append( descr ); }
-        string AppendDescrShort( const string descr ) { return m_descr_short.append( descr ); }
-        uint_t DelDescrExtra( string key ) { return m_descr_extra.erase( key ); }
-        string GetDescrExtra( string key ) const;
-        #define GetDescrExtra_( T ) GetDescrExtra( T ).c_str()
-        list<string> GetDescrExtraKeys() const;
-        uint_t GetDescrExtraSize() const { return m_descr_extra.size(); }
-        list<string> GetDescrExtraValues() const;
-        pair<map<string,string>::iterator,bool> SetDescrExtra( const string key, string value ) { return m_descr_extra.insert( pair<string,string>( key, value ) ); }
-        string GetDescrLong( const Thing* looker = NULL ) const { return m_descr_long; }
-        #define GetDescrLong_( T ) GetDescrLong( T ).c_str()
-        string GetDescrShort( const Thing* looker = NULL ) const { return m_descr_short; }
-        #define GetDescrShort_( T ) GetDescrShort( T ).c_str()
-        string SetDescrLong( const string descr ) { return m_descr_long = descr; }
-        string SetDescrShort( const string descr ) { return m_descr_short = descr; }
+        string appendDescrLong( const string descr ) { return m_descr_long.append( descr ); }
+        string appendDescrShort( const string descr ) { return m_descr_short.append( descr ); }
+        uint_t delDescrExtra( string key ) { return m_descr_extra.erase( key ); }
+        string getDescrExtra( string key ) const;
+        #define getDescrExtra_( T ) getDescrExtra( T ).c_str()
+        list<string> getDescrExtraKeys() const;
+        uint_t getDescrExtraSize() const { return m_descr_extra.size(); }
+        list<string> getDescrExtraValues() const;
+        pair<map<string,string>::iterator,bool> setDescrExtra( const string key, string value ) { return m_descr_extra.insert( pair<string,string>( key, value ) ); }
+        string getDescrLong( const Thing* looker = NULL ) const { return m_descr_long; }
+        #define getDescrLong_( T ) getDescrLong( T ).c_str()
+        string getDescrShort( const Thing* looker = NULL ) const { return m_descr_short; }
+        #define getDescrShort_( T ) getDescrShort( T ).c_str()
+        string setDescrLong( const string descr ) { return m_descr_long = descr; }
+        string setDescrShort( const string descr ) { return m_descr_short = descr; }
 
         // Level
-        uint_t GetExperience() const { return m_experience; }
-        uint_t DecrExperience( const uint_t amount );
-        uint_t IncrExperience( const uint_t amount );
-        uint_t SetExperience( const uint_t amount );
+        uint_t getExperience() const { return m_experience; }
+        uint_t decrExperience( const uint_t amount );
+        uint_t incrExperience( const uint_t amount );
+        uint_t setExperience( const uint_t amount );
 
         // Name
-        string AppendName( const string name ) { return m_name.append( name ); }
-        string GetName( const Thing* looker = NULL ) const { return m_name; }
-        #define GetName_( T ) GetName( T ).c_str()
+        string appendName( const string name ) { return m_name.append( name ); }
+        string getName( const Thing* looker = NULL ) const { return m_name; }
+        #define getName_( T ) getName( T ).c_str()
 /*        bool IsWithinName( const char* word );
         bool IsWithinName( const string word );*/
-        string PrefixName( const string name ) { return m_name.insert( 0, name ); }
-        string SetName( const string name ) { return m_name = name; }
+        string prefixName( const string name ) { return m_name.insert( 0, name ); }
+        string setName( const string name ) { return m_name = name; }
 
         // 'Object' Manipulation
-        bool DropThing( const Thing* what );
-        bool EquipThing( const Thing* what );
-        bool RemoveThing( const Thing* what );
+        bool dropThing( const Thing* what );
+        bool equipThing( const Thing* what );
+        bool removeThing( const Thing* what );
 
         // Owner
-        Thing* GetOwner() const { return m_owner; }
-        Thing* SetOwner( Thing* owner ) { return m_owner = owner; }
+        Thing* getOwner() const { return m_owner; }
+        Thing* setOwner( Thing* owner ) { return m_owner = owner; }
 
     protected:
         // Alignment

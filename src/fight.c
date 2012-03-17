@@ -335,7 +335,7 @@ void violence_update( void )
                     act( "@@W   $p@@N you are wearing are @@eBURNING@@N you!!!", ch, heated_item, NULL, TO_CHAR );
                     act( "@@W   $p worn by $n is @@eBURNING@@N!!!", ch, heated_item, NULL, TO_ROOM );
                     if ( IS_NPC( ch ) )
-                        ch->DropThing(heated_item);
+                        ch->dropThing(heated_item);
                 }
             }
         }
@@ -468,7 +468,7 @@ void violence_update( void )
                             && ( ch->mana > mana_cost( ch, skill_lookup( rev_table_lookup( tab_cast_name, ( 1 << index ) ) ) ) ) )
                     {
                         char cast_name[MSL];
-                        snprintf( cast_name, MSL, "%s %s", rev_table_lookup( tab_cast_name, ( 1 << index ) ), ch->fighting->GetName_() );
+                        snprintf( cast_name, MSL, "%s %s", rev_table_lookup( tab_cast_name, ( 1 << index ) ), ch->fighting->getName_() );
                         do_cast( ch, cast_name );
                         has_cast = TRUE;
                         break;
@@ -609,9 +609,9 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
     {
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
-        ch->SetModAC( 0 );
-        ch->SetModDR( 0 );
-        ch->SetModHR( 0 );
+        ch->setModAC( 0 );
+        ch->setModDR( 0 );
+        ch->setModHR( 0 );
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );
     }
 
@@ -832,7 +832,7 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
                 ch->hit = UMIN( ch->max_hit, ch->hit + number_range( (int)(dam * .03), (int)(dam * .13) ) );
             }
 
-            ch->SetAlignment( UMAX( -1000, ch->GetAlignment() - 50 ) );
+            ch->setAlignment( UMAX( -1000, ch->getAlignment() - 50 ) );
         }
     }
     if ( !IS_NPC(victim) )
@@ -1112,17 +1112,17 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
                     char bufz[MSL];
 
                     explosion->level = 120;
-                    explosion->SetDescrShort( "@@mConflagration@@N" );
-                    explosion->SetDescrLong( "@@N A @@eFlaming @@NStaff of @@aIce@@N is supsended in mid air!" );
+                    explosion->setDescrShort( "@@mConflagration@@N" );
+                    explosion->setDescrLong( "@@N A @@eFlaming @@NStaff of @@aIce@@N is supsended in mid air!" );
 
                     elemental->level = 140;
-                    elemental->SetName(".hidden");
-                    elemental->SetDescrShort( "@@NThe @@rConflict@@N of @@eFire @@Nand @@aIce@@N" );
-                    elemental->SetDescrLong( "@@NA @@rPillar@@N of @@eFire @@Nand @@aIce@@N immolates itself!" );
+                    elemental->setName(".hidden");
+                    elemental->setDescrShort( "@@NThe @@rConflict@@N of @@eFire @@Nand @@aIce@@N" );
+                    elemental->setDescrLong( "@@NA @@rPillar@@N of @@eFire @@Nand @@aIce@@N immolates itself!" );
 
                     char_to_room( elemental, ch->in_room );
                     obj_to_char( explosion, elemental );
-                    snprintf( bufz, MSL, "%s", explosion->GetName_() );
+                    snprintf( bufz, MSL, "%s", explosion->getName_() );
                     do_wear( elemental, bufz );
 
                     if ( number_range( 0, 99 ) < 40 )
@@ -1332,14 +1332,14 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
                     && victim->act.test(ACT_PKOK) )
             {
 
-                snprintf(buf, MSL, "%s kills %s in mortal combat.", ch->GetName_(), victim->GetName_());
+                snprintf(buf, MSL, "%s kills %s in mortal combat.", ch->getName_(), victim->getName_());
                 info(buf, 1);
             }
             else
             {
                 snprintf( buf, MSL, "%s turns %s into a corpse.  Whooops.",
-                          ( IS_NPC(ch) ? ch->GetDescrShort_() : ch->GetName_() ),
-                          ( IS_NPC(victim) ? victim->GetDescrShort_() : victim->GetName_()) );
+                          ( IS_NPC(ch) ? ch->getDescrShort_() : ch->getName_() ),
+                          ( IS_NPC(victim) ? victim->getDescrShort_() : victim->getName_()) );
                 info( buf, 1 );
             }
 
@@ -1355,10 +1355,10 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
              * * Fixed my bug here too, hehe!
              */
 
-            if ( victim->GetExperience() > 0 )
+            if ( victim->getExperience() > 0 )
             {
-                int lose = victim->GetExperience() / 2;
-                victim->DecrExperience( lose );
+                int lose = victim->getExperience() / 2;
+                victim->decrExperience( lose );
             }
 
         }
@@ -1370,7 +1370,7 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
         else
         {
             char name_buf[MAX_STRING_LENGTH];
-            snprintf( name_buf, MSL, "%s", ch->GetName_() );
+            snprintf( name_buf, MSL, "%s", ch->getName_() );
             raw_kill( victim, name_buf );
         }
         /* NPC victims are no longer valid past this point. raw_kill() will extract_char() and deallocate memory. --Kline */
@@ -1627,7 +1627,7 @@ void check_killer( CHAR_DATA * ch, CHAR_DATA * victim )
     {
         char buf[MAX_STRING_LENGTH];
 
-        snprintf( buf, MSL, "%s flagged as a KILLER for attack on %s.", ch->GetName_(), victim->GetName_() );
+        snprintf( buf, MSL, "%s flagged as a KILLER for attack on %s.", ch->getName_(), victim->getName_() );
         monitor_chan( buf, MONITOR_COMBAT );
     }
     diff = 3;
@@ -1900,11 +1900,11 @@ void update_pos( CHAR_DATA * victim )
 
         if ( !IS_NPC( victim ) )
         {
-            int lose = victim->GetExperience() / 4;
-            victim->DecrExperience( lose );
+            int lose = victim->getExperience() / 4;
+            victim->decrExperience( lose );
         }
 
-        snprintf( buf, MSL, "%s (vampire) has been misted!", victim->GetName_() );
+        snprintf( buf, MSL, "%s (vampire) has been misted!", victim->getName_() );
         monitor_chan( buf, MONITOR_COMBAT );
 
         act( "$n turns to mist and floats away....", victim, NULL, NULL, TO_ROOM );
@@ -2142,9 +2142,9 @@ void set_fighting( CHAR_DATA * ch, CHAR_DATA * victim, bool check )
         /*
          * Then set victim->target to player's name...
          */
-        if ( ch != NULL && victim->target.find(ch->GetName()) == string::npos )
+        if ( ch != NULL && victim->target.find(ch->getName()) == string::npos )
         {
-            victim->target += ch->GetName();
+            victim->target += ch->getName();
             victim->target += " ";
         }
     }
@@ -2157,7 +2157,7 @@ void set_fighting( CHAR_DATA * ch, CHAR_DATA * victim, bool check )
             return;
     }
     /*
-    snprintf(log_buf,MSL,"Adding %s vs %s to the fight queue.",ch->GetName_(),victim->GetName_());
+    snprintf(log_buf,MSL,"Adding %s vs %s to the fight queue.",ch->getName_(),victim->getName_());
     monitor_chan(log_buf,MONITOR_DEBUG);
     */
     fight_list.push_back(ch);
@@ -2271,7 +2271,7 @@ void make_corpse( CHAR_DATA * ch, char *argument )
         corpse = create_object( get_obj_index( OBJ_VNUM_CORPSE_PC ), 0 );
         corpse->timer = number_range( 20, 30 );
 
-        corpse->SetOwner( ch );
+        corpse->setOwner( ch );
 
         if ( ( arg[0] != '\0' ) && ( !IS_NPC( ch ) ) )
         {
@@ -2279,7 +2279,7 @@ void make_corpse( CHAR_DATA * ch, char *argument )
             for ( li = char_list.begin(); li != char_list.end(); li++ )
             {
                 wch = *li;
-                if ( !IS_NPC( wch ) && is_name( arg, const_cast<char *>(wch->GetName_()) ) )
+                if ( !IS_NPC( wch ) && is_name( arg, const_cast<char *>(wch->getName_()) ) )
                 {
                     target = wch;
                     break;
@@ -2315,11 +2315,11 @@ void make_corpse( CHAR_DATA * ch, char *argument )
         corpse->value[0] = 1;
         corpse->value[3] = number_range( 3, 6 );
     }
-    snprintf( buf, MSL, corpse->GetDescrShort_(), name );
-    corpse->SetDescrShort( buf );
+    snprintf( buf, MSL, corpse->getDescrShort_(), name );
+    corpse->setDescrShort( buf );
 
-    snprintf( buf, MSL, corpse->GetDescrLong_(), name );
-    corpse->SetDescrLong( buf );
+    snprintf( buf, MSL, corpse->getDescrLong_(), name );
+    corpse->setDescrLong( buf );
 
     for ( obj = ch->first_carry; obj != NULL; obj = obj_next )
     {
@@ -2479,7 +2479,7 @@ void raw_kill( CHAR_DATA * victim, char *argument )
         {
             char monbuf[MSL];
             snprintf( monbuf, MSL, "%s is looking for their corpse in room %d, but it's not there",
-                      victim->GetName_(), victim->in_room->vnum );
+                      victim->getName_(), victim->in_room->vnum );
             monitor_chan( monbuf, MONITOR_MOB );
         }
         else
@@ -2521,7 +2521,7 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
                  && ( ch->rider == NULL ) ) ) || ( !IS_NPC( victim ) ) || ( victim == ch ) )
         return;
 
-    gain = victim->GetExperience();  /* Now share this out... */
+    gain = victim->getExperience();  /* Now share this out... */
     if ( victim->act.test(ACT_INTELLIGENT ) )
         gain = exp_for_mobile( victim->level, victim );
 
@@ -2585,7 +2585,7 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
 
         snprintf( buf, MSL, "You Receive %d Experience Points.\r\n", xp );
         send_to_char( buf, gch );
-        gch->IncrExperience( xp );
+        gch->incrExperience( xp );
 
         if ( !IS_NPC(gch) && (IS_VAMP( gch ) || IS_WOLF( gch )) )
 
@@ -2593,14 +2593,14 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
 
         if ( !IS_NPC( gch ) && ( gch->pcdata->learned[gsn_emotion_control] < 73 ) )
         {
-            align = gch->GetAlignment() - ( victim->GetAlignment() * ( 80 - gch->pcdata->learned[gsn_emotion_control] ) / 100 );
+            align = gch->getAlignment() - ( victim->getAlignment() * ( 80 - gch->pcdata->learned[gsn_emotion_control] ) / 100 );
 
             if ( align > 500 )
-                gch->SetAlignment( UMIN( gch->GetAlignment() + ( align - 500 ) / 4, 1000 ) );
+                gch->setAlignment( UMIN( gch->getAlignment() + ( align - 500 ) / 4, 1000 ) );
             else if ( align < -500 )
-                gch->SetAlignment( UMAX( gch->GetAlignment() + ( align + 500 ) / 4, -1000 ) );
+                gch->setAlignment( UMAX( gch->getAlignment() + ( align + 500 ) / 4, -1000 ) );
             else
-                gch->DecrAlignment( gch->GetAlignment() / 4 );
+                gch->decrAlignment( gch->getAlignment() / 4 );
         }
         for ( obj = ch->first_carry; obj != NULL; obj = obj_next )
         {
@@ -3248,7 +3248,7 @@ DO_FUN(do_murder)
     }
 
     ch->set_cooldown(COOLDOWN_OFF, 1.50);
-    snprintf( log_buf, (2 * MIL), "%s attacked by %s.\r\n", victim->GetName_(), ch->GetName_() );
+    snprintf( log_buf, (2 * MIL), "%s attacked by %s.\r\n", victim->getName_(), ch->getName_() );
     notify( log_buf, MAX_LEVEL - 2 );
 
     if ( IS_NPC( ch ) || IS_NPC( victim )
@@ -3527,13 +3527,13 @@ DO_FUN(do_flee)
 
         if ( !IS_NPC( ch ) )
         {
-            cost = number_range( ch->GetExperience() / 15, ch->GetExperience() / 10 );
+            cost = number_range( ch->getExperience() / 15, ch->getExperience() / 10 );
             if ( IS_ADEPT(ch) )
                 cost /= 1000;
-            cost = UMIN( cost, ch->GetExperience() );
+            cost = UMIN( cost, ch->getExperience() );
             snprintf( buf, MSL, "You flee from combat!  You lose %d exps.\r\n", cost );
             send_to_char( buf, ch );
-            ch->DecrExperience( cost );
+            ch->decrExperience( cost );
         }
         if ( ( ch->fighting != NULL ) && ( AI_MOB( ch->fighting ) ) )
         {
@@ -3552,10 +3552,10 @@ DO_FUN(do_flee)
     cost = ch->get_level("psuedo") * 3;
     if ( IS_ADEPT(ch) )
         cost = 0;
-    cost = UMIN( cost, ch->GetExperience() );
+    cost = UMIN( cost, ch->getExperience() );
     snprintf( buf, MSL, "You failed!  You lose %d exps.\r\n", cost );
     send_to_char( buf, ch );
-    ch->DecrExperience( cost );
+    ch->decrExperience( cost );
     return;
 }
 
@@ -4807,7 +4807,7 @@ void obj_damage( OBJ_DATA * obj, CHAR_DATA * victim, float dam )
         if ( !IS_NPC( victim ) )
         {
 
-            snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->GetName_(), obj->GetDescrShort_(), victim->in_room->vnum );
+            snprintf( log_buf, (2 * MIL), "%s killed by %s at %d", victim->getName_(), obj->getDescrShort_(), victim->in_room->vnum );
             Utils::Logger( 0, log_buf );
 
             notify( log_buf, 82 );
@@ -4818,10 +4818,10 @@ void obj_damage( OBJ_DATA * obj, CHAR_DATA * victim, float dam )
              * * Fixed my bug here too, hehe!
              */
 
-            if ( victim->GetExperience() > 0 )
+            if ( victim->getExperience() > 0 )
             {
-                int lose = victim->GetExperience() / 2;
-                victim->DecrExperience( lose );
+                int lose = victim->getExperience() / 2;
+                victim->decrExperience( lose );
             }
 
         }
@@ -5154,11 +5154,11 @@ void death_message( CHAR_DATA * ch, CHAR_DATA * victim, int dt, int max_dt )
         obj = create_object( get_obj_index( vnum ), 0 );
         obj->timer = number_range( 4, 7 );
 
-        snprintf( buf, MSL, obj->GetDescrShort_(), name );
-        obj->SetDescrShort( buf );
+        snprintf( buf, MSL, obj->getDescrShort_(), name );
+        obj->setDescrShort( buf );
 
-        snprintf( buf, MSL, obj->GetDescrLong_(), name );
-        obj->SetDescrLong( buf );
+        snprintf( buf, MSL, obj->getDescrLong_(), name );
+        obj->setDescrLong( buf );
 
         obj_to_room( obj, ch->in_room );
     }
@@ -5364,8 +5364,8 @@ DO_FUN(do_stake)
 
         if ( !IS_NPC( victim ) )
         {
-            int lose = 3 * victim->GetExperience() / 4;
-            victim->DecrExperience( lose );
+            int lose = 3 * victim->getExperience() / 4;
+            victim->decrExperience( lose );
         }
 
         raw_kill( victim, "" );
@@ -5801,9 +5801,9 @@ DO_FUN(do_rage)
         ch->act.set(ACT_RAGED);
         ch->pcdata->super->energy = ( ch->pcdata->super->energy_max - number_range( 0, ch->pcdata->super->generation * 3 ) );
         ch->stance = STANCE_WARRIOR;
-        ch->SetModAC( 0 );
-        ch->SetModDR( 0 );
-        ch->SetModHR( 0 );
+        ch->setModAC( 0 );
+        ch->setModDR( 0 );
+        ch->setModHR( 0 );
     }
     else
         send_to_char( "You fail to become @@eENRAGED@@N.\r\n", ch );
@@ -6026,13 +6026,13 @@ DO_FUN(do_disguise)
     }
     if ( !str_cmp(farg, "reset") )
     {
-        ch->SetDescrLong( "" );
+        ch->setDescrLong( "" );
         send_to_char("You have removed your disguise.\r\n", ch);
         return;
     }
     else
     {
-        ch->SetDescrLong( farg );
+        ch->setDescrLong( farg );
         send_to_char("You are now Disguised!!!\r\n", ch);
         return;
     }
@@ -6282,19 +6282,19 @@ DO_FUN(do_stance)
         {
             char stance_buf[MSL];
             if ( stance_app[i].ac_mod > 0 )
-                ch->SetModAC( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->setModAC( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
             else
-                ch->SetModAC( stance_app[i].ac_mod * ch->get_level("psuedo") / 12 );
+                ch->setModAC( stance_app[i].ac_mod * ch->get_level("psuedo") / 12 );
 
             if ( stance_app[i].dr_mod < 0 )
-                ch->SetModDR( stance_app[i].dr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->setModDR( stance_app[i].dr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
             else
-                ch->SetModDR( stance_app[i].dr_mod * ch->get_level("psuedo") / 10 );
+                ch->setModDR( stance_app[i].dr_mod * ch->get_level("psuedo") / 10 );
 
             if ( stance_app[i].hr_mod < 0 )
-                ch->SetModHR( stance_app[i].hr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->setModHR( stance_app[i].hr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
             else
-                ch->SetModHR( stance_app[i].hr_mod * ch->get_level("psuedo") / 10 );
+                ch->setModHR( stance_app[i].hr_mod * ch->get_level("psuedo") / 10 );
 
             ch->stance = i;
             snprintf( stance_buf, MSL, "$n assumes the Stance of the %s!", stance_app[i].name );
@@ -6362,7 +6362,7 @@ void aggro_attack( CHAR_DATA *mob, CHAR_DATA *player )
 
     OBJ_DATA *wield = get_eq_char(mob, WEAR_HOLD_HAND_L);
     if ( wield != NULL && wield->item_type == ITEM_WEAPON && wield->value[3] == 11 && player->fighting == NULL )
-        do_backstab(mob, const_cast<char *>(player->GetName_()));
+        do_backstab(mob, const_cast<char *>(player->getName_()));
     else
         one_hit(mob, player, TYPE_UNDEFINED);
 
@@ -6389,11 +6389,11 @@ void remember_attack( CHAR_DATA *mob, CHAR_DATA *player )
     switch ( number_range(0, 6) )
     {
         case 0:
-            snprintf(buf, MSL, "%s returns! I shall have my revenge at last!", player->GetName_());
+            snprintf(buf, MSL, "%s returns! I shall have my revenge at last!", player->getName_());
             do_yell(mob, buf);
             break;
         case 1:
-            snprintf(buf, MSL, "You should never have returned %s. Ye shall DIE!", player->GetName_());
+            snprintf(buf, MSL, "You should never have returned %s. Ye shall DIE!", player->getName_());
             do_whisper(mob, buf);
             break;
         case 2:
@@ -6403,36 +6403,36 @@ void remember_attack( CHAR_DATA *mob, CHAR_DATA *player )
             do_say(mob, "I SHALL HAVE MY REVENGE!!!");
             break;
         case 3:
-            snprintf(buf, MSL, "%s has wronged me, and now I will seek my revenge!", player->GetName_());
+            snprintf(buf, MSL, "%s has wronged me, and now I will seek my revenge!", player->getName_());
             do_gossip(mob, buf);
-            snprintf(buf, MSL, "Prepare to die, %s.", player->GetName_());
+            snprintf(buf, MSL, "Prepare to die, %s.", player->getName_());
             do_say(mob, buf);
             break;
         case 4:
-            snprintf(buf, MSL, "So, %s. You have returned. Let us finish our fight this time!", player->GetName_());
+            snprintf(buf, MSL, "So, %s. You have returned. Let us finish our fight this time!", player->getName_());
             do_say(mob, buf);
             break;
         case 5:
-            snprintf(buf, MSL, "Only cowards flee from me, %s!", player->GetName_());
+            snprintf(buf, MSL, "Only cowards flee from me, %s!", player->getName_());
             do_say(mob, buf);
             break;
         case 6:
             act("$n looks at $N, and recognizes $M!!", mob, NULL, player, TO_ROOM);
             act("$n looks at you, and recognizes you!!", mob, NULL, player, TO_VICT);
             act("You look at $N, and recognize $M!", mob, NULL, player, TO_CHAR);
-            snprintf(buf, MSL, "There can only be one winner, %s.", player->GetName_());
+            snprintf(buf, MSL, "There can only be one winner, %s.", player->getName_());
             do_say(mob, buf);
             break;
     }
 
     OBJ_DATA *wield = get_eq_char(mob, WEAR_HOLD_HAND_L);
     if ( wield != NULL && wield->item_type == ITEM_WEAPON && wield->value[3] == 11 && player->fighting == NULL )
-        do_backstab(mob, const_cast<char *>(player->GetName_()));
+        do_backstab(mob, const_cast<char *>(player->getName_()));
     else
         one_hit(mob, player, TYPE_UNDEFINED);
 
-    first = static_cast<int>(mob->target.find(player->GetName()));
-    last = (strlen(player->GetName_()) + 1);
+    first = static_cast<int>(mob->target.find(player->getName()));
+    last = (strlen(player->getName_()) + 1);
     mob->target.erase(first, last);
 
     return;

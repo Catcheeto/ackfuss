@@ -149,7 +149,7 @@ DO_FUN(do_enchant)
             bad_enchant_mix = TRUE;
             if ( !str_cmp( arg2, "debug" ) )
             {
-                snprintf( debug, MSL, "Non-enchantment item in matrix..%s\r\n", this_obj->GetName_() );
+                snprintf( debug, MSL, "Non-enchantment item in matrix..%s\r\n", this_obj->getName_() );
                 send_to_char( debug, ch );
             }
             break;
@@ -177,7 +177,7 @@ DO_FUN(do_enchant)
                 default:
                     if ( !str_cmp( arg2, "debug" ) )
                     {
-                        snprintf( debug, MSL, "Bad location in v0 of enchantment %s\r\n", this_obj->GetName_() );
+                        snprintf( debug, MSL, "Bad location in v0 of enchantment %s\r\n", this_obj->getName_() );
                         send_to_char( debug, ch );
                     }
                     break;
@@ -284,7 +284,7 @@ DO_FUN(do_enchant)
             default:
                 if ( !str_cmp( arg2, "debug" ) )
                 {
-                    snprintf( debug, MSL, "Unknown aff on %s\r\n", unique->GetName_() );
+                    snprintf( debug, MSL, "Unknown aff on %s\r\n", unique->getName_() );
                     send_to_char( debug, ch );
                 }
                 break;
@@ -358,7 +358,7 @@ DO_FUN(do_enchant)
 
     if ( !str_cmp( arg1, "show" ) )
     {
-        snprintf( msg_buf, MSL, "Your enchantment will add the following to %s\r\n", unique->GetDescrShort_() );
+        snprintf( msg_buf, MSL, "Your enchantment will add the following to %s\r\n", unique->getDescrShort_() );
 
         if ( new_extras.count() != 0 )
         {
@@ -586,7 +586,7 @@ DO_FUN(do_enchant)
         }
         if ( IS_OBJ_STAT(unique, ITEM_EXTRA_CLAN_EQ) )
         {
-            snprintf( cat_buf, MSL, "%s is clan equipment, and may not be enchanted.\r\n", unique->GetDescrShort_() );
+            snprintf( cat_buf, MSL, "%s is clan equipment, and may not be enchanted.\r\n", unique->getDescrShort_() );
             strncat( msg_buf, cat_buf, MSL - 1 );
             legal_enchant = FALSE;
         }
@@ -616,7 +616,7 @@ DO_FUN(do_enchant)
             {
                 snprintf( cat_buf, MSL,
                           "@@eWARNING: @@WEnchanting %s with these affects will make the item level %d, which is higher than your current ability to use.\r\n",
-                          unique->GetDescrShort_(), min_level );
+                          unique->getDescrShort_(), min_level );
                 strncat( msg_buf, cat_buf, MSL - 1 );
             }
         }
@@ -857,7 +857,7 @@ DO_FUN(do_enchant)
             this_obj_next = this_obj->next_in_carry_list;
             if ( this_obj->item_type == ITEM_ENCHANTMENT )
             {
-                snprintf( enchant_catbuf, MSL, "%s (%d) ", this_obj->GetName_(), this_obj->pIndexData->vnum );
+                snprintf( enchant_catbuf, MSL, "%s (%d) ", this_obj->getName_(), this_obj->pIndexData->vnum );
                 strncat( enchant_buf, enchant_catbuf, MSL - 1 );
                 extract_obj( this_obj );
             }
@@ -876,7 +876,7 @@ DO_FUN(do_enchant)
             AFFECT_DATA *one_aff;
 
             snprintf( brandbuf, MSL, "UNIQUE ITEM: keyword: %s, Name: %s, flags: %s \r\n level: %d, affects:\r\n",
-                      unique->GetName_(), unique->GetDescrShort_(), extra_bit_name( unique->extra_flags ), unique->level );
+                      unique->getName_(), unique->getDescrShort_(), extra_bit_name( unique->extra_flags ), unique->level );
             for ( one_aff = unique->first_apply; one_aff != NULL; one_aff = one_aff->next )
             {
                 if ( one_aff->location != APPLY_NONE && one_aff->modifier != 0 )
@@ -890,7 +890,7 @@ DO_FUN(do_enchant)
             strncat( brandbuf, cat2_buf, MSL - 1 );
             strncat( brandbuf, enchant_buf, MSL - 1 );
             brand = new BRAND_DATA;
-            brand->branded = ch->GetName();
+            brand->branded = ch->getName();
             brand->branded_by = "@@rSystem@@N";
             brand->priority = "unique";
             brand->message = brandbuf;

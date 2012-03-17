@@ -116,11 +116,11 @@ namespace Utils {
 #define HAS_COOLDOWN(ch)        ( ch->cooldown[COOLDOWN_OFF] > 0 || ch->cooldown[COOLDOWN_DEF] > 0 )
 #define IS_CASTING(ch)          ( ch->casting->time > 0 )
 #define IS_GHOST(ch)            ( ch->act.test(ACT_GHOST) )
-#define IS_GOOD(ch)             ( (ch)->GetAlignment() >= 350)
-#define IS_EVIL(ch)             ( (ch)->GetAlignment() <= -350)
+#define IS_GOOD(ch)             ( (ch)->getAlignment() >= 350)
+#define IS_EVIL(ch)             ( (ch)->getAlignment() <= -350)
 #define IS_NEUTRAL(ch)          (!IS_GOOD(ch) && !IS_EVIL(ch))
 #define IS_AWAKE(ch)            (ch->position > POS_SLEEPING)
-#define GET_AC(ch)              ( REAL_AC( ch ) + (ch)->GetModAC() )
+#define GET_AC(ch)              ( REAL_AC( ch ) + (ch)->getModAC() )
 #define REAL_AC(ch)             ((ch)->armor  + ( IS_AWAKE(ch) \
                                  ? ( IS_NPC( ch ) \
                                      ? ( dex_app[get_curr_dex(ch)].defensive * ch->get_level("psuedo") / 20 ) \
@@ -136,9 +136,9 @@ namespace Utils {
 /* Added bonus to hit and dam for higher levl players */
 /* High level naked players should still be able to fight ok */
 
-#define GET_HITROLL(ch)         ( REAL_HITROLL(ch) + ch->GetModHR() + (ch->get_level("psuedo") / 4 ) )
+#define GET_HITROLL(ch)         ( REAL_HITROLL(ch) + ch->getModHR() + (ch->get_level("psuedo") / 4 ) )
 #define REAL_HITROLL(ch)        ((ch)->hitroll+ (str_app[get_curr_str(ch)].tohit * ch->get_level("psuedo") / 10) )
-#define GET_DAMROLL(ch)         ( REAL_DAMROLL(ch) + ch->GetModDR() + (ch->get_level("psuedo") / 4 ) )
+#define GET_DAMROLL(ch)         ( REAL_DAMROLL(ch) + ch->getModDR() + (ch->get_level("psuedo") / 4 ) )
 #define REAL_DAMROLL(ch)        ((ch)->damroll+( str_app[get_curr_str(ch)].todam * ch->get_level("psuedo") / 10 ) )
 #define IS_OUTSIDE(ch)          (!(ch)->in_room->room_flags.test(RFLAG_INDOORS))
 #define WAIT_STATE(ch, npulse)  ((ch)->wait = UMAX((ch)->wait, (npulse)))

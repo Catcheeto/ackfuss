@@ -280,7 +280,7 @@ void build_save_mobs(  )
 
     fprintf( SaveFile, "\n#MOBILE\n" );
     fprintf( SaveFile, "Vnum      %d\n", pMobIndex->vnum );  /* Must be first for sanity checks --Kline */
-    fprintf( SaveFile, "AcMod     %ld\n", pMobIndex->GetModAC() );
+    fprintf( SaveFile, "AcMod     %ld\n", pMobIndex->getModAC() );
 
     outstr.clear();
     fprintf( SaveFile, "Act       " );
@@ -301,17 +301,17 @@ void build_save_mobs(  )
     fprintf( SaveFile, "Class      %d\n", pMobIndex->p_class );
     fprintf( SaveFile, "Def        %d\n", pMobIndex->def );
     fprintf( SaveFile, "Desc       %s~\n", pMobIndex->description );
-    fprintf( SaveFile, "DrMod      %ld\n", pMobIndex->GetModDR() );
-    fprintf( SaveFile, "HrMod      %ld\n", pMobIndex->GetModHR() );
+    fprintf( SaveFile, "DrMod      %ld\n", pMobIndex->getModDR() );
+    fprintf( SaveFile, "HrMod      %ld\n", pMobIndex->getModHR() );
     fprintf( SaveFile, "Level      %d\n", pMobIndex->level );
-    fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->GetDescrLong_() );
-    fprintf( SaveFile, "Name       %s~\n", pMobIndex->GetName_() );
+    fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->getDescrLong_() );
+    fprintf( SaveFile, "Name       %s~\n", pMobIndex->getName_() );
     fprintf( SaveFile, "Position   %d\n", pMobIndex->position );
     fprintf( SaveFile, "Race       %d\n", pMobIndex->race );
     fprintf( SaveFile, "RaceMods   %d\n", pMobIndex->race_mods );
     fprintf( SaveFile, "Resist     %d\n", pMobIndex->resist );
     fprintf( SaveFile, "Sex        %d\n", pMobIndex->sex );
-    fprintf( SaveFile, "ShortDesc  %s~\n", pMobIndex->GetDescrShort_() );
+    fprintf( SaveFile, "ShortDesc  %s~\n", pMobIndex->getDescrShort_() );
     fprintf( SaveFile, "Skills     %d\n", pMobIndex->skills );
     fprintf( SaveFile, "SMagic     %d\n", pMobIndex->strong_magic );
     fprintf( SaveFile, "SpecFun    %s\n", rev_spec_lookup(pMobIndex->spec_fun) );
@@ -365,10 +365,10 @@ void build_save_objects(  )
 
     fprintf( SaveFile, "ItemApply  %d\n", pObjIndex->item_apply );
     fprintf( SaveFile, "Level      %d\n", pObjIndex->level );
-    fprintf( SaveFile, "LongDesc   %s~\n", pObjIndex->GetDescrLong_() );
-    fprintf( SaveFile, "Name       %s~\n", pObjIndex->GetName_() );
+    fprintf( SaveFile, "LongDesc   %s~\n", pObjIndex->getDescrLong_() );
+    fprintf( SaveFile, "Name       %s~\n", pObjIndex->getName_() );
     fprintf( SaveFile, "ObjFun     %s\n", rev_obj_fun_lookup( pObjIndex->obj_fun ) );
-    fprintf( SaveFile, "ShortDesc  %s~\n", pObjIndex->GetDescrShort_() );
+    fprintf( SaveFile, "ShortDesc  %s~\n", pObjIndex->getDescrShort_() );
     fprintf( SaveFile, "Speed      %0.2f\n", pObjIndex->speed );
     fprintf( SaveFile, "Type       %d\n", pObjIndex->item_type );
 
@@ -403,9 +403,9 @@ void build_save_objects(  )
         pAf = pAf->next;
     }
 
-    if ( pObjIndex->GetDescrExtraSize() )
+    if ( pObjIndex->getDescrExtraSize() )
     {
-        list<string> keys = pObjIndex->GetDescrExtraKeys();
+        list<string> keys = pObjIndex->getDescrExtraKeys();
         list<string>::iterator mi = keys.begin();
         string value;
 
@@ -413,7 +413,7 @@ void build_save_objects(  )
         {
             value = *mi;
             fprintf( SaveFile, "#OEXTRA\n" );
-            fprintf( SaveFile, "Desc       %s~\n", pObjIndex->GetDescrExtra_( value ) );
+            fprintf( SaveFile, "Desc       %s~\n", pObjIndex->getDescrExtra_( value ) );
             fprintf( SaveFile, "Keyword    %s~\n", value.c_str() );
             fprintf( SaveFile, "End\n" );
         }
@@ -501,9 +501,9 @@ void build_save_rooms(  )
      * Now do extra descripts..
      */
 
-    if ( pRoomIndex->GetDescrExtraSize() )
+    if ( pRoomIndex->getDescrExtraSize() )
     {
-        list<string> keys = pRoomIndex->GetDescrExtraKeys();
+        list<string> keys = pRoomIndex->getDescrExtraKeys();
         list<string>::iterator mi = keys.begin();
         string value;
 
@@ -511,7 +511,7 @@ void build_save_rooms(  )
         {
             value = *mi;
             fprintf( SaveFile, "#REXTRA\n" );
-            fprintf( SaveFile, "Desc       %s~\n", pRoomIndex->GetDescrExtra_( value ) );
+            fprintf( SaveFile, "Desc       %s~\n", pRoomIndex->getDescrExtra_( value ) );
             fprintf( SaveFile, "Keyword    %s~\n", value.c_str() );
             fprintf( SaveFile, "End\n" );
         }

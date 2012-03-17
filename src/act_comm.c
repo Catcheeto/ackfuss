@@ -84,7 +84,7 @@ bool is_note_to( CHAR_DATA * ch, NOTE_DATA * pnote )
     list<string>::iterator li;
 
     for ( li = pnote->to_list.begin(); li != pnote->to_list.end(); li++ )
-        if ( *li == ch->GetName() )
+        if ( *li == ch->getName() )
             return true;
 
     return false;
@@ -99,7 +99,7 @@ void note_attach( CHAR_DATA * ch )
 
     pnote = new NOTE_DATA;
 
-    pnote->sender = ch->GetName();
+    pnote->sender = ch->getName();
     ch->pcdata->pnote = pnote;
     return;
 }
@@ -117,12 +117,12 @@ void note_remove( CHAR_DATA * ch, NOTE_DATA * pnote )
      * Build a new to_list.
      * Strip out this recipient.
      */
-    pnote->to_list.remove( ch->GetName() );
+    pnote->to_list.remove( ch->getName() );
 
     /*
      * Just a simple recipient removal?
      */
-    if ( ( ch->GetName() == pnote->sender ) && !pnote->to_list.empty() )
+    if ( ( ch->getName() == pnote->sender ) && !pnote->to_list.empty() )
         return;
 
     /*
@@ -208,7 +208,7 @@ DO_FUN(do_note)
                 snprintf( buf, MSL, "[%3d%s] %s: %s\r\n",
                           vnum,
                           ( pnote->date_stamp > ch->pcdata->last_note
-                            && ( pnote->sender == ch->GetName() ) ) ? "N" : " ", pnote->sender.c_str(), pnote->subject );
+                            && ( pnote->sender == ch->getName() ) ) ? "N" : " ", pnote->sender.c_str(), pnote->subject );
                 strncat( buf1, buf, MSL );
                 vnum++;
             }
@@ -244,7 +244,7 @@ DO_FUN(do_note)
             for ( li = note_list.begin(); li != note_list.end(); li++ )
             {
                 pnote = *li;
-                if ( is_note_to( ch, pnote ) && ( ch->GetName() == pnote->sender ) && ch->pcdata->last_note < pnote->date_stamp )
+                if ( is_note_to( ch, pnote ) && ( ch->getName() == pnote->sender ) && ch->pcdata->last_note < pnote->date_stamp )
                 {
                     snprintf( buf, MSL, "The letter is postmarked %d:%s\r\n", vnum, pnote->date );
                     strncat( buf1, buf, MSL );
@@ -577,7 +577,7 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
             break;
 
         case CHANNEL_ADEPT:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "adept" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "adept" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "$n %s: '$t'.", verb );
             break;
@@ -595,13 +595,13 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
             break;
 
         case CHANNEL_CLAN:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "clan" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "clan" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "$n %s: '$t'.", verb );
             break;
 
         case CHANNEL_FAMILY:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "clan" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "clan" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "$n %s: '$t'.", verb );
             break;
@@ -613,7 +613,7 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
             break;
 
         case CHANNEL_RACE:
-            snprintf( buf, MSL, "%s%s %s: '%s'.%s\r\n", color_string( ch, "race" ), verb, ch->GetName_(), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s%s %s: '%s'.%s\r\n", color_string( ch, "race" ), verb, ch->getName_(), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "$n %s: '$t'.", verb );
             break;
@@ -635,31 +635,31 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
             break;
 
         case CHANNEL_REMORTTALK:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "remort" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "remort" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "%s $n: $t.", verb );
             break;
 
         case CHANNEL_DIPLOMAT:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "diplomat" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "diplomat" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "%s $n: $t.", verb );
             break;
 
         case CHANNEL_QUEST:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "quest" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "quest" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "%s $n: $t.", verb );
             break;
 
         case CHANNEL_OOC:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "ooc" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "ooc" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "%s $n: $t.", verb );
             break;
 
         case CHANNEL_GAME:
-            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->GetName_(), color_string( ch, "game" ), argument, color_string( ch, "normal" ) );
+            snprintf( buf, MSL, "%s %s: '%s%s%s'.\r\n", verb, ch->getName_(), color_string( ch, "game" ), argument, color_string( ch, "normal" ) );
             send_to_char( buf, ch );
             snprintf( buf, MSL, "%s $n: $t.", verb );
             break;
@@ -1152,10 +1152,10 @@ DO_FUN(do_ignore)
         arg[i] = str_dup( ch->pcdata->ignore_list[i] );
     }
 
-    if ( !str_cmp( victim->GetName(), arg[0] ) || !str_cmp( victim->GetName(), arg[1] ) || !str_cmp( victim->GetName(), arg[2] ) )
+    if ( !str_cmp( victim->getName(), arg[0] ) || !str_cmp( victim->getName(), arg[1] ) || !str_cmp( victim->getName(), arg[2] ) )
     {  /* if already on the list, remove them */
         i = 0;
-        while ( str_cmp( victim->GetName(), arg[i] ) )
+        while ( str_cmp( victim->getName(), arg[i] ) )
         {
             i++;
         }
@@ -1276,10 +1276,10 @@ DO_FUN(do_tell)
 
 
     if ( ( !IS_NPC( victim ) )
-            && ( !str_cmp( victim->pcdata->ignore_list[0], ch->GetName() ) ||
-                 !str_cmp( victim->pcdata->ignore_list[1], ch->GetName() ) || !str_cmp( victim->pcdata->ignore_list[2], ch->GetName() ) ) && !IS_IMMORTAL(ch) )
+            && ( !str_cmp( victim->pcdata->ignore_list[0], ch->getName() ) ||
+                 !str_cmp( victim->pcdata->ignore_list[1], ch->getName() ) || !str_cmp( victim->pcdata->ignore_list[2], ch->getName() ) ) && !IS_IMMORTAL(ch) )
     {
-        snprintf( buf, MSL, "%s @@Ris ignoring you!!@@g\r\n", victim->GetName_() );
+        snprintf( buf, MSL, "%s @@Ris ignoring you!!@@g\r\n", victim->getName_() );
         send_to_char( buf, ch );
         return;
     }
@@ -1738,7 +1738,7 @@ DO_FUN(do_quit)
     send_to_char( "@@W-- George Orwell, '1984'@@g\r\n", ch );
 
     act( "$n waves, and leaves the game.", ch, NULL, NULL, TO_ROOM );
-    snprintf( log_buf, (2 * MIL), "%s quits ACK!", ch->GetName_() );
+    snprintf( log_buf, (2 * MIL), "%s quits ACK!", ch->getName_() );
     if ( ch->level != 85 )
         notify( log_buf, MAX_LEVEL - 2 );
     Utils::Logger( 0, log_buf );
@@ -1754,12 +1754,12 @@ DO_FUN(do_quit)
 
         if ( ( other_logins != d )
                 && ( other_logins->character != NULL )
-                && ( !other_logins->getConnectionState( CON_RECONNECTING ) ) && ( other_logins->character->GetName() == ch->GetName() ) )
+                && ( !other_logins->getConnectionState( CON_RECONNECTING ) ) && ( other_logins->character->getName() == ch->getName() ) )
         {
             if ( other_logins->getConnectionState( CON_GET_OLD_PASSWORD ) )
             {
                 char logbuf[MSL];
-                snprintf( logbuf, MSL, "CHEATER!!! Possible attempt to utilize eq dup bug, %s", other_logins->character->GetName_() );
+                snprintf( logbuf, MSL, "CHEATER!!! Possible attempt to utilize eq dup bug, %s", other_logins->character->getName_() );
 
                 Utils::Logger( 0, logbuf );
             }
@@ -1788,7 +1788,7 @@ DO_FUN(do_save)
     }
 
     save_char_obj( ch );
-    snprintf( buf, MSL, "Saving %s.\r\n", ch->GetName_() );
+    snprintf( buf, MSL, "Saving %s.\r\n", ch->getName_() );
     if ( str_cmp(argument, "auto") )
         send_to_char( buf, ch );
     return;
@@ -1831,7 +1831,7 @@ DO_FUN(do_follow)
     }
 
     if ( IS_RIDING( ch ) && is_same_group( ch, ch->riding ) )
-        do_group( ch, const_cast<char *>(ch->riding->GetName_()) );
+        do_group( ch, const_cast<char *>(ch->riding->getName_()) );
 
     if ( ch->master != NULL )
         stop_follower( ch );
@@ -2119,7 +2119,7 @@ DO_FUN(do_group)
                     snprintf( buf, MSL,
                               "%-16s %4d of %4d hp %4d of %4d mana %4d of %4d move %5lu xp %0.2f%% split\r\n",
                               capitalize( victim->get_name(ch) ),
-                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->GetExperience(), percent );
+                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->getExperience(), percent );
                 }
                 else
                 {
@@ -2128,7 +2128,7 @@ DO_FUN(do_group)
                               victim->level,
                               IS_NPC( victim ) ? "Mob" : class_table[victim->p_class].who_name,
                               capitalize( victim->get_name(ch) ),
-                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->GetExperience(), percent );
+                              victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->getExperience(), percent );
                 }
 
                 send_to_char( buf, ch );
@@ -2296,7 +2296,7 @@ DO_FUN(do_gtell)
     if ( !IS_NPC( ch ) && ch->pcdata->condition[COND_DRUNK] > 10 )
         argument = slur_text( argument );
 
-    snprintf( buf, MSL, "%s tells the group '%s'.\r\n", ch->GetName_(), argument );
+    snprintf( buf, MSL, "%s tells the group '%s'.\r\n", ch->getName_(), argument );
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         gch = *li;
@@ -2406,7 +2406,7 @@ DO_FUN(do_pray)
     }
 
     send_to_char( "You pray, concentrating on your message.\r\n", ch );
-    snprintf( buf, MSL, "%s sends the following message via prayer:\r\n`%s'\r\n", ch->GetName_(), argument );
+    snprintf( buf, MSL, "%s sends the following message via prayer:\r\n`%s'\r\n", ch->getName_(), argument );
     notify( buf, LEVEL_HERO );
 
     return;

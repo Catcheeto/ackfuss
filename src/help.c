@@ -122,13 +122,13 @@ DO_FUN(do_help)
         if ( !shelp )
         {
             ch->send("No help on that word.\r\n");
-            snprintf(log_buf, MIL, "Missing help: %s attempted by %s.", argument, ch->GetName_());
+            snprintf(log_buf, MIL, "Missing help: %s attempted by %s.", argument, ch->getName_());
             monitor_chan(log_buf, MONITOR_HELPS);
         }
         else
         {
             ch->send("No sHelp for that skill/spell.\r\n");
-            snprintf(log_buf, MIL, "Missing sHelp: %s attempted by %s.", argument, ch->GetName_());
+            snprintf(log_buf, MIL, "Missing sHelp: %s attempted by %s.", argument, ch->getName_());
             monitor_chan(log_buf, MONITOR_HELPS);
         }
         return;
@@ -154,13 +154,13 @@ DO_FUN(do_help)
             if ( !shelp )
             {
                 ch->send("No help on that word.\r\n");
-                snprintf(log_buf, MIL, "Missing help: %s attempted by %s.", argument, ch->GetName_());
+                snprintf(log_buf, MIL, "Missing help: %s attempted by %s.", argument, ch->getName_());
                 monitor_chan(log_buf, MONITOR_HELPS);
             }
             else
             {
                 ch->send("No sHelp for that skill/spell.\r\n");
-                snprintf(log_buf, MIL, "Missing sHelp: %s attempted by %s.", argument, ch->GetName_());
+                snprintf(log_buf, MIL, "Missing sHelp: %s attempted by %s.", argument, ch->getName_());
                 monitor_chan(log_buf, MONITOR_HELPS);
             }
             return;

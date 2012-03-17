@@ -740,7 +740,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
             {
                 obj = get_obj_index( ch->pcdata->build_vnum );
                 if ( obj != NULL )
-                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, obj->GetDescrShort_() );
+                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, obj->getDescrShort_() );
             }
         }
 
@@ -754,7 +754,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
             {
                 mob = get_mob_index( ch->pcdata->build_vnum );
                 if ( mob != NULL )
-                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, mob->GetDescrShort_() );
+                    snprintf( msg2, MSL, "[%5d]: %s", ch->pcdata->build_vnum, mob->getDescrShort_() );
             }
         }
         snprintf( msg3, MSL, "< %s %s >", msg, msg2 );
@@ -950,7 +950,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                         cost = exp_to_level( ch, cl_index, 5 );
                     else
                         cost = exp_to_level( ch, cl_index, ch->pcdata->order[cl_index] );
-                    snprintf( buf2, MSL, "%lu", UMAX( 0, cost - ch->GetExperience() ) );
+                    snprintf( buf2, MSL, "%lu", UMAX( 0, cost - ch->getExperience() ) );
                     i = buf2;
                     break;
                 }
@@ -1003,11 +1003,11 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case 'x':
-                snprintf( buf2, MSL, "%lu", ch->GetExperience() );
+                snprintf( buf2, MSL, "%lu", ch->getExperience() );
                 i = buf2;
                 break;
             case 'X':
-                snprintf( buf2, MSL, "%s", comma_print(ch->GetExperience()) );
+                snprintf( buf2, MSL, "%s", comma_print(ch->getExperience()) );
                 i = buf2;
                 break;
             case 'g':
@@ -1016,7 +1016,7 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 break;
             case 'a':
                 if ( ch->level < 5 )
-                    snprintf( buf2, MSL, "%ld", ch->GetAlignment() );
+                    snprintf( buf2, MSL, "%ld", ch->getAlignment() );
                 else
                     snprintf( buf2, MSL, "%s", IS_GOOD( ch ) ? "good" : IS_EVIL( ch ) ? "evil" : "neutral" );
                 i = buf2;
@@ -1562,7 +1562,7 @@ void nanny( Brain *b, const string input )
                 b->Disconnect();
                 return;
             }
-            if ( check_playing( b, ch->GetName() ) )
+            if ( check_playing( b, ch->getName() ) )
                 return;
         }
 
@@ -1603,7 +1603,7 @@ void nanny( Brain *b, const string input )
             /*
              * New characters with same name fix by Salem's Lot
              */
-            if ( check_playing( b, ch->GetName() ) )
+            if ( check_playing( b, ch->getName() ) )
                 return;
 
             for ( li = ban_list.begin(); li != ban_list.end(); li++ )
@@ -1634,7 +1634,7 @@ void nanny( Brain *b, const string input )
         if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ) )
         {
             b->Send( "Wrong password.\r\n" );
-            snprintf( buf, MSL, "FAILED LOGIN for %s from site %s.", ch->GetName_(), b->getHost_() );
+            snprintf( buf, MSL, "FAILED LOGIN for %s from site %s.", ch->getName_(), b->getHost_() );
             monitor_chan( buf, MONITOR_CONNECT );
             ch->pcdata->failures++;
             save_char_obj( ch );
@@ -1647,10 +1647,10 @@ void nanny( Brain *b, const string input )
         if ( check_reconnect( b, TRUE ) )
             return;
 
-        if ( check_playing( b, ch->GetName() ) )
+        if ( check_playing( b, ch->getName() ) )
             return;
 
-        snprintf( log_buf, (2 * MIL), "%s has connected.", ch->GetName_() );
+        snprintf( log_buf, (2 * MIL), "%s has connected.", ch->getName_() );
         monitor_chan( log_buf, MONITOR_CONNECT );
 
         snprintf( log_buf, (2 * MIL), "Site Name: %s.", b->getHost_() );
@@ -1686,7 +1686,7 @@ void nanny( Brain *b, const string input )
         {
             case 'y':
             case 'Y':
-                snprintf( buf, MSL, "New character.\r\nGive me a password for %s: %s", ch->GetName_(), echo_off_str );
+                snprintf( buf, MSL, "New character.\r\nGive me a password for %s: %s", ch->getName_(), echo_off_str );
                 b->Send( buf );
                 b->setConnectionState( CON_GET_NEW_PASSWORD );
                 return;
@@ -1716,7 +1716,7 @@ void nanny( Brain *b, const string input )
             return;
         }
 
-        pwdnew = crypt( argument, ch->GetName_() );
+        pwdnew = crypt( argument, ch->getName_() );
         for ( p = pwdnew; *p != '\0'; p++ )
         {
             if ( *p == '~' )
@@ -1759,7 +1759,7 @@ void nanny( Brain *b, const string input )
             return;
         }
 
-        pwdnew = crypt( argument, b->character->GetName_() );
+        pwdnew = crypt( argument, b->character->getName_() );
         for ( p = pwdnew; *p != '\0'; p++ )
         {
             if ( *p == '~' )
@@ -1852,7 +1852,7 @@ void nanny( Brain *b, const string input )
                         return;
                     }
                 }
-                snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->GetName_(), b->getHost_() );
+                snprintf( log_buf, (2 * MIL), "%s@%s new player.", ch->getName_(), b->getHost_() );
                 Utils::Logger( 0, log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
                 b->Send( "\r\n" );
@@ -2230,7 +2230,7 @@ void nanny( Brain *b, const string input )
                 save_mudinfo();                /* if we crash that no one else logs in first to */
             }                               /* steal power. --Kline                          */
 
-            ch->SetExperience( 0 );
+            ch->setExperience( 0 );
             ch->hit = ch->max_hit;
             ch->mana = ch->max_mana;
             ch->move = ch->max_move;
@@ -2295,12 +2295,12 @@ void nanny( Brain *b, const string input )
             {
                 if ( strcmp( b->getHost_(), ch->pcdata->host[i] ) )
                 {
-                    snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->GetName_(), b->getHost_(), ch->pcdata->host[0] );
+                    snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->getName_(), b->getHost_(), ch->pcdata->host[0] );
                     Utils::Logger( 0, msg );
                     monitor_chan( msg, MONITOR_CONNECT );
                     if ( ( ch->level > 80 ) )
                     {
-                        snprintf( msg, MSL, "WARNING!!! %s logged in with level %d.", ch->GetName_(), ch->level );
+                        snprintf( msg, MSL, "WARNING!!! %s logged in with level %d.", ch->getName_(), ch->level );
                         Utils::Logger( 0, msg );
                     }
 
@@ -2331,7 +2331,7 @@ void nanny( Brain *b, const string input )
         for ( li = note_list.begin(); li != note_list.end(); li++ )
         {
             pnote = *li;
-            if ( is_note_to( ch, pnote ) && ( ch->GetName() == pnote->sender ) && pnote->date_stamp > ch->pcdata->last_note )
+            if ( is_note_to( ch, pnote ) && ( ch->getName() == pnote->sender ) && pnote->date_stamp > ch->pcdata->last_note )
                 notes++;
         }
 
@@ -2348,7 +2348,7 @@ void nanny( Brain *b, const string input )
         act( "$n enters " mudnamecolor ".", ch, NULL, NULL, TO_ROOM );
         char_list.push_back(ch); /* we removed them earlier in the function, now put them back that login is done --Kline */
 
-        snprintf( buf, MSL, "%s has entered the game.", ch->GetName_() );
+        snprintf( buf, MSL, "%s has entered the game.", ch->getName_() );
         monitor_chan( buf, MONITOR_CONNECT );
         update_player_cnt( );
 
@@ -2629,7 +2629,7 @@ bool check_login_cmd( DESCRIPTOR_DATA *d, char *cmd )
             return true;
         }
 
-        snprintf( buf, MSL, "\r\nEnter a new password for %s: %s", who->character->GetName_(), echo_off_str );
+        snprintf( buf, MSL, "\r\nEnter a new password for %s: %s", who->character->getName_(), echo_off_str );
         d->Send( buf );
         d->character = who->character;
         d->setConnectionState( CON_RESET_PASSWORD );
@@ -2698,7 +2698,7 @@ bool check_parse_name( char *name )
         {
             for ( pMobIndex = mob_index_hash[iHash]; pMobIndex != NULL; pMobIndex = pMobIndex->next )
             {
-                if ( is_name( name, pMobIndex->GetName() ) )
+                if ( is_name( name, pMobIndex->getName() ) )
                     return FALSE;
             }
         }
@@ -2721,7 +2721,7 @@ bool check_reconnect( DESCRIPTOR_DATA * d, bool fConn )
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         ch = *li;
-        if ( !IS_NPC( ch ) && ( !fConn || ch->desc == NULL ) && d->character->GetName() == ch->GetName() )
+        if ( !IS_NPC( ch ) && ( !fConn || ch->desc == NULL ) && d->character->getName() == ch->getName() )
         {
             if ( fConn == FALSE )
             {
@@ -2736,7 +2736,7 @@ bool check_reconnect( DESCRIPTOR_DATA * d, bool fConn )
                 ch->timer = 0;
                 send_to_char( "Reconnecting.\r\n", ch );
                 act( "$n reconnects.", ch, NULL, NULL, TO_ROOM );
-                snprintf( log_buf, (2 * MIL), "%s@%s reconnected.", ch->GetName_(), d->getHost_() );
+                snprintf( log_buf, (2 * MIL), "%s@%s reconnected.", ch->getName_(), d->getHost_() );
                 Utils::Logger( 0, log_buf );
                 monitor_chan( log_buf, MONITOR_CONNECT );
                 d->setConnectionState( CON_PLAYING );
@@ -2774,7 +2774,7 @@ bool check_playing( DESCRIPTOR_DATA * d, string name )
                 && dold->character != NULL
                 && !dold->getConnectionState( CON_GET_NAME )
                 && !dold->getConnectionState( CON_GET_OLD_PASSWORD )
-                && name == ( dold->original ? dold->original->GetName() : dold->character->GetName() ) )
+                && name == ( dold->original ? dold->original->getName() : dold->character->getName() ) )
         {
             snprintf( buf, MSL, "Player from site %s tried to login as %s (already playing) !", d->getHost_(), name.c_str() );
             monitor_chan( buf, MONITOR_CONNECT );
@@ -3102,22 +3102,22 @@ void act( const char *format, CHAR_DATA * ch, const void *arg1, const void *arg2
                         i = his_her[URANGE( 0, vch->sex, 2 )];
                         break;
                     case 'k':
-                        one_argument( const_cast<char *>(ch->GetName_()), tmp_str );
+                        one_argument( const_cast<char *>(ch->getName_()), tmp_str );
                         i = ( char * )tmp_str;
                         break;
                     case 'K':
-                        one_argument( const_cast<char *>(ch->GetName_()), tmp_str );
+                        one_argument( const_cast<char *>(ch->getName_()), tmp_str );
                         i = ( char * )tmp_str;
                         break;
 
                     case 'p':
                         if ( obj1 )
-                            obj1->GetDescrShort_( to );
+                            obj1->getDescrShort_( to );
                         break;
 
                     case 'P':
                         if ( obj2 )
-                            obj2->GetDescrShort_( to );
+                            obj2->getDescrShort_( to );
                         break;
 
                     case 'd':
@@ -3173,7 +3173,7 @@ DO_FUN(do_finger)
     for ( di = brain_list.begin(); di != brain_list.end(); di++ )
     {
         this_d = *di;
-        if ( ( this_d->getConnectionState() > 0 ) && !str_cmp( this_d->character->GetName(), name ) )
+        if ( ( this_d->getConnectionState() > 0 ) && !str_cmp( this_d->character->getName(), name ) )
         {
             do_whois( ch, name );
             return;
@@ -3193,7 +3193,7 @@ DO_FUN(do_finger)
     d.character = NULL;
     victim->desc = NULL;
 
-    snprintf( buf, MSL, "Name: %s.\r\n", capitalize( victim->GetName_() ) );
+    snprintf( buf, MSL, "Name: %s.\r\n", capitalize( victim->getName_() ) );
     send_to_char( buf, ch );
 
     snprintf( buf, MSL, "Last Login was from: %s.\r\n", victim->pcdata->host[0] );
@@ -3372,7 +3372,7 @@ void update_player_cnt( void )
  for ( di = brain_list.begin(); di != brain_list.end(); di++ )
  {
      d = *di;
-     if( !d->character || d->character->GetName().empty() || !d->getConnectionState( CON_PLAYING ) )
+     if( !d->character || d->character->getName().empty() || !d->getConnectionState( CON_PLAYING ) )
          continue;
      else
          found++;

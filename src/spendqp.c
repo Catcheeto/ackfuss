@@ -351,7 +351,7 @@ void do_qpspend( CHAR_DATA * ch, char *argument )
                 do_save( ch, "auto" );
                 {
                     brand = new BRAND_DATA;
-                    brand->branded = ch->GetName();
+                    brand->branded = ch->getName();
                     brand->branded_by = "@@rSystem@@N";
                     brand->priority = "normal";
                     brand->message = brandbuf;
@@ -416,7 +416,7 @@ void do_qpspend( CHAR_DATA * ch, char *argument )
             do_save( ch, "auto" );
             {
                 brand = new BRAND_DATA;
-                brand->branded = ch->GetName();
+                brand->branded = ch->getName();
                 brand->branded_by = "@@rSystem@@N";
                 brand->priority = "normal";
                 snprintf( brandbuf, MSL, "Assist message changed to %s\r\n", ch->pcdata->assist_msg );
@@ -510,7 +510,7 @@ void do_qpspend( CHAR_DATA * ch, char *argument )
             for ( li = obj_list.begin(); li != obj_list.end(); li++ )
             {
                 obj = *li;
-                if ( ( ( obj->pIndexData->vnum ) == OBJ_VNUM_CORPSE_PC ) && ( ( ch == obj->GetOwner() ) ) && ( !( obj->in_room == ch->in_room ) ) ) /*don't work! */
+                if ( ( ( obj->pIndexData->vnum ) == OBJ_VNUM_CORPSE_PC ) && ( ( ch == obj->getOwner() ) ) && ( !( obj->in_room == ch->in_room ) ) ) /*don't work! */
                 {
                     found = TRUE;
                     obj_from_room( obj );
@@ -718,7 +718,7 @@ void do_immbrand( CHAR_DATA * ch, char *argument )
         }
 
         ch->pcdata->current_brand->dt_stamp = current_time_str();
-        ch->pcdata->current_brand->branded_by = ch->GetName();
+        ch->pcdata->current_brand->branded_by = ch->getName();
         ch->pcdata->current_brand = NULL;
         save_brands(  );
         send_to_char( "Ok.\r\n", ch );

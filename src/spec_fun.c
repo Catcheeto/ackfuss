@@ -789,7 +789,7 @@ SPEC_FUN(spec_executioner)
     if ( undead )
         snprintf( buf, MSL, "BANZAI!!! UNDEAD HAVE ARRIVED!!! PROTECT THE LIVING!!!" );
     else
-        snprintf( buf, MSL, "%s is a %s!  PROTECT THE INNOCENT!  MORE BLOOOOD!!!", victim->GetName_(), crime );
+        snprintf( buf, MSL, "%s is a %s!  PROTECT THE INNOCENT!  MORE BLOOOOD!!!", victim->getName_(), crime );
 
     do_yell( ch, buf );
     one_hit( ch, victim, TYPE_UNDEFINED );
@@ -1067,7 +1067,7 @@ SPEC_FUN(spec_policeman)
         return FALSE;
 
 
-    snprintf( buf, MSL, "%s is a %s, I shall not rest till justice is done!", victim->GetName_(), crime );
+    snprintf( buf, MSL, "%s is a %s, I shall not rest till justice is done!", victim->getName_(), crime );
     do_yell( ch, buf );
 
     set_hunt( ch, NULL, victim, NULL, 0, 0 );
@@ -1399,7 +1399,7 @@ SPEC_FUN(spec_rewield)
 
         if ( pickup )
         {
-            snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", weapon->GetDescrShort_() );
+            snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", weapon->getDescrShort_() );
             do_say( ch, buf );
         }
 
@@ -1411,7 +1411,7 @@ SPEC_FUN(spec_rewield)
             if ( pickup )
                 get_obj( ch, weapon, NULL );
 
-            ch->EquipThing( weapon );
+            ch->equipThing( weapon );
 
             /*
              * Check is mob wielded weapon ok...
@@ -1743,7 +1743,7 @@ SPEC_FUN(spec_vamp_hunter)
         case 5:
             break;
         case 6:
-            snprintf( buf, MSL, "%s", ch->hunting->GetName_() );
+            snprintf( buf, MSL, "%s", ch->hunting->getName_() );
             snprintf( buf1, MSL, "@@eI know that you are a Vampire, and I shall not rest until your are destroyed!!!@@N\r\n" );
             strncat( buf, buf1, MSL - 1 );
             do_tell( ch, buf );
@@ -1757,7 +1757,7 @@ SPEC_FUN(spec_vamp_hunter)
         case 12:
         case 13:
             snprintf( buf, MSL, "My informants have told me that %s is a Vampire, and I have vowed to destroy him!!\r\n",
-                      ch->hunting->GetName_() );
+                      ch->hunting->getName_() );
             do_yell( ch, buf );
             break;
 
@@ -1766,7 +1766,7 @@ SPEC_FUN(spec_vamp_hunter)
         case 16:
             break;
         case 17:
-            snprintf( buf, MSL, " %s ", ch->hunting->GetName_() );
+            snprintf( buf, MSL, " %s ", ch->hunting->getName_() );
             snprintf( buf1, MSL, "@@Do you finally know fear? I shall not rest until ALL of your kind are destroyed!!!@@N\r\n" );
             strncat( buf, buf1, MSL - 1 );
             do_tell( ch, buf );
@@ -1778,7 +1778,7 @@ SPEC_FUN(spec_vamp_hunter)
         case 20:
             snprintf( buf, MSL,
                       "All the realm shall know that %s is a Vampire, and I shall eridicate all of these vile creatures!!\r\n",
-                      ch->hunting->GetName_() );
+                      ch->hunting->getName_() );
             do_yell( ch, buf );
             break;
         default:

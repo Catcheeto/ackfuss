@@ -996,7 +996,7 @@ void load_mobile( FILE * fp )
                 break;
 
             case 'A':
-                KEY_("AcMod", pMobIndex->SetModAC, fread_number(fp));
+                KEY_("AcMod", pMobIndex->setModAC, fread_number(fp));
                 if ( !str_cmp( word, "Act" ) )
                 {
                     tmp = fread_word(fp);
@@ -1033,20 +1033,20 @@ void load_mobile( FILE * fp )
             case 'D':
                 KEY("Def", pMobIndex->def, fread_number(fp));
                 SKEY("Desc", pMobIndex->description, fread_string(fp));
-                KEY_("DrMod", pMobIndex->SetModDR, fread_number(fp));
+                KEY_("DrMod", pMobIndex->setModDR, fread_number(fp));
                 break;
 
             case 'H':
-                KEY_("HrMod", pMobIndex->SetModHR, fread_number(fp));
+                KEY_("HrMod", pMobIndex->setModHR, fread_number(fp));
                 break;
 
             case 'L':
                 KEY("Level", pMobIndex->level, fread_number(fp));
-                KEY_("LongDesc", pMobIndex->SetDescrLong, fread_string(fp));
+                KEY_("LongDesc", pMobIndex->setDescrLong, fread_string(fp));
                 break;
 
             case 'N':
-                KEY_("Name", pMobIndex->SetName, fread_string(fp));
+                KEY_("Name", pMobIndex->setName, fread_string(fp));
                 break;
 
             case 'P':
@@ -1061,7 +1061,7 @@ void load_mobile( FILE * fp )
 
             case 'S':
                 KEY("Sex", pMobIndex->sex, fread_number(fp));
-                KEY_("ShortDesc", pMobIndex->SetDescrShort, fread_string(fp));
+                KEY_("ShortDesc", pMobIndex->setDescrShort, fread_string(fp));
                 KEY("Skills", pMobIndex->skills, fread_number(fp));
                 KEY("SMagic", pMobIndex->strong_magic, fread_number(fp));
                 if ( !str_cmp(word, "SpecFun") )
@@ -1114,7 +1114,7 @@ void load_mobile( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in mob :%s (%s), no match for ( %s ).", area_load->name, pMobIndex->GetDescrShort_(), word );
+        snprintf( log_buf, (2 * MIL), "Loading in mob :%s (%s), no match for ( %s ).", area_load->name, pMobIndex->getDescrShort_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -1173,7 +1173,7 @@ void load_oaffect( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in oaffect :%s (%s), no match for ( %s ).", area_load->name, obj_load->GetName_(), word );
+        snprintf( log_buf, (2 * MIL), "Loading in oaffect :%s (%s), no match for ( %s ).", area_load->name, obj_load->getName_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -1261,11 +1261,11 @@ void load_object( FILE * fp )
 
             case 'L':
                 KEY("Level", pObjIndex->level, fread_number(fp));
-                KEY_("LongDesc", pObjIndex->SetDescrLong, fread_string(fp));
+                KEY_("LongDesc", pObjIndex->setDescrLong, fread_string(fp));
                 break;
 
             case 'N':
-                KEY_("Name", pObjIndex->SetName, fread_string(fp));
+                KEY_("Name", pObjIndex->setName, fread_string(fp));
                 break;
 
             case 'O':
@@ -1292,7 +1292,7 @@ void load_object( FILE * fp )
                 break;
 
             case 'S':
-                KEY_("ShortDesc", pObjIndex->SetDescrShort, fread_string(fp));
+                KEY_("ShortDesc", pObjIndex->setDescrShort, fread_string(fp));
                 KEY("Speed", pObjIndex->speed, fread_float(fp));
                 break;
 
@@ -1356,7 +1356,7 @@ void load_object( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in obj :%s (%s), no match for ( %s ).", area_load->name, pObjIndex->GetDescrShort_(), word );
+        snprintf( log_buf, (2 * MIL), "Loading in obj :%s (%s), no match for ( %s ).", area_load->name, pObjIndex->getDescrShort_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -1411,12 +1411,12 @@ void load_oextra( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in oextra :%s (%s), no match for ( %s ).", area_load->name, obj_load->GetName_(), word );
+        snprintf( log_buf, (2 * MIL), "Loading in oextra :%s (%s), no match for ( %s ).", area_load->name, obj_load->getName_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
 
-    obj_load->SetDescrExtra( key, value );
+    obj_load->setDescrExtra( key, value );
     return;
 }
 
@@ -1613,7 +1613,7 @@ void load_rextra( FILE * fp )
         fread_to_eol( fp );
     }
 
-    room_load->SetDescrExtra( key, value );
+    room_load->setDescrExtra( key, value );
     return;
 }
 
@@ -1819,7 +1819,7 @@ void load_shop( FILE * fp )
 
     if ( !fMatch )
     {
-        snprintf( log_buf, (2 * MIL), "Loading in shop :%s (%s), no match for ( %s ).", area_load->name, get_mob_index(pShop->keeper)->GetDescrShort_(), word );
+        snprintf( log_buf, (2 * MIL), "Loading in shop :%s (%s), no match for ( %s ).", area_load->name, get_mob_index(pShop->keeper)->getDescrShort_(), word );
         monitor_chan( log_buf, MONITOR_BAD );
         fread_to_eol( fp );
     }
@@ -2490,7 +2490,7 @@ void reset_area( AREA_DATA * pArea )
                 if ( pReset->command == 'E' )
                 {
                     char objname[MSL];
-                    char fixme[MSL]; strcpy(fixme,obj->GetName_());
+                    char fixme[MSL]; strcpy(fixme,obj->getName_());
                     one_argument( fixme, objname );
                     if ( obj->level > mob->get_level() )
                         obj->level = mob->get_level();
@@ -2620,7 +2620,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
         /*
          * Only load one with the same name
          */
-        snprintf( buf, 255, "%s n%i", pMobIndex->GetName_(), 1 );
+        snprintf( buf, 255, "%s n%i", pMobIndex->getName_(), 1 );
 
     }
 
@@ -2634,23 +2634,23 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
         aggro_list.push_back(mob);
 
     if ( pMobIndex->act.test(ACT_INTELLIGENT) )
-        mob->SetName( buf );
+        mob->setName( buf );
     else
-        mob->SetName( pMobIndex->GetName() );
+        mob->setName( pMobIndex->getName() );
 
-    mob->SetDescrShort( pMobIndex->GetDescrShort() );
-    mob->SetDescrLong( pMobIndex->GetDescrLong() );
+    mob->setDescrShort( pMobIndex->getDescrShort() );
+    mob->setDescrLong( pMobIndex->getDescrLong() );
     mob->description = pMobIndex->description;
     mob->npcdata->spec_fun = pMobIndex->spec_fun;
     mob->prompt = str_dup(DEFAULT_PROMPT);
     mob->level = pMobIndex->level;
     mob->act = pMobIndex->act;
     mob->affected_by = pMobIndex->affected_by;
-    mob->SetAlignment( pMobIndex->alignment );
+    mob->setAlignment( pMobIndex->alignment );
     mob->sex = pMobIndex->sex;
-    mob->SetModAC( pMobIndex->GetModAC() );
-    mob->SetModHR( pMobIndex->GetModHR() );
-    mob->SetModDR( pMobIndex->GetModDR() );
+    mob->setModAC( pMobIndex->getModAC() );
+    mob->setModHR( pMobIndex->getModHR() );
+    mob->setModDR( pMobIndex->getModDR() );
 
     mob->armor = interpolate( mob->level / 2, 100, 100 );
     hold = mob->armor;
@@ -2672,7 +2672,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->max_hit = (int)hold;
     mob->hit = mob->max_hit;
 
-    mob->SetExperience( exp_for_mobile( mob->level, mob ) );
+    mob->setExperience( exp_for_mobile( mob->level, mob ) );
 
     /*
      * mana for mobs...
@@ -2772,9 +2772,9 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
 
     obj->wear_loc = -1;
 
-    obj->SetName( pObjIndex->GetName() );
-    obj->SetDescrShort( pObjIndex->GetDescrShort() );
-    obj->SetDescrLong( pObjIndex->GetDescrLong() );
+    obj->setName( pObjIndex->getName() );
+    obj->setDescrShort( pObjIndex->getDescrShort() );
+    obj->setDescrLong( pObjIndex->getDescrLong() );
     obj->item_type = pObjIndex->item_type;
     obj->extra_flags = pObjIndex->extra_flags;
     obj->wear_flags = pObjIndex->wear_flags;
@@ -3361,7 +3361,7 @@ DO_FUN(do_memory)
     if ( !str_cmp( argument, "defrag" ) )
     {
         send_to_char( "Defragmenting SSM heap.", ch );
-        Utils::Logger( 0, "SSM: %s called defrag_heap.", ch->GetName_() );
+        Utils::Logger( 0, "SSM: %s called defrag_heap.", ch->getName_() );
         defrag_heap(  );
         return;
     }
@@ -3378,14 +3378,14 @@ DO_FUN(do_memory)
         {
             mem_log = FALSE;
             send_to_char( "Memory logging is now OFF.\r\n", ch );
-            Utils::Logger( 0, "%s turned off memory logging", ch->GetName_() );
+            Utils::Logger( 0, "%s turned off memory logging", ch->getName_() );
             return;
         }
         else
         {
             mem_log = TRUE;
             send_to_char( "Memory logging is now ON.. remember to turn it off!\r\n", ch );
-            Utils::Logger( 0, "%s turned on memory logging", ch->GetName_() );
+            Utils::Logger( 0, "%s turned on memory logging", ch->getName_() );
             return;
         }
     }
@@ -3676,7 +3676,7 @@ void append_file( CHAR_DATA * ch, char *file, char *str )
     }
     else
     {
-        snprintf( buf, MSL, "%s :: [%5d] %s: %s\n", current_time_str(), ch->in_room ? ch->in_room->vnum : 0, ch->GetName_(), str );
+        snprintf( buf, MSL, "%s :: [%5d] %s: %s\n", current_time_str(), ch->in_room ? ch->in_room->vnum : 0, ch->getName_(), str );
         fprintf(fp, "%s", buf);
 
         buf[strlen(buf)-1] = '\0'; /* Strip newline */

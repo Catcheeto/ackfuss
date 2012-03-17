@@ -475,8 +475,8 @@ DO_FUN(do_delete)
     /*
      * See if person is writer or is recipient
      */
-    if ( ( ch->GetName() == msg->author ) && !is_name( ch->GetName_(), msg->title )
-            && get_trust( ch ) < MAX_LEVEL && str_cmp( ch->GetName(), clan_table[board->clan].leader ) )
+    if ( ( ch->getName() == msg->author ) && !is_name( ch->getName_(), msg->title )
+            && get_trust( ch ) < MAX_LEVEL && str_cmp( ch->getName(), clan_table[board->clan].leader ) )
     {
         send_to_char( "Not your message.\r\n", ch );
         return;
@@ -555,7 +555,7 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
 
             to_person = one_argument( msg->title, to_check );
             to_person = one_argument( to_person, private_name );
-            if ( !str_cmp( to_check, "to:" ) && str_prefix( private_name, ch->GetName_() ) && ( msg->author == ch->GetName() ) )
+            if ( !str_cmp( to_check, "to:" ) && str_prefix( private_name, ch->getName_() ) && ( msg->author == ch->getName() ) )
             {
                 send_to_char( "This is a private message.\r\n", ch );
                 break;
@@ -644,7 +644,7 @@ DO_FUN(do_write)
     msg->datetime = time( NULL ); /* we are sure we can edit.          */
     snprintf( buf, MSL, "%s @@a%s@@N", argument, ( char * )ctime( &current_time ) );
     msg->title = buf;
-    msg->author = ch->GetName();
+    msg->author = ch->getName();
     msg->board = board;
 
     /*
@@ -773,7 +773,7 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
         {
             mfound = TRUE;
 
-            if ( msg->author == ch->GetName() )
+            if ( msg->author == ch->getName() )
             {
                 send_to_char( "Not your message to edit!\r\n", ch );
                 return;

@@ -126,9 +126,9 @@ void move_char( CHAR_DATA * ch, int door, bool look )
     {
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
-        ch->SetModAC( 0 );
-        ch->SetModDR( 0 );
-        ch->SetModHR( 0 );
+        ch->setModAC( 0 );
+        ch->setModDR( 0 );
+        ch->setModHR( 0 );
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );
     }
     if ( IS_NPC( ch ) )
@@ -546,7 +546,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
     ch->using_named_door = FALSE;
 
     for ( fch = ch->in_room->first_person; fch != NULL; fch = fch->next_in_room )
-        if ( IS_NPC(fch) && fch->act.test(ACT_REMEMBER) && fch->target.find(ch->GetName()) != string::npos )
+        if ( IS_NPC(fch) && fch->act.test(ACT_REMEMBER) && fch->target.find(ch->getName()) != string::npos )
             remember_attack(fch, ch);
 
     return;
@@ -1602,14 +1602,14 @@ DO_FUN(do_recall)
         {
             ch->set_cooldown(COOLDOWN_DEF, 2.75);
             lose = ( ch->level / 4 ) + 1;
-            ch->DecrExperience( lose );
+            ch->decrExperience( lose );
             snprintf( buf, MSL, "You failed!  You lose %d exps.\r\n", ( lose * -1 ) );
             send_to_char( buf, ch );
             return;
         }
 
         lose = ( ch->level / 4 ) + 25;
-        ch->DecrExperience( lose );
+        ch->decrExperience( lose );
         snprintf( buf, MSL, "You recall from combat!  You lose %d exps.\r\n", ( lose * -1 ) );
         send_to_char( buf, ch );
         stop_fighting( ch );

@@ -58,7 +58,7 @@ const void Brain::Disconnect()
 
     if ( ( ch = character ) != NULL )
     {
-        snprintf( buf, MSL, "Closing link to %s.", ch->GetName_() );
+        snprintf( buf, MSL, "Closing link to %s.", ch->getName_() );
         Utils::Logger( 0, buf );
         monitor_chan( buf, MONITOR_CONNECT );
         if ( m_connection_state == CON_PLAYING )
@@ -152,7 +152,7 @@ const bool Brain::ProcessOutput( const bool prompt )
 
         snoop_ch = original ? original : character;
         if ( snoop_ch != NULL )
-            snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->GetName_() );
+            snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->getName_() );
         snoop_by->Send( foo );
     }
 
@@ -172,7 +172,7 @@ const bool Brain::Read()
     start = strlen( inbuf );
     if ( start >= MSL )
     {
-        snprintf( buf, MSL, "Input overflow by %s (%s)", ( character == NULL ) ? "[login]" : character->GetName_(), getHost_() );
+        snprintf( buf, MSL, "Input overflow by %s (%s)", ( character == NULL ) ? "[login]" : character->getName_(), getHost_() );
         Utils::Logger( 0, buf );
         monitor_chan( buf, MONITOR_CONNECT );
         Send( "\r\n SPAMMING IS RUDE, BYE BYE! \r\n" );
@@ -263,7 +263,7 @@ string Brain::pushCommandQueue( const string cmd, const bool front )
         {
             if ( m_connection_state == CON_PLAYING )
             {
-                snprintf( buf, MSL, "%s input spamming!", character->GetName_() );
+                snprintf( buf, MSL, "%s input spamming!", character->getName_() );
                 Utils::Logger( 0, buf );
                 monitor_chan( buf, MONITOR_CONNECT );
             }

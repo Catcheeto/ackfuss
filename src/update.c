@@ -1307,7 +1307,7 @@ void char_update( void )
                 char_to_room(ch, get_room_index(ROOM_VNUM_ALTAR));
                 send_to_char("The gods have taken pity upon your ghostly plight...\r\n", ch);
                 resurrect(ch);
-                do_mpcr(ch, const_cast<char *>(ch->GetName_()));
+                do_mpcr(ch, const_cast<char *>(ch->getName_()));
                 do_look(ch, "auto");
             }
         }
@@ -1373,7 +1373,7 @@ void char_update( void )
                         {
                             snprintf( bug_buf, (2 * MIL),
                                       "ERROR in expiring item %s(%s %d): item has a replace vnum set (%d), but that is not a valid item.",
-                                      obj->GetName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
+                                      obj->getName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
                             monitor_chan( bug_buf, MONITOR_OBJ );
                             Utils::Logger( 0, bug_buf );
                         }
@@ -1525,7 +1525,7 @@ void char_update( void )
                         this_master = ch->master;
                         do_say( ch, "Whaa?? Where am I? How did I get here?" );
                         do_scan( ch, "" );
-                        check_social( ch, "growl", const_cast<char *>(ch->master->GetName_()) );
+                        check_social( ch, "growl", const_cast<char *>(ch->master->getName_()) );
                         do_say( ch, "How dare you order me around!!!" );
                         stop_follower( ch );
                         one_hit( ch, this_master, TYPE_UNDEFINED );
@@ -1681,7 +1681,7 @@ void obj_update( void )
 
         obj = *li;
 
-        monitor_chan(obj->GetName_(), MONITOR_OBJ);
+        monitor_chan(obj->getName_(), MONITOR_OBJ);
 
         if ( obj == auction_item )
             continue;
@@ -1748,7 +1748,7 @@ void obj_update( void )
             {
                 snprintf( bug_buf, (2 * MIL),
                           "ERROR in expiring item %s(%s %d): item has a replace vnum set (%d), but that is not a valid item.",
-                          obj->GetName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
+                          obj->getName_(), obj->pIndexData->area->keyword, obj->pIndexData->vnum, obj->value[6] );
                 monitor_chan( bug_buf, MONITOR_OBJ );
                 Utils::Logger( 0, bug_buf );
             }
@@ -2073,7 +2073,7 @@ bool check_rewield( CHAR_DATA * ch )
 
         if ( pickup )
         {
-            snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", weapon->GetDescrShort_() );
+            snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", weapon->getDescrShort_() );
             do_say( ch, buf );
         }
 
@@ -2085,7 +2085,7 @@ bool check_rewield( CHAR_DATA * ch )
             if ( pickup )
                 get_obj( ch, weapon, NULL );
 
-            ch->EquipThing( weapon );
+            ch->equipThing( weapon );
 
             /*
              * Check is mob wielded weapon ok...
@@ -2228,7 +2228,7 @@ bool check_reequip( CHAR_DATA * ch )
              */
             if ( pickup )
             {
-                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", armor->GetDescrShort_() );
+                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", armor->getDescrShort_() );
                 do_say( ch, buf );
             }
 
@@ -2239,7 +2239,7 @@ bool check_reequip( CHAR_DATA * ch )
                 get_obj( ch, armor, NULL );
         }
 
-        ch->EquipThing( armor );
+        ch->equipThing( armor );
 
         /*
          * Check is mob wielded weapon ok...
@@ -2262,7 +2262,7 @@ bool check_reequip( CHAR_DATA * ch )
              */
             if ( pickup )
             {
-                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", light->GetDescrShort_() );
+                snprintf( buf, MSL, "Great!  %s!  Just what i've always wanted!", light->getDescrShort_() );
                 do_say( ch, buf );
             }
 
@@ -2273,7 +2273,7 @@ bool check_reequip( CHAR_DATA * ch )
                 get_obj( ch, light, NULL );
         }
 
-        ch->EquipThing( light );
+        ch->equipThing( light );
 
         /*
          * Check is mob wielded weapon ok...
@@ -2315,20 +2315,20 @@ void auction_update( void )
             {
                 snprintf( buf, MSL,
                           "@@N%s (level:%d, valued at %s) has been offered for auction.  A @@e10%% fee@@N will be charged, the higher of the reserve price or highest bid.",
-                          auction_item->GetDescrShort_(), auction_item->level, cost_to_money( auction_item->cost ) );
+                          auction_item->getDescrShort_(), auction_item->level, cost_to_money( auction_item->cost ) );
             }
             else
             {
-                snprintf( buf, MSL, "%s has bid %s for %s.", auction_bidder->GetName_(),
-                          cost_to_money( auction_bid ), auction_item->GetDescrShort_() );
+                snprintf( buf, MSL, "%s has bid %s for %s.", auction_bidder->getName_(),
+                          cost_to_money( auction_bid ), auction_item->getDescrShort_() );
             }
             break;
         case 1:
             if ( auction_bidder == NULL )
-                snprintf( buf, MSL, "Last chance to bid for %s.", auction_item->GetDescrShort_() );
+                snprintf( buf, MSL, "Last chance to bid for %s.", auction_item->getDescrShort_() );
             else
                 snprintf( buf, MSL, "Last bid for %s was %s.  Any more offers?",
-                          auction_item->GetDescrShort_(), cost_to_money( auction_bid ) );
+                          auction_item->getDescrShort_(), cost_to_money( auction_bid ) );
             break;
         case 2:
             if ( auction_bidder == NULL )
@@ -2364,10 +2364,10 @@ void auction_update( void )
                 auction_item = NULL;
                 return;
             }
-            snprintf( buf, MSL, "%s - Going Once!", auction_item->GetDescrShort_() );
+            snprintf( buf, MSL, "%s - Going Once!", auction_item->getDescrShort_() );
             break;
         case 3:
-            snprintf( buf, MSL, "%s - Going TWICE!", auction_item->GetDescrShort_() );
+            snprintf( buf, MSL, "%s - Going TWICE!", auction_item->getDescrShort_() );
             break;
         case 4:
             if ( auction_bid < auction_reserve )
@@ -2381,7 +2381,7 @@ void auction_update( void )
                         good_buyer = TRUE;
                 }
 
-                snprintf( buf, MSL, "%s - CANCELLED.  Reserve price not matched.", auction_item->GetDescrShort_() );
+                snprintf( buf, MSL, "%s - CANCELLED.  Reserve price not matched.", auction_item->getDescrShort_() );
                 if ( good_seller )
                 {
                     int bid;
@@ -2414,13 +2414,13 @@ void auction_update( void )
 
                 if ( good_buyer )
                 {
-                    snprintf( buf, MSL, "%s - SOLD! to %s.", auction_item->GetDescrShort_(), auction_bidder->GetName_() );
+                    snprintf( buf, MSL, "%s - SOLD! to %s.", auction_item->getDescrShort_(), auction_bidder->getName_() );
 
                     obj_to_char( auction_item, auction_bidder );
                 }
                 else
                 {
-                    snprintf( buf, MSL, "%s - SOLD!, but the buyer has left us.  Oh Well!!!", auction_item->GetDescrShort_() );
+                    snprintf( buf, MSL, "%s - SOLD!, but the buyer has left us.  Oh Well!!!", auction_item->getDescrShort_() );
                     extract_obj( auction_item );
                 }
                 if ( good_seller )

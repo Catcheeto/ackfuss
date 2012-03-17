@@ -364,7 +364,7 @@ DO_FUN(do_rename)
     /*
      * Save the filename of the old name
      */
-    snprintf( strsave, MIL, "%s%s%s%s", PLAYER_DIR, initial( victim->GetName_() ), "/", capitalize( victim->GetName_() ) );
+    snprintf( strsave, MIL, "%s%s%s%s", PLAYER_DIR, initial( victim->getName_() ), "/", capitalize( victim->getName_() ) );
 
     /*
      * Rename the character and save him to a new file
@@ -373,7 +373,7 @@ DO_FUN(do_rename)
      * NOTE: Players who are level 1 do NOT get saved under a new name
      */
 
-    victim->SetName( capitalize( new_name ) );
+    victim->setName( capitalize( new_name ) );
 
     save_char_obj( victim );
 

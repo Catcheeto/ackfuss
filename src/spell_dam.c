@@ -447,11 +447,11 @@ void sp_death_message( CHAR_DATA * ch, CHAR_DATA * victim, int realm )
         obj = create_object( get_obj_index( vnum ), 0 );
         obj->timer = number_range( 4, 7 );
 
-        snprintf( buf, MSL, obj->GetDescrShort_(), name );
-        obj->SetDescrShort( buf );
+        snprintf( buf, MSL, obj->getDescrShort_(), name );
+        obj->setDescrShort( buf );
 
-        snprintf( buf, MSL, obj->GetDescrLong_(), name );
-        obj->SetDescrLong( buf );
+        snprintf( buf, MSL, obj->getDescrLong_(), name );
+        obj->setDescrLong( buf );
 
         obj_to_room( obj, ch->in_room );
     }
@@ -787,7 +787,7 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
     }
     else
     {
-        snprintf( log_buf, (2 * MIL), "Error, object %s casting spell, but not carried by anyone.", obj->GetDescrShort_() );
+        snprintf( log_buf, (2 * MIL), "Error, object %s casting spell, but not carried by anyone.", obj->getDescrShort_() );
         monitor_chan( log_buf, MONITOR_DEBUG );
         return FALSE;
     }
@@ -925,7 +925,7 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
         if ( dam > sysdata.damcap )
         {
             char buf[MAX_STRING_LENGTH];
-            snprintf( buf, MSL, "Spell: %d damage by %s, spell %s", dam, ( obj == NULL ) ? ch->get_name() : obj->GetDescrShort_(), skill_table[sn].name );
+            snprintf( buf, MSL, "Spell: %d damage by %s, spell %s", dam, ( obj == NULL ) ? ch->get_name() : obj->getDescrShort_(), skill_table[sn].name );
             if ( ch->level < 82 )
                 monitor_chan( buf, MONITOR_MAGIC );
             Utils::Logger( 0, buf );
@@ -1044,10 +1044,10 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
              * * Fixed my bug here too, hehe!
              */
 
-            if ( victim->GetExperience() > 0 )
+            if ( victim->getExperience() > 0 )
             {
-                int lose = (victim->GetExperience() / 2);
-                victim->DecrExperience( lose );
+                int lose = (victim->getExperience() / 2);
+                victim->decrExperience( lose );
             }
 
         }
@@ -1057,7 +1057,7 @@ bool sp_damage( OBJ_DATA * obj, CHAR_DATA * ch, CHAR_DATA * victim, int dam, int
         else
         {
             char name_buf[MAX_STRING_LENGTH];
-            snprintf( name_buf, MSL, "%s", ch->GetName_() );
+            snprintf( name_buf, MSL, "%s", ch->getName_() );
             raw_kill( victim, name_buf );
         }
 

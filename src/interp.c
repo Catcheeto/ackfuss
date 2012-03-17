@@ -959,7 +959,7 @@ void comlog( CHAR_DATA * ch, bool cleanup, int cmd, char *args )
     }
 
     fprintf( fplog, "%.24s :: %12.12s (%5d): %s %s\n", ctime( &current_time ),
-             ch->GetName_(), ( IS_NPC( ch ) ? ch->npcdata->pIndexData->vnum : -1 ), cmd_table[cmd].name,
+             ch->getName_(), ( IS_NPC( ch ) ? ch->npcdata->pIndexData->vnum : -1 ), cmd_table[cmd].name,
              ( cmd_table[cmd].log == LOG_NEVER ? "XXX" : args ) );
     fflush( fplog );
 }
@@ -1114,7 +1114,7 @@ void interpret( CHAR_DATA * ch, const string input )
 
     if ( ( !IS_NPC( ch ) && ch->act.test(ACT_LOG) ) || fLogAll || cmd_table[cmd].log == LOG_ALWAYS )
     {
-        snprintf( log_buf, (2 * MIL), "Log %s: %s", ch->GetName_(), logline );
+        snprintf( log_buf, (2 * MIL), "Log %s: %s", ch->getName_(), logline );
         Utils::Logger( 0, "%s", log_buf );
         if ( ch->act.test(ACT_LOG) )
             monitor_chan( log_buf, MONITOR_BAD );
@@ -1128,7 +1128,7 @@ void interpret( CHAR_DATA * ch, const string input )
     if ( ch->desc != NULL && ch->desc->snoop_by != NULL ) /* -S- Mod */
     {
         char snp[MAX_STRING_LENGTH];
-        snprintf( snp, MSL, "[Snoop:%s] %s\r\n", ch->GetName_(), logline );
+        snprintf( snp, MSL, "[Snoop:%s] %s\r\n", ch->getName_(), logline );
         ch->desc->snoop_by->Send( snp );
     }
 
@@ -1235,9 +1235,9 @@ void interpret( CHAR_DATA * ch, const string input )
     {
         send_to_char( "You step out of the shadows.\r\n", ch );
         ch->stance = STANCE_WARRIOR;
-        ch->SetModAC( 0 );
-        ch->SetModDR( 0 );
-        ch->SetModHR( 0 );
+        ch->setModAC( 0 );
+        ch->setModDR( 0 );
+        ch->setModHR( 0 );
         act( "$n steps out of the Shadows!", ch, NULL, NULL, TO_ROOM );
     }
 

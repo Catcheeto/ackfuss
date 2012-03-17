@@ -316,7 +316,7 @@ DO_FUN(build_interpret)
 
     if ( ( !IS_NPC( ch ) && ch->act.test(ACT_LOG) ) || fLogAll || build_cmd_table[cmd].log == LOG_ALWAYS )
     {
-        snprintf( log_buf, (2 * MIL),  "Log %s: %s", ch->GetName_(), logline );
+        snprintf( log_buf, (2 * MIL),  "Log %s: %s", ch->getName_(), logline );
         Utils::Logger( 0, log_buf );
         monitor_chan( log_buf, MONITOR_BUILD );
     }
@@ -416,7 +416,7 @@ DO_FUN(build_showmob)
 
     buf1[0] = '\0';
 
-    snprintf( buf, MSL, "@@WName: @@y%s.    @@WClass: @@y%s.\r\n", pMob->GetName_(), tab_mob_class[pMob->p_class].text );
+    snprintf( buf, MSL, "@@WName: @@y%s.    @@WClass: @@y%s.\r\n", pMob->getName_(), tab_mob_class[pMob->p_class].text );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WSex: @@y%s.  @@WRace:@@y %s ",
@@ -430,7 +430,7 @@ DO_FUN(build_showmob)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WModifiers: AC: @@y%ld.  @@WHitroll: @@y%ld.  @@WDamroll: @@y%ld.\r\n",
-              pMob->GetModAC(), pMob->GetModHR(), pMob->GetModDR() );
+              pMob->getModAC(), pMob->getModHR(), pMob->getModDR() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WMob Flags:@@y\r\n%s", bs_show_values( tab_mob_act, pMob->act ) );
@@ -457,7 +457,7 @@ DO_FUN(build_showmob)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n",
-              pMob->GetDescrShort_(), !pMob->GetDescrLong().empty() ? pMob->GetDescrLong_() : "(none)." );
+              pMob->getDescrShort_(), !pMob->getDescrLong().empty() ? pMob->getDescrLong_() : "(none)." );
     strncat( buf1, buf, MSL - 1 );
 
     if ( pMob->spec_fun != 0 )
@@ -524,13 +524,13 @@ DO_FUN(build_showobj)
     if ( !build_canread( obj->area, ch, 1 ) )
         return;
 
-    snprintf( buf, MSL, "@@WName: @@y%s  @@WLevel: @@y%d.\r\n", obj->GetName_(), obj->level );
+    snprintf( buf, MSL, "@@WName: @@y%s  @@WLevel: @@y%d.\r\n", obj->getName_(), obj->level );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WType: @@y%s.\r\n", obj->vnum, tab_item_types[( obj->item_type ) - 1].text );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n", obj->GetDescrShort_(), obj->GetDescrLong_() );
+    snprintf( buf, MSL, "@@WShort description: @@y%s.\r\n@@WLong description: @@y%s\r\n", obj->getDescrShort_(), obj->getDescrLong_() );
     strncat( buf1, buf, MSL - 1 );
 
     /*
@@ -612,9 +612,9 @@ DO_FUN(build_showobj)
         strncat( buf1, buf, MSL - 1 );
     }
 
-    if ( obj->GetDescrExtraSize() )
+    if ( obj->getDescrExtraSize() )
     {
-        list<string> keys = obj->GetDescrExtraKeys();
+        list<string> keys = obj->getDescrExtraKeys();
         list<string>::iterator mi = keys.begin();
         string value;
 
@@ -707,9 +707,9 @@ DO_FUN(build_showroom)
         strncat( buf1, buf, MSL - 1 );
     }
 
-    if ( location->GetDescrExtraSize() )
+    if ( location->getDescrExtraSize() )
     {
-        list<string> keys = location->GetDescrExtraKeys();
+        list<string> keys = location->getDescrExtraKeys();
         list<string>::iterator mi = keys.begin();
         string value;
 
@@ -746,7 +746,7 @@ DO_FUN(build_showroom)
                     strncat( buf1, buf, MSL - 1 );
                     snprintf( buf, MSL, "             @@WKey: @@y%5i %s@@N\r\n@@WExit Type:@@y %s@@N\r\n",
                               pKeyObj != NULL ? pKeyObj->vnum : 0,
-                              pKeyObj != NULL ? pKeyObj->GetName_() : "None", bs_show_values( tab_door_types, pexit->exit_info ) );
+                              pKeyObj != NULL ? pKeyObj->getName_() : "None", bs_show_values( tab_door_types, pexit->exit_info ) );
                     strncat( buf1, buf, MSL - 1 );
                     if ( pexit->keyword != NULL && pexit->keyword[0] != '\0' )
                     {
@@ -836,7 +836,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
         case 'G':
             pObj = get_obj_index( pReset->arg1 );
             if ( pObj )
-                snprintf( buf, MSL, "  stray 'give' reset: object [%d] %s.\r\n", pReset->arg1, pObj->GetName_() );
+                snprintf( buf, MSL, "  stray 'give' reset: object [%d] %s.\r\n", pReset->arg1, pObj->getName_() );
             else
                 snprintf( buf, MSL, "  stray 'give' reset: object %d (unknown).\r\n", pReset->arg1 );
             strncat( buf1, buf, MSL - 1 );
@@ -845,7 +845,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
             pObj = get_obj_index( pReset->arg1 );
             if ( pObj )
                 snprintf( buf, MSL, "  stray 'equip' reset: object [%d] %s, on %s.\r\n",
-                          pReset->arg1, pObj->GetName_(), tab_wear_loc[( pReset->arg3 )].text );
+                          pReset->arg1, pObj->getName_(), tab_wear_loc[( pReset->arg3 )].text );
             else
                 snprintf( buf, MSL, "  stray 'equip' reset: object [%d] (unknown), on %s.\r\n",
                           pReset->arg1, tab_wear_loc[( pReset->arg3 )].text );
@@ -858,7 +858,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
         case 'M':  /* Load mob */
             pMob = get_mob_index( pReset->arg1 );
             if ( pMob != NULL )
-                snprintf( buf, MSL, " [%d] %s (limit of %d).\r\n", pMob->vnum, pMob->GetName_(), pReset->arg2 );
+                snprintf( buf, MSL, " [%d] %s (limit of %d).\r\n", pMob->vnum, pMob->getName_(), pReset->arg2 );
             else
                 snprintf( buf, MSL, " [%d] (unknown) (limit of %d).\r\n", pReset->arg1, pReset->arg2 );
             strncat( buf1, buf, MSL - 1 );
@@ -886,7 +886,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
                             strncat( buf1, "  sells ", MSL );
                         else
                             strncat( buf1, "  with ", MSL );
-                        snprintf( buf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->GetName_() );
+                        snprintf( buf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->getName_() );
                         strncat( buf1, buf, MSL - 1 );
                     }
                     else
@@ -900,7 +900,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
                     pObj = get_obj_index( pReset->arg1 );
                     if ( pObj != NULL )
                         snprintf( buf, MSL, "  equiped with [%d] %s, on %s.\r\n", pObj->vnum,
-                                  pObj->GetName_(), tab_wear_loc[( pReset->arg3 )].text );
+                                  pObj->getName_(), tab_wear_loc[( pReset->arg3 )].text );
                     else
                         snprintf( buf, MSL, "[%d] unknown object equipped on %s.\r\n", pReset->arg1, tab_wear_loc[pReset->arg3].text );
                     strncat( buf1, buf, MSL - 1 );
@@ -910,7 +910,7 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
         case 'O':  /* Load object to room */
             pObj = get_obj_index( pReset->arg1 );
             if ( pObj != NULL )
-                snprintf( buf, MSL, " [%d] %s no more than %d in room.\r\n", pObj->vnum, pObj->GetName_(), pReset->arg2 );
+                snprintf( buf, MSL, " [%d] %s no more than %d in room.\r\n", pObj->vnum, pObj->getName_(), pReset->arg2 );
             else
                 snprintf( buf, MSL, " [%d] unknown object reset!\r\n", pReset->arg1 );
             strncat( buf1, buf, MSL - 1 );
@@ -921,9 +921,9 @@ char *reset_to_text( BUILD_DATA_LIST ** pList, int *pcount )
             if ( pObj )
             {
                 if ( to_obj )
-                    snprintf( buf, MSL, " object [%d] %s inside object [%d] %s. (limit %d)\r\n", pReset->arg1, pObj->GetName_(), pReset->arg3, to_obj->GetName_(), pReset->arg2 );
+                    snprintf( buf, MSL, " object [%d] %s inside object [%d] %s. (limit %d)\r\n", pReset->arg1, pObj->getName_(), pReset->arg3, to_obj->getName_(), pReset->arg2 );
                 else
-                    snprintf( buf, MSL, " object [%d] %s inside object [%d] (unknown). (limit %d)\r\n", pReset->arg1, pObj->GetName_(), pReset->arg3, pReset->arg2 );
+                    snprintf( buf, MSL, " object [%d] %s inside object [%d] (unknown). (limit %d)\r\n", pReset->arg1, pObj->getName_(), pReset->arg3, pReset->arg2 );
             }
             else
                 snprintf( buf, MSL, " object [%d] (unknown) inside object [%d] (unknown). (limit %d)\r\n", pReset->arg1, pReset->arg3, pReset->arg2 );
@@ -1012,10 +1012,10 @@ DO_FUN(build_findmob)
     {
         nMatch++;
         pMobIndex = (MOB_INDEX_DATA *)Pointer->data;
-        if ( fAll || is_name( arg, pMobIndex->GetName() ) )
+        if ( fAll || is_name( arg, pMobIndex->getName() ) )
         {
             found = TRUE;
-            snprintf( buf, MSL, "[%5d] %s\r\n", pMobIndex->vnum, capitalize( pMobIndex->GetDescrShort_() ) );
+            snprintf( buf, MSL, "[%5d] %s\r\n", pMobIndex->vnum, capitalize( pMobIndex->getDescrShort_() ) );
             strncat( buf1, buf, MSL - 1 );
         }
     }
@@ -1134,10 +1134,10 @@ DO_FUN(build_findobject)
     {
         pObjIndex = (OBJ_INDEX_DATA *)pList->data;
         nMatch++;
-        if ( fAll || is_name( arg, pObjIndex->GetName() ) )
+        if ( fAll || is_name( arg, pObjIndex->getName() ) )
         {
             found = TRUE;
-            snprintf( buf, MSL, "[%5d] %s\r\n", pObjIndex->vnum, capitalize( pObjIndex->GetDescrShort_() ) );
+            snprintf( buf, MSL, "[%5d] %s\r\n", pObjIndex->vnum, capitalize( pObjIndex->getDescrShort_() ) );
             strncat( buf1, buf, MSL - 1 );
         }
     }
@@ -1621,7 +1621,7 @@ DO_FUN(build_setmob)
             send_to_char( "ac_mod range is -500 to 2500.\r\n", ch );
             return;
         }
-        pMob->SetModAC( value );
+        pMob->setModAC( value );
         area_modified( pArea );
         return;
     }
@@ -1633,7 +1633,7 @@ DO_FUN(build_setmob)
             send_to_char( "hr_mod range is -10 to 1000.\r\n", ch );
             return;
         }
-        pMob->SetModHR( value );
+        pMob->setModHR( value );
         area_modified( pArea );
         return;
     }
@@ -1645,7 +1645,7 @@ DO_FUN(build_setmob)
             send_to_char( "dr_mod range is -10 to 1000.\r\n", ch );
             return;
         }
-        pMob->SetModDR( value );
+        pMob->setModDR( value );
         area_modified( pArea );
         return;
     }
@@ -1663,21 +1663,21 @@ DO_FUN(build_setmob)
 
     if ( !str_cmp( arg2, "name" ) )
     {
-        pMob->SetName( arg3 );
+        pMob->setName( arg3 );
         area_modified( pArea );
         return;
     }
 
     if ( !str_cmp( arg2, "short" ) )
     {
-        pMob->SetDescrShort( arg3 );
+        pMob->setDescrShort( arg3 );
         area_modified( pArea );
         return;
     }
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        pMob->SetDescrLong( arg3 );
+        pMob->setDescrLong( arg3 );
         area_modified( pArea );
         return;
     }
@@ -2023,13 +2023,13 @@ DO_FUN(build_setroom)
         {
             argn = arg2 + 1;
 
-            if ( !location->GetDescrExtraSize() )
+            if ( !location->getDescrExtraSize() )
             {
                 send_to_char( "This room has no extra descrs.\r\n", ch );
                 return;
             }
 
-            if ( !location->DelDescrExtra( argn ) )
+            if ( !location->delDescrExtra( argn ) )
             {
                 send_to_char( "Keyword not found.\r\n", ch );
                 return;
@@ -2039,7 +2039,7 @@ DO_FUN(build_setroom)
             return;
         }
 
-        if ( !location->GetDescrExtra( arg2 ).empty() )
+        if ( !location->getDescrExtra( arg2 ).empty() )
         {
             //FIXME build_strdup( &ed->keyword, arg2, FALSE, FALSE, ch );
             //FIXME build_strdup( &ed->description, arg3, FALSE, FALSE, ch );
@@ -2746,19 +2746,19 @@ DO_FUN(build_setobject)
 
     if ( !str_cmp( arg2, "name" ) )
     {
-        pObj->SetName( arg3 );
+        pObj->setName( arg3 );
         return;
     }
 
     if ( !str_cmp( arg2, "short" ) )
     {
-        pObj->SetDescrShort( arg3 );
+        pObj->setDescrShort( arg3 );
         return;
     }
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        pObj->SetDescrLong( arg3 );
+        pObj->setDescrLong( arg3 );
         return;
     }
 
@@ -2778,13 +2778,13 @@ DO_FUN(build_setobject)
              */
             argn = arg3 + 1;
 
-            if ( !pObj->GetDescrExtraSize() )
+            if ( !pObj->getDescrExtraSize() )
             {
                 send_to_char( "This object has no extra descrs.\r\n", ch );
                 return;
             }
 
-            if ( !pObj->DelDescrExtra( argn ) )
+            if ( !pObj->delDescrExtra( argn ) )
             {
                 send_to_char( "Keyword not found.\r\n", ch );
                 return;
@@ -2794,7 +2794,7 @@ DO_FUN(build_setobject)
             return;
         }
 
-        if ( !pObj->GetDescrExtra( arg3 ).empty() )
+        if ( !pObj->getDescrExtra( arg3 ).empty() )
         {
             //FIXME build_strdup( &ed->description, argument, TRUE, FALSE, ch );
             return;
@@ -3097,7 +3097,7 @@ DO_FUN(build_addmob)
     pMobIndex = new MOB_INDEX_DATA;
     pMobIndex->vnum = vnum;
     pMobIndex->area = pArea;
-    pMobIndex->SetName( arg2 );
+    pMobIndex->setName( arg2 );
 
     iHash = vnum % MAX_KEY_HASH;
     SING_TOPLINK( pMobIndex, mob_index_hash[iHash], next );
@@ -3163,7 +3163,7 @@ DO_FUN(build_addobject)
     pObjIndex = new OBJ_INDEX_DATA;
     pObjIndex->vnum = vnum;
     pObjIndex->area = pArea;
-    pObjIndex->SetName( arg2 );
+    pObjIndex->setName( arg2 );
 
     iHash = vnum % MAX_KEY_HASH;
     SING_TOPLINK( pObjIndex, obj_index_hash[iHash], next );
@@ -4157,7 +4157,7 @@ DO_FUN(build_delobject)
 
         old_ovnum = vnum;
 
-        snprintf( buf, MSL, "Are you sure you want to delete object: [%d] %s?\r\n", vnum, pObjIndex->GetName_() );
+        snprintf( buf, MSL, "Are you sure you want to delete object: [%d] %s?\r\n", vnum, pObjIndex->getName_() );
         strncat( buf, "Type delobject ok if you are sure.\r\n", MSL );
         send_to_char( buf, ch );
         return;
@@ -4331,7 +4331,7 @@ DO_FUN(build_delmob)
 
         old_mob_vnum = vnum;
 
-        snprintf( buf, MSL, "Are you sure you want to delete mobile: [%d] %s?\r\n", vnum, pMobIndex->GetName_() );
+        snprintf( buf, MSL, "Are you sure you want to delete mobile: [%d] %s?\r\n", vnum, pMobIndex->getName_() );
         strncat( buf, "Type delmobile ok if you are sure.\r\n", MSL );
         send_to_char( buf, ch );
         return;
@@ -4856,7 +4856,7 @@ DO_FUN(build_setvnum)
                 found = FALSE;
             }
             else
-                snprintf( buf2, MSL, "Object exists: %s\r\n", obj->GetDescrShort_() );
+                snprintf( buf2, MSL, "Object exists: %s\r\n", obj->getDescrShort_() );
 
             break;
 
@@ -4875,7 +4875,7 @@ DO_FUN(build_setvnum)
                 found = FALSE;
             }
             else
-                snprintf( buf2, MSL, "Mobile exists: %s\r\n", mob->GetDescrShort_() );
+                snprintf( buf2, MSL, "Mobile exists: %s\r\n", mob->getDescrShort_() );
 
             break;
 
@@ -5877,12 +5877,12 @@ DO_FUN(build_clone)
         in_room->sector_type = room->sector_type;
         in_room->room_flags = room->room_flags;
 
-        keys = room->GetDescrExtraKeys();
+        keys = room->getDescrExtraKeys();
         mi = keys.begin();
         while ( mi++ != keys.end() )
         {
             value = *mi;
-            in_room->SetDescrExtra( value, room->GetDescrExtra( value ) );
+            in_room->setDescrExtra( value, room->getDescrExtra( value ) );
         }
 
         send_to_char( "Room cloned.\r\n", ch );
@@ -5927,10 +5927,10 @@ DO_FUN(build_clone)
         /*
          * Copy details across...
          */
-        this_obj->SetName( obj->GetName() );
+        this_obj->setName( obj->getName() );
         this_obj->level = obj->level;
-        this_obj->SetDescrShort( obj->GetDescrShort() );
-        this_obj->SetDescrLong( obj->GetDescrLong() );
+        this_obj->setDescrShort( obj->getDescrShort() );
+        this_obj->setDescrLong( obj->getDescrLong() );
         this_obj->item_type = obj->item_type;
         this_obj->extra_flags = obj->extra_flags;
         this_obj->wear_flags = obj->wear_flags;
@@ -5945,12 +5945,12 @@ DO_FUN(build_clone)
         this_obj->obj_fun = obj->obj_fun;
         this_obj->armor_type = obj->armor_type;
 
-        keys = obj->GetDescrExtraKeys();
+        keys = obj->getDescrExtraKeys();
         mi = keys.begin();
         while ( mi++ != keys.end() )
         {
             value = *mi;
-            this_obj->SetDescrExtra( value, obj->GetDescrExtra( value ) );
+            this_obj->setDescrExtra( value, obj->getDescrExtra( value ) );
         }
 
         send_to_char( "Object cloned.\r\n", ch );
@@ -5996,9 +5996,9 @@ DO_FUN(build_clone)
         /*
          * Copy details across...
          */
-        this_mob->SetName( mob->GetName() );
-        this_mob->SetDescrShort( mob->GetDescrShort() );
-        this_mob->SetDescrLong( mob->GetDescrLong() );
+        this_mob->setName( mob->getName() );
+        this_mob->setDescrShort( mob->getDescrShort() );
+        this_mob->setDescrLong( mob->getDescrLong() );
         if ( this_mob->description != NULL )
             free_string( this_mob->description );
         this_mob->description = str_dup( mob->description );
@@ -6008,9 +6008,9 @@ DO_FUN(build_clone)
         this_mob->alignment = mob->alignment;
         this_mob->level = mob->level;
         this_mob->sex = mob->sex;
-        this_mob->SetModAC( mob->GetModAC() );
-        this_mob->SetModHR( mob->GetModHR() );
-        this_mob->SetModDR( mob->GetModDR() );
+        this_mob->setModAC( mob->getModAC() );
+        this_mob->setModHR( mob->getModHR() );
+        this_mob->setModDR( mob->getModDR() );
         this_mob->cast = mob->cast;
         this_mob->def = mob->def;
         this_mob->skills = mob->skills;

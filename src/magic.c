@@ -400,7 +400,7 @@ bool saves_spell( int level, CHAR_DATA * victim )
         saved = TRUE;
 
     snprintf( log_buf, (2 * MIL), "%s lvl %d wismod %d savemod %d save total %d against level %d, %s ).",
-              victim->GetName_(), victim->get_level("psuedo"),
+              victim->getName_(), victim->get_level("psuedo"),
               wis_app[get_curr_wis( victim )].spell_save,
               victim->saving_throw, save, level, ( saved ? "@@aSAVED@@N" : "@@eFAILED@@N" ) );
     monitor_chan( log_buf, MONITOR_MAGIC );
@@ -717,7 +717,7 @@ void cast( CHAR_DATA * ch, char *argument )
             break;
 
         case TAR_CHAR_SELF:
-            if ( arg2[0] != '\0' && !is_name( arg2, const_cast<char *>(ch->GetName_()) ) )
+            if ( arg2[0] != '\0' && !is_name( arg2, const_cast<char *>(ch->getName_()) ) )
             {
                 send_to_char( "You cannot cast this spell on another.\r\n", ch );
                 return;
@@ -847,8 +847,8 @@ void cast( CHAR_DATA * ch, char *argument )
             && ( sn != skill_lookup( "cure critical" ) ) && ( sn != skill_lookup( "heal" ) ) )
     {
         snprintf( log_buf, (2 * MIL), "%s typed %s, Spell %s, room %s(%d), target %s",
-                  ch->GetName_(), typed, skill_table[sn].name,
-                  ch->in_room->name, ch->in_room->vnum, ( victim != NULL ? victim->GetName_() : obj != NULL ? obj->GetName_() : "NONE" ) );
+                  ch->getName_(), typed, skill_table[sn].name,
+                  ch->in_room->name, ch->in_room->vnum, ( victim != NULL ? victim->getName_() : obj != NULL ? obj->getName_() : "NONE" ) );
         monitor_chan( log_buf, MONITOR_MAGIC );
     }
     if ( ( *skill_table[sn].spell_fun ) ( sn, best, ch, vo, NULL ) )
@@ -890,9 +890,9 @@ void cast( CHAR_DATA * ch, char *argument )
                     && ( sn != skill_lookup( "cure critical" ) ) && ( sn != skill_lookup( "heal" ) ) )
             {
                 snprintf( log_buf, (2 * MIL), "%s typed %s, Spell %s, room %s(%d), target %s",
-                          ch->GetName_(), typed, skill_table[sn].name,
+                          ch->getName_(), typed, skill_table[sn].name,
                           ch->in_room->name, ch->in_room->vnum,
-                          ( victim != NULL ? victim->GetName_() : obj != NULL ? obj->GetName_() : "NONE" ) );
+                          ( victim != NULL ? victim->getName_() : obj != NULL ? obj->getName_() : "NONE" ) );
                 monitor_chan( log_buf, MONITOR_MAGIC );
             }
             if ( ( *skill_table[sn].spell_fun ) ( sn, best, ch, vo, NULL ) )
@@ -937,9 +937,9 @@ void cast( CHAR_DATA * ch, char *argument )
                     && ( sn != skill_lookup( "cure critical" ) ) && ( sn != skill_lookup( "heal" ) ) )
             {
                 snprintf( log_buf, (2 * MIL), "%s typed %s, Spell %s, room %s(%d), target %s",
-                          ch->GetName_(), typed, skill_table[sn].name,
+                          ch->getName_(), typed, skill_table[sn].name,
                           ch->in_room->name, ch->in_room->vnum,
-                          ( victim != NULL ? victim->GetName_() : obj != NULL ? obj->GetName_() : "NONE" ) );
+                          ( victim != NULL ? victim->getName_() : obj != NULL ? obj->getName_() : "NONE" ) );
                 monitor_chan( log_buf, MONITOR_MAGIC );
             }
             if ( ( *skill_table[sn].spell_fun ) ( sn, best, ch, vo, NULL ) )
@@ -1529,8 +1529,8 @@ bool spell_create_water( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     {
         ob->value[2] = LIQ_WATER;
         ob->value[1] += water;
-        if ( !is_name( "water", ob->GetName() ) )
-            ob->AppendName(" water");
+        if ( !is_name( "water", ob->getName() ) )
+            ob->appendName(" water");
         act( "$p is filled.", ch, ob, NULL, TO_CHAR );
     }
 
@@ -2247,7 +2247,7 @@ bool spell_energy_drain( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     if ( saves_spell( level, victim ) )
         return TRUE;
 
-    ch->SetAlignment( UMAX( -1000, ch->GetAlignment() - 200 ) );
+    ch->setAlignment( UMAX( -1000, ch->getAlignment() - 200 ) );
     if ( victim->level <= 2 )
     {
         dam = ch->hit + 1;
@@ -2255,7 +2255,7 @@ bool spell_energy_drain( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     else
     {
         int lose = number_range(level / 2, 3 * level / 2);
-        victim->DecrExperience( lose );
+        victim->decrExperience( lose );
         victim->mana /= 4;
         victim->move /= 4;
         dam = dice( level / 15, level );
@@ -2568,7 +2568,7 @@ bool spell_identify( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
 
     snprintf( buf, MSL,
               "@@NObject '%s' is @@etype@@N %s, @@aextra flags@@N %s.\r\n@@mWorn@@N: %s, @@cWeight@@N: %d, @@lDurability@@N: %d/%d (%1.0f%%), @@yvalue@@N: %s @@N, @@rlevel@@N: %d.\r\n",
-              ob->GetDescrShort_(),
+              ob->getDescrShort_(),
               item_type_name( ob ),
               extra_bit_name( ob->extra_flags ),
               wear_bit_name( ob->wear_flags ),
@@ -2723,7 +2723,7 @@ bool spell_know_alignment( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     char *msg;
     int ap;
 
-    ap = victim->GetAlignment();
+    ap = victim->getAlignment();
 
     if ( ap > 700 )
         msg = "$N has an aura as white as the driven snow.";
@@ -2784,7 +2784,7 @@ bool spell_locate_object( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
     for ( li = obj_list.begin(); li != obj_list.end(); li++ )
     {
         ob = *li;
-        if ( !can_see_obj( ch, ob ) || !is_name( target_name, ob->GetName() )
+        if ( !can_see_obj( ch, ob ) || !is_name( target_name, ob->getName() )
                 || IS_OBJ_STAT(ob, ITEM_EXTRA_RARE)
                 || ( ob->item_type == ITEM_PIECE )
                 || ( IS_OBJ_STAT(ob, ITEM_EXTRA_UNIQUE) ) || ( !str_prefix( target_name, "unique" ) ) )
@@ -2805,12 +2805,12 @@ bool spell_locate_object( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
         {
             found = TRUE;
             snprintf( buf, MSL, "%s carried by %s.\r\n",
-                      ob->GetDescrShort_(), in_obj->carried_by->get_name(ch) );
+                      ob->getDescrShort_(), in_obj->carried_by->get_name(ch) );
         }
         else
         {
             found = TRUE;
-            snprintf( buf, MSL, "%s in %s.\r\n", ob->GetDescrShort_(), in_obj->in_room == NULL ? "somewhere" : in_obj->in_room->name );
+            snprintf( buf, MSL, "%s in %s.\r\n", ob->getDescrShort_(), in_obj->in_room == NULL ? "somewhere" : in_obj->in_room->name );
         }
 
         buf[0] = UPPER( buf[0] );
@@ -3148,7 +3148,7 @@ bool spell_summon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     char_from_room( victim );
     char_to_room( victim, ch->in_room );
     act( "$n arrives suddenly.", victim, NULL, NULL, TO_ROOM );
-    snprintf( buf, MSL, "%s has summoned you!!", ch->GetName_() );
+    snprintf( buf, MSL, "%s has summoned you!!", ch->getName_() );
     send_to_char( buf, victim );
     do_look( victim, "auto" );
     return TRUE;
@@ -3211,7 +3211,7 @@ bool spell_ventriloquate( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
 
     for ( vch = ch->in_room->first_person; vch != NULL; vch = vch->next_in_room )
     {
-        if ( !is_name( speaker, const_cast<char *>(vch->GetName_()) ) )
+        if ( !is_name( speaker, const_cast<char *>(vch->getName_()) ) )
             send_to_char( saves_spell( level, vch ) ? buf2 : buf1, vch );
     }
 
@@ -4246,7 +4246,7 @@ bool spell_detection( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
     for ( li = obj_list.begin(); li != obj_list.end(); li++ )
     {
         ob = *li;
-        if ( !can_see_obj( ch, ob ) || !is_name( target_name, ob->GetName() )
+        if ( !can_see_obj( ch, ob ) || !is_name( target_name, ob->getName() )
                 || IS_OBJ_STAT(ob, ITEM_EXTRA_RARE)
                 || ( ob->item_type == ITEM_PIECE )
                 || ( IS_OBJ_STAT(ob, ITEM_EXTRA_UNIQUE) ) || ( !str_prefix( target_name, "unique" ) ) )
@@ -4270,12 +4270,12 @@ bool spell_detection( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
         {
             found = TRUE;
             snprintf( buf, MSL, "%s carried by %s.\r\n",
-                      ob->GetDescrShort_(), in_obj->carried_by->get_name(ch) );
+                      ob->getDescrShort_(), in_obj->carried_by->get_name(ch) );
         }
         else
         {
             found = TRUE;
-            snprintf( buf, MSL, "%s in %s.\r\n", ob->GetDescrShort_(), in_obj->in_room == NULL ? "somewhere" : in_obj->in_room->name );
+            snprintf( buf, MSL, "%s in %s.\r\n", ob->getDescrShort_(), in_obj->in_room == NULL ? "somewhere" : in_obj->in_room->name );
         }
 
         buf[0] = UPPER( buf[0] );
@@ -4442,7 +4442,7 @@ bool spell_know_item( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
 
     snprintf( buf, MSL,
               "Object '%s' is type %s, extra flags %s.\r\nWeight is %d.\r\n",
-              ob->GetName_(), item_type_name( ob ), extra_bit_name( ob->extra_flags ), ob->weight );
+              ob->getName_(), item_type_name( ob ), extra_bit_name( ob->extra_flags ), ob->weight );
     send_to_char( buf, ch );
 
     switch ( ob->item_type )
@@ -4643,7 +4643,7 @@ bool spell_stalker( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
     stalker->level = victim->level;
     stalker->max_hit = victim->max_hit;
     stalker->hit = stalker->max_hit;
-    stalker->SetExperience( victim->level * 10 );  /* not much exp :P */
+    stalker->setExperience( victim->level * 10 );  /* not much exp :P */
 
     if ( set_hunt( stalker, ch, victim, NULL, HUNT_MERC, HUNT_CR ) )
         act( "$n sniffs the air in search of $s prey.", stalker, NULL, NULL, TO_ROOM );
@@ -4774,7 +4774,7 @@ bool spell_window( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
         return FALSE;
     }
 
-    if ( beacon->GetOwner() != ch )
+    if ( beacon->getOwner() != ch )
     {
         send_to_char( "That's not one of YOUR beacons!\r\n", ch );
         return FALSE;
@@ -4826,7 +4826,7 @@ bool spell_portal( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
         return FALSE;
     }
 
-    if ( beacon->GetOwner() != ch )
+    if ( beacon->getOwner() != ch )
     {
         send_to_char( "That's not one of YOUR beacons!\r\n", ch );
         return FALSE;
@@ -4879,8 +4879,8 @@ bool spell_beacon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     }
 
     ob = create_object( get_obj_index( OBJ_VNUM_BEACON ), level );
-    ob->SetName( arg );
-    ob->SetOwner( ch );
+    ob->setName( arg );
+    ob->setOwner( ch );
     ob->timer = 20 + (level / 3);
     obj_to_room( ob, ch->in_room );
     act( "$n magically produces $p!", ch, ob, NULL, TO_ROOM );
@@ -6083,7 +6083,7 @@ bool spell_restoration( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
         ch->pcdata->super->energy = ch->pcdata->super->energy_max;
 
     send_to_char( "@@eTHe life force of tha captured soul restores you!\r\n", ch );
-    snprintf( buf, MSL, " %s has used a restoration spell.\r\n", ch->GetName_() );
+    snprintf( buf, MSL, " %s has used a restoration spell.\r\n", ch->getName_() );
     monitor_chan( buf, MONITOR_BAD );
     return TRUE;
 }
@@ -7193,7 +7193,7 @@ bool spell_redemption( int sn, int level, CHAR_DATA *ch, void *vo, OBJ_DATA *obj
     victim->hit += number_range(level * 2, level * 6);
     victim->mana += number_range(level * 2, level * 6);
     victim->move += number_range(level * 2, level * 6);
-    victim->IncrExperience( (victim->GetExperience() > 0 ? victim->GetExperience() / 4 : 1 ) );
+    victim->incrExperience( (victim->getExperience() > 0 ? victim->getExperience() / 4 : 1 ) );
     send_to_char("You have gained insight from your death, and regaiend some of your lost experience!\r\n", victim);
     update_pos(victim);
 

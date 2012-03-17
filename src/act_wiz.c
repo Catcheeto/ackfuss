@@ -488,7 +488,7 @@ DO_FUN(do_transfer)
                     && d->character != ch && d->character->in_room != NULL && can_see( ch, d->character ) )
             {
                 char buf[MSL];
-                snprintf( buf, MSL, "%s %s", d->character->GetName_(), arg2 );
+                snprintf( buf, MSL, "%s %s", d->character->getName_(), arg2 );
                 do_transfer( ch, buf );
             }
         }
@@ -703,9 +703,9 @@ DO_FUN(do_rstat)
               bs_show_values( tab_room_flags, location->room_flags ), location->description );
     strncat( buf1, buf, MSL - 1 );
 
-    if ( location->GetDescrExtraSize() )
+    if ( location->getDescrExtraSize() )
     {
-        list<string> keys = location->GetDescrExtraKeys();
+        list<string> keys = location->getDescrExtraKeys();
         list<string>::iterator mi = keys.begin();
         string value;
 
@@ -713,7 +713,7 @@ DO_FUN(do_rstat)
         while ( mi++ != keys.end() )
         {
             value = *mi;
-            strncat( buf1, location->GetDescrExtra_( value ), MSL - 1 );
+            strncat( buf1, location->getDescrExtra_( value ), MSL - 1 );
             strncat( buf1, " ", MSL );
         }
         strncat( buf1, "'.\r\n", MSL );
@@ -723,7 +723,7 @@ DO_FUN(do_rstat)
     for ( rch = location->first_person; rch; rch = rch->next_in_room )
     {
         strncat( buf1, " ", MSL );
-        one_argument( const_cast<char *>(rch->GetName_()), buf );
+        one_argument( const_cast<char *>(rch->getName_()), buf );
         strncat( buf1, buf, MSL - 1 );
     }
 
@@ -731,7 +731,7 @@ DO_FUN(do_rstat)
     for ( obj = location->first_content; obj; obj = obj->next_in_room )
     {
         strncat( buf1, " ", MSL );
-        char fixme[MSL]; strcpy(fixme, obj->GetName_());
+        char fixme[MSL]; strcpy(fixme, obj->getName_());
         one_argument( fixme, buf );
         strncat( buf1, buf, MSL - 1 );
     }
@@ -795,13 +795,13 @@ DO_FUN(do_ostat)
         return;
     }
 
-    snprintf( buf, MSL, "Name: %s.\r\n", obj->GetName_() );
+    snprintf( buf, MSL, "Name: %s.\r\n", obj->getName_() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Vnum: %d.  Type: %s.\r\n", obj->pIndexData->vnum, item_type_name( obj ) );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "Short description: %s.\r\nLong description: %s\r\n", obj->GetDescrShort_(), obj->GetDescrLong_() );
+    snprintf( buf, MSL, "Short description: %s.\r\nLong description: %s\r\n", obj->getDescrShort_(), obj->getDescrLong_() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Wear bits: %s.\r\nExtra bits: %s\r\n",
@@ -832,8 +832,8 @@ DO_FUN(do_ostat)
     snprintf( buf, MSL,
               "In room: %d.  In object: %s.  Carried by: %s.  Wear_loc: %d.\r\n",
               obj->in_room == NULL ? 0 : obj->in_room->vnum,
-              obj->in_obj == NULL ? "(none)" : obj->in_obj->GetDescrShort_(),
-              obj->carried_by == NULL ? "(none)" : obj->carried_by->GetName_(), obj->wear_loc );
+              obj->in_obj == NULL ? "(none)" : obj->in_obj->getDescrShort_(),
+              obj->carried_by == NULL ? "(none)" : obj->carried_by->getName_(), obj->wear_loc );
     strncat( buf1, buf, MSL - 1 );
 
     strncat( buf1, "Item Values:\r\n", MSL );
@@ -878,9 +878,9 @@ DO_FUN(do_ostat)
      * strncat( buf1, buf, MSL-1 );
      */
 
-    if ( obj->GetDescrExtraSize() || obj->pIndexData->GetDescrExtraSize() )
+    if ( obj->getDescrExtraSize() || obj->pIndexData->getDescrExtraSize() )
     {
-        list<string> keys = obj->GetDescrExtraKeys();
+        list<string> keys = obj->getDescrExtraKeys();
         list<string>::iterator mi = keys.begin();
         string value;
 
@@ -893,7 +893,7 @@ DO_FUN(do_ostat)
             strncat( buf1, " ", MSL );
         }
 
-        keys = obj->pIndexData->GetDescrExtraKeys();
+        keys = obj->pIndexData->getDescrExtraKeys();
         mi = keys.begin();
 
         while ( mi++ != keys.end() )
@@ -941,7 +941,7 @@ DO_FUN(do_mstat)
 
     buf1[0] = '\0';
 
-    snprintf( buf, MSL, "Name: %s.  Race %i\r\n", victim->GetName_(), victim->race );
+    snprintf( buf, MSL, "Name: %s.  Race %i\r\n", victim->getName_(), victim->race );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Vnum: %d.  Sex: %s.  Room: %d.\r\n",
@@ -1000,7 +1000,7 @@ DO_FUN(do_mstat)
 
     snprintf( buf, MSL,
               "Lv: %d.  Class: %d.  Align: %ld.  AC: %ld.  Exp: %lu.\r\n",
-              victim->get_level(), victim->p_class, victim->GetAlignment(), GET_AC( victim ), victim->GetExperience() );
+              victim->get_level(), victim->p_class, victim->getAlignment(), GET_AC( victim ), victim->getExperience() );
     strncat( buf1, buf, MSL - 1 );
 
     if ( !IS_NPC( victim ) )
@@ -1020,7 +1020,7 @@ DO_FUN(do_mstat)
 
     if ( IS_NPC( victim ) )
     {
-        snprintf( buf, MSL, "MODIFIERS: AC: %ld.  Hitroll: %ld.  Damroll: %ld.\r\n", victim->GetModAC(), victim->GetModHR(), victim->GetModDR() );
+        snprintf( buf, MSL, "MODIFIERS: AC: %ld.  Hitroll: %ld.  Damroll: %ld.\r\n", victim->getModAC(), victim->getModHR(), victim->getModDR() );
         strncat( buf1, buf, MSL - 1 );
         snprintf( buf, MSL, "TARGET: %s\r\n", victim->target.c_str() );
         strncat( buf1, buf, MSL - 1 );
@@ -1034,7 +1034,7 @@ DO_FUN(do_mstat)
         strncat( buf1, buf, MSL - 1 );
     }
 
-    snprintf( buf, MSL, "Fighting: %s.\r\n", victim->fighting ? victim->fighting->GetName_() : "(none)" );
+    snprintf( buf, MSL, "Fighting: %s.\r\n", victim->fighting ? victim->fighting->getName_() : "(none)" );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf(buf, MSL, "Fight speed: LH: %4.2f (%4.2f) RH: %4.2f (%4.2f)\r\n", get_speed(victim, SPEED_LH), victim->speed[SPEED_LH], get_speed(victim, SPEED_RH), victim->speed[SPEED_RH]);
@@ -1074,12 +1074,12 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Master: %s.  Leader: %s.  Affected by: %s.\r\n",
-              victim->master ? victim->master->GetName_() : "(none)",
-              victim->leader ? victim->leader->GetName_() : "(none)", affect_bit_name( victim->affected_by ) );
+              victim->master ? victim->master->getName_() : "(none)",
+              victim->leader ? victim->leader->getName_() : "(none)", affect_bit_name( victim->affected_by ) );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Short description: %s.\r\nLong  description: %s\r\n",
-              IS_NPC(victim) ? victim->GetDescrShort_() : "(none)", !victim->GetDescrLong().empty() ? victim->GetDescrLong_() : "(none)." );
+              IS_NPC(victim) ? victim->getDescrShort_() : "(none)", !victim->getDescrLong().empty() ? victim->getDescrLong_() : "(none)." );
     strncat( buf1, buf, MSL - 1 );
 
     if ( IS_NPC( victim ) )
@@ -1143,7 +1143,7 @@ DO_FUN(do_mstat)
             if ( victim->hunting && IS_SET( victim->hunt_flags, HUNT_CR ) && victim->hunt_obj->item_type == ITEM_CORPSE_PC )
                 strncat( buf, " to return a corpse", MSL );
             else
-                snprintf( buf + strlen( buf ), MSL, " looking for (object) %s", victim->hunt_obj->GetDescrShort_() );
+                snprintf( buf + strlen( buf ), MSL, " looking for (object) %s", victim->hunt_obj->getDescrShort_() );
         }
         if ( IS_NPC( victim ) && IS_SET( victim->hunt_flags, HUNT_MERC | HUNT_CR ) && victim->npcdata->hunt_for )
             snprintf( buf + strlen( buf ), MSL, ", employed by %s", victim->npcdata->hunt_for->get_name() );
@@ -1250,13 +1250,13 @@ DO_FUN(do_ofindlev)
                 if ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) )
                 {
                     snprintf( buf, MSL, "\r\n(@@mREMORT@@N) [%3d] [%5d] %s", pObjIndex->level,
-                              pObjIndex->vnum, pObjIndex->GetDescrShort_() );
+                              pObjIndex->vnum, pObjIndex->getDescrShort_() );
                     strncat( buf1, buf, MSL - 1 );
                 }
                 else
                 {
                     snprintf( buf, MSL, "\r\n(@@aMORTAL@@N) [%3d] [%5d] %s", pObjIndex->level,
-                              pObjIndex->vnum, pObjIndex->GetDescrShort_() );
+                              pObjIndex->vnum, pObjIndex->getDescrShort_() );
                     strncat( buf1, buf, MSL - 1 );
                 }
             }
@@ -1311,10 +1311,10 @@ DO_FUN(do_mfind)
         if ( ( pMobIndex = get_mob_index( vnum ) ) != NULL )
         {
             nMatch++;
-            if ( fAll || is_name( arg, pMobIndex->GetName() ) )
+            if ( fAll || is_name( arg, pMobIndex->getName() ) )
             {
                 found = TRUE;
-                snprintf( buf, MSL, "[%5d] [%3d] %s\r\n", pMobIndex->vnum, pMobIndex->level, capitalize( pMobIndex->GetDescrShort_() ) );
+                snprintf( buf, MSL, "[%5d] [%3d] %s\r\n", pMobIndex->vnum, pMobIndex->level, capitalize( pMobIndex->getDescrShort_() ) );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -1391,7 +1391,7 @@ DO_FUN(do_mfindlev)
                     perkills = ( pMobIndex->killed * 100 ) / ( kill_table[moblev].killed );
 
                 snprintf( buf, MSL, "(%3d) [%3d] [%5d] %s\r\n",
-                          perkills, pMobIndex->level, pMobIndex->vnum, capitalize( pMobIndex->GetDescrShort_() ) );
+                          perkills, pMobIndex->level, pMobIndex->vnum, capitalize( pMobIndex->getDescrShort_() ) );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -1446,13 +1446,13 @@ DO_FUN(do_ofind)
         if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
         {
             nMatch++;
-            if ( fAll || is_name( arg, pObjIndex->GetName() ) )
+            if ( fAll || is_name( arg, pObjIndex->getName() ) )
             {
                 found = TRUE;
                 snprintf( buf, MSL, "[%5d] [%3d] %s %s\r\n",
                           pObjIndex->vnum, pObjIndex->level,
                           ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) ?
-                            "@@mRemort@@N" : "@@aMortal@@N" ), capitalize( pObjIndex->GetDescrShort_() ) );
+                            "@@mRemort@@N" : "@@aMortal@@N" ), capitalize( pObjIndex->getDescrShort_() ) );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -1504,7 +1504,7 @@ DO_FUN(do_mwhere)
     for ( li = char_list.begin(); li != char_list.end(); li++ )
     {
         victim = *li;
-        if ( IS_NPC( victim ) && victim->in_room != NULL && is_name( arg, const_cast<char *>(victim->GetName_()) ) )
+        if ( IS_NPC( victim ) && victim->in_room != NULL && is_name( arg, const_cast<char *>(victim->getName_()) ) )
         {
             found = TRUE;
             snprintf( buf, MSL, "[%5d] %-20s [%5d] %-30s\r\n",
@@ -1546,7 +1546,7 @@ DO_FUN(do_reboot)
 
     save_mudinfo();
 
-    snprintf( buf, MSL, "Reboot by %s.", ch->GetName_() );
+    snprintf( buf, MSL, "Reboot by %s.", ch->getName_() );
     do_echo( ch, buf );
     server.shutdown = true;
     return;
@@ -1576,7 +1576,7 @@ DO_FUN(do_shutdown)
 
     save_mudinfo();
 
-    snprintf( buf, MSL, "Shutdown by %s.", ch->GetName_() );
+    snprintf( buf, MSL, "Shutdown by %s.", ch->getName_() );
     append_file( ch, SHUTDOWN_FILE, buf );
     strncat( buf, "\r\n", MSL );
     do_echo( ch, buf );
@@ -2037,11 +2037,11 @@ DO_FUN(do_freeze)
     else
     {
         send_to_char( "You can't do ANYthing!\r\n", victim );
-        snprintf( buf, MSL, "You have been FROZEN by %s!!\r\n", ch->GetName_() );
+        snprintf( buf, MSL, "You have been FROZEN by %s!!\r\n", ch->getName_() );
         send_to_char( buf, victim );
         send_to_char( "Freeze set.\r\n", ch );
 
-        snprintf( buf, MSL, "%s has been FROZEN by %s.\r\n", victim->GetName_(), ch->GetName_() );
+        snprintf( buf, MSL, "%s has been FROZEN by %s.\r\n", victim->getName_(), ch->getName_() );
         notify( buf, ch->level + 1 );
     }
 
@@ -2391,7 +2391,7 @@ DO_FUN(do_ban)
         pban->newbie = FALSE;
 
     pban->name = str_dup( arg );
-    pban->banned_by = str_dup(ch->GetName_());
+    pban->banned_by = str_dup(ch->getName_());
     save_bans(  );
     send_to_char( "Ok.\r\n", ch );
     return;
@@ -2488,12 +2488,12 @@ DO_FUN(do_wizlock)
     if ( wizlock )
     {
         send_to_char( "Game wizlocked.\r\n", ch );
-        snprintf( buf, MSL, "%s wizlocks ACK! Mud.\r\n", ch->GetName_() );
+        snprintf( buf, MSL, "%s wizlocks ACK! Mud.\r\n", ch->getName_() );
     }
     else
     {
         send_to_char( "Game un-wizlocked.\r\n", ch );
-        snprintf( buf, MSL, "%s un-wizlocks ACK! Mud.\r\n", ch->GetName_() );
+        snprintf( buf, MSL, "%s un-wizlocks ACK! Mud.\r\n", ch->getName_() );
     }
     notify( buf, get_trust( ch ) );
     return;
@@ -3053,7 +3053,7 @@ DO_FUN(do_mset)
             send_to_char( "Alignment range is -1000 to 1000.\r\n", ch );
             return;
         }
-        victim->SetAlignment( value );
+        victim->setAlignment( value );
         return;
     }
 
@@ -3185,7 +3185,7 @@ DO_FUN(do_mset)
             return;
         }
 
-        victim->SetName(arg3);
+        victim->setName(arg3);
         return;
     }
 
@@ -3197,14 +3197,14 @@ DO_FUN(do_mset)
             return;
         }
         snprintf( buf, MSL, "%s", arg3 );
-        victim->SetDescrShort( buf );
+        victim->setDescrShort( buf );
         return;
     }
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        victim->SetDescrLong( arg3 );
-        victim->AppendDescrLong( "\r\n" );
+        victim->setDescrLong( arg3 );
+        victim->appendDescrLong( "\r\n" );
         return;
     }
 
@@ -3317,7 +3317,7 @@ DO_FUN(do_mset)
 
     if ( !str_cmp( arg2, "exp" ) )
     {
-        victim->SetExperience( 0 );
+        victim->setExperience( 0 );
         send_to_char("Done.\r\n", ch);
         return;
     }
@@ -3527,19 +3527,19 @@ DO_FUN(do_oset)
 
     if ( !str_cmp( arg2, "name" ) )
     {
-        obj->SetName(arg3);
+        obj->setName(arg3);
         return;
     }
 
     if ( !str_cmp( arg2, "short" ) )
     {
-        obj->SetDescrShort( arg3 );
+        obj->setDescrShort( arg3 );
         return;
     }
 
     if ( !str_cmp( arg2, "long" ) )
     {
-        obj->SetDescrLong( arg3 );
+        obj->setDescrLong( arg3 );
         return;
     }
 
@@ -3552,7 +3552,7 @@ DO_FUN(do_oset)
             return;
         }
 
-        obj->SetDescrExtra( arg3, argument );
+        obj->setDescrExtra( arg3, argument );
         return;
     }
 
@@ -3717,7 +3717,7 @@ DO_FUN(do_users)
         snprintf( buf + strlen( buf ), MSL, "[%3ld %3ld %18s] %-12s %-30s",
                   d->getDescriptor(),
                   d->getConnectionState(),
-                  buf3, d->original ? d->original->GetName_() : d->character ? d->character->GetName_() : "(none)", d->getHost_() );
+                  buf3, d->original ? d->original->getName_() : d->character ? d->character->getName_() : "(none)", d->getHost_() );
         if ( get_trust( ch ) == 85 )
             snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->getPort() );
         else
@@ -4022,13 +4022,13 @@ DO_FUN(do_owhere)
                 }
                 else
                     snprintf( catbuf, MSL, "[%2d] %s carried by %s [Room:%d].\r\n",
-                              obj_counter, obj->GetDescrShort_(), in_obj->carried_by->get_name(ch), in_obj->carried_by->in_room->vnum );
+                              obj_counter, obj->getDescrShort_(), in_obj->carried_by->get_name(ch), in_obj->carried_by->in_room->vnum );
             }
             else
             {
                 snprintf( catbuf, MSL, "[%2d] %s in %s [Room:%d].\r\n",
                           obj_counter,
-                          obj->GetDescrShort_(), ( in_obj->in_room == NULL ) ?
+                          obj->getDescrShort_(), ( in_obj->in_room == NULL ) ?
                           "somewhere" : in_obj->in_room->name, in_obj->in_room->vnum );
             }
 
@@ -4042,7 +4042,7 @@ DO_FUN(do_owhere)
         for ( li = obj_list.begin(); li != obj_list.end(); li++ )
         {
             obj = *li;
-            if ( !is_name( arg, obj->GetName() ) )
+            if ( !is_name( arg, obj->getName() ) )
                 continue;
             if ( obj == auction_item )
                 continue;
@@ -4053,13 +4053,13 @@ DO_FUN(do_owhere)
             if ( in_obj->carried_by != NULL )
             {
                 snprintf( catbuf, MSL, "[%2d] %s carried by %s [Room:%d].\r\n",
-                          obj_counter, obj->GetDescrShort_(), in_obj->carried_by->get_name(ch), in_obj->carried_by->in_room->vnum );
+                          obj_counter, obj->getDescrShort_(), in_obj->carried_by->get_name(ch), in_obj->carried_by->in_room->vnum );
             }
             else
             {
                 snprintf( catbuf, MSL, "[%2d] %s in %s [Room:%d].\r\n",
                           obj_counter,
-                          obj->GetDescrShort_(), ( in_obj->in_room == NULL ) ?
+                          obj->getDescrShort_(), ( in_obj->in_room == NULL ) ?
                           "somewhere" : in_obj->in_room->name, in_obj->in_room->vnum );
             }
 
@@ -4108,7 +4108,7 @@ DO_FUN(do_mpcr)
     for ( li = obj_list.begin(); li != obj_list.end(); li++ )
     {
         obj = *li;
-        if ( ( ( obj->pIndexData->vnum ) == OBJ_VNUM_CORPSE_PC ) && ( !str_cmp( arg, obj->GetOwner()->GetName() ) ) && ( !( obj->in_room == ch->in_room ) ) )  /*don't work! */
+        if ( ( ( obj->pIndexData->vnum ) == OBJ_VNUM_CORPSE_PC ) && ( !str_cmp( arg, obj->getOwner()->getName() ) ) && ( !( obj->in_room == ch->in_room ) ) )  /*don't work! */
         {
             found = TRUE;
             obj_from_room( obj );
@@ -4179,7 +4179,7 @@ DO_FUN(do_resetpassword)
         return;
     }
 
-    pwdnew = crypt( arg2, victim->GetName_() );
+    pwdnew = crypt( arg2, victim->getName_() );
 
 
     free_string( victim->pcdata->pwd );
@@ -4272,7 +4272,7 @@ DO_FUN(do_iwhere)
 
             count++;
             snprintf( buf, MSL, "%-12s [%5d] %-20s\r\n",
-                      vch->GetName_(), vch->in_room == NULL ? 0 : vch->in_room->vnum, vch->in_room->area->name );
+                      vch->getName_(), vch->in_room == NULL ? 0 : vch->in_room->vnum, vch->in_room->area->name );
             strncat( buf2, buf, MSL - 1 );
         }
     }
@@ -4370,9 +4370,9 @@ DO_FUN(do_setclass)
             p_class = ADVANCE_ADEPT;
             advance_level( victim, p_class, TRUE, FALSE );
             victim->pcdata->adept_level = 1;
-            snprintf( buf, MSL, " %s %s", victim->GetName_(), victim->get_whoname() );
+            snprintf( buf, MSL, " %s %s", victim->getName_(), victim->get_whoname() );
             do_whoname( ch, buf );
-            victim->SetExperience( 0 );
+            victim->setExperience( 0 );
             do_save( victim, "auto" );
             return;
         }
@@ -4456,7 +4456,7 @@ DO_FUN(do_setclass)
         }
         else
             victim->lvl[p_class] = 1;
-        victim->SetExperience( 0 );
+        victim->setExperience( 0 );
         if ( vamp )
         {
             victim->pcdata->super->energy_max = 10;
@@ -4530,7 +4530,7 @@ DO_FUN(do_setclass)
     }
 
 
-    victim->SetExperience( 0 );
+    victim->setExperience( 0 );
     victim->trust = 0;
 
     /*
@@ -4576,7 +4576,7 @@ DO_FUN(do_isnoop)
         if ( d->snoop_by != NULL )
         {
             count++;
-            snprintf( buf, MSL, "%s by %s.\r\n", d->character->GetName_(), d->snoop_by->character->GetName_() );
+            snprintf( buf, MSL, "%s by %s.\r\n", d->character->getName_(), d->snoop_by->character->getName_() );
             send_to_char( buf, ch );
         }
     }
@@ -4884,7 +4884,7 @@ DO_FUN(do_lhunt)
             if ( lch->hunting && IS_SET( lch->hunt_flags, HUNT_CR ) && lch->hunt_obj->item_type == ITEM_CORPSE_PC )
                 strncat( buf, " to return a corpse", MSL );
             else
-                snprintf( buf + strlen( buf ), MSL, " looking for (object) %s", lch->hunt_obj->GetDescrShort_() );
+                snprintf( buf + strlen( buf ), MSL, " looking for (object) %s", lch->hunt_obj->getDescrShort_() );
         }
         if ( IS_NPC( lch ) && IS_SET( lch->hunt_flags, HUNT_MERC | HUNT_CR ) && lch->npcdata->hunt_for )
             snprintf( buf + strlen( buf ), MSL, ", employed by %s", lch->npcdata->hunt_for->get_name() );
@@ -5220,9 +5220,9 @@ DO_FUN(do_reward)
         send_to_char( "Value range is -100 to 100.\r\n", ch );
         return;
     }
-    snprintf( buf, MSL, "@@NYou have been rewarded @@y%3d @@aQuest Points@@N by @@m %s @@N!!!\r\n", value, ch->GetName_() );
+    snprintf( buf, MSL, "@@NYou have been rewarded @@y%3d @@aQuest Points@@N by @@m %s @@N!!!\r\n", value, ch->getName_() );
     send_to_char( buf, victim );
-    snprintf( buf, MSL, "@@NYou have rewarded @@r%s  @@y%3d @@aQuest Points@@N!!!\r\n", victim->GetName_(), value );
+    snprintf( buf, MSL, "@@NYou have rewarded @@r%s  @@y%3d @@aQuest Points@@N!!!\r\n", victim->getName_(), value );
     send_to_char( buf, ch );
 
     victim->pcdata->quest_points += value;
@@ -5469,9 +5469,9 @@ const char *name_expand( CHAR_DATA * ch )
     static char outbuf[MSL];
 
     if ( !IS_NPC( ch ) )
-        return ch->GetName_();
+        return ch->getName_();
 
-    one_argument( const_cast<char *>(ch->GetName_()), name );  /* copy the first word into name */
+    one_argument( const_cast<char *>(ch->getName_()), name );  /* copy the first word into name */
 
     if ( !name[0] ) /* weird mob .. no keywords */
     {
@@ -5480,7 +5480,7 @@ const char *name_expand( CHAR_DATA * ch )
     }
 
     for ( rch = ch->in_room->first_person; rch && ( rch != ch ); rch = rch->next_in_room )
-        if ( is_name( name, const_cast<char *>(rch->GetName_()) ) )
+        if ( is_name( name, const_cast<char *>(rch->getName_()) ) )
             count++;
 
 
@@ -5744,7 +5744,7 @@ DO_FUN(do_otype)
                 found = TRUE;
                 snprintf( buf, MSL, "<%d> %s [%5d] %s\r\n", pObjIndex->level,
                           ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) ?
-                            "@@mRemort@@N" : "@@aMortal@@N" ), pObjIndex->vnum, pObjIndex->GetDescrShort_() );
+                            "@@mRemort@@N" : "@@aMortal@@N" ), pObjIndex->vnum, pObjIndex->getDescrShort_() );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -5806,7 +5806,7 @@ DO_FUN(do_owear)
                           pObjIndex->vnum,
                           pObjIndex->level,
                           ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) ?
-                            "@@mRemort@@N" : "@@aMortal@@N" ), pObjIndex->GetDescrShort_() );
+                            "@@mRemort@@N" : "@@aMortal@@N" ), pObjIndex->getDescrShort_() );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -5938,7 +5938,7 @@ DO_FUN(do_findreset)
                                                 strncat( outbuf, "  sells ", MSL );
                                             else
                                                 strncat( outbuf, "  with ", MSL );
-                                            snprintf( catbuf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->GetName_() );
+                                            snprintf( catbuf, MSL, "[%d] %s.\r\n", pObj->vnum, pObj->getName_() );
                                             strncat( outbuf, catbuf, MSL - 1 );
                                         }
                                         else
@@ -5952,7 +5952,7 @@ DO_FUN(do_findreset)
                                         pObj = get_obj_index( similar->arg1 );
                                         if ( pObj != NULL )
                                             snprintf( catbuf, MSL, "  equiped with [%d] %s, on %s.\r\n", pObj->vnum,
-                                                      pObj->GetName_(), tab_wear_loc[( similar->arg3 )].text );
+                                                      pObj->getName_(), tab_wear_loc[( similar->arg3 )].text );
                                         else
                                             snprintf( catbuf, MSL, "[%d] unknown object equipped on %s.\r\n",
                                                       similar->arg1, tab_wear_loc[similar->arg3].text );
@@ -6250,7 +6250,7 @@ DO_FUN(do_hotreboot)
         }
         else
         {
-            fprintf( fp, "%ld %s %s\n", d->getDescriptor(), och->GetName_(), d->getHost_() );
+            fprintf( fp, "%ld %s %s\n", d->getDescriptor(), och->getName_(), d->getHost_() );
             save_char_obj( och );
             d->Send( buf );
         }
@@ -6365,7 +6365,7 @@ DO_FUN(do_disable)
     }
 
     p = new DISABLED_DATA;
-    p->disabled_by = ch->GetName();
+    p->disabled_by = ch->getName();
     p->level = get_trust(ch);
     p->command = &cmd_table[i];
 

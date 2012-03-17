@@ -21,7 +21,7 @@
 #endif
 
 // Alignment
-sint_t Thing::DecrAlignment( const sint_t amount )
+sint_t Thing::decrAlignment( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -32,7 +32,7 @@ sint_t Thing::DecrAlignment( const sint_t amount )
         return m_alignment -= amount;
 }
 
-sint_t Thing::IncrAlignment( const sint_t amount )
+sint_t Thing::incrAlignment( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -43,7 +43,7 @@ sint_t Thing::IncrAlignment( const sint_t amount )
         return m_alignment += amount;
 }
 
-sint_t Thing::SetAlignment( const sint_t amount )
+sint_t Thing::setAlignment( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -52,7 +52,7 @@ sint_t Thing::SetAlignment( const sint_t amount )
 }
 
 // Brain
-Brain* Thing::AttachBrain( Brain* brain )
+Brain* Thing::attachBrain( Brain* brain )
 {
     if ( brain )
         return m_brain = brain;
@@ -65,7 +65,7 @@ Brain* Thing::AttachBrain( Brain* brain )
 }
 
 // Combat Stats
-sint_t Thing::DecrModAC( const sint_t amount )
+sint_t Thing::decrModAC( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -76,7 +76,7 @@ sint_t Thing::DecrModAC( const sint_t amount )
         return m_mod_ac -= amount;
 }
 
-sint_t Thing::IncrModAC( const sint_t amount )
+sint_t Thing::incrModAC( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -87,7 +87,7 @@ sint_t Thing::IncrModAC( const sint_t amount )
         return m_mod_ac += amount;
 }
 
-sint_t Thing::SetModAC( const sint_t amount )
+sint_t Thing::setModAC( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -95,7 +95,7 @@ sint_t Thing::SetModAC( const sint_t amount )
     return m_mod_ac = amount;
 }
 
-sint_t Thing::DecrModDR( const sint_t amount )
+sint_t Thing::decrModDR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -106,7 +106,7 @@ sint_t Thing::DecrModDR( const sint_t amount )
         return m_mod_dr -= amount;
 }
 
-sint_t Thing::IncrModDR( const sint_t amount )
+sint_t Thing::incrModDR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -117,7 +117,7 @@ sint_t Thing::IncrModDR( const sint_t amount )
         return m_mod_dr += amount;
 }
 
-sint_t Thing::SetModDR( const sint_t amount )
+sint_t Thing::setModDR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -125,7 +125,7 @@ sint_t Thing::SetModDR( const sint_t amount )
     return m_mod_dr = amount;
 }
 
-sint_t Thing::DecrModHR( const sint_t amount )
+sint_t Thing::decrModHR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -136,7 +136,7 @@ sint_t Thing::DecrModHR( const sint_t amount )
         return m_mod_hr -= amount;
 }
 
-sint_t Thing::IncrModHR( const sint_t amount )
+sint_t Thing::incrModHR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -147,7 +147,7 @@ sint_t Thing::IncrModHR( const sint_t amount )
         return m_mod_hr += amount;
 }
 
-sint_t Thing::SetModHR( const sint_t amount )
+sint_t Thing::setModHR( const sint_t amount )
 {
     if ( amount <= sintmin_t || amount >= sintmax_t )
         return 0;
@@ -156,7 +156,7 @@ sint_t Thing::SetModHR( const sint_t amount )
 }
 
 // Descriptions
-string Thing::GetDescrExtra( const string key ) const
+string Thing::getDescrExtra( const string key ) const
 {
     map<string,string>::const_iterator it = m_descr_extra.find( key );
     string value = it->second;
@@ -164,7 +164,7 @@ string Thing::GetDescrExtra( const string key ) const
     return value;
 }
 
-list<string> Thing::GetDescrExtraKeys() const
+list<string> Thing::getDescrExtraKeys() const
 {
     map<string,string>::const_iterator it;
     list<string> value;;
@@ -175,7 +175,7 @@ list<string> Thing::GetDescrExtraKeys() const
     return value;
 }
 
-list<string> Thing::GetDescrExtraValues() const
+list<string> Thing::getDescrExtraValues() const
 {
     map<string,string>::const_iterator it;
     list<string> value;
@@ -187,7 +187,7 @@ list<string> Thing::GetDescrExtraValues() const
 }
 
 // Level
-uint_t Thing::DecrExperience( const uint_t amount )
+uint_t Thing::decrExperience( const uint_t amount )
 {
     if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
@@ -198,7 +198,7 @@ uint_t Thing::DecrExperience( const uint_t amount )
         return m_experience -= amount;
 }
 
-uint_t Thing::IncrExperience( const uint_t amount )
+uint_t Thing::incrExperience( const uint_t amount )
 {
     if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
@@ -209,7 +209,7 @@ uint_t Thing::IncrExperience( const uint_t amount )
         return m_experience += amount;
 }
 
-uint_t Thing::SetExperience( const uint_t amount )
+uint_t Thing::setExperience( const uint_t amount )
 {
     if ( amount <= 0 || amount >= uintmax_t )
         return 0;
@@ -218,29 +218,29 @@ uint_t Thing::SetExperience( const uint_t amount )
 }
 
 // 'Object' Manipulation
-bool Thing::DropThing( const Thing* what )
+bool Thing::dropThing( const Thing* what )
 {
     char name[MSL];
 
-    strcpy( name, what->GetName().c_str() );
+    strcpy( name, what->getName().c_str() );
     do_drop( static_cast<CHAR_DATA*>(this), name );
     return true;
 }
 
-bool Thing::EquipThing( const Thing* what )
+bool Thing::equipThing( const Thing* what )
 {
     char name[MSL];
 
-    strcpy( name, what->GetName().c_str() );
+    strcpy( name, what->getName().c_str() );
     do_wear( static_cast<CHAR_DATA*>(this), name );
     return true;
 }
 
-bool Thing::RemoveThing( const Thing* what )
+bool Thing::removeThing( const Thing* what )
 {
     char name[MSL];
 
-    strcpy( name, what->GetName().c_str() );
+    strcpy( name, what->getName().c_str() );
     do_remove( static_cast<CHAR_DATA*>(this), name );
     return true;
 }
