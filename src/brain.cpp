@@ -293,6 +293,14 @@ string Brain::pushCommandQueue( const string cmd, const bool front )
     return push;
 }
 
+uint_t Brain::setType( const uint_t type )
+{
+    if ( type <= uintmin_t || type >= MAX_BRAIN_TYPE )
+        return m_type = BRAIN_TYPE_DUMB_NPC;
+    else
+        return m_type = type;
+}
+
 Brain::Brain()
 {
     snoop_by = NULL;
@@ -314,6 +322,7 @@ Brain::Brain()
     m_output = "";
     m_port = uintmin_t;
     m_timeout = current_time + MAX_IDLE_TIME;
+    m_type = uintmin_t;
     m_world = NULL;
 }
 

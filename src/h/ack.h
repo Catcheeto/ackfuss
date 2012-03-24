@@ -424,7 +424,6 @@ class mob_index_data : public Thing {
         short alignment;
         AREA_DATA *area;
         int cast;
-        short clan;
         int def;
         char *description;
         int hunt_flags;
@@ -474,7 +473,6 @@ class char_data : public Thing {
         short carry_number;
         float carry_weight;
         CAST_DATA *casting;
-        short clan;
         float cooldown[MAX_COOLDOWN];
         short damroll;
         bitset<MAX_BITSET> deaf;
@@ -1030,7 +1028,7 @@ struct chanhistory
     time_t time[CHANNEL_MAX][MAX_HISTORY];
     char message[CHANNEL_MAX][MAX_HISTORY][MAX_STRING_LENGTH]; /* 30 channels, each with MAX_HISTORY, length of MSL */
     char aname[CHANNEL_MAX][MAX_HISTORY][128]; /* To track area, for yell */
-    int cbit[CHANNEL_MAX][MAX_HISTORY]; /* To track which clan, family, tribe, or race */
+    uint_t cbit[CHANNEL_MAX][MAX_HISTORY]; /* To track which clan, family, tribe, or race */
 };
 
 class record_data

@@ -129,7 +129,7 @@ char *format_obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch, bool fShort, bool iNam
 
     snprintf( buf, MSL, "%s", color_string( ch, "objects" ) );
 
-    if ( IS_IMMORTAL(ch) && ch->position == POS_BUILDING ) /* Imms should see vnums, <3 builders :) --Kline */
+    if ( ch->isImmortal() && ch->position == POS_BUILDING ) /* Imms should see vnums, <3 builders :) --Kline */
     {
         snprintf(buf2, MSL, "(%d) ", obj->pIndexData->vnum);
         strncat(buf, buf2, MSL - 1);
@@ -424,7 +424,7 @@ void show_char_to_char_0( CHAR_DATA * victim, CHAR_DATA * ch )
     }
 
 
-    if ( !IS_NPC( victim ) || IS_IMMORTAL(ch) )
+    if ( !IS_NPC( victim ) || ch->isImmortal() )
     {
         /*
          * Then show what race they are (about time this added ;)
@@ -730,7 +730,7 @@ void show_char_to_char( CHAR_DATA * list, CHAR_DATA * ch )
         if ( rch == ch )
             continue;
 
-        if ( !IS_NPC( rch ) && rch->act.test(ACT_WIZINVIS) && get_trust( ch ) < rch->pcdata->invis )
+        if ( !IS_NPC( rch ) && rch->act.test(ACT_WIZINVIS) && ch->getTrust() < rch->pcdata->invis )
             continue;
 
         if ( ( rch->rider != NULL ) && ( rch->rider != ch ) )
@@ -1250,7 +1250,7 @@ DO_FUN(do_exits)
                     && pexit->to_room != NULL
                     && pexit->exit_info.test(EX_CLOSED)
                     && !pexit->exit_info.test(EX_NODETECT)
-                    && ( (ch->pcdata->learned[gsn_find_doors] > number_percent(  )) || IS_IMMORTAL(ch) ) && ( !str_cmp( pexit->keyword, "" ) ) )
+                    && ( (ch->pcdata->learned[gsn_find_doors] > number_percent(  )) || ch->isImmortal() ) && ( !str_cmp( pexit->keyword, "" ) ) )
             {
                 found = TRUE;
                 if ( fAuto || fAutonr )
@@ -1313,7 +1313,7 @@ DO_FUN(do_score)
               ch->get_title(),
               IS_NPC( ch ) ? "n/a" : race_table[ch->race].race_title,
               IS_VAMP( ch ) ? "@@e(Vampire)@@N" : IS_WOLF( ch ) ? "@@r(Werewolf)@@N" : "",
-              IS_NPC( ch ) ? "n/a" : clan_table[ch->clan].clan_name );
+              IS_NPC( ch ) ? "n/a" : clan_table[ch->getClan()].clan_name );
     my_get_age( ch, buf );
     send_to_char( buf, ch );
     snprintf( buf, MSL, " (%d hours RL)\r\n", my_get_hours( ch ) );
@@ -1410,12 +1410,12 @@ DO_FUN(do_score)
     send_to_char( buf, ch );
 
     snprintf( buf, MSL,
-              "X========= @@WExps: @@y%9lu @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->getExperience(), IS_NPC(ch) ? 0 : ch->pcdata->quest_points );
+              "X========= @@WExps: @@y%9lu @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->getExperience(), ch->isNPC() ? 0 : ch->pcdata->quest_points );
     send_to_char( buf, ch );
 
-    if ( get_trust( ch ) != ch->level )
+    if ( ch->getTrust() != ch->level )
     {
-        snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2lu @@c=================X\r\n", get_trust( ch ) );
+        snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2lu @@c=================X\r\n", ch->getTrust() );
         send_to_char( buf, ch );
     }
 
@@ -2747,7 +2747,7 @@ DO_FUN(do_commands)
     if ( IS_NPC(ch) )
         return;
 
-    total = IS_IMMORTAL(ch) ? C_TYPE_IMM + 1 : C_TYPE_IMM;
+    total = ch->isImmortal() ? C_TYPE_IMM + 1 : C_TYPE_IMM;
 
     if ( argument[0] != '\0' )
     {
@@ -2784,13 +2784,13 @@ DO_FUN(do_commands)
 
         for ( cmd = 0; cmd_table[cmd].name[0] != '\0'; cmd++ )
         {
-            if ( cmd_table[cmd].level <= L_GOD && cmd_table[cmd].level <= get_trust(ch) )
+            if ( cmd_table[cmd].level <= L_GOD && cmd_table[cmd].level <= ch->getTrust() )
             {
                 if ( show > -1 && cmd_table[cmd].type != show )
                     continue;
                 if ( show == -1 && cmd_table[cmd].type != i )
                     continue;
-                if ( cmd_table[cmd].level == CLAN_ONLY && ch->clan == 0 )
+                if ( cmd_table[cmd].level == CLAN_ONLY && ch->getClan() == 0 )
                     continue;
                 if ( cmd_table[cmd].level == BOSS_ONLY && !ch->act.test(ACT_CLEADER) )
                     continue;
@@ -2933,7 +2933,7 @@ DO_FUN(do_channels)
             return;
         }
 
-        trust = get_trust( ch );
+        trust = ch->getTrust();
         buffer[0] = '\0';
         strncat( buffer, "Channels:\r\n", MSL - 1 );
 
@@ -2989,7 +2989,7 @@ DO_FUN(do_channels)
         bit = 0;
         for ( a = 0; tab_channels[a].bit != 0; a++ )
         {
-            if ( tab_channels[a].min_level > get_trust( ch ) )
+            if ( tab_channels[a].min_level > ch->getTrust() )
                 continue;
             if ( !str_prefix( arg + 1, tab_channels[a].name ) )
             {
@@ -3030,7 +3030,7 @@ DO_FUN(do_config)
     {
         send_to_char( "@@d[@@W Keyword   @@d]@@W Option@@N\r\n", ch );
 
-        if ( IS_IMMORTAL(ch) )
+        if ( ch->isImmortal() )
         {
             send_to_char( ch->act.test(ACT_AUTODIG)
                           ? "@@d[@@a+AUTODIG   @@d]@@a You can dig new zones by walking.@@N\r\n"
@@ -3197,7 +3197,7 @@ DO_FUN(do_race_list)
 
     for ( iRace = 0; iRace < MAX_RACE; iRace++ ) /* Lets display race info if people rlist <abbr> --Kline */
     {
-        if ( !str_cmp(argument, race_table[iRace].race_name) && (IS_IMMORTAL(ch) || race_table[iRace].player_allowed == TRUE) )
+        if ( !str_cmp(argument, race_table[iRace].race_name) && (ch->isImmortal() || race_table[iRace].player_allowed == TRUE) )
         {
             int iWear, cnt = 0;
 
@@ -3236,14 +3236,14 @@ DO_FUN(do_race_list)
     send_to_char( "    Here follows a list of current races for " mudnamecolor ":\r\n", ch );
     send_to_char( "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n", ch );
     send_to_char( "\r\n", ch );
-    if ( IS_IMMORTAL( ch ) )
+    if ( ch->isImmortal() )
         send_to_char( "    No.   Room.    Abbr.    Name.    M/C   Classes: (Good->Bad)\r\n", ch );
     else
         send_to_char( "   Abbr.    Name.   M/C  Classes: (Good->Bad)\r\n", ch );
 
     for ( iRace = 0; iRace < MAX_RACE; iRace++ )
     {
-        if ( IS_IMMORTAL( ch ) )
+        if ( ch->isImmortal() )
         {
             snprintf( buf, MSL, "   %3d   %5d    %5s     %9s %2d %s %5s %4s\r\n",
                       iRace, race_table[iRace].recall,
@@ -3278,16 +3278,16 @@ DO_FUN(do_clan_list)
     send_to_char( "\r\n    Here follows a list of current clans for " mudnamecolor ":\r\n", ch );
     send_to_char( "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n", ch );
     send_to_char( "\r\n", ch );
-    if ( IS_IMMORTAL( ch ) )
+    if ( ch->isImmortal() )
         send_to_char( "    No.   Room.   Abbr.     Leader    Name.\r\n", ch );
     else
         send_to_char( "   Abbr.          Leader     Name.\r\n", ch );
 
     for ( iClan = 0; iClan < MAX_CLAN; iClan++ )
     {
-        if ( !IS_IMMORTAL( ch ) && iClan == 0 )
+        if ( !ch->isImmortal() && iClan == 0 )
             continue;   /* Don't list 'none' as a clan :) */
-        if ( IS_IMMORTAL( ch ) )
+        if ( ch->isImmortal() )
             snprintf( buf, MSL, "   %3d   %5d    %s  %12s  %s\r\n",
                       iClan, clan_table[iClan].clan_room, clan_table[iClan].clan_abbr,
                       clan_table[iClan].leader, clan_table[iClan].clan_name );
@@ -4807,7 +4807,7 @@ DO_FUN(do_whois)
      * Ok, so now show the details!
      */
     snprintf( buf, MSL, "-=-=-=-=-=-=-=-=-=-=- %9s -=-=-=-=-=-=-=-=-=-=-\r\n", victim->getName_() );
-    if ( IS_IMMORTAL( victim ) )
+    if ( victim->isImmortal() )
     {
         snprintf( buf + strlen( buf ), MSL, " [ %3s ]\r\n", victim->pcdata->who_name );
     }
@@ -4836,7 +4836,7 @@ DO_FUN(do_whois)
     snprintf( buf + strlen( buf ), MSL, "Sex: %s.  Race: %s.  Clan: %s.\r\n",
               ( victim->sex == SEX_MALE ) ? "Male" :
               ( victim->sex == SEX_FEMALE ) ? "Female" : "None",
-              race_table[victim->race].race_name, clan_table[victim->clan].clan_name );
+              race_table[victim->race].race_name, clan_table[victim->getClan()].clan_name );
 
     /*
      * if (victim->act != 0)
@@ -4851,7 +4851,7 @@ DO_FUN(do_whois)
     snprintf( buf + strlen( buf ), MSL, "Mobs killed: %d.  Times killed by mobs: %d.\r\n",
               victim->pcdata->records->mk, victim->pcdata->records->md );
 
-    if ( IS_IMMORTAL( victim ) )
+    if ( victim->isImmortal() )
     {
         snprintf( buf + strlen( buf ), MSL, "%s is an Immortal.\r\n", victim->getName_() );
     }
@@ -4957,7 +4957,7 @@ DO_FUN(do_loot)
      * begin checking for lootability
      */
 
-    if ( ( ch->clan == 0 ) && ( !ch->act.test(ACT_PKOK) ) && ( !IS_VAMP( ch ) && !IS_WOLF( ch ) ) )
+    if ( ( ch->getClan() == 0 ) && ( !ch->act.test(ACT_PKOK) ) && ( !IS_VAMP( ch ) && !IS_WOLF( ch ) ) )
     {
         send_to_char( "You cannot loot corpses.\r\n", ch );
         return;
@@ -4969,7 +4969,7 @@ DO_FUN(do_loot)
         return;
     }
 
-    if ( ( ch->clan == corpse->value[2] )
+    if ( ( ch->getClan() == corpse->value[2] )
             || ( ( ch->act.test(ACT_PKOK) )
                  && ( corpse->value[0] == 1 ) ) || ( ( IS_WOLF( ch ) || IS_VAMP( ch ) ) && ( corpse->value[0] == 1 ) ) )
     {

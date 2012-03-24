@@ -297,7 +297,7 @@ void build_save_mobs(  )
     fprintf( SaveFile, "Affected   %d\n", pMobIndex->affected_by );
     fprintf( SaveFile, "Alignment  %d\n", pMobIndex->alignment );
     fprintf( SaveFile, "Cast       %d\n", pMobIndex->cast );
-    fprintf( SaveFile, "Clan       %d\n", pMobIndex->clan );
+    fprintf( SaveFile, "Clan       %lu\n", pMobIndex->getClan() );
     fprintf( SaveFile, "Class      %d\n", pMobIndex->p_class );
     fprintf( SaveFile, "Def        %d\n", pMobIndex->def );
     fprintf( SaveFile, "Desc       %s~\n", pMobIndex->description );

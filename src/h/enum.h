@@ -38,7 +38,30 @@ enum bitsBrain_m_creation_check {
     MAX_CREATION_CHECK  = 4
 };
 
-// bitset<MAX_BITSET>            Utils
+// uint_t    Brain->m_type
+enum uintBrain_m_type {
+    BRAIN_TYPE_DUMB_NPC  = 0,
+    BRAIN_TYPE_SMART_NPC = 1,
+    BRAIN_TYPE_HUMAN     = 2,
+    MAX_BRAIN_TYPE       = 3
+};
+
+// bitset<MAX_BITSET>[MAX_THING_FLAG]    Thing->m_flag
+enum bitsThing_m_flag {
+    THING_FLAG_ACT = 0,
+    MAX_THING_FLAG = 1
+};
+
+// uint_t    THING_FLAG_ACT
+enum uintThing_flag_act {
+    THING_FLAG_ACT_CBOSS      = 0,
+    THING_FLAG_ACT_VAMPIRE    = 1,
+    THING_FLAG_ACT_WEREWOLF   = 2,
+    THING_FLAG_ACT_AMBASSADOR = 3,
+    MAX_THING_FLAG_ACT        = 4
+};
+
+// bitset<MAX_BITSET>    Utils
 enum bitsUtils {
     UTILS_DEBUG       = 0,
     UTILS_IGNORE_CASE = 1,

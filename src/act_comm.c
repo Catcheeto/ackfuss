@@ -505,7 +505,7 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
     /*
      * Allows immortals to communicate in silent rooms
      */
-    if ( ch->in_room->room_flags.test(RFLAG_QUIET) && !IS_IMMORTAL( ch ) ) /* Sssshhh! */
+    if ( ch->in_room->room_flags.test(RFLAG_QUIET) && !ch->isImmortal() ) /* Sssshhh! */
     {
         send_to_char( "Ssshhh!  This is a quiet room!\r\n", ch );
         return;
@@ -680,11 +680,11 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
 
             if ( d->getConnectionState( CON_PLAYING ) && vch != ch && !och->deaf.test(channel) && !och->deaf.test(CHANNEL_HERMIT) )
             {
-                if ( vch->in_room->room_flags.test(RFLAG_QUIET) && !IS_IMMORTAL( ch ) )
+                if ( vch->in_room->room_flags.test(RFLAG_QUIET) && !ch->isImmortal() )
                     continue;
-                if ( channel == CHANNEL_CREATOR && get_trust( och ) < MAX_LEVEL )
+                if ( channel == CHANNEL_CREATOR && och->getTrust() < MAX_LEVEL )
                     continue;
-                if ( channel == CHANNEL_IMMTALK && !IS_HERO( och ) )
+                if ( channel == CHANNEL_IMMTALK && !och->isHero() )
                     continue;
                 if ( channel == CHANNEL_DIPLOMAT && !och->act.test(ACT_CDIPLOMAT) )
                     continue;
@@ -697,8 +697,8 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
                 if ( channel == CHANNEL_RACE && vch->race != ch->race
                         && ( och->level != 85 || och->deaf.test(CHANNEL_ALLRACE) ) )
                     continue;
-                if ( channel == CHANNEL_CLAN && och->clan != ch->clan
-                        && ( och->deaf.test(CHANNEL_ALLCLAN) || get_trust( och ) != MAX_LEVEL ) )
+                if ( channel == CHANNEL_CLAN && och->getClan() != ch->getClan()
+                        && ( och->deaf.test(CHANNEL_ALLCLAN) || och->getTrust() < MAX_LEVEL ) )
                     continue;
                 if ( ( channel == CHANNEL_FAMILY )
                         && ( ( !IS_VAMP( och ) || !IS_VAMP( ch ) )
@@ -842,13 +842,13 @@ DO_FUN(do_clan)
         return;
     }
 
-    if ( ch->clan == 0 )
+    if ( ch->getClan() == 0 )
     {
         send_to_char( "Only players in clans may use this channel.\r\n", ch );
         return;
     }
 
-    snprintf( buf, MSL, "[%s]", clan_table[ch->clan].clan_abbr );
+    snprintf( buf, MSL, "[%s]", clan_table[ch->getClan()].clan_abbr );
     talk_channel( ch, argument, CHANNEL_CLAN, buf );
     return;
 }
@@ -1028,7 +1028,7 @@ DO_FUN(do_say)
         return;
     }
 
-    if ( ch->in_room->room_flags.test(RFLAG_QUIET) && !IS_IMMORTAL( ch ) )
+    if ( ch->in_room->room_flags.test(RFLAG_QUIET) && !ch->isImmortal() )
     {
         send_to_char( "Sssshhhh! This is a quiet room!\r\n", ch );
         return;
@@ -1111,7 +1111,7 @@ DO_FUN(do_ignore)
         return;
     }
 
-    if ( IS_IMMORTAL( victim ) )
+    if ( victim->isImmortal() )
     {
         send_to_char( "You cannot ignore immortals!\r\n", ch );
         return;
@@ -1207,7 +1207,7 @@ DO_FUN(do_tell)
     CHAR_DATA *victim;
     int position;
 
-    if ( ch->in_room->vnum == ROOM_VNUM_JAIL && !IS_IMMORTAL( ch ) )
+    if ( ch->in_room->vnum == ROOM_VNUM_JAIL && !ch->isImmortal() )
     {
         send_to_char( "You cannot send tells from jail.\r\n", ch );
         return;
@@ -1250,7 +1250,7 @@ DO_FUN(do_tell)
         send_to_char( "They aren't here.\r\n", ch );
         return;
     }
-    if ( !IS_NPC( victim ) && IS_WOLF( victim ) && ( IS_SHIFTED( victim ) || IS_RAGED( victim ) ) && !IS_IMMORTAL(ch) )
+    if ( !IS_NPC( victim ) && IS_WOLF( victim ) && ( IS_SHIFTED( victim ) || IS_RAGED( victim ) ) && !ch->isImmortal() )
     {
         send_to_char( "They can't hear you.\r\n", ch );
         return;
@@ -1262,13 +1262,13 @@ DO_FUN(do_tell)
         return;
     }
 
-    if ( victim->act.test(ACT_AFK) && !IS_IMMORTAL(ch) )
+    if ( victim->act.test(ACT_AFK) && !ch->isImmortal() )
     {
         act( "$N is currently away from keyboard.", ch, NULL, victim, TO_CHAR );
         return;
     }
 
-    if ( victim->in_room->room_flags.test(RFLAG_QUIET) && !IS_IMMORTAL( ch ) )
+    if ( victim->in_room->room_flags.test(RFLAG_QUIET) && !ch->isImmortal() )
     {
         act( "$N is in a quiet room, $E can't hear you.", ch, NULL, victim, TO_CHAR );
         return;
@@ -1277,7 +1277,7 @@ DO_FUN(do_tell)
 
     if ( ( !IS_NPC( victim ) )
             && ( !str_cmp( victim->pcdata->ignore_list[0], ch->getName() ) ||
-                 !str_cmp( victim->pcdata->ignore_list[1], ch->getName() ) || !str_cmp( victim->pcdata->ignore_list[2], ch->getName() ) ) && !IS_IMMORTAL(ch) )
+                 !str_cmp( victim->pcdata->ignore_list[1], ch->getName() ) || !str_cmp( victim->pcdata->ignore_list[2], ch->getName() ) ) && !ch->isImmortal() )
     {
         snprintf( buf, MSL, "%s @@Ris ignoring you!!@@g\r\n", victim->getName_() );
         send_to_char( buf, ch );
@@ -1298,7 +1298,7 @@ DO_FUN(do_tell)
         return;
         }*/
 
-    if ( !IS_IMMORTAL( ch ) && !IS_AWAKE( victim ) )
+    if ( !ch->isImmortal() && !IS_AWAKE( victim ) )
     {
         act( "$E can't hear you.", ch, 0, victim, TO_CHAR );
         return;
@@ -1350,13 +1350,13 @@ DO_FUN(do_reply)
     }
 
 
-    if ( victim->in_room->room_flags.test(RFLAG_QUIET) && !IS_IMMORTAL( ch ) )
+    if ( victim->in_room->room_flags.test(RFLAG_QUIET) && !ch->isImmortal() )
     {
         act( "$N is in a quiet room.  $E can't hear you.", ch, NULL, victim, TO_CHAR );
         return;
     }
 
-    if ( !IS_IMMORTAL( ch ) && !IS_AWAKE( victim ) )
+    if ( !ch->isImmortal() && !IS_AWAKE( victim ) )
     {
         act( "$E can't hear you.", ch, 0, victim, TO_CHAR );
         return;
@@ -2652,7 +2652,7 @@ DO_FUN(do_whisper)
     }
 
 
-    if ( !IS_IMMORTAL( ch ) && !IS_AWAKE( victim ) )
+    if ( !ch->isImmortal() && !IS_AWAKE( victim ) )
     {
         act( "$E can't hear you.", ch, 0, victim, TO_CHAR );
         return;
@@ -2717,7 +2717,7 @@ DO_FUN(do_ask)
     }
 
 
-    if ( !IS_IMMORTAL( ch ) && !IS_AWAKE( victim ) )
+    if ( !ch->isImmortal() && !IS_AWAKE( victim ) )
     {
         act( "$E can't hear you.", ch, 0, victim, TO_CHAR );
         return;

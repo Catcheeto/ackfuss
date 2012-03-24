@@ -59,6 +59,9 @@ class Brain {
         time_t getTimeout() const { return m_timeout; }
         time_t setTimeout( const time_t timeout ) { return m_timeout = timeout; }
 
+        uint_t getType() const { return m_type; };
+        uint_t setType( const uint_t type );
+
         World* getWorld() const { return m_world; }
         World* setWorld( World* world ) { return m_world = world; }
 
@@ -77,5 +80,6 @@ class Brain {
         string m_output;           // Output buffer
         uint_t m_port;             // Remote port
         time_t m_timeout;          // Idle timeout
+        uint_t m_type;             // Brain type: dumb NPC, player, smart NPC, etc
         World* m_world;            // Game world
 };

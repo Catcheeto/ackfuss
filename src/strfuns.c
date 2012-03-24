@@ -1762,7 +1762,7 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
             break;
 
         case 'C':
-            if ( !str_cmp(arg1, "clan") && !str_cmp(arg2, strip_color(clan_table[ch->clan].clan_name, "@@")) )           { retval = true; break; }
+            if ( !str_cmp(arg1, "clan") && !str_cmp(arg2, strip_color(clan_table[ch->getClan()].clan_name, "@@")) )     { retval = true; break; }
             if ( !str_cmp(arg1, "class") && !IS_NPC(ch) && !str_cmp(arg2, class_table[ch->pcdata->order[0]].who_name) ) { retval = true; break; }
             if ( !str_cmp(arg1, "con") && evaluate_tag(arg2, get_curr_con(ch), value) ) { retval = true; break; }
             break;
@@ -2133,7 +2133,7 @@ const char *who_pers( CHAR_DATA *pers )
  snprintf( ntbuf, MSL, "%s", color_format(buf2,33,true) );
 
  /* Make the magic happen */
- snprintf( buf1, MSL, "%s  %3s%5s  %s @@R|@@N %s @@e%-7s@@N", pers->get_whoname(), race_table[pers->race].race_name, clan_table[pers->clan].clan_name, flags1, ntbuf, flags2 );
+ snprintf( buf1, MSL, "%s  %3s%5s  %s @@R|@@N %s @@e%-7s@@N", pers->get_whoname(), race_table[pers->race].race_name, clan_table[pers->getClan()].clan_name, flags1, ntbuf, flags2 );
  output = str_dup( buf1 );
 
  return output;

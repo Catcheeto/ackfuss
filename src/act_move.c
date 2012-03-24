@@ -173,7 +173,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
             if ( ch->mana > mana_cost( ch, skill_lookup( "room dispel" ) ) )
                 do_cast( ch, "room dispel" );
         }
-        else if ( !IS_GHOST(ch) && !IS_IMMORTAL(ch) )
+        else if ( !IS_GHOST(ch) && !ch->isImmortal() )
         {
             send_to_char( "A barely visible energy web stops your movement!\r\n", ch );
             ch->using_named_door = FALSE;
@@ -187,7 +187,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
             if ( ch->mana > mana_cost( ch, skill_lookup( "room dispel" ) ) )
                 do_cast( ch, "room dispel" );
         }
-        else if ( !IS_GHOST(ch) && !IS_IMMORTAL(ch) )
+        else if ( !IS_GHOST(ch) && !ch->isImmortal() )
         {
             send_to_char( "A fleeting vision of bars appears before the exit, and stops your movement!\r\n", ch );
             ch->using_named_door = FALSE;
@@ -195,9 +195,9 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         }
     }
 
-    if ( pexit->exit_info.test(EX_CLOSED) && !IS_IMMORTAL(ch) )
+    if ( pexit->exit_info.test(EX_CLOSED) && !ch->isImmortal() )
     {
-        if ( !IS_AFFECTED( ch, AFF_PASS_DOOR ) && ( !item_has_apply( ch, ITEM_APPLY_PASS_DOOR ) ) && !IS_GHOST(ch) && !IS_IMMORTAL(ch) )
+        if ( !IS_AFFECTED( ch, AFF_PASS_DOOR ) && ( !item_has_apply( ch, ITEM_APPLY_PASS_DOOR ) ) && !IS_GHOST(ch) && !ch->isImmortal() )
         {
             if ( pexit->exit_info.test(EX_NODETECT) )
                 send_to_char( "Alas, you cannot go that way.\r\n", ch );
@@ -206,7 +206,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
             ch->using_named_door = FALSE;
             return;
         }
-        else if ( pexit->exit_info.test(EX_PASSPROOF) && !IS_IMMORTAL(ch) )
+        else if ( pexit->exit_info.test(EX_PASSPROOF) && !ch->isImmortal() )
         {
             if ( pexit->exit_info.test(EX_NODETECT) )
                 send_to_char( "Alas, you cannot go that way.\r\n", ch );
@@ -224,7 +224,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         return;
     }
 
-    if ( room_is_private( to_room ) && !IS_IMMORTAL( ch ) )
+    if ( room_is_private( to_room ) && !ch->isImmortal() )
     {
         send_to_char( "That room is private right now.\r\n", ch );
         ch->using_named_door = FALSE;
@@ -260,7 +260,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
     }
 
 
-    if ( pexit->exit_info.test(EX_IMMORTAL) && !IS_IMMORTAL( ch ) )
+    if ( pexit->exit_info.test(EX_IMMORTAL) && !ch->isImmortal() )
     {
         send_to_char( "Only an Immortal may use that exit.\r\n", ch );
         ch->using_named_door = FALSE;
@@ -308,7 +308,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         {
             if ( to_room->vnum == class_table[iClass].guild )
             {
-                if ( ( IS_NPC( ch ) ) || ( ( !IS_IMMORTAL( ch ) ) && ( ch->lvl[iClass] == -1 ) ) )
+                if ( ( IS_NPC( ch ) ) || ( !ch->isImmortal() && ( ch->lvl[iClass] == -1 ) ) )
                 {
                     send_to_char( "You aren't allowed in there.\r\n", ch );
                     ch->using_named_door = FALSE;
@@ -323,7 +323,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
 
         for ( iRace = 0; iRace < MAX_RACE; iRace++ )
         {
-            if ( ( to_room->vnum == race_table[iRace].race_room ) && ( iRace != ch->race ) && ( !IS_IMMORTAL( ch ) ) )
+            if ( ( to_room->vnum == race_table[iRace].race_room ) && ( iRace != ch->race ) && !ch->isImmortal() )
             {
                 send_to_char( "You aren't allowed in there.\r\n", ch );
                 ch->using_named_door = FALSE;
@@ -339,7 +339,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         {
             if ( to_room->vnum == clan_table[iClan].clan_room )
             {
-                if ( ( IS_NPC( ch ) ) || ( ( !IS_IMMORTAL( ch ) ) && ( iClan != ch->clan ) ) )
+                if ( ( IS_NPC( ch ) ) || ( !ch->isImmortal() && ( iClan != ch->getClan() ) ) )
                 {
                     send_to_char( "You aren't allowed in there.\r\n", ch );
                     ch->using_named_door = FALSE;
@@ -348,7 +348,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
             }
         }
 
-        if ( to_room->vnum == ROOM_VNUM_BUILDER && ( !IS_IMMORTAL( ch ) && !ch->act.test(ACT_BUILDER) ) )
+        if ( to_room->vnum == ROOM_VNUM_BUILDER && ( !ch->isImmortal() && !ch->act.test(ACT_BUILDER) ) )
         {
             send_to_char( "The Portal allows entrance to builders only.\r\n", ch );
             ch->using_named_door = FALSE;
@@ -356,8 +356,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         }
 
 
-        if ( to_room->vnum == ROOM_VNUM_CLAN
-                && ( IS_NPC( ch ) || ( ( !IS_IMMORTAL( ch ) ) && ( !ch->act.test(ACT_CBOSS) ) ) ) )
+        if ( to_room->vnum == ROOM_VNUM_CLAN && ( ch->isNPC() || ( !ch->isImmortal() && !ch->act.test(ACT_CBOSS) ) ) )
         {
             send_to_char( "Only Clan Bosses may enter this room.\r\n", ch );
             ch->using_named_door = FALSE;
@@ -417,7 +416,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
                 {
                     do_cast( ch, "fly" );
                 }
-                else if ( !IS_IMMORTAL( ch ) )
+                else if ( !ch->isImmortal() )
                 {
                     send_to_char( "You need a boat to go there.\r\n", ch );
                     ch->using_named_door = FALSE;
@@ -431,7 +430,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
 
         if ( IS_AFFECTED( ch, AFF_FLYING ) || item_has_apply( ch, ITEM_APPLY_FLY ) || ch->get_level() <= 5 || IS_RIDING(ch) )
             move = 1;
-        if ( IS_GHOST(ch) || IS_IMMORTAL(ch) )
+        if ( IS_GHOST(ch) || ch->isImmortal() )
             move = 0;
 
         if ( ch->move < move )
@@ -541,7 +540,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
             do_exits( ch, "autonr" );
     }
 
-    if ( !IS_NPC( ch ) && IS_VAMP( ch ) && !IS_IMMORTAL( ch ) )
+    if ( !IS_NPC( ch ) && IS_VAMP( ch ) && !ch->isImmortal() )
         check_vamp( ch ); /* burn the vampire! */
     ch->using_named_door = FALSE;
 
@@ -830,7 +829,7 @@ bool has_key( CHAR_DATA * ch, int key )
     }
 
     /* Immortals do not need keys. --Kline */
-    if ( IS_IMMORTAL( ch ) )
+    if ( ch->isImmortal() )
         return true;
 
     return false;
@@ -1483,13 +1482,13 @@ DO_FUN(do_clan_recall)
         return;
     }
 
-    if ( ch->clan == 0 )
+    if ( ch->getClan() == 0 )
     {
         send_to_char( "You must be in a clan to use this command!!\r\n", ch );
         return;
     }
     else
-        location = get_room_index( clan_table[ch->clan].clan_room );
+        location = get_room_index( clan_table[ch->getClan()].clan_room );
 
     if ( location == NULL )
     {

@@ -317,7 +317,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
     fprintf( fp, "Damroll        %d\n", ch->damroll );
     fprintf( fp, "Armor          %d\n", ch->armor );
     fprintf( fp, "Wimpy          %d\n", ch->wimpy );
-    fprintf( fp, "Clan           %d\n", ch->clan );
+    fprintf( fp, "Clan           %lu\n", ch->getClan() );
 
     if ( IS_NPC( ch ) )
     {
@@ -908,7 +908,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 break;
 
             case 'C':
-                KEY( "Clan", ch->clan, fread_number( fp ) );
+                KEY_( "Clan", ch->setClan, fread_number( fp ) );
                 KEY( "Class", ch->p_class, fread_number( fp ) );
                 if ( !str_cmp( word, "Colors" ) && !IS_NPC( ch ) )
                 {

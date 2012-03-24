@@ -237,7 +237,7 @@ DO_FUN(do_get)
         pd = one_argument( pd, name );
         pd = one_argument( pd, name );
         pd = one_argument( pd, name );
-        if ( str_cmp( name, ch->getName() ) && !IS_IMMORTAL( ch ) )
+        if ( str_cmp( name, ch->getName() ) && !ch->isImmortal() )
         {
             bool fGroup = FALSE;
             victim = NULL;
@@ -975,7 +975,7 @@ DO_FUN(do_drink)
         }
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !IS_IMMORTAL(ch) )
+    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to drink such a liquid.\n\r", ch );
         return;
@@ -1137,13 +1137,13 @@ DO_FUN(do_eat)
         return;
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !IS_IMMORTAL(ch) )
+    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to eat such a food.\n\r", ch );
         return;
     }
 
-    if ( !IS_IMMORTAL( ch ) )
+    if ( !ch->isImmortal() )
     {
         if ( obj->item_type != ITEM_FOOD && obj->item_type != ITEM_PILL )
         {
@@ -2159,7 +2159,7 @@ DO_FUN(do_quaff)
         return;
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !IS_IMMORTAL(ch) )
+    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to use such a potion.\n\r", ch );
         return;
@@ -2217,7 +2217,7 @@ DO_FUN(do_recite)
         }
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !IS_IMMORTAL(ch) )
+    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to use such a scroll.\n\r", ch );
         return;
@@ -3487,7 +3487,7 @@ DO_FUN(do_cdonate)
         return;
     }
 
-    if ( ch->clan == 0 )
+    if ( ch->getClan() == 0 )
     {
         send_to_char( "You must be in a clan to use this command!\r\n", ch );
         return;
@@ -3548,7 +3548,7 @@ DO_FUN(do_cdonate)
      * Remove object from inventory and put into donation room
      */
 
-    place_to_put_it = clan_table[ch->clan].donat_room;
+    place_to_put_it = clan_table[ch->getClan()].donat_room;
     if ( ( room = get_room_index( place_to_put_it ) ) == NULL )
     {
         Utils::Logger( 0, "Cdonate: no valid room for vnum %d", place_to_put_it );
@@ -3842,7 +3842,7 @@ DO_FUN(do_auction)
     }
 
     argument = one_argument( argument, arg );
-    if ( ( IS_IMMORTAL( ch ) ) && ( ( !str_cmp( arg, "stop" ) ) || ( !str_cmp( arg, "take" ) ) ) )
+    if ( ch->isImmortal() && ( ( !str_cmp( arg, "stop" ) ) || ( !str_cmp( arg, "take" ) ) ) )
         if ( auction_item != NULL )
         {
             CHAR_DATA *ach;

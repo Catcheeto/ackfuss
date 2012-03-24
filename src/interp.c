@@ -981,9 +981,7 @@ void interpret( CHAR_DATA * ch, const string input )
     bool alias_call;
     char command[MAX_INPUT_LENGTH];
     char logline[MAX_INPUT_LENGTH];
-    int cmd;
-    int trust;
-    bool found;
+    uint_t cmd;
     alias_call = FALSE;
     char *argument;
 
@@ -1065,45 +1063,10 @@ void interpret( CHAR_DATA * ch, const string input )
         argument = one_argument( argument, command );
     }
 
-
-
-
-
     /*
      * Look for command in command table.
      */
-    found = FALSE;
-    trust = get_trust( ch );
-    for ( cmd = 0; cmd_table[cmd].name[0] != '\0'; cmd++ )
-    {
-
-        /*
-         * Stephen Mod:  if level == CLAN_ONLY then for clan member only.
-         * == BOSS_ONLY have to be leader.
-         * == -3 vamp
-         * == -4 wolf
-         */
-
-        if ( cmd_table[cmd].level == CLAN_ONLY && !IS_NPC( ch ) && ch->clan == 0 )
-            continue;
-
-        if ( cmd_table[cmd].level == BOSS_ONLY && !IS_NPC( ch ) && ch->act.test(ACT_CLEADER) )
-            continue;
-
-        if ( cmd_table[cmd].level == VAMP_ONLY && !IS_NPC( ch ) && !IS_VAMP( ch ) && ( ch->level != L_GOD ) )
-            continue;
-
-        if ( cmd_table[cmd].level == WOLF_ONLY && !IS_NPC( ch ) && !IS_WOLF( ch ) && ( ch->level != L_GOD ) )
-            continue;
-
-        if ( command[0] == cmd_table[cmd].name[0]
-                && !str_prefix( command, cmd_table[cmd].name ) && ( cmd_table[cmd].level <= trust ) )
-        {
-            found = TRUE;
-            break;
-        }
-
-    }
+    cmd = ch->canInterpret( command );
 
     /*
      * Log and snoop.
@@ -1134,7 +1097,7 @@ void interpret( CHAR_DATA * ch, const string input )
     if ( cmd_table[cmd].log != LOG_NEVER )
         ch->desc->pushCommandHistory( logline );
 
-    if ( !found && !IS_NPC( ch ) && ( !alias_call ) )
+    if ( ( cmd == ( sizeof( cmd_table ) / sizeof( cmd_table[0] ) ) ) && !IS_NPC( ch ) && ( !alias_call ) )
     {
         int cnt;
         char foo[MAX_STRING_LENGTH];
@@ -1146,7 +1109,6 @@ void interpret( CHAR_DATA * ch, const string input )
         {
             if ( !str_cmp( ch->pcdata->alias_name[cnt], command ) && str_cmp( ch->pcdata->alias_name[cnt], "<none>@@N" ) )
             {
-                found = TRUE;
                 snprintf( foo, MSL, "~%s %s", ch->pcdata->alias[cnt], argument );
                 interpret( ch, foo );
                 return;
@@ -1155,7 +1117,7 @@ void interpret( CHAR_DATA * ch, const string input )
     }
 
 
-    if ( !found )
+    if ( cmd == ( sizeof( cmd_table ) / sizeof( cmd_table[0] ) ) )
     {
         /*
          * Look for command in socials table.

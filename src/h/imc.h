@@ -44,7 +44,7 @@
 #define CH_IMCLEVEL(ch)          ((ch)->level)
 #define CH_IMCSEX(ch)            ((ch)->sex)
 #define CH_IMCTITLE(ch)          ((ch)->get_title())
-#define CH_IMCRANK(ch)           (str_cmp(ch->pcdata->who_name,"off") ? ch->pcdata->who_name : IS_IMMORTAL(ch) ? "Imm" : class_table[(ch)->p_class].who_name)
+#define CH_IMCRANK(ch)           (str_cmp(ch->pcdata->who_name,"off") ? ch->pcdata->who_name : isImmortal() ? "Imm" : class_table[(ch)->p_class].who_name)
 
 #define IMC_BUFF_SIZE 16384
 

@@ -113,26 +113,6 @@ extern CHAR_DATA *quest_target;
 extern COUNCIL_DATA super_councils[MAX_SUPER];
 
 /*
- * Retrieve a character's trusted level for permission checking.
- */
-uint_t get_trust( CHAR_DATA * ch )
-{
-    if ( ch->desc != NULL && ch->desc->original != NULL )
-        ch = ch->desc->original;
-
-    if ( !IS_NPC( ch ) && ch->act.test(ACT_AMBASSADOR) )
-        return ( LEVEL_HERO + 1 );
-
-    if ( ch->trust != 0 )
-        return ch->trust;
-
-    if ( IS_NPC( ch ) && ch->level >= LEVEL_HERO )
-        return LEVEL_HERO - 1;
-    else
-        return ch->level;
-}
-
-/*
  * Replacement for retrieving a character's age
  * Each tick = 1 mud hr.  (spaced at 1 minute rl)
  * 24 mud hrs = 1 mud day

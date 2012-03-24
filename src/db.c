@@ -1026,7 +1026,7 @@ void load_mobile( FILE * fp )
 
             case 'C':
                 KEY("Cast", pMobIndex->cast, fread_number(fp));
-                KEY("Clan", pMobIndex->clan, fread_number(fp));
+                KEY_("Clan", pMobIndex->setClan, fread_number(fp));
                 KEY("Class", pMobIndex->p_class, fread_number(fp));
                 break;
 
@@ -2696,7 +2696,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->npcdata->cast = pMobIndex->cast;
     mob->npcdata->def = pMobIndex->def;
     mob->p_class = pMobIndex->p_class;
-    mob->clan = pMobIndex->clan;
+    mob->setClan( pMobIndex->getClan() );
     mob->npcdata->strong_magic = pMobIndex->strong_magic;
     mob->npcdata->weak_magic = pMobIndex->weak_magic;
     mob->npcdata->resist = pMobIndex->resist;
@@ -3917,7 +3917,7 @@ void check_chistory( CHAR_DATA *ch, int channel )
                         }
                         break;
                     case CHANNEL_CLAN:
-                        if ( ch->clan == chan_history.cbit[x][y] )
+                        if ( ch->getClan() == chan_history.cbit[x][y] )
                         {
                             send_to_char(buf, ch);
                             found = TRUE;
@@ -3973,9 +3973,9 @@ void update_chistory( CHAR_DATA *ch, char *argument, int channel )
             switch ( channel )
             {
                 default: break;
-                case CHANNEL_YELL:   snprintf(chan_history.aname[x][y], 128, "%s", ch->in_room->area->name);      break;
-                case CHANNEL_CLAN:   chan_history.cbit[x][y] = ch->clan;                                       break;
-                case CHANNEL_RACE:   chan_history.cbit[x][y] = ch->race;                                       break;
+                case CHANNEL_YELL:   snprintf(chan_history.aname[x][y], 128, "%s", ch->in_room->area->name);    break;
+                case CHANNEL_CLAN:   chan_history.cbit[x][y] = ch->getClan();                                   break;
+                case CHANNEL_RACE:   chan_history.cbit[x][y] = ch->race;                                        break;
                 case CHANNEL_FAMILY: if ( !IS_NPC(ch) ) chan_history.cbit[x][y] = ch->pcdata->super->bloodline; break;
                 case CHANNEL_HOWL:   if ( !IS_NPC(ch) ) chan_history.cbit[x][y] = ch->pcdata->super->bloodline; break;
             }
@@ -4006,9 +4006,9 @@ void update_chistory( CHAR_DATA *ch, char *argument, int channel )
             switch ( channel )
             {
                 default: break;
-                case CHANNEL_YELL:   snprintf(chan_history.aname[x][y], 128, "%s", ch->in_room->area->name);      break;
-                case CHANNEL_CLAN:   chan_history.cbit[x][y] = ch->clan;                                       break;
-                case CHANNEL_RACE:   chan_history.cbit[x][y] = ch->race;                                       break;
+                case CHANNEL_YELL:   snprintf(chan_history.aname[x][y], 128, "%s", ch->in_room->area->name);    break;
+                case CHANNEL_CLAN:   chan_history.cbit[x][y] = ch->getClan();                                   break;
+                case CHANNEL_RACE:   chan_history.cbit[x][y] = ch->race;                                        break;
                 case CHANNEL_FAMILY: if ( !IS_NPC(ch) ) chan_history.cbit[x][y] = ch->pcdata->super->bloodline; break;
                 case CHANNEL_HOWL:   if ( !IS_NPC(ch) ) chan_history.cbit[x][y] = ch->pcdata->super->bloodline; break;
             }

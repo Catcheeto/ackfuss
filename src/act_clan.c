@@ -153,7 +153,7 @@ DO_FUN(do_ctoggle)
         return;
     }
 
-    if ( ch->clan != victim->clan )
+    if ( ch->getClan() != victim->getClan() )
     {
         send_to_char( "Only on members of YOUR clan!\r\n", ch );
         return;
@@ -325,7 +325,7 @@ DO_FUN(do_politics)
     if ( ch->act.test(ACT_CDIPLOMAT) )
         for ( x = 1; x < MAX_CLAN; x++ )
         {
-            if ( politics_data.end_current_state[ch->clan][x] )
+            if ( politics_data.end_current_state[ch->getClan()][x] )
             {
                 str.clear();
                 str += clan_table[x].clan_name;
@@ -341,7 +341,7 @@ DO_FUN(do_negotiate)
     char buf[MAX_STRING_LENGTH];
     char arg1[MAX_STRING_LENGTH];
     char arg2[MAX_STRING_LENGTH];
-    short target_clan;
+    uint_t target_clan;
 
     argument = one_argument( argument, arg1 );
     argument = one_argument( argument, arg2 );
@@ -365,13 +365,13 @@ DO_FUN(do_negotiate)
         send_to_char( "That is not a clan!\r\n", ch );
         return;
     }
-    if ( target_clan == ch->clan )
+    if ( target_clan == ch->getClan() )
     {
         send_to_char( "Well, that will accomplish a lot..you must be of two minds about the whole thing!\r\n", ch );
         return;
     }
 
-    if ( politics_data.daily_negotiate_table[ch->clan][target_clan] )
+    if ( politics_data.daily_negotiate_table[ch->getClan()][target_clan] )
     {
         snprintf( buf, MSL, "Your clan has already negotiated with %s today.\r\n", clan_table[target_clan].clan_name );
         send_to_char( buf, ch );
@@ -380,20 +380,20 @@ DO_FUN(do_negotiate)
 
     if ( !str_prefix( arg2, "peace" ) )
     {
-        if ( politics_data.diplomacy[ch->clan][target_clan] < -450 )
+        if ( politics_data.diplomacy[ch->getClan()][target_clan] < -450 )
         {
-            if ( politics_data.end_current_state[ch->clan][target_clan] &&
-                    politics_data.end_current_state[target_clan][ch->clan] )
+            if ( politics_data.end_current_state[ch->getClan()][target_clan] &&
+                    politics_data.end_current_state[target_clan][ch->getClan()] )
             {
-                politics_data.diplomacy[ch->clan][target_clan] = -425;
-                politics_data.diplomacy[target_clan][ch->clan] = -425;
+                politics_data.diplomacy[ch->getClan()][target_clan] = -425;
+                politics_data.diplomacy[target_clan][ch->getClan()] = -425;
                 send_to_char( "@@NYou have successfully negotiated an end to this dreaded @@eCLAN WAR@@N. Great Job!!\r\n", ch );
                 snprintf( buf, MSL, "@@eCLAN:@@N The war between %s and %s has ended. They may no longer PKILL each other!!\r\n",
-                          clan_table[ch->clan].clan_name, clan_table[target_clan].clan_name );
+                          clan_table[ch->getClan()].clan_name, clan_table[target_clan].clan_name );
                 info( buf, 1 );
 
-                politics_data.end_current_state[ch->clan][target_clan] = FALSE;
-                politics_data.end_current_state[target_clan][ch->clan] = FALSE;
+                politics_data.end_current_state[ch->getClan()][target_clan] = FALSE;
+                politics_data.end_current_state[target_clan][ch->getClan()] = FALSE;
 
                 return;
             }
@@ -408,8 +408,8 @@ DO_FUN(do_negotiate)
         }
         else
         {
-            politics_data.diplomacy[ch->clan][target_clan] += 25;
-            politics_data.diplomacy[target_clan][ch->clan] += 25;
+            politics_data.diplomacy[ch->getClan()][target_clan] += 25;
+            politics_data.diplomacy[target_clan][ch->getClan()] += 25;
 
             snprintf( buf, MSL, "You are requesting a more peaceful state of affairs with %s.", clan_table[target_clan].clan_name );
             send_to_char( buf, ch );
@@ -420,28 +420,28 @@ DO_FUN(do_negotiate)
 
     else if ( !str_prefix( arg2, "war" ) )
     {
-        if ( ( politics_data.diplomacy[ch->clan][target_clan] - 50 ) < -450 )
+        if ( ( politics_data.diplomacy[ch->getClan()][target_clan] - 50 ) < -450 )
 
         {
             snprintf( buf, MSL, "@@NYou have started a @@eWAR@@N with %s! Watch out!.\r\n", clan_table[target_clan].clan_name );
             send_to_char( buf, ch );
 
             snprintf( buf, MSL, "@@eCLAN:@@N A war has started between %s and %s. They may now PKILL each other!!\r\n",
-                      clan_table[ch->clan].clan_name, clan_table[target_clan].clan_name );
+                      clan_table[ch->getClan()].clan_name, clan_table[target_clan].clan_name );
             info( buf, 1 );
 
-            politics_data.diplomacy[ch->clan][target_clan] = -460;
-            politics_data.diplomacy[target_clan][ch->clan] = -460;
-            politics_data.end_current_state[ch->clan][target_clan] = FALSE;
-            politics_data.end_current_state[target_clan][ch->clan] = FALSE;
+            politics_data.diplomacy[ch->getClan()][target_clan] = -460;
+            politics_data.diplomacy[target_clan][ch->getClan()] = -460;
+            politics_data.end_current_state[ch->getClan()][target_clan] = FALSE;
+            politics_data.end_current_state[target_clan][ch->getClan()] = FALSE;
             save_clan_table(  );
             return;
         }
 
         else
         {
-            politics_data.diplomacy[ch->clan][target_clan] -= 50;
-            politics_data.diplomacy[target_clan][ch->clan] -= 50;
+            politics_data.diplomacy[ch->getClan()][target_clan] -= 50;
+            politics_data.diplomacy[target_clan][ch->getClan()] -= 50;
 
             snprintf( buf, MSL, "You are requesting a more aggressive state of affairs with %s.", clan_table[target_clan].clan_name );
             send_to_char( buf, ch );
@@ -449,21 +449,21 @@ DO_FUN(do_negotiate)
     }
     else if ( !str_prefix( arg2, "end" ) )
     {
-        if ( politics_data.diplomacy[ch->clan][target_clan] > 450 )
+        if ( politics_data.diplomacy[ch->getClan()][target_clan] > 450 )
         {
             send_to_char( "You are negotiating an and to your alliance.\r\n", ch );
-            politics_data.end_current_state[ch->clan][target_clan] = FALSE;
-            politics_data.end_current_state[target_clan][ch->clan] = FALSE;
-            politics_data.diplomacy[ch->clan][target_clan] = 100;
-            politics_data.diplomacy[target_clan][ch->clan] = 100;
+            politics_data.end_current_state[ch->getClan()][target_clan] = FALSE;
+            politics_data.end_current_state[target_clan][ch->getClan()] = FALSE;
+            politics_data.diplomacy[ch->getClan()][target_clan] = 100;
+            politics_data.diplomacy[target_clan][ch->getClan()] = 100;
 
         }
-        if ( politics_data.diplomacy[ch->clan][target_clan] < -450 )
+        if ( politics_data.diplomacy[ch->getClan()][target_clan] < -450 )
         {
-            politics_data.end_current_state[ch->clan][target_clan] = TRUE;
+            politics_data.end_current_state[ch->getClan()][target_clan] = TRUE;
 
-            if ( politics_data.end_current_state[ch->clan][target_clan]
-                    && politics_data.end_current_state[target_clan][ch->clan] )
+            if ( politics_data.end_current_state[ch->getClan()][target_clan]
+                    && politics_data.end_current_state[target_clan][ch->getClan()] )
             {
                 send_to_char
                 ( "Both clans have successfully negotiated and end to the war.  Negotiate peace to seal your treaty!\r\n",
@@ -489,7 +489,7 @@ DO_FUN(do_negotiate)
         send_to_char( "That is not a legal diplomatic negotiation!\r\n", ch );
         return;
     }
-    politics_data.daily_negotiate_table[ch->clan][target_clan] = TRUE;
+    politics_data.daily_negotiate_table[ch->getClan()][target_clan] = TRUE;
 
 
     /* save table to file here */
@@ -571,7 +571,7 @@ DO_FUN(do_cset)
     }
 
 
-    victim->clan = value;
+    victim->setClan( value );
     snprintf( buf, MSL, "%s now belongs to clan %s.\r\n", victim->getName_(), clan_table[value].clan_name );
     send_to_char( buf, ch );
 
@@ -612,7 +612,7 @@ DO_FUN(do_accept)
         return;
     }
 
-    if ( IS_IMMORTAL( victim ) )
+    if ( victim->isImmortal() )
     {
         send_to_char( "You hear the gods laughing at you.  Nice try.\r\n", ch );
         return;
@@ -624,7 +624,7 @@ DO_FUN(do_accept)
         return;
     }
 
-    if ( victim->clan != 0 )
+    if ( victim->getClan() != 0 )
     {
         snprintf( buf, MSL, "%s is already in a clan.  Maybe they should leave it first?\r\n", victim->getName_() );
         send_to_char( buf, ch );
@@ -637,11 +637,11 @@ DO_FUN(do_accept)
         send_to_char( buf, ch );
         return;
     }
-    victim->clan = ch->clan;
+    victim->setClan( ch->getClan() );
     act( "$N accepts you into $S clan!", victim, NULL, ch, TO_VICT );
     act( "You accept $N into your clan!", ch, NULL, victim, TO_VICT );
 
-    snprintf( buf, MSL, "%s has accepted %s into clan %s.", ch->getName_(), victim->getName_(), clan_table[ch->clan].clan_name );
+    snprintf( buf, MSL, "%s has accepted %s into clan %s.", ch->getName_(), victim->getName_(), clan_table[ch->getClan()].clan_name );
     monitor_chan( buf, MONITOR_CLAN );
 
     return;
@@ -663,7 +663,7 @@ DO_FUN(do_cwhere)
     if ( IS_NPC( ch ) )
         return;
 
-    if ( ch->clan == 0 )
+    if ( ch->getClan() == 0 )
     {
         send_to_char( "You don't belong to a clan!\r\n", ch );
         return;
@@ -679,7 +679,7 @@ DO_FUN(do_cwhere)
                 && !IS_NPC( victim )
                 && victim->in_room != NULL && ( ch->act.test(ACT_CBOSS) || can_see( ch, victim ) ) )
         {
-            if ( victim->clan != ch->clan )
+            if ( victim->getClan() != ch->getClan() )
                 continue;
             if ( !IS_NPC( victim ) && IS_WOLF( victim ) && ( IS_SHIFTED( victim ) || IS_RAGED( victim ) ) )
                 continue;
@@ -726,16 +726,16 @@ DO_FUN(do_leave)
     if ( IS_NPC( ch ) )
         return;
 
-    if ( ch->clan == 0 )  /* No clan */
+    if ( ch->getClan() == 0 )  /* No clan */
     {
         send_to_char( "You must be IN a clan before you can leave it!\r\n", ch );
         return;
     }
 
-    snprintf( buf, MSL, "%s has left clan %s.", ch->getName_(), clan_table[ch->clan].clan_name );
+    snprintf( buf, MSL, "%s has left clan %s.", ch->getName_(), clan_table[ch->getClan()].clan_name );
     monitor_chan( buf, MONITOR_CLAN );
 
-    ch->clan = 0;
+    ch->setClan();
     ch->act.reset(ACT_CDIPLOMAT | ACT_CTREASURER | ACT_CARMORER | ACT_CLEADER | ACT_CBOSS);
     send_to_char( "You leave your clan.  Let's hope they don't get mad!\r\n", ch );
 
@@ -781,7 +781,7 @@ DO_FUN(do_banish)
         return;
     }
 
-    if ( victim->clan != ch->clan )
+    if ( victim->getClan() != ch->getClan() )
     {
         send_to_char( "They're not in your clan!\r\n", ch );
         return;
@@ -793,13 +793,13 @@ DO_FUN(do_banish)
         return;
     }
 
-    victim->clan = 0;
+    victim->setClan();
     victim->act.reset(ACT_CDIPLOMAT | ACT_CTREASURER | ACT_CARMORER | ACT_CLEADER | ACT_CBOSS);
 
-    snprintf( buf, MSL, "%s has banished %s from clan %s.", ch->getName_(), victim->getName_(), clan_table[ch->clan].clan_name );
+    snprintf( buf, MSL, "%s has banished %s from clan %s.", ch->getName_(), victim->getName_(), clan_table[ch->getClan()].clan_name );
     monitor_chan( buf, MONITOR_CLAN );
 
-    snprintf( buf, MSL, "%s banishes you from clan %s!\r\n", ch->getName_(), clan_table[ch->clan].clan_name );
+    snprintf( buf, MSL, "%s banishes you from clan %s!\r\n", ch->getName_(), clan_table[ch->getClan()].clan_name );
     send_to_char( buf, victim );
     act( "$N has been banished.", ch, NULL, victim, TO_CHAR );
     return;
@@ -834,8 +834,8 @@ DO_FUN(do_make)
 
         for ( cnt = 0; cnt < MAX_CLAN_EQ; cnt++ )
         {
-            if ( clan_table[ch->clan].eq[cnt] != -1
-                    && ( ( pObj = get_obj_index( clan_table[ch->clan].eq[cnt] ) ) != NULL ) )
+            if ( clan_table[ch->getClan()].eq[cnt] != -1
+                    && ( ( pObj = get_obj_index( clan_table[ch->getClan()].eq[cnt] ) ) != NULL ) )
             {
                 snprintf( buf, MSL, "[%2d] : %s.\r\n", cnt, pObj->getDescrShort_() );
                 send_to_char( buf, ch );
@@ -862,7 +862,7 @@ DO_FUN(do_make)
         return;
     }
 
-    if ( target->clan != ch->clan )
+    if ( target->getClan() != ch->getClan() )
     {
         act( "$N isn't in your clan...", ch, NULL, target, TO_CHAR );
         return;
@@ -876,14 +876,14 @@ DO_FUN(do_make)
         return;
     }
 
-    if ( clan_table[ch->clan].eq[num] == -1 )
+    if ( clan_table[ch->getClan()].eq[num] == -1 )
     {
         send_to_char( "No object has been set for that slot.\r\n", ch );
         do_make( ch, "" );
         return;
     }
 
-    if ( ( pObj = get_obj_index( clan_table[ch->clan].eq[num] ) ) == NULL )
+    if ( ( pObj = get_obj_index( clan_table[ch->getClan()].eq[num] ) ) == NULL )
     {
         send_to_char( "Couldn't find that object to load...\r\n", ch );
         do_make( ch, "" );

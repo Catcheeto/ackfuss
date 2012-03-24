@@ -184,7 +184,7 @@ void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
         return;
     }
 
-    if ( ( board->clan != 0 ) && !IS_NPC( ch ) && ch->clan != ( board->clan - 1 ) )
+    if ( ( board->clan != 0 ) && !IS_NPC( ch ) && ch->getClan() != ( board->clan - 1 ) )
     {
         send_to_char( "You are not of the right clan to read this board.\r\n", ch );
         return;
@@ -449,7 +449,7 @@ DO_FUN(do_delete)
         return;
     }
 
-    if ( ( board->clan != 0 ) && ch->clan != ( board->clan - 1 ) )
+    if ( ( board->clan != 0 ) && ch->getClan() != ( board->clan - 1 ) )
     {
         send_to_char( "You are not of the right clan to delete on this board.\r\n", ch );
         return;
@@ -540,7 +540,7 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
         return;
     }
 
-    if ( ( board->clan != 0 ) && !IS_NPC( ch ) && ch->clan != ( board->clan - 1 ) )
+    if ( ( board->clan != 0 ) && !IS_NPC( ch ) && ch->getClan() != ( board->clan - 1 ) )
     {
         send_to_char( "You are not of the right clan to read this board.\r\n", ch );
         return;
@@ -634,7 +634,7 @@ DO_FUN(do_write)
         return;
     }
 
-    if ( ( board->clan != 0 ) && ch->clan != ( board->clan - 1 ) )
+    if ( ( board->clan != 0 ) && ch->getClan() != ( board->clan - 1 ) )
     {
         send_to_char( "You are not of the right clan to write on this board.\r\n", ch );
         return;
@@ -760,7 +760,7 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
         return;
     }
 
-    if ( ( board->clan != 0 ) && !IS_NPC( ch ) && ch->clan != ( board->clan - 1 ) )
+    if ( ( board->clan != 0 ) && !IS_NPC( ch ) && ch->getClan() != ( board->clan - 1 ) )
     {
         send_to_char( "You are not of the right clan to even read this board!\r\n", ch );
         return;

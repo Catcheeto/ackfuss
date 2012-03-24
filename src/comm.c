@@ -612,6 +612,7 @@ void new_descriptor( int d_control )
      */
     dnew = new DESCRIPTOR_DATA();
     dnew->setDescriptor( desc );
+    dnew->setType( BRAIN_TYPE_HUMAN );
     brain_list.push_back( dnew );
 
     size = sizeof( sock );
@@ -2237,8 +2238,6 @@ void nanny( Brain *b, const string input )
             ch->pcdata->mana_from_gain = ch->max_mana;
             ch->pcdata->hp_from_gain = ch->max_hit;
             ch->pcdata->move_from_gain = ch->max_move;
-
-            ch->clan = 0;   /* no clan */
             ch->set_title("@@N needs a new title!");
 
             {
@@ -3254,6 +3253,7 @@ void copyover_recover(  )
 
         d = new DESCRIPTOR_DATA();
         d->setDescriptor( desc );
+        d->setType( BRAIN_TYPE_HUMAN );
         brain_list.push_back( d );
         d->setHost( host );
         d->setConnectionState( CON_COPYOVER_RECOVER );   /* -15, so Brain->Disconnect() frees the char */

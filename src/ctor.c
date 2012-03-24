@@ -129,7 +129,6 @@ char_data::char_data()
     carry_number = 0;
     carry_weight = 0;
     casting = new CAST_DATA;
-    clan = -1;
     for ( short i = 0; i < MAX_COOLDOWN; i++ )
         cooldown[i] = 0;
     damroll = 5;
@@ -300,7 +299,6 @@ mob_index_data::mob_index_data()
     alignment = 0;
     area = NULL;
     cast = 0;
-    clan = -1;
     def = 0;
     description = &str_empty[0];
     hunt_flags = 0;

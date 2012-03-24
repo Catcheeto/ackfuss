@@ -104,8 +104,6 @@ namespace Utils {
  * Character macros.
  */
 #define IS_NPC(ch)              ( (ch)->npc )
-#define IS_IMMORTAL(ch)         (get_trust(ch) >= LEVEL_IMMORTAL)
-#define IS_HERO(ch)             (get_trust(ch) >= LEVEL_HERO)
 #define IS_ADEPT(ch)            ( !IS_NPC(ch) && ch->get_level("adept") > 0 )
 #define IS_REMORT(ch)           ( !IS_NPC(ch) && ch->get_level("remort") > 0 )
 #define IS_AFFECTED(ch, sn)     ( IS_SET((ch)->affected_by, (sn)))

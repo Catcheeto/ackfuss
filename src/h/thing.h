@@ -31,6 +31,10 @@ class Thing {
         Brain* attachBrain( Brain* brain = NULL );
         Brain* getBrain() const { return m_brain; }
 
+        // Clan
+        uint_t getClan() const { return m_clan; }
+        uint_t setClan( const uint_t clan = 0 );
+
         // Combat Stats
         sint_t getModAC() const { return m_mod_ac; }
         sint_t decrModAC( const sint_t amount );
@@ -44,6 +48,9 @@ class Thing {
         sint_t decrModHR( const sint_t amount );
         sint_t incrModHR( const sint_t amount );
         sint_t setModHR( const sint_t amount );
+
+        // Command Handling
+        uint_t canInterpret( const string cmd ) const;
 
         // Descriptions
         string appendDescrLong( const string descr ) { return m_descr_long.append( descr ); }
@@ -62,11 +69,26 @@ class Thing {
         string setDescrLong( const string descr ) { return m_descr_long = descr; }
         string setDescrShort( const string descr ) { return m_descr_short = descr; }
 
+        // Flags
+        bool getFlag( const uint_t flag_type, const uint_t flag_value ) const;
+        bool setFlag( const uint_t flag_type, const uint_t flag_value, const bool flag_state );
+
         // Level
         uint_t getExperience() const { return m_experience; }
         uint_t decrExperience( const uint_t amount );
         uint_t incrExperience( const uint_t amount );
         uint_t setExperience( const uint_t amount );
+        uint_t getLevel() const;
+        uint_t getTrust() const;
+        uint_t setTrust( const uint_t level );
+
+        // Misc
+        bool isCBoss() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_CBOSS ); }
+        bool isHero() const { return getTrust() >= LEVEL_HERO; }
+        bool isImmortal() const { return getTrust() >= LEVEL_IMMORTAL; }
+        bool isNPC() const { return !( getBrain() && getBrain()->getType() == BRAIN_TYPE_HUMAN ); }
+        bool isVampire() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_VAMPIRE ); }
+        bool isWerewolf() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_WEREWOLF ); }
 
         // Name
         string appendName( const string name ) { return m_name.append( name ); }
@@ -93,6 +115,9 @@ class Thing {
         // Brain
         Brain* m_brain;
 
+        // Clan
+        uint_t m_clan;
+
         // Combat Stats
         sint_t m_mod_ac;
         sint_t m_mod_dr;
@@ -103,8 +128,12 @@ class Thing {
         string m_descr_long;
         string m_descr_short;
 
+        // Flags
+        bitset<MAX_BITSET> m_flag[MAX_THING_FLAG];
+
         // Level
         uint_t m_experience;
+        uint_t m_trust;
 
         // Name
         string m_name;

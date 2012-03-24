@@ -64,6 +64,15 @@ Brain* Thing::attachBrain( Brain* brain )
     }
 }
 
+// Clan
+uint_t Thing::setClan( const uint_t clan )
+{
+    if ( clan <= uintmin_t || clan >= MAX_CLAN )
+        return m_clan = 0;
+    else
+        return m_clan = clan;
+}
+
 // Combat Stats
 sint_t Thing::decrModAC( const sint_t amount )
 {
@@ -155,6 +164,32 @@ sint_t Thing::setModHR( const sint_t amount )
     return m_mod_hr = amount;
 }
 
+// Command Handling
+uint_t Thing::canInterpret( const string cmd ) const
+{
+    uint_t value = 0;
+
+    for ( value = 0; cmd_table[value].name[0] != '\0'; value++ )
+    {
+        if ( cmd_table[value].level == CLAN_ONLY && !isNPC() && m_clan == uintmin_t )
+            continue;
+
+        if ( cmd_table[value].level == BOSS_ONLY && !isNPC() && !isClanBoss() )
+            continue;
+
+        if ( cmd_table[value].level == VAMP_ONLY && !isNPC() && !isVampire() && ( level != L_GOD ) )
+            continue;
+
+        if ( cmd_table[value].level == WOLF_ONLY && !isNPC() && !isWerewolf() && ( level != L_GOD ) )
+            continue;
+
+        if ( command[0] == cmd_table[value].name[0] && !str_prefix( cmd.c_str(), cmd_table[value].name ) && ( cmd_table[value].level <= trust ) )
+            break;
+    }
+
+    return value;
+}
+
 // Descriptions
 string Thing::getDescrExtra( const string key ) const
 {
@@ -186,13 +221,38 @@ list<string> Thing::getDescrExtraValues() const
     return value;
 }
 
+// Flags
+bool Thing::getFlag( const uint_t flag_type, const uint_t flag_value ) const
+{
+    if ( flag_type <= uintmin_t || flag_type >= MAX_THING_FLAG )
+        return false;
+
+    if ( flag_value <= uintmin_t || flag_value >= MAX_BITSET )
+        return false;
+
+    return m_flag[flag_type].test( flag_value );
+}
+
+bool Thing::setFlag( const uint_t flag_type, const uint_t flag_value, const bool flag_state )
+{
+    if ( flag_type <= uintmin_t || flag_type >= MAX_THING_FLAG )
+        return false;
+
+    if ( flag_value <= uintmin_t || flag_value >= MAX_BITSET )
+        return false;
+
+    m_flag[flag_type].set( flag_value, flag_state );
+
+    return true;
+}
+
 // Level
 uint_t Thing::decrExperience( const uint_t amount )
 {
     if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
 
-    if ( ( m_experience - amount ) <= 0 )
+    if ( ( m_experience - amount ) <= uintmin_t )
         return m_experience = uintmin_t;
     else
         return m_experience -= amount;
@@ -211,10 +271,37 @@ uint_t Thing::incrExperience( const uint_t amount )
 
 uint_t Thing::setExperience( const uint_t amount )
 {
-    if ( amount <= 0 || amount >= uintmax_t )
+    if ( amount <= uintmin_t || amount >= uintmax_t )
         return 0;
 
     return m_experience = amount;
+}
+
+uint_t Thing::getLevel() const
+{
+    return 0;
+}
+
+uint_t Thing::getTrust() const
+{
+    if ( !isNPC() && getFlag( THING_FLAG_ACT, THING_FLAG_ACT_AMBASSADOR ) )
+        return ( LEVEL_HERO + 1 );
+
+    if ( m_trust != uintmin_t )
+        return m_trust;
+
+    if ( isNPC() && getLevel() >= LEVEL_HERO )
+        return ( LEVEL_HERO - 1 );
+    else
+        return getLevel();
+}
+
+uint_t Thing::setTrust( const uint_t level )
+{
+    if ( level <= uintmin_t || level >= MAX_LEVEL )
+        return 0;
+
+    return m_trust = level;
 }
 
 // 'Object' Manipulation
@@ -295,6 +382,9 @@ Thing::Thing()
     // Brain
     m_brain = NULL;
 
+    // Clan
+    m_clan = uintmin_t;
+
     // Combat Stats
     m_mod_ac = uintmin_t;
     m_mod_dr = uintmin_t;
@@ -305,8 +395,13 @@ Thing::Thing()
     m_descr_long.clear();
     m_descr_short.clear();
 
+    // Flags
+    for ( uint_t i = 0; i < MAX_THING_FLAG; i++ )
+        m_flag[i].reset();
+
     // Level
     m_experience = uintmin_t;
+    m_trust = uintmin_t;
 
     // Name
     m_name.clear();

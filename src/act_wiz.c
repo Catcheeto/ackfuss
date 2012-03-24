@@ -165,7 +165,7 @@ DO_FUN(do_transdm)
         wch = *li;
         if ( !IS_NPC( wch ) && ( ch != wch ) )
         {
-            if ( IS_IMMORTAL( wch ) && ( wch != ch ) )
+            if ( wch->isImmortal() && ( wch != ch ) )
             {
                 send_to_char( "Everyone has been transferred to the DM arena.\r\n", wch );
                 continue;
@@ -195,7 +195,7 @@ DO_FUN(do_wizhelp)
     col = 0;
     for ( cmd = 0; cmd_table[cmd].name[0] != '\0'; cmd++ )
     {
-        if ( cmd_table[cmd].level >= LEVEL_HERO && cmd_table[cmd].level <= get_trust( ch ) )
+        if ( cmd_table[cmd].level >= LEVEL_HERO && cmd_table[cmd].level <= ch->getTrust() )
         {
             snprintf( buf, MSL, "%-12s", cmd_table[cmd].name );
             strncat( buf1, buf, MSL - 1 );
@@ -276,7 +276,7 @@ DO_FUN(do_deny)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
 //        if ( victim->desc == NULL )
@@ -484,7 +484,7 @@ DO_FUN(do_transfer)
         {
             d = *di;
             if ( d->getConnectionState( CON_PLAYING )
-                    && !IS_IMMORTAL( d->character )
+                    && !d->character->isImmortal()
                     && d->character != ch && d->character->in_room != NULL && can_see( ch, d->character ) )
             {
                 char buf[MSL];
@@ -1005,11 +1005,11 @@ DO_FUN(do_mstat)
 
     if ( !IS_NPC( victim ) )
     {
-        snprintf( buf, MSL, "Race: %d (%s)%s.   Clan: %d (%s).\r\n",
+        snprintf( buf, MSL, "Race: %d (%s)%s.   Clan: %lu (%s).\r\n",
                   victim->race,
                   race_table[victim->race].race_name,
                   IS_VAMP( victim ) ? "[VAMPIRE]" : "",
-                  victim->clan, clan_table[victim->clan].clan_abbr );
+                  victim->getClan(), clan_table[victim->getClan()].clan_abbr );
         strncat( buf1, buf, MSL - 1 );
     }
 
@@ -1631,7 +1631,7 @@ DO_FUN(do_snoop)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -1784,7 +1784,7 @@ DO_FUN(do_oload)
 
     if ( arg2[0] == '\0' )
     {
-        level = get_trust( ch );
+        level = ch->getTrust();
     }
     else
     {
@@ -1797,7 +1797,7 @@ DO_FUN(do_oload)
             return;
         }
         level = atoi( arg2 );
-        if ( level < 0 || level > get_trust( ch ) )
+        if ( level < 0 || level > ch->getTrust() )
         {
             send_to_char( "Limited to your trust level.\r\n", ch );
             return;
@@ -1921,7 +1921,7 @@ DO_FUN(do_trust)
         return;
     }
 
-    if ( level > get_trust( ch ) )
+    if ( level > ch->getTrust() )
     {
         send_to_char( "Limited to your trust.\r\n", ch );
         return;
@@ -1957,9 +1957,9 @@ DO_FUN(do_restore)
         for ( li = char_list.begin(); li != char_list.end(); li++ )
         {
             vch = *li;
-            if ( !IS_NPC( vch ) )
+            if ( !vch->isNPC() )
             {
-                if ( IS_IMMORTAL( vch ) && ( vch != ch ) )
+                if ( vch->isImmortal() && ( vch != ch ) )
                 {
                     act( "Everyone has been restored by $n.", ch, NULL, vch, TO_VICT );
                 }
@@ -2021,7 +2021,7 @@ DO_FUN(do_freeze)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -2150,7 +2150,7 @@ DO_FUN(do_noemote)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -2199,7 +2199,7 @@ DO_FUN(do_notell)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -2248,7 +2248,7 @@ DO_FUN(do_silence)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -2299,7 +2299,7 @@ DO_FUN(do_nopray)
         return;
     }
 
-    if ( get_trust( victim ) >= get_trust( ch ) )
+    if ( victim->getTrust() >= ch->getTrust() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -2495,7 +2495,7 @@ DO_FUN(do_wizlock)
         send_to_char( "Game un-wizlocked.\r\n", ch );
         snprintf( buf, MSL, "%s un-wizlocks ACK! Mud.\r\n", ch->getName_() );
     }
-    notify( buf, get_trust( ch ) );
+    notify( buf, ch->getTrust() );
     return;
 }
 
@@ -2691,7 +2691,7 @@ DO_FUN(do_mset)
             return;
         }
 
-        if ( get_trust( ch ) < 84 )
+        if ( ch->getTrust() < MAX_LEVEL - 1 )
         {
             send_to_char( "Only a Supreme or above may use this option.\r\n", ch );
             return;
@@ -2929,7 +2929,7 @@ DO_FUN(do_mset)
 
         CHAR_DATA *hunted = 0;
 
-        if ( ch->level < 84 )
+        if ( ch->level < MAX_LEVEL - 1 )
         {
             send_to_char( "Currently restricted to reduce abuses.\r\n", ch );
             return;
@@ -3134,7 +3134,7 @@ DO_FUN(do_mset)
         int neg = 0;
         char *lookupstr = arg3;
 
-        if ( get_trust( ch ) < MAX_LEVEL - 1 )
+        if ( ch->getTrust() < MAX_LEVEL - 1 )
         {
             send_to_char( "Only supreme or creator level immortals may use this.\r\n", ch );
             return;
@@ -3643,7 +3643,7 @@ DO_FUN(do_users)
     buf2[0] = '\0';
 
     send_to_char( "\r\n Desc.  Connection State.    Player Name.     Login Site.", ch );
-    if ( get_trust( ch ) == 85 )
+    if ( ch->getTrust() == MAX_LEVEL )
         send_to_char( "                 Port.\r\n", ch );
     else
         send_to_char( "\r\n", ch );
@@ -3718,7 +3718,7 @@ DO_FUN(do_users)
                   d->getDescriptor(),
                   d->getConnectionState(),
                   buf3, d->original ? d->original->getName_() : d->character ? d->character->getName_() : "(none)", d->getHost_() );
-        if ( get_trust( ch ) == 85 )
+        if ( ch->getTrust() == MAX_LEVEL )
             snprintf( buf + strlen( buf ), MSL, "  %5ld\r\n", d->getPort() );
         else
             snprintf( buf + strlen( buf ), MSL, "\r\n" );
@@ -3755,7 +3755,7 @@ DO_FUN(do_force)
     /*
      * Look for command in command table.
      */
-    trust = get_trust( ch );
+    trust = ch->getTrust();
     for ( cmd = 0; cmd_table[cmd].name[0] != '\0'; cmd++ )
     {
         if ( argument[0] == cmd_table[cmd].name[0]
@@ -3824,7 +3824,7 @@ DO_FUN(do_force)
         {
             vch = *li;
 
-            if ( !IS_NPC( vch ) && !IS_IMMORTAL( vch ) )
+            if ( !vch->isNPC() && !vch->isImmortal() )
             {
                 act( "$n forces you to '$t'.", ch, argument, vch, TO_VICT );
                 interpret( vch, argument );
@@ -3847,7 +3847,7 @@ DO_FUN(do_force)
             return;
         }
 
-        if ( get_trust( victim ) >= get_trust( ch ) )
+        if ( victim->getTrust() >= ch->getTrust() )
         {
             send_to_char( "Do it yourself!\r\n", ch );
             return;
@@ -3884,7 +3884,7 @@ DO_FUN(do_invis)
     {
         if ( !is_number( argument ) )
         {
-            level = get_trust( ch );
+            level = ch->getTrust();
         }
         level = UMAX( 1, atoi( argument ) );
         level = UMIN( ch->level, level );
@@ -3901,7 +3901,7 @@ DO_FUN(do_invis)
     }
 
     if ( level == -1 )
-        level = get_trust( ch );
+        level = ch->getTrust();
 
     ch->pcdata->invis = level;
 
@@ -4113,7 +4113,7 @@ DO_FUN(do_mpcr)
             found = TRUE;
             obj_from_room( obj );
             obj_to_room( obj, ch->in_room );
-            if ( !IS_IMMORTAL(ch) )
+            if ( !ch->isImmortal() )
                 act( "Got the blighter!", ch, NULL, NULL, TO_CHAR );
 
         }
@@ -4124,7 +4124,7 @@ DO_FUN(do_mpcr)
      * act used to enable mobiles to check for CR triggers...
      */
 
-    if ( !found && !IS_IMMORTAL(ch) )
+    if ( !found && !ch->isImmortal() )
     {
         act( "Couldn't find it.", ch, NULL, NULL, TO_CHAR );
     }
@@ -4408,7 +4408,7 @@ DO_FUN(do_setclass)
         return;
     }
 
-    if ( value > get_trust( ch ) )
+    if ( value > ch->getTrust() )
     {
         send_to_char( "Limited to your trust level.\r\n", ch );
         return;
@@ -4793,7 +4793,7 @@ DO_FUN(do_whoname)
         return;
     }
 
-    if ( ( get_trust( ch ) < ( MAX_LEVEL - 1 ) ) && ch != victim )
+    if ( ( ch->getTrust() < ( MAX_LEVEL - 1 ) ) && ch != victim )
     {
         send_to_char( "Only Supremes and Creators can set the whoname of others.\r\n", ch );
         return;
@@ -5083,7 +5083,7 @@ DO_FUN(do_monitor)
             char colbuf[10];
             colbuf[0] = '\0';
 
-            if ( tab_monitor[a].min_level > get_trust( ch ) )
+            if ( tab_monitor[a].min_level > ch->getTrust() )
                 continue;
 
             if ( ch->pcdata->monitor.test(tab_monitor[a].channel) )
@@ -5161,7 +5161,7 @@ void monitor_chan( const char *message, int channel )
         d = *di;
         if ( d->getConnectionState( CON_PLAYING )
                 && !IS_NPC( d->character )
-                && d->character->pcdata->monitor.test(channel) && level <= get_trust( d->character ) )
+                && d->character->pcdata->monitor.test(channel) && level <= d->character->getTrust() )
         {
             send_to_char( buf, d->character );
         }
@@ -6112,7 +6112,7 @@ DO_FUN(do_slay)
     }
 
 
-    if ( IS_HERO( victim ) )
+    if ( victim->isHero() )
     {
         send_to_char( "Not on other Immortal / Adept players!\r\n", ch );
         return;
@@ -6328,7 +6328,7 @@ DO_FUN(do_disable)
         if ( !str_cmp(argument, p->command->name) )
         {
 
-            if ( get_trust(ch) < p->level )
+            if ( ch->getTrust() < p->level )
             {
                 send_to_char("This command was disabled by a higher power.\r\n", ch);
                 return;
@@ -6358,7 +6358,7 @@ DO_FUN(do_disable)
         return;
     }
 
-    if ( cmd_table[i].level > get_trust(ch) )
+    if ( cmd_table[i].level > ch->getTrust() )
     {
         send_to_char("You can't disable a command that you cannot use.\r\n", ch);
         return;
@@ -6366,7 +6366,7 @@ DO_FUN(do_disable)
 
     p = new DISABLED_DATA;
     p->disabled_by = ch->getName();
-    p->level = get_trust(ch);
+    p->level = ch->getTrust();
     p->command = &cmd_table[i];
 
     save_disabled();
