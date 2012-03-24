@@ -9,18 +9,18 @@
 #define DEC_UTILS_H
 
 namespace Utils {
-    const string _FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
-    const string __FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val );
+    string _FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
+    string __FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val );
     #define FormatString( flags, fmt, ... ) _FormatString( PP_NARG( __VA_ARGS__ ), flags, _caller, fmt, ##__VA_ARGS__ )
-    const void _Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
+    void _Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... );
     #define Logger( flags, fmt, ... ) _Logger( PP_NARG( __VA_ARGS__ ), flags, _caller, fmt, ##__VA_ARGS__ )
-    const bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
-    const vector<string> StrTokens( const string input );
-    template <class T> inline const string toLower( const T& t )  { stringstream ss; ss << nouppercase << t; return ss.str(); }
+    bool PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str );
+    vector<string> StrTokens( const string input );
+    template <class T> inline string toLower( const T& t )  { stringstream ss; ss << nouppercase << t; return ss.str(); }
     #define toLower_( T ) toLower( T ).c_str()
-    template <class T> inline const string toString( const T& t ) { stringstream ss; ss << t; return ss.str(); }
+    template <class T> inline string toString( const T& t ) { stringstream ss; ss << t; return ss.str(); }
     #define toString_( T ) toString( T ).c_str()
-    template <class T> inline const string toUpper( const T& t )  { stringstream ss; ss << uppercase << t; return ss.str(); }
+    template <class T> inline string toUpper( const T& t )  { stringstream ss; ss << uppercase << t; return ss.str(); }
     #define toUpper_( T ) toUpper( T ).c_str()
 };
 

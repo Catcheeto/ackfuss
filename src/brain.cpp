@@ -252,6 +252,11 @@ const bool Brain::_Send()
     return true;
 }
 
+bool Brain::preCommandQueue( const string cmd )
+{
+    return false;
+}
+
 string Brain::pushCommandQueue( const string cmd, const bool front )
 {
     char buf[MSL];

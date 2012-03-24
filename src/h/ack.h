@@ -973,6 +973,7 @@ struct cmd_type
     short type;   /*added by Aeria for do_commands */
     short show;   /*added by Aeria for do_commands */
     bool ghost_cmd;
+    bool can_preempt;
 };
 
 

@@ -10,7 +10,7 @@
 
 void monitor_chan (const char *message, int channel);
 
-const string Utils::_FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
+string Utils::_FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
     va_list args;
     string output;
@@ -22,7 +22,7 @@ const string Utils::_FormatString( const sint_t narg, const bitset<MAX_BITSET> f
     return output;
 }
 
-const string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net for the start of this
+string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, va_list val ) // Thanks go to Darien @ MudBytes.net for the start of this
 {
     va_list args;
     vector<string> arguments;
@@ -57,7 +57,7 @@ const string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> 
     return output = &buf[0];
 }
 
-const void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
+void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
     va_list args;
     string output;
@@ -79,7 +79,7 @@ const void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, co
     return;
 }
 
-const bool Utils::PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str )
+bool Utils::PatternMatch( const bitset<MAX_BITSET> flags, const string pat, const string str )
 {
     uint_t pi = 0, si = 0,  px = 0, sx = 0;
     char ppat = '\0';
@@ -162,7 +162,7 @@ const bool Utils::PatternMatch( const bitset<MAX_BITSET> flags, const string pat
     return found;
 }
 
-const vector<string> Utils::StrTokens( const string input )
+vector<string> Utils::StrTokens( const string input )
 {
     stringstream ss( input );
     istream_iterator<string> si( ss );

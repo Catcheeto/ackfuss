@@ -32,6 +32,7 @@ class Brain {
         string pushCommandHistory( const string cmd ) { m_command_history.push_front( cmd ); return cmd; }
 
         list<string> getCommandQueue() const { return m_command_queue; }
+        bool preCommandQueue( const string cmd );
         string popCommandQueue() { string cmd = m_command_queue.front(); m_command_queue.pop_front(); return cmd; }
         string pushCommandQueue( const string cmd, const bool front = false );
 

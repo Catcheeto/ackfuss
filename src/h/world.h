@@ -21,7 +21,7 @@ class World {
     Brain* getNextBrain() { return ++bi != m_list_brain.end() ? *bi : NULL; }
     const void pushListBrain( Brain* brain ) { brain->setWorld( this ); m_list_brain.push_back( brain ); return; }
     const void removeListBrain( Brain* brain ) { m_list_brain.remove( brain ); return; }
-    const string &setName( const string name ) { return m_name = name; }
+    string &setName( const string name ) { return m_name = name; }
 
     private:
         list<Brain*>::const_iterator bi;
