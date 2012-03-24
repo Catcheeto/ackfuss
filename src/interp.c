@@ -1067,6 +1067,7 @@ void interpret( CHAR_DATA * ch, const string input )
      * Look for command in command table.
      */
     cmd = ch->canInterpret( command );
+Utils::Logger( 0, "cmd: %lu -- total_commands: %lu", cmd, server.total_commands );
 
     /*
      * Log and snoop.
@@ -1097,7 +1098,7 @@ void interpret( CHAR_DATA * ch, const string input )
     if ( cmd_table[cmd].log != LOG_NEVER )
         ch->desc->pushCommandHistory( logline );
 
-    if ( ( cmd == ( sizeof( cmd_table ) / sizeof( cmd_table[0] ) ) ) && !IS_NPC( ch ) && ( !alias_call ) )
+    if ( cmd == server.total_commands && !IS_NPC( ch ) && ( !alias_call ) )
     {
         int cnt;
         char foo[MAX_STRING_LENGTH];
@@ -1117,7 +1118,7 @@ void interpret( CHAR_DATA * ch, const string input )
     }
 
 
-    if ( cmd == ( sizeof( cmd_table ) / sizeof( cmd_table[0] ) ) )
+    if ( cmd == server.total_commands )
     {
         /*
          * Look for command in socials table.
@@ -1348,4 +1349,14 @@ bool check_disabled( const struct cmd_type *command )
     }
 
     return false;
+}
+
+uint_t count_commands()
+{
+    uint_t total = 0;
+
+    for ( total = 0; cmd_table[total].name[0] != '\0'; total++ )
+        ;
+
+    return total;
 }

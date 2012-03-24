@@ -89,6 +89,7 @@ class Thing {
         bool isNPC() const { return !( getBrain() && getBrain()->getType() == BRAIN_TYPE_HUMAN ); }
         bool isVampire() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_VAMPIRE ); }
         bool isWerewolf() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_WEREWOLF ); }
+        const void Send( const string msg ) { if ( getBrain() ) getBrain()->Send( msg ); return; }
 
         // Name
         string appendName( const string name ) { return m_name.append( name ); }

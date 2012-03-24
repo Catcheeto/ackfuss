@@ -3657,7 +3657,7 @@ DO_FUN(do_prompt)
     if ( farg[0] == '\0' )
     {
         snprintf( farg, MSL, "Your current prompt is: %s\r\n", ch->prompt.c_str() );
-        ch->desc->Send( farg );
+        ch->Send( farg );
         return;
     }
     if ( !str_cmp(farg, "all") )
@@ -5172,15 +5172,15 @@ DO_FUN(do_logins)
 DO_FUN(do_cmd_history)
 {
     uint_t i = 0;
-    list<string> hist = ch->desc->getCommandHistory();
+    list<string> hist = ch->getBrain()->getCommandHistory();
     iterString si;
 
-    ch->desc->Send( Utils::FormatString( 0, "Last [%2lu] commands:\r\n", MAX_CMD_HISTORY ) );
+    ch->Send( Utils::FormatString( 0, "Last [%2lu] commands:\r\n", MAX_CMD_HISTORY ) );
 
     for ( si = hist.begin(); si != hist.end(); si++ )
     {
         i++;
-        ch->desc->Send( Utils::FormatString( 0, "  [%2lu] %s\r\n", i, (*si).c_str() ) );
+        ch->Send( Utils::FormatString( 0, "  [%2lu] %s\r\n", i, (*si).c_str() ) );
     }
 
     return;

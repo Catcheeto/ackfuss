@@ -19,5 +19,6 @@ void comlog P_((CHAR_DATA * ch, bool cleanup, int cmd, char *args));
 void interpret P_((CHAR_DATA * ch, const string input));
 bool check_social P_((CHAR_DATA * ch, char *command, char *argument));
 bool check_disabled P_((const struct cmd_type *command));
+uint_t count_commands P_((void));
 
 #undef P_

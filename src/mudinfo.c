@@ -24,6 +24,10 @@
 #include "h/help.h"
 #endif
 
+#ifndef DEC_INTERP_H
+#include "h/interp.h"
+#endif
+
 #ifndef DEC_MUDINFO_H
 #include "h/mudinfo.h"
 #endif
@@ -101,12 +105,12 @@ void save_mudinfo( void )
     }
 
     fprintf(fp, "First_Boot   %lu\n", server.first_boot);
-    fprintf(fp, "Max_Players  %d\n",  server.max_players);
+    fprintf(fp, "Max_Players  %lu\n", server.max_players);
     fprintf(fp, "MK_By_NPC    %lu\n", server.mk_by_npc);
     fprintf(fp, "MK_By_PC     %lu\n", server.mk_by_pc);
     fprintf(fp, "PK_By_NPC    %lu\n", server.pk_by_npc);
     fprintf(fp, "PK_By_PC     %lu\n", server.pk_by_pc);
-    fprintf(fp, "Total_Pfiles %d\n",  server.total_pfiles);
+    fprintf(fp, "Total_Pfiles %lu\n", server.total_pfiles);
     fprintf(fp, "End\n\n");
 
     file_close(fp);
@@ -131,21 +135,21 @@ DO_FUN(do_mudinfo)
     else if ( server.cur_players == 1 )
         ch->send("You are all alone in this world. How lonely :(.\r\n");
     else
-        ch_printf(ch, "%d players are currently online.\r\n", server.cur_players);
+        ch_printf(ch, "%lu players are currently online.\r\n", server.cur_players);
 
     if ( server.max_players == 0 )
         ch->send("No players have ever logged in!\r\n");
     else if ( server.max_players == 1 )
         ch->send("You are the only person to ever log in. How lonely :(.\r\n");
     else
-        ch_printf(ch, "The MUD has had %d players logged in at once.\r\n", server.max_players);
+        ch_printf(ch, "The MUD has had %lu players logged in at once.\r\n", server.max_players);
 
     if ( server.max_players_reboot == 0 )
         ch->send("No players have ever logged in this reboot!\r\n");
     else if ( server.max_players_reboot == 1 )
         ch->send("You are the only person to ever log in this reboot. How lonely :(.\r\n");
     else
-        ch_printf(ch, "The MUD has had %d players logged in this reboot.\r\n", server.max_players_reboot);
+        ch_printf(ch, "The MUD has had %lu players logged in this reboot.\r\n", server.max_players_reboot);
 
     if ( server.mk_by_npc == 0 )
         ch->send("No mobs have died to other mobs yet!\r\n");
@@ -178,27 +182,28 @@ DO_FUN(do_mudinfo)
     if ( server.total_pfiles == 1 )
         ch->send("There is only a single pfile. How lonely :(.\r\n");
     else
-        ch_printf(ch, "There are currently @@W%d @@Npfiles.\r\n", server.total_pfiles);
+        ch_printf(ch, "There are currently @@W%lu @@Npfiles.\r\n", server.total_pfiles);
 
     return;
 }
 
 void init_mudinfo( void )
 {
-    server.cur_players = 0;
-    server.descriptor = 0;
-    server.first_boot = 0;
-    server.max_descriptor = 0;
-    server.max_players = 0;
-    server.max_players_reboot = 0;
-    server.mk_by_npc = 0;
-    server.mk_by_pc = 0;
+    server.cur_players = uintmin_t;
+    server.descriptor = uintmin_t;
+    server.first_boot = uintmin_t;
+    server.max_descriptor = uintmin_t;
+    server.max_players = uintmin_t;
+    server.max_players_reboot = uintmin_t;
+    server.mk_by_npc = uintmin_t;
+    server.mk_by_pc = uintmin_t;
     server.port = 1234;
-    server.pk_by_npc = 0;
-    server.pk_by_pc = 0;
+    server.pk_by_npc = uintmin_t;
+    server.pk_by_pc = uintmin_t;
     server.shutdown = false;
-    server.total_pfiles = 0;
+    server.total_commands = count_commands();
     server.total_helpfiles = count_helps();
+    server.total_pfiles = uintmin_t;
 
     return;
 }

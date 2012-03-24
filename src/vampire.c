@@ -293,7 +293,7 @@ void do_family( CHAR_DATA * ch, char *argument )
             send_to_char( "Huh?\r\n", ch );
             return;
         }
-    if ( get_trust( ch ) == 85 )
+    if ( ch->getTrust() == MAX_LEVEL )
     {
         for ( index = 0; index <= 4; index++ )
         {
@@ -356,7 +356,7 @@ void do_family( CHAR_DATA * ch, char *argument )
             d = *di;
             if ( d->getConnectionState( CON_PLAYING )
                     && ( victim = d->character ) != NULL
-                    && !IS_NPC( victim ) && victim->in_room != NULL && IS_VAMP( victim ) && !IS_IMMORTAL( victim ) )
+                    && !IS_NPC( victim ) && victim->in_room != NULL && IS_VAMP( victim ) && !victim->isImmortal() )
             {
                 if ( victim->pcdata->super->bloodline != ch->pcdata->super->bloodline )
                     continue;

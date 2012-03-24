@@ -1706,9 +1706,9 @@ DO_FUN(do_qui)
 
 DO_FUN(do_quit)
 {
-    DESCRIPTOR_DATA *d;
-    DESCRIPTOR_DATA *other_logins = NULL;
-    iterBrain di;
+    Brain* b;
+    Brain* other_logins = NULL;
+    iterBrain bi;
 
     if ( IS_NPC( ch ) )
         return;
@@ -1746,13 +1746,13 @@ DO_FUN(do_quit)
     /*
      * After extract_char the ch is no longer valid!
      */
-    d = ch->desc;
+    b = ch->desc;
 
-    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
+    for ( bi = brain_list.begin(); bi != brain_list.end(); bi++ )
     {
-        other_logins = *di;
+        other_logins = *bi;
 
-        if ( ( other_logins != d )
+        if ( ( other_logins != b )
                 && ( other_logins->character != NULL )
                 && ( !other_logins->getConnectionState( CON_RECONNECTING ) ) && ( other_logins->character->getName() == ch->getName() ) )
         {
@@ -1771,8 +1771,8 @@ DO_FUN(do_quit)
     ch->is_quitting = true;
 
     extract_char( ch, TRUE );
-    if ( d != NULL )
-        d->Disconnect();
+    if ( b != NULL )
+        b->Disconnect();
 
     return;
 }

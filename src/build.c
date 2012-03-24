@@ -301,7 +301,7 @@ DO_FUN(build_interpret)
     for ( cmd = 0; build_cmd_table[cmd].name[0] != '\0'; cmd++ )
     {
         if ( command[0] == build_cmd_table[cmd].name[0]
-                && !str_prefix( command, build_cmd_table[cmd].name ) && get_trust( ch ) >= build_cmd_table[cmd].level )
+                && !str_prefix( command, build_cmd_table[cmd].name ) && ch->getTrust() >= build_cmd_table[cmd].level )
         {
             found = TRUE;
             break;
@@ -364,7 +364,7 @@ DO_FUN(build_commands)
 
     for ( cmd = 0; build_cmd_table[cmd].name[0] != '\0'; cmd++ )
     {
-        if ( build_cmd_table[cmd].level > get_trust( ch ) )
+        if ( build_cmd_table[cmd].level > ch->getTrust() )
             continue;
         snprintf( buf, MSL, "%-20s    ", build_cmd_table[cmd].name );
         strncat( out, buf, MSL - 1 );
@@ -2403,7 +2403,7 @@ DO_FUN(build_setobject)
     /*
      * Check for extra flag: clan_eq
      */
-    if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && get_trust( ch ) != 85 )
+    if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && ch->getTrust() < MAX_LEVEL )
     {
         send_to_char( "Only a Creator can set Clan-Eq.\r\n", ch );
         return;
@@ -2725,7 +2725,7 @@ DO_FUN(build_setobject)
             return;
         }
 
-        if ( value == ITEM_EXTRA_CLAN_EQ && get_trust( ch ) != 85 )
+        if ( value == ITEM_EXTRA_CLAN_EQ && ch->getTrust() < MAX_LEVEL )
         {
             send_to_char( "Only a CREATOR may set this flag.\r\n", ch );
             return;
@@ -3378,7 +3378,7 @@ DO_FUN(build_addreset)
         }
 
 
-        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !IS_IMMORTAL( ch ) )
+        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !ch->isImmortal() )
         {
             send_to_char( "You can't use that object for a reset.\r\n", ch );
             return;
@@ -3433,7 +3433,7 @@ DO_FUN(build_addreset)
         }
 
 
-        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !IS_IMMORTAL( ch ) )
+        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !ch->isImmortal() )
         {
             send_to_char( "You can't use that object for a reset.\r\n", ch );
             return;
@@ -3504,7 +3504,7 @@ DO_FUN(build_addreset)
         }
 
 
-        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !IS_IMMORTAL( ch ) )
+        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !ch->isImmortal() )
         {
             send_to_char( "You can't use that object for a reset.\r\n", ch );
             return;
@@ -3565,7 +3565,7 @@ DO_FUN(build_addreset)
             return;
         }
 
-        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !IS_IMMORTAL( ch ) )
+        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !ch->isImmortal() )
         {
             send_to_char( "You can't use that object for a reset.\r\n", ch );
             return;
@@ -3578,7 +3578,7 @@ DO_FUN(build_addreset)
             return;
         }
 
-        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !IS_IMMORTAL( ch ) )
+        if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_CLAN_EQ) && !ch->isImmortal() )
         {
             send_to_char( "You can't use that object for a reset.\r\n", ch );
             return;

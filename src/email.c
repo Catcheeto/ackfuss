@@ -65,7 +65,7 @@ DO_FUN(do_email)
     snprintf( body, MSL, "<html>%s from %s has sent you the following message via the MUD.<br><br>%s</html>", ch->getName_(), mudnamenocolor, argument );
 
     /* Imms can attempt to mail a non-validated address */
-    if ( IS_IMMORTAL(ch) )
+    if ( ch->isImmortal() )
         validate = false;
 
     if ( who[0] == '\0' )

@@ -157,7 +157,7 @@ const char *char_data::get_name( CHAR_DATA *looker )
         }
         else
         {
-            if ( IS_IMMORTAL(this) )
+            if ( isImmortal() )
                 return "A Mystical Being";
             else
                 return "Someone";
@@ -191,7 +191,7 @@ const char *char_data::get_whoname( )
     if ( IS_NPC(this) )
         return "";
 
-    if ( IS_IMMORTAL(this) )
+    if ( isImmortal() )
     {
         if ( strcmp(pcdata->who_name,"off") )
             return pcdata->who_name;

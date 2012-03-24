@@ -474,9 +474,9 @@ class char_data : public Thing {
         float carry_weight;
         CAST_DATA *casting;
         float cooldown[MAX_COOLDOWN];
+        Brain* desc;
         short damroll;
         bitset<MAX_BITSET> deaf;
-        DESCRIPTOR_DATA *desc;
         string description;
         CHAR_DATA *fighting;
         AFFECT_DATA *first_affect;
@@ -1019,7 +1019,7 @@ class lookup_data
     public:
         lookup_data();
         ~lookup_data();
-        DESCRIPTOR_DATA *d;
+        Brain* b;
         char *buf;
 };
 
@@ -1070,20 +1070,21 @@ class super_data
 struct mudinfo
 {
     iterBrain         mudNextDesc;
-    unsigned int      cur_players;
+    uint_t            cur_players;
     uint_t            descriptor;
     time_t            first_boot;
     uint_t            max_descriptor;
-    unsigned int      max_players;
-    unsigned int      max_players_reboot;
-    unsigned long int mk_by_npc;
-    unsigned long int mk_by_pc;
-    unsigned long int pk_by_npc;
-    unsigned long int pk_by_pc;
+    uint_t            max_players;
+    uint_t            max_players_reboot;
+    uint_t            mk_by_npc;
+    uint_t            mk_by_pc;
+    uint_t            pk_by_npc;
+    uint_t            pk_by_pc;
     uint_t            port;
     bool              shutdown;
-    unsigned int      total_helpfiles;
-    unsigned int      total_pfiles;
+    uint_t            total_commands;
+    uint_t            total_helpfiles;
+    uint_t            total_pfiles;
 };
 
 struct sysdata_type

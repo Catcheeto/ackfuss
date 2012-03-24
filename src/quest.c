@@ -324,7 +324,7 @@ DO_FUN(do_iquest)
         for ( di = brain_list.begin(); di != brain_list.end(); di++ )
         {
             d = *di;
-            if ( !d->getConnectionState( CON_PLAYING ) || IS_IMMORTAL( d->character ) )
+            if ( !d->getConnectionState( CON_PLAYING ) || d->character->isImmortal() )
                 continue;
             player_count += 1;
             total_levels += d->character->level;
@@ -672,7 +672,7 @@ void generate_auto_quest(  )
             d = *di;
             if ( !d->getConnectionState( CON_PLAYING ) )
                 continue;
-            if ( IS_IMMORTAL(d->character) ) /* Imms shouldn't count against the quest level. --Kline */
+            if ( d->character->isImmortal() ) /* Imms shouldn't count against the quest level. --Kline */
                 continue;
             player_count++;
             total_levels += d->character->level;

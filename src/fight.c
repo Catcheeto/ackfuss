@@ -5958,7 +5958,7 @@ void check_brawl( CHAR_DATA *ch )
     {
         rch_next = rch->next_in_room;
 
-        if ( rch->fighting == NULL && IS_AWAKE(rch) && rch->master != ch && !IS_IMMORTAL(rch) && number_percent() <= 2 )
+        if ( rch->fighting == NULL && IS_AWAKE(rch) && rch->master != ch && !rch->isImmortal() && number_percent() <= 2 )
         {
             if ( IS_NPC(rch) && (rch->act.test(ACT_TRAIN) || rch->act.test(ACT_PRACTICE) || rch->npcdata->pIndexData->pShop != NULL) )
                 continue;
@@ -5967,7 +5967,7 @@ void check_brawl( CHAR_DATA *ch )
             {
                 vch_next = vch->next_in_room;
 
-                if ( vch->fighting == NULL && rch->master != ch && !IS_IMMORTAL(vch) && i < MAX_BRAWLS )
+                if ( vch->fighting == NULL && rch->master != ch && !vch->isImmortal() && i < MAX_BRAWLS )
                 {
                     fight[i] = vch;
                     i++;

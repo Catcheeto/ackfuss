@@ -169,21 +169,23 @@ uint_t Thing::canInterpret( const string cmd ) const
 {
     uint_t value = 0;
 
-    for ( value = 0; cmd_table[value].name[0] != '\0'; value++ )
+    for ( value = 0; value < server.total_commands; value++ )
     {
-        if ( cmd_table[value].level == CLAN_ONLY && !isNPC() && m_clan == uintmin_t )
+        if ( cmd_table[value].level == CLAN_ONLY && m_clan == uintmin_t )
             continue;
 
-        if ( cmd_table[value].level == BOSS_ONLY && !isNPC() && !isClanBoss() )
+        if ( cmd_table[value].level == BOSS_ONLY && !isCBoss() )
             continue;
 
-        if ( cmd_table[value].level == VAMP_ONLY && !isNPC() && !isVampire() && ( level != L_GOD ) )
+        if ( cmd_table[value].level == VAMP_ONLY && !isVampire() && getTrust() < L_GOD )
             continue;
 
-        if ( cmd_table[value].level == WOLF_ONLY && !isNPC() && !isWerewolf() && ( level != L_GOD ) )
+        if ( cmd_table[value].level == WOLF_ONLY && !isWerewolf() && getTrust() < L_GOD  )
             continue;
 
-        if ( command[0] == cmd_table[value].name[0] && !str_prefix( cmd.c_str(), cmd_table[value].name ) && ( cmd_table[value].level <= trust ) )
+        if ( cmd.c_str()[0] == cmd_table[value].name[0] )
+            Utils::Logger( 0, "trust: %lu -- npc: %d -- btype: %lu -- cmd: %s -- table: %s (%lu)", getTrust(), isNPC(), getBrain()->getType(), cmd.c_str(), cmd_table[value].name, cmd_table[value].level );
+        if ( !str_prefix( cmd.c_str(), cmd_table[value].name ) && cmd_table[value].level <= getTrust() )
             break;
     }
 
@@ -279,7 +281,7 @@ uint_t Thing::setExperience( const uint_t amount )
 
 uint_t Thing::getLevel() const
 {
-    return 0;
+    return MAX_LEVEL;
 }
 
 uint_t Thing::getTrust() const

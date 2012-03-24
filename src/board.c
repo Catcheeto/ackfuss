@@ -178,7 +178,7 @@ void show_contents( CHAR_DATA * ch, OBJ_DATA * obj )
      * check here to see if player allowed to read board
      */
 
-    if ( board->min_read_lev > get_trust( ch ) )
+    if ( board->min_read_lev > ch->getTrust() )
     {
         send_to_char( "You are not allowed to look at this board.\r\n", ch );
         return;
@@ -443,7 +443,7 @@ DO_FUN(do_delete)
      * check here to see if player allowed to write to board
      */
 
-    if ( board->min_write_lev > get_trust( ch ) )
+    if ( board->min_write_lev > ch->getTrust() )
     {
         send_to_char( "You are not allowed to delete on this board.\r\n", ch );
         return;
@@ -476,7 +476,7 @@ DO_FUN(do_delete)
      * See if person is writer or is recipient
      */
     if ( ( ch->getName() == msg->author ) && !is_name( ch->getName_(), msg->title )
-            && get_trust( ch ) < MAX_LEVEL && str_cmp( ch->getName(), clan_table[board->clan].leader ) )
+            && ch->getTrust() < MAX_LEVEL && str_cmp( ch->getName(), clan_table[board->clan].leader ) )
     {
         send_to_char( "Not your message.\r\n", ch );
         return;
@@ -534,7 +534,7 @@ void show_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
      * check here to see if player allowed to read board
      */
 
-    if ( board->min_read_lev > get_trust( ch ) )
+    if ( board->min_read_lev > ch->getTrust() )
     {
         send_to_char( "You are not allowed to look at this board.\r\n", ch );
         return;
@@ -628,7 +628,7 @@ DO_FUN(do_write)
      * check here to see if player allowed to write to board
      */
 
-    if ( board->min_write_lev > get_trust( ch ) )
+    if ( board->min_write_lev > ch->getTrust() )
     {
         send_to_char( "You are not allowed to write on this board.\r\n", ch );
         return;
@@ -754,7 +754,7 @@ void edit_message( CHAR_DATA * ch, int mess_num, OBJ_DATA * obj )
      * check here to see if player allowed to read board
      */
 
-    if ( board->min_read_lev > get_trust( ch ) )
+    if ( board->min_read_lev > ch->getTrust() )
     {
         send_to_char( "You are not allowed to even look at this board!\r\n", ch );
         return;

@@ -117,7 +117,7 @@ void do_tribe( CHAR_DATA * ch, char *argument )
     if ( ( arg1[0] == '\0' ) || ( ch->pcdata->super->generation > 1 ) )
     {
 
-        if ( get_trust( ch ) == 85 )
+        if ( ch->getTrust() == MAX_LEVEL )
         {
             for ( index = 0; index <= 4; index++ )
             {
@@ -181,7 +181,7 @@ void do_tribe( CHAR_DATA * ch, char *argument )
                 d = *di;
                 if ( d->getConnectionState( CON_PLAYING )
                         && ( victim = d->character ) != NULL
-                        && !IS_NPC( victim ) && victim->in_room != NULL && IS_WOLF( victim ) && !IS_IMMORTAL( victim ) )
+                        && !IS_NPC( victim ) && victim->in_room != NULL && IS_WOLF( victim ) && !victim->isImmortal() )
                 {
                     if ( victim->pcdata->super->bloodline != ch->pcdata->super->bloodline )
                         continue;

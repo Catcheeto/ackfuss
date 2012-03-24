@@ -55,12 +55,12 @@ DO_FUN(do_help)
     {
         if ( !str_prefix(buf, "-find") )
         {
-            send_to_char(find_helps(farg, IS_IMMORTAL(ch) ? true : false), ch);
+            send_to_char(find_helps(farg, ch->isImmortal() ? true : false), ch);
             return;
         }
         if ( !str_prefix(buf, "-search") )
         {
-            send_to_char(grep_helps(farg, IS_IMMORTAL(ch) ? true : false), ch);
+            send_to_char(grep_helps(farg, ch->isImmortal() ? true : false), ch);
             return;
         }
     }
@@ -103,12 +103,12 @@ DO_FUN(do_help)
     {
         str = argument;
         str += ".";
-        str += IS_IMMORTAL(ch) ? HELP_IMM : HELP_MORT;
-        
+        str += ch->isImmortal() ? HELP_IMM : HELP_MORT;
+
         if( exists_help(str.c_str()) )
         {
             hlp = load_help(str.c_str());
-            if ( !IS_IMMORTAL(ch) && hlp->imm )
+            if ( !ch->isImmortal() && hlp->imm )
                 found = false;
             else
                 found = true;
@@ -117,7 +117,7 @@ DO_FUN(do_help)
         }
     }
 
-    if ( !IS_IMMORTAL(ch) && !found )
+    if ( !ch->isImmortal() && !found )
     {
         if ( !shelp )
         {
@@ -134,7 +134,7 @@ DO_FUN(do_help)
         return;
     }
 
-    if ( IS_IMMORTAL(ch) )
+    if ( ch->isImmortal() )
     {
         str = argument;
         str += ".";

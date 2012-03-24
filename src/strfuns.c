@@ -1764,26 +1764,26 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
         case 'C':
             if ( !str_cmp(arg1, "clan") && !str_cmp(arg2, strip_color(clan_table[ch->getClan()].clan_name, "@@")) )     { retval = true; break; }
             if ( !str_cmp(arg1, "class") && !IS_NPC(ch) && !str_cmp(arg2, class_table[ch->pcdata->order[0]].who_name) ) { retval = true; break; }
-            if ( !str_cmp(arg1, "con") && evaluate_tag(arg2, get_curr_con(ch), value) ) { retval = true; break; }
+            if ( !str_cmp(arg1, "con") && evaluate_tag(arg2, get_curr_con(ch), value) )                                 { retval = true; break; }
             break;
 
         case 'D':
             if ( !str_cmp(arg1, "day") && evaluate_tag(arg2, time_info.day, value) )    { retval = true; break; }
             if ( !str_cmp(arg1, "dex") && evaluate_tag(arg2, get_curr_dex(ch), value) ) { retval = true; break; }
             if ( !str_cmp(arg1, "dr") && evaluate_tag(arg2, GET_DAMROLL(ch), value) )   { retval = true; break; }
-            if ( !str_cmp(arg1, "drunk") && IS_DRUNK(ch) )                            { retval = true; break; }
+            if ( !str_cmp(arg1, "drunk") && IS_DRUNK(ch) )                              { retval = true; break; }
             break;
 
         case 'H':
             if ( !str_cmp(arg1, "hp") && evaluate_tag(arg2, ch->hit, value) )         { retval = true; break; }
             if ( !str_cmp(arg1, "hr") && evaluate_tag(arg2, GET_HITROLL(ch), value) ) { retval = true; break; }
-            if ( !str_cmp(arg1, "hungry") && IS_HUNGRY(ch) )                        { retval = true; break; }
+            if ( !str_cmp(arg1, "hungry") && IS_HUNGRY(ch) )                          { retval = true; break; }
             break;
 
         case 'I':
-            if ( !str_cmp(arg1, "immortal") && IS_IMMORTAL(ch) )                                 { retval = true; break; }
+            if ( !str_cmp(arg1, "immortal") && ch->isImmortal() )                                  { retval = true; break; }
             if ( !str_cmp(arg1, "int") && evaluate_tag(arg2, get_curr_int(ch), value) )            { retval = true; break; }
-            if ( !str_cmp(arg1, "isname") && !str_cmp(arg2, ch->getName()) )                           { retval = true; break; }
+            if ( !str_cmp(arg1, "isname") && !str_cmp(arg2, ch->getName()) )                       { retval = true; break; }
             if ( !str_cmp(arg1, "istitle") && !str_cmp(arg2, strip_color(ch->get_title(), "@@")) ) { retval = true; break; }
             break;
 
@@ -2058,7 +2058,7 @@ const char *who( const char *what, CHAR_DATA *looker )
         snprintf( buf1, MSL, " (*) Clan Boss  (L) Clan Leader  (!) Clan Armorer " );
         snprintf( buf2, MSL, "@@R|@@N %s @@R|\r\n", center_text( buf1, 75 ) );
         output += buf2;
-        snprintf( buf1, MSL, "There has been a maximum of %d player%s logged on this session.", server.max_players_reboot, server.max_players_reboot == 1 ? "" : "s" );
+        snprintf( buf1, MSL, "There has been a maximum of %lu player%s logged on this session.", server.max_players_reboot, server.max_players_reboot == 1 ? "" : "s" );
         snprintf( buf2, MSL, "@@R|@@N %s @@R|\r\n", center_text( buf1, 75 ) );
         output += buf2;
         output += "@@R+-----------------------------------------------------------------------------+\r\n@@N";

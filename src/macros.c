@@ -125,7 +125,7 @@ void reset_gain_stats( CHAR_DATA * ch )
 
 bool ok_to_use( CHAR_DATA * ch, int value )
 {
-    if ( value == NO_USE && get_trust( ch ) < 85 )
+    if ( value == NO_USE && ch->getTrust() < MAX_LEVEL )
     {
         send_to_char( "Only Creators may use this value.\r\n", ch );
         return FALSE;
@@ -138,7 +138,7 @@ bool check_level_use( CHAR_DATA * ch, uint_t level )
     char buf[MAX_STRING_LENGTH];
     char out[MAX_STRING_LENGTH];
 
-    if ( get_trust( ch ) >= level )
+    if ( ch->getTrust() >= level )
         return TRUE;
 
     snprintf( out, MSL, "This option limited to " );

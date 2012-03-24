@@ -533,7 +533,7 @@ DO_FUN(do_hunt)
     if ( !IS_NPC( ch ) && IS_WOLF( ch ) && ( IS_SHIFTED( ch ) || IS_RAGED( ch ) ) )
         victim = get_char_world( ch, arg );
     else
-        victim = ( get_trust( ch ) >= MAX_LEVEL ? get_char_world( ch, arg ) : get_char_area( ch, arg ) );
+        victim = ( ch->getTrust() == MAX_LEVEL ? get_char_world( ch, arg ) : get_char_area( ch, arg ) );
     if ( victim == ch )
     {
         if ( ch->hunting )
@@ -553,7 +553,7 @@ DO_FUN(do_hunt)
         end_hunt( ch );
         return;
     }
-    else if ( !IS_IMMORTAL( ch ) && ( victim != NULL ) && !IS_NPC( victim ) && IS_IMMORTAL( victim ) )
+    else if ( !ch->isImmortal() && ( victim != NULL ) && !IS_NPC( victim ) && victim->isImmortal() )
     {
         snprintf( arg, MIL, "You can't hunt Immortal %s!\r\n", victim->get_name() );
         send_to_char( arg, ch );
@@ -598,7 +598,7 @@ DO_FUN(do_hunt)
     if ( !IS_NPC( ch ) && IS_WOLF( ch ) && ( IS_SHIFTED( ch ) || IS_RAGED( ch ) ) )
         ch->hunt_flags = HUNT_WORLD | HUNT_OPENDOOR | HUNT_UNLOCKDOOR | HUNT_PICKDOOR;
     else if ( !IS_NPC( ch ) )
-        ch->hunt_flags = ( get_trust( ch ) >= MAX_LEVEL ? HUNT_WORLD : 0 )
+        ch->hunt_flags = ( ch->getTrust() == MAX_LEVEL ? HUNT_WORLD : 0 )
                          | ( ch->pcdata->learned[gsn_hunt] >= 70 ? HUNT_OPENDOOR | HUNT_UNLOCKDOOR | HUNT_PICKDOOR : 0 );
     if ( !victim || !set_hunt( ch, NULL, victim, NULL, 0, HUNT_CR | HUNT_MERC ) )
     {

@@ -539,7 +539,7 @@ void game_loop( )
             {
                 cur_hour = now_bd_time->tm_hour;
                 out_file = file_open( PLAYERNUM_FILE, "a" );
-                fprintf( out_file, "%i %i %i\n", now_bd_time->tm_mday, cur_hour, server.max_players_reboot );
+                fprintf( out_file, "%i %i %lu\n", now_bd_time->tm_mday, cur_hour, server.max_players_reboot );
                 file_close( out_file );
                 update_player_cnt( );
             }
@@ -1030,21 +1030,21 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case 'R':
-                if ( IS_IMMORTAL( ch ) && ch->in_room != NULL )
+                if ( ch->isImmortal() && ch->in_room != NULL )
                     snprintf( buf2, MSL, "%d", ch->in_room->vnum );
                 else
                     snprintf( buf2, MSL, " " );
                 i = buf2;
                 break;
             case 's':
-                if ( !IS_NPC( ch ) )
+                if ( !ch->isNPC() )
                     snprintf( buf2, MSL, "%s", stance_app[ch->stance].name );
                 else
                     snprintf( buf2, MSL, " " );
                 i = buf2;
                 break;
             case 'z':
-                if ( IS_IMMORTAL( ch ) && ch->in_room != NULL )
+                if ( ch->isImmortal() && ch->in_room != NULL )
                     snprintf( buf2, MSL, "%s", ch->in_room->area->name );
                 else
                     snprintf( buf2, MSL, " " );
@@ -1076,9 +1076,9 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case 'i':
-                if ( IS_NPC( ch ) )
+                if ( ch->isNPC() )
                     break;
-                if ( IS_IMMORTAL( ch ) )
+                if ( ch->isImmortal() )
                     snprintf( buf2, MSL, "INVIS: %lu", ch->act.test(ACT_WIZINVIS) ? ch->pcdata->invis : 0 );
                 else
                 {
@@ -1545,7 +1545,7 @@ void nanny( Brain *b, const string input )
         }
         else
         {
-            if ( wizlock && !IS_HERO( ch ) && !ch->wizbit && !is_name( argument, sysdata.playtesters ) )
+            if ( wizlock && !ch->isHero() && !ch->wizbit && !is_name( argument, sysdata.playtesters ) )
             {
                 b->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
                 b->Send( "Please Try Connecting Again In A Little While, When Any Problems\r\n" );
@@ -1553,7 +1553,7 @@ void nanny( Brain *b, const string input )
                 b->Disconnect();
                 return;
             }
-            if ( deathmatch && !IS_HERO( ch ) && !ch->wizbit )
+            if ( deathmatch && !ch->isHero() && !ch->wizbit )
             {
                 b->Send( "\r\n             " mudnamenocolor " IS CURRENTLY WIZLOCKED.\r\n" );
                 b->Send( "Sorry, The Players Connected At This Time Are Currently Participating\r\n" );
@@ -1664,7 +1664,7 @@ void nanny( Brain *b, const string input )
         if ( ch->lvl[ch->p_class] == -1 )
             ch->lvl[ch->p_class] = ch->level;
 
-        if ( IS_HERO( ch ) )
+        if ( ch->isHero() )
         {
             uint_t numbrands = brand_list.size();
             char msgbuf[MSL];
@@ -2267,7 +2267,7 @@ void nanny( Brain *b, const string input )
         {
             char_to_room( ch, ch->in_room );
         }
-        else if ( IS_IMMORTAL( ch ) )
+        else if ( ch->isImmortal() )
         {
             char_to_room( ch, get_room_index( ROOM_VNUM_CHAT ) );
         }
@@ -3056,14 +3056,14 @@ void act( const char *format, CHAR_DATA * ch, const void *arg1, const void *arg2
                          */
                     case 'L':
                         can_see_message = TRUE;
-                        if ( IS_IMMORTAL( to ) )
+                        if ( to->isImmortal() )
                         {
-                            if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) && ch->pcdata->invis > get_trust( to ) )
+                            if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) && ch->pcdata->invis > to->getTrust() )
                                 can_see_message = FALSE;
                         }
                         else
                         {
-                            if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) && get_trust( to ) < ch->pcdata->invis )
+                            if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) && to->getTrust() < ch->pcdata->invis )
                                 can_see_message = FALSE;
                             if ( ( IS_AFFECTED( ch, AFF_SNEAK ) || item_has_apply( ch, ITEM_APPLY_SNEAK ) )
                                     && ( ( ch->get_level("psuedo") - 20 + number_range( 1, 30 ) ) > to->get_level("psuedo") ) )

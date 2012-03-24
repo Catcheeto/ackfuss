@@ -496,7 +496,7 @@ DO_FUN(do_mgive)
         char m_number[MSL];
         short mn;
         MONEY_TYPE *transfer = new MONEY_TYPE;
-        if ( get_trust( ch ) < 84 )
+        if ( ch->getTrust() < MAX_LEVEL - 1 )
         {
             send_to_char( "Huh?\r\n", ch );
             return;
@@ -519,7 +519,7 @@ DO_FUN(do_mgive)
     if ( !str_cmp( arg1, "exchange" ) )
     {
         int m_val;
-        if ( get_trust( ch ) < 84 )
+        if ( ch->getTrust() < MAX_LEVEL - 1 )
         {
             send_to_char( "Huh?\r\n", ch );
             return;
@@ -538,7 +538,7 @@ DO_FUN(do_mgive)
         char m_number[MSL];
         short mn;
         MONEY_TYPE *transfer = new MONEY_TYPE;
-        if ( get_trust( ch ) < 84 )
+        if ( ch->getTrust() < MAX_LEVEL - 1 )
         {
             send_to_char( "Huh?\r\n", ch );
             return;

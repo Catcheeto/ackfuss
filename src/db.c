@@ -3368,7 +3368,7 @@ DO_FUN(do_memory)
 
     if ( !str_cmp( argument, "log" ) )
     {
-        if ( get_trust( ch ) < MAX_LEVEL )
+        if ( ch->getTrust() < MAX_LEVEL )
         {
             send_to_char( "Not at your level.\r\n", ch );
             return;
@@ -3392,23 +3392,25 @@ DO_FUN(do_memory)
 
 
 
-    snprintf( buf, MSL, "Affects %5d\r\n", static_cast<int>(affect_list.size()) );
+    snprintf( buf, MSL, "Affects  %5d\r\n", static_cast<int>(affect_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Areas   %5d\r\n", static_cast<int>(area_list.size()) );
+    snprintf( buf, MSL, "Areas    %5d\r\n", static_cast<int>(area_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Exits   %5d\r\n", static_cast<int>(exit_list.size()) );
+    snprintf( buf, MSL, "Commands %5lu\r\n", server.total_commands );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Helps   %5d\r\n", server.total_helpfiles );
+    snprintf( buf, MSL, "Exits    %5d\r\n", static_cast<int>(exit_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Mobs    %5d\r\n", static_cast<int>(mob_index_list.size()) );
+    snprintf( buf, MSL, "Helps    %5lu\r\n", server.total_helpfiles );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Objs    %5d\r\n", static_cast<int>(obj_index_list.size()) );
+    snprintf( buf, MSL, "Mobs     %5d\r\n", static_cast<int>(mob_index_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Resets  %5d\r\n", static_cast<int>(reset_list.size()) );
+    snprintf( buf, MSL, "Objs     %5d\r\n", static_cast<int>(obj_index_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Rooms   %5d\r\n", static_cast<int>(room_index_list.size()) );
+    snprintf( buf, MSL, "Resets   %5d\r\n", static_cast<int>(reset_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Shops   %5d\r\n", static_cast<int>(shop_list.size()) );
+    snprintf( buf, MSL, "Rooms    %5d\r\n", static_cast<int>(room_index_list.size()) );
+    send_to_char( buf, ch );
+    snprintf( buf, MSL, "Shops    %5d\r\n", static_cast<int>(shop_list.size()) );
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Shared String Info:\r\n" );
     send_to_char( buf, ch );
@@ -3458,7 +3460,7 @@ DO_FUN(do_status)
     send_to_char( "of how many are actually in the game at this time.\r\n", ch );
     snprintf( buf, MSL, "Areas   %5d\r\n", static_cast<int>(area_list.size()) );
     send_to_char( buf, ch );
-    snprintf( buf, MSL, "Helps   %5d\r\n", server.total_helpfiles );
+    snprintf( buf, MSL, "Helps   %5lu\r\n", server.total_helpfiles );
     send_to_char( buf, ch );
     snprintf( buf, MSL, "Mobs    %5d\r\n", static_cast<int>(mob_index_list.size()) );
     send_to_char( buf, ch );
@@ -3881,7 +3883,7 @@ void check_chistory( CHAR_DATA *ch, int channel )
     for ( y = 0; y < MAX_HISTORY; y++ )
         if ( chan_history.message[x][y][0] != '\0' )
         {
-            if ( IS_IMMORTAL(ch) )
+            if ( ch->isImmortal() )
             {
                 found = TRUE;
                 snprintf(buf, MSL, "[%s", ctime(&chan_history.time[x][y]));

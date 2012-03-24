@@ -811,7 +811,7 @@ SPEC_FUN(spec_mino_guard)
     {
         if ( IS_VAMP( victim ) && IS_AFFECTED( victim, AFF_VAMP_HEALING ) )
             continue;
-        if ( ( IS_NPC( victim ) ) || ( ch == victim ) || ( IS_IMMORTAL( victim ) ) )
+        if ( IS_NPC( victim ) || ch == victim || victim->isImmortal() )
         {
             continue;
         }

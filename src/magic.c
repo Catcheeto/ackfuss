@@ -556,7 +556,7 @@ void cast( CHAR_DATA * ch, char *argument )
     /*
      * Check if in a no-magic room
      */
-    if ( !char_login && ch->in_room->room_flags.test(RFLAG_NO_MAGIC) && ( skill_table[sn].flag2 != WOLF ) && !IS_IMMORTAL(ch) )
+    if ( !char_login && ch->in_room->room_flags.test(RFLAG_NO_MAGIC) && ( skill_table[sn].flag2 != WOLF ) && !ch->isImmortal() )
     {
         send_to_char( "Some strange force prevents you casting the spell!\r\n", ch );
         return;
@@ -2151,7 +2151,7 @@ bool spell_enchant_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( IS_IMMORTAL( ch ) && ch->level != 85 )
+    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -2794,11 +2794,8 @@ bool spell_locate_object( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
 
         for ( in_obj = ob; in_obj->in_obj != NULL; in_obj = in_obj->in_obj )
             ;
-        if ( ( in_obj->carried_by != NULL )
-                && ( IS_IMMORTAL( in_obj->carried_by )
-                     || ( !IS_NPC( in_obj->carried_by )
-                          && IS_WOLF( in_obj->carried_by )
-                          && ( IS_SHIFTED( in_obj->carried_by ) || ( IS_RAGED( in_obj->carried_by ) ) ) ) ) )
+        if ( ( in_obj->carried_by != NULL && in_obj->carried_by->isImmortal() )
+          || ( !in_obj->carried_by->isNPC() && in_obj->carried_by->isWerewolf() && ( IS_SHIFTED( in_obj->carried_by ) || IS_RAGED( in_obj->carried_by ) ) ) )
             break;
 
         if ( in_obj->carried_by != NULL )
@@ -3933,7 +3930,7 @@ bool spell_enhance_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( IS_IMMORTAL( ch ) && ch->level != 85 )
+    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -4096,7 +4093,7 @@ bool spell_dimension_blade( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DAT
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( IS_IMMORTAL( ch ) && ch->level != 85 )
+    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -4258,11 +4255,8 @@ bool spell_detection( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
 
         for ( in_obj = ob; in_obj->in_obj != NULL; in_obj = in_obj->in_obj )
             ;
-        if ( ( in_obj->carried_by != NULL )
-                && ( IS_IMMORTAL( in_obj->carried_by )
-                     || ( !IS_NPC( in_obj->carried_by )
-                          && IS_WOLF( in_obj->carried_by )
-                          && ( IS_SHIFTED( in_obj->carried_by ) || ( IS_RAGED( in_obj->carried_by ) ) ) ) ) )
+        if ( ( in_obj->carried_by != NULL && in_obj->carried_by->isImmortal() )
+          || ( !in_obj->carried_by->isNPC() && in_obj->carried_by->isWerewolf() && ( IS_SHIFTED( in_obj->carried_by ) || IS_RAGED( in_obj->carried_by ) ) ) )
             break;
 
 
@@ -5150,7 +5144,7 @@ bool spell_poison_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( IS_IMMORTAL( ch ) && ch->level != 85 )
+    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -6099,7 +6093,7 @@ bool spell_infuse( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( IS_IMMORTAL( ch ) && ch->level != 85 )
+    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;

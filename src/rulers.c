@@ -220,7 +220,7 @@ void do_rulers( CHAR_DATA * ch, char *argument )
 
     if ( !str_prefix( arg1, "new" ) )
     {
-        if ( get_trust( ch ) < L_SUP )
+        if ( ch->getTrust() < L_SUP )
         {
             send_to_char( "Huh?\r\n", ch );
             return;
@@ -250,7 +250,7 @@ void do_rulers( CHAR_DATA * ch, char *argument )
     {
         short clan_number;
 
-        if ( get_trust( ch ) < L_SUP )
+        if ( ch->getTrust() < L_SUP )
         {
             send_to_char( "Huh?\r\n", ch );
             return;
@@ -302,7 +302,7 @@ void do_rulers( CHAR_DATA * ch, char *argument )
     }
     if ( !str_prefix( arg1, "delete" ) )
     {
-        if ( get_trust( ch ) < L_SUP )
+        if ( ch->getTrust() < L_SUP )
         {
             send_to_char( "Huh?\r\n", ch );
             return;
@@ -334,7 +334,7 @@ void do_rulers( CHAR_DATA * ch, char *argument )
 
     if ( !str_prefix( arg1, "sex" ) )
     {
-        if ( get_trust( ch ) < L_SUP )
+        if ( ch->getTrust() < L_SUP )
         {
             send_to_char( "Huh?\r\n", ch );
             return;
@@ -383,7 +383,7 @@ void do_rulers( CHAR_DATA * ch, char *argument )
 
     if ( !str_prefix( arg1, "rank" ) )
     {
-        if ( get_trust( ch ) < L_SUP )
+        if ( ch->getTrust() < L_SUP )
         {
             send_to_char( "Huh?\r\n", ch );
             return;

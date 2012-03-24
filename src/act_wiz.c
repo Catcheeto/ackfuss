@@ -301,8 +301,8 @@ DO_FUN(do_deny)
 DO_FUN(do_disconnect)
 {
     char arg[MSL];
-    DESCRIPTOR_DATA *d = NULL;
-    iterBrain di;
+    Brain* b = NULL;
+    iterBrain bi;
     CHAR_DATA *victim;
 
     one_argument( argument, arg );
@@ -324,12 +324,12 @@ DO_FUN(do_disconnect)
         return;
     }
 
-    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
+    for ( bi = brain_list.begin(); bi != brain_list.end(); bi++ )
     {
-        d = *di;
-        if ( d == victim->desc )
+        b = *bi;
+        if ( b == victim->desc )
         {
-            d->Disconnect();
+            b->Disconnect();
             send_to_char( "Ok.\r\n", ch );
             return;
         }

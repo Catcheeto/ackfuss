@@ -894,7 +894,7 @@ void obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch )
 
         average_level = obj->value[3];
 
-        if ( IS_IMMORTAL(ch) )
+        if ( ch->isImmortal() )
             valid_questor = TRUE;
         else if ( ( average_level < 20 ) && ( ch->get_level("psuedo") < 45 ) )
         {
@@ -2235,7 +2235,7 @@ bool can_see( CHAR_DATA * ch, CHAR_DATA * victim )
         return TRUE;
 
 
-    if ( !IS_NPC( victim ) && victim->act.test(ACT_WIZINVIS) && get_trust( ch ) < victim->pcdata->invis )
+    if ( !IS_NPC( victim ) && victim->act.test(ACT_WIZINVIS) && ch->getTrust() < victim->pcdata->invis )
         return FALSE;
 
     if ( ( room_is_dark( ch->in_room ) && !IS_AFFECTED( ch, AFF_INFRARED ) ) && ch->in_room == victim->in_room )
@@ -2425,7 +2425,7 @@ void log_chan( const char *message, int lv )
     {
         d = *di;
         if ( d->getConnectionState( CON_PLAYING )
-                && ( get_trust( d->character ) == MAX_LEVEL )
+                && ( d->character->getTrust() == MAX_LEVEL )
                 && ( !IS_NPC( d->character ) ) && ( d->character->level >= lv ) && ( !d->character->deaf.test(CHANNEL_LOG) ) )
             send_to_char( buf, d->character );
     }
