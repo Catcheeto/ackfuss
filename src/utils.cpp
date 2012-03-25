@@ -60,7 +60,8 @@ string Utils::__FormatString( const sint_t narg, const bitset<MAX_BITSET> flags,
 void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const string caller, const string fmt, ... )
 {
     va_list args;
-    string output;
+    string output, pre, post;
+    uint_t i = 0;
 
     va_start( args, fmt );
     output = __FormatString( narg, flags, caller, fmt, args );
@@ -69,10 +70,26 @@ void Utils::_Logger( const sint_t narg, const bitset<MAX_BITSET> flags, const st
     if ( output.empty() )
         return;
 
-    if ( flags.test(UTILS_DEBUG) ) // output caller
-        clog << current_time_str() << " :: " << output << " [" << caller << "]" << endl;
-    else
-        clog << current_time_str() << " :: " << output << endl;
+    // prepend timestamp
+    pre += current_time_str(); pre += " :: ";
+
+    for ( i = 0; i < MAX_UTILS; i++ )
+    {
+        if ( flags.test( i ) )
+        {
+            switch( i )
+            {
+                case UTILS_DEBUG:       post += " ["; post += caller; post += "]"; break; // output caller
+                case UTILS_IGNORE_CASE: break; // noting for now
+                case UTILS_RAW:         pre.clear(); post.clear(); i = MAX_UTILS;  break; //no extraneous data applied
+                case UTILS_TYPE_ERROR:  pre += "ERROR: ";                          break; // so fancy!
+                default: break;
+            }
+        }
+    }
+
+    clog << pre << output << post << endl;
+
     if ( !server.shutdown )
         monitor_chan( output.c_str(), MONITOR_LOG );
 

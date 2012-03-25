@@ -65,6 +65,7 @@ enum uintThing_flag_act {
 enum bitsUtils {
     UTILS_DEBUG       = 0,
     UTILS_IGNORE_CASE = 1,
-    UTILS_RAW         = 3,
+    UTILS_RAW         = 2,
+    UTILS_TYPE_ERROR  = 3,
     MAX_UTILS         = 4
 };
