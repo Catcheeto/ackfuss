@@ -28,7 +28,7 @@ class Thing {
         sint_t setAlignment( const sint_t amount );
 
         // Brain
-        Brain* attachBrain( Brain* brain = NULL );
+        Brain* attachBrain( Brain* brain = NULL, uint_t brain_type = BRAIN_TYPE_DUMB_NPC );
         Brain* getBrain() const { return m_brain; }
 
         // Clan

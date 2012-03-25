@@ -52,13 +52,14 @@ sint_t Thing::setAlignment( const sint_t amount )
 }
 
 // Brain
-Brain* Thing::attachBrain( Brain* brain )
+Brain* Thing::attachBrain( Brain* brain, uint_t brain_type )
 {
     if ( brain )
         return m_brain = brain;
     else
     {
         m_brain = new Brain();
+        m_brain->setType( brain_type );
         CoreWorld->pushListBrain( m_brain );
         return m_brain;
     }

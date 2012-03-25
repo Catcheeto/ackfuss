@@ -262,7 +262,7 @@ help_data::help_data()
 lookup_data::lookup_data()
 {
     buf = &str_empty[0];
-    d = NULL;
+    m_brain = NULL;
 }
 
 magic_shield::magic_shield()

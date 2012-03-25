@@ -566,7 +566,7 @@ void *lookup_address( void *input )
 
     if ( from && from->h_name )
     {
-        ld->d->setHost( from->h_name );
+        ld->m_brain->setHost( from->h_name );
         snprintf( log_buf, (2 * MIL), "Hostname resolved to: %s.", from->h_name );
         monitor_chan( log_buf, MONITOR_CONNECT );
     }
@@ -643,7 +643,7 @@ void new_descriptor( int d_control )
         dnew->setHost( buf );
 
         LOOKUP_DATA *ld = new LOOKUP_DATA();
-        ld->d = dnew;
+        ld->m_brain = dnew;
         ld->buf = str_dup((char *) & sock.sin_addr);
         pthread_attr_init(&attr);
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);

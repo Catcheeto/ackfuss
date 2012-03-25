@@ -2626,8 +2626,8 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
 
     mob = new CHAR_DATA;
     mob->npcdata = new NPC_DATA;
+    mob->attachBrain();
 
-    mob->npc = true;
     mob->npcdata->pIndexData = pMobIndex;
 
     if ( pMobIndex->act.test(ACT_AGGRESSIVE) )

@@ -17,14 +17,14 @@ class World {
         World();
         ~World();
 
-    Brain* getFirstBrain() const { return *m_list_brain.begin(); }
-    Brain* getNextBrain() { return ++bi != m_list_brain.end() ? *bi : NULL; }
-    const void pushListBrain( Brain* brain ) { brain->setWorld( this ); m_list_brain.push_back( brain ); return; }
-    const void removeListBrain( Brain* brain ) { m_list_brain.remove( brain ); return; }
-    string &setName( const string name ) { return m_name = name; }
+    Brain* getFirstBrain( const uint_t brain_type ) const { return *m_list_brain[brain_type].begin(); }
+    Brain* getNextBrain( const uint_t brain_type ) { return ++bi[brain_type] != m_list_brain[brain_type].end() ? *bi[brain_type] : NULL; }
+    const void pushListBrain( Brain* brain );
+    const void removeListBrain( Brain* brain );
+    string setName( const string name ) { return m_name = name; }
 
     private:
-        list<Brain*>::const_iterator bi;
-        list<Brain*> m_list_brain;
+        list<Brain*>::const_iterator bi[MAX_BRAIN_TYPE];
+        list<Brain*> m_list_brain[MAX_BRAIN_TYPE];
         string m_name;
 };

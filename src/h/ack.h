@@ -507,7 +507,6 @@ class char_data : public Thing {
         MONEY_TYPE *money;
         int move;
         CHAR_DATA *next_in_room;
-        bool npc; /* For NPC's, no more flag */
         NPC_DATA *npcdata;
         short num_followers;
         CHAR_DATA *old_body; /* = descriptor->original */
@@ -1019,7 +1018,7 @@ class lookup_data
     public:
         lookup_data();
         ~lookup_data();
-        Brain* b;
+        Brain* m_brain;
         char *buf;
 };
 
