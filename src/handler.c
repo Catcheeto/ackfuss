@@ -2509,7 +2509,7 @@ CHAR_DATA *switch_char( CHAR_DATA * victim, int mvnum, int poly_level )
 
         case 1: /* Level 1 */
             mob->pcdata = victim->pcdata;
-            mob->npc = FALSE;
+            // FIXME: check/reset brain mob->npc = FALSE;
 
         case 0: /* Level 0 */
             mob->desc = victim->desc;
@@ -2585,8 +2585,8 @@ CHAR_DATA *unswitch_char( CHAR_DATA * victim )
         case 1:
             original->pcdata = victim->pcdata;
 
-        case 0:
-            victim->npc = TRUE;
+        case 0: break;
+            // FIXME: check/reset brain victim->npc = TRUE;
     }
 
 

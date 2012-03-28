@@ -456,16 +456,25 @@ void game_loop( )
                 }
             }
 
-            if ( d->character != NULL && d->character->wait > 0 )
-            {
-                --d->character->wait;
-                continue;
-            }
-
             d->Read();
             if ( !d->getCommandQueue().empty() )
             {
                 string cmd = d->popCommandQueue();
+
+                if ( d->getConnectionState( CON_PLAYING ) )
+                {
+                    bool preempt = cmd_table[d->character->canInterpret( cmd )].can_preempt;
+
+                    if ( d->getThing() && d->getThing()->wait > 0 )
+                    {
+                        if ( !preempt )
+                        {
+                            --d->getThing()->wait;
+                            d->pushCommandQueue( cmd, true ); //Place it back at the front of the list
+                            continue;
+                        }
+                    }
+                }
                 d->togCommandRun();
                 stop_idling( d->character );
                 d->setTimeout( current_time + MAX_IDLE_TIME );

@@ -166,7 +166,6 @@ char_data::char_data()
     money = new MONEY_TYPE;
     move = 50;
     next_in_room = NULL;
-    npc = false;
     npcdata = NULL;
     num_followers = 0;
     old_body = NULL;

@@ -609,7 +609,7 @@ hash_table *hash_changed_vnums = NULL;
 
 int cur_revision = 0;
 
-bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
+bool load_char_obj( Brain* b, const char *name, bool system_call )
 {
     char strsave[MAX_INPUT_LENGTH];
     char tempstrsave[MAX_INPUT_LENGTH];
@@ -651,18 +651,23 @@ bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
     }
 
     /* load npc */
-    if ( ( d == NULL ) && ( !system_call ) )
+    if ( ( b == NULL ) && ( !system_call ) )
         is_npc = TRUE;
     else
         is_npc = FALSE;
 
     ch = new CHAR_DATA;
 
+    if ( is_npc )
+        ch->attachBrain();
+    else
+        ch->attachBrain( b, BRAIN_TYPE_HUMAN );
+
     if ( !is_npc )
     {
         ch->pcdata = new PC_DATA;
 
-        d->character = ch;
+        b->character = ch;
 
         imc_initchar( ch );
 #ifdef I3
@@ -670,14 +675,9 @@ bool load_char_obj( DESCRIPTOR_DATA * d, const char *name, bool system_call )
 #endif
     }
 
-    ch->desc = d;
+    ch->desc = b;
     ch->setName( name );
     ch->prompt = DEFAULT_PROMPT;
-    if ( is_npc )
-        ch->npc = true;
-    else
-        ch->npc = false;
-
     found = FALSE;
 
     /*

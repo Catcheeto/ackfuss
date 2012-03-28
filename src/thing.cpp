@@ -184,8 +184,6 @@ uint_t Thing::canInterpret( const string cmd ) const
         if ( cmd_table[value].level == WOLF_ONLY && !isWerewolf() && getTrust() < L_GOD  )
             continue;
 
-        if ( cmd.c_str()[0] == cmd_table[value].name[0] )
-            Utils::Logger( 0, "trust: %lu -- npc: %d -- btype: %lu -- cmd: %s -- table: %s (%lu)", getTrust(), isNPC(), getBrain()->getType(), cmd.c_str(), cmd_table[value].name, cmd_table[value].level );
         if ( !str_prefix( cmd.c_str(), cmd_table[value].name ) && cmd_table[value].level <= getTrust() )
             break;
     }

@@ -188,7 +188,11 @@ const bool Brain::Read()
             if ( inbuf[start - 1] == '\n' || inbuf[start - 1] == '\r' )
             {
                 inbuf[start - 1] = '\0';
-                pushCommandQueue( inbuf );
+
+                if ( getThing() && cmd_table[getThing()->canInterpret( inbuf )].can_preempt ) // Skip the line!
+                    pushCommandQueue( inbuf, true );
+                else
+                    pushCommandQueue( inbuf );
                 break;
             }
         }

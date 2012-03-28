@@ -56,6 +56,9 @@ class Brain {
         uint_t getPort() const { return m_port; }
         uint_t setPort( const uint_t port ) { return m_port = port; }
 
+        CHAR_DATA* getThing() const { return original ? original : character; } //FIXME: move to Thing*
+        CHAR_DATA* setThing( CHAR_DATA* thing ) { return character = thing; } //FIXME: move to Thing*
+
         time_t getTimeout() const { return m_timeout; }
         time_t setTimeout( const time_t timeout ) { return m_timeout = timeout; }
 

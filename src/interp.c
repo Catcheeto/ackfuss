@@ -1067,7 +1067,6 @@ void interpret( CHAR_DATA * ch, const string input )
      * Look for command in command table.
      */
     cmd = ch->canInterpret( command );
-Utils::Logger( 0, "cmd: %lu -- total_commands: %lu", cmd, server.total_commands );
 
     /*
      * Log and snoop.

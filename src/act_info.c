@@ -1307,7 +1307,6 @@ DO_FUN(do_score)
     char buf2[MSL];
     int cnt;
 
-
     snprintf( buf, MSL, "@@y%s%s, Race: %s%s, Clan: %s\r\nAge: ",
               ch->get_name(),
               ch->get_title(),
