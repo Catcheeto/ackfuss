@@ -92,16 +92,16 @@ void load_sysdata( void )
         switch ( UPPER(word[0]) )
         {
             case 'B':
-                KEY("Build_Obj_AC",  sysdata.build_obj_ac,  fread_number(fp));
-                KEY("Build_Obj_DR",  sysdata.build_obj_dr,  fread_number(fp));
-                KEY("Build_Obj_HP",  sysdata.build_obj_hp,  fread_number(fp));
-                KEY("Build_Obj_HR",  sysdata.build_obj_hr,  fread_number(fp));
-                KEY("Build_Obj_MP",  sysdata.build_obj_mp,  fread_number(fp));
-                KEY("Build_Obj_MV",  sysdata.build_obj_mv,  fread_number(fp));
-                KEY("Build_Obj_SVS", sysdata.build_obj_svs, fread_number(fp));
+                KEY("Build_Obj_AC",   sysdata.build_obj_ac,   fread_number(fp));
+                KEY("Build_Obj_DR",   sysdata.build_obj_dr,   fread_number(fp));
+                KEY("Build_Obj_HP",   sysdata.build_obj_hp,   fread_number(fp));
+                KEY("Build_Obj_HR",   sysdata.build_obj_hr,   fread_number(fp));
+                KEY("Build_Obj_MP",   sysdata.build_obj_mp,   fread_number(fp));
+                KEY("Build_Obj_MV",   sysdata.build_obj_mv,   fread_number(fp));
+                KEY("Build_Obj_SVS",  sysdata.build_obj_svs,  fread_number(fp));
                 break;
             case 'D':
-                KEY("Damcap",        sysdata.damcap,        fread_number(fp));
+                KEY("Damcap",         sysdata.damcap,         fread_number(fp));
                 break;
             case 'E':
                 if ( !str_cmp(word, "End") )
@@ -111,35 +111,36 @@ void load_sysdata( void )
                     Utils::Logger( 0, "Done." );
                     return;
                 }
-                KEY("Expmult",       sysdata.expmult,       fread_float(fp));
+                KEY("Expmult",        sysdata.expmult,        fread_float(fp));
                 break;
             case 'K':
-                KEY("KillPerLev",    sysdata.killperlev,    fread_number(fp));
+                KEY("KillPerLev",     sysdata.killperlev,     fread_number(fp));
                 break;
             case 'M':
-                KEY("Max_Move_Disp", sysdata.max_move_disp, fread_number(fp));
-                KEY("Max_Pushback",  sysdata.max_pushback,  fread_float(fp));
-                KEY("Mob_AC",        sysdata.mob_ac,        fread_float(fp));
-                KEY("Mob_DR",        sysdata.mob_dr,        fread_float(fp));
-                KEY("Mob_HP",        sysdata.mob_hp,        fread_float(fp));
-                KEY("Mob_HR",        sysdata.mob_hr,        fread_float(fp));
-                KEY("Mob_MP",        sysdata.mob_mp,        fread_float(fp));
-                KEY("Mob_MV",        sysdata.mob_mv,        fread_float(fp));
-                KEY("Mob_SVS",       sysdata.mob_svs,       fread_float(fp));
+                KEY("Max_Move_Disp",  sysdata.max_move_disp,  fread_number(fp));
+                KEY("Max_Pushback",   sysdata.max_pushback,   fread_float(fp));
+                KEY("Min_Save_Level", sysdata.min_save_level, fread_number(fp));
+                KEY("Mob_AC",         sysdata.mob_ac,         fread_float(fp));
+                KEY("Mob_DR",         sysdata.mob_dr,         fread_float(fp));
+                KEY("Mob_HP",         sysdata.mob_hp,         fread_float(fp));
+                KEY("Mob_HR",         sysdata.mob_hr,         fread_float(fp));
+                KEY("Mob_MP",         sysdata.mob_mp,         fread_float(fp));
+                KEY("Mob_MV",         sysdata.mob_mv,         fread_float(fp));
+                KEY("Mob_SVS",        sysdata.mob_svs,        fread_float(fp));
                 break;
             case 'N':
-                KEY("Num_Greeting",  sysdata.num_greeting,  fread_number(fp));
+                KEY("Num_Greeting",   sysdata.num_greeting,   fread_number(fp));
                 break;
             case 'P':
-                KEY("Playtesters",   sysdata.playtesters,   fread_string(fp));
-                KEY("Pulse",         sysdata.pulse,         fread_number(fp));
-                KEY("PulseCache",    sysdata.pulse_cache,   fread_number(fp));
+                KEY("Playtesters",    sysdata.playtesters,    fread_string(fp));
+                KEY("Pulse",          sysdata.pulse,          fread_number(fp));
+                KEY("PulseCache",     sysdata.pulse_cache,    fread_number(fp));
                 break;
             case 'S':
-                KEY("Shownumbers",   sysdata.shownumbers,   fread_number(fp));
+                KEY("Shownumbers",    sysdata.shownumbers,    fread_number(fp));
                 break;
             case 'W':
-                KEY("Wizlock",       sysdata.w_lock,        fread_number(fp));
+                KEY("Wizlock",        sysdata.w_lock,         fread_number(fp));
                 break;
         }
         if ( !fMatch )
@@ -164,31 +165,32 @@ void save_sysdata( void )
         return;
     }
 
-    fprintf(fp, "Build_Obj_AC  %d\n",    sysdata.build_obj_ac);
-    fprintf(fp, "Build_Obj_DR  %d\n",    sysdata.build_obj_dr);
-    fprintf(fp, "Build_Obj_HP  %d\n",    sysdata.build_obj_hp);
-    fprintf(fp, "Build_Obj_HR  %d\n",    sysdata.build_obj_hr);
-    fprintf(fp, "Build_Obj_MP  %d\n",    sysdata.build_obj_mp);
-    fprintf(fp, "Build_Obj_MV  %d\n",    sysdata.build_obj_mv);
-    fprintf(fp, "Build_Obj_SVS %d\n",    sysdata.build_obj_svs);
-    fprintf(fp, "Damcap        %d\n",    sysdata.damcap);
-    fprintf(fp, "Expmult       %0.4f\n", sysdata.expmult);
-    fprintf(fp, "KillPerLev    %d\n",    sysdata.killperlev);
-    fprintf(fp, "Max_Move_Disp %d\n",    sysdata.max_move_disp);
-    fprintf(fp, "Max_Pushback  %0.4f\n", sysdata.max_pushback);
-    fprintf(fp, "Mob_AC        %0.4f\n", sysdata.mob_ac);
-    fprintf(fp, "Mob_DR        %0.4f\n", sysdata.mob_dr);
-    fprintf(fp, "Mob_HP        %0.4f\n", sysdata.mob_hp);
-    fprintf(fp, "Mob_HR        %0.4f\n", sysdata.mob_hr);
-    fprintf(fp, "Mob_MP        %0.4f\n", sysdata.mob_mp);
-    fprintf(fp, "Mob_MV        %0.4f\n", sysdata.mob_mv);
-    fprintf(fp, "Mob_SVS       %0.4f\n", sysdata.mob_svs);
-    fprintf(fp, "Num_Greeting  %d\n",    sysdata.num_greeting);
-    fprintf(fp, "Playtesters   %s~\n",   sysdata.playtesters);
-    fprintf(fp, "Pulse         %lu\n",   sysdata.pulse);
-    fprintf(fp, "PulseCache    %lu\n",   sysdata.pulse_cache);
-    fprintf(fp, "Shownumbers   %d\n",    sysdata.shownumbers);
-    fprintf(fp, "Wizlock       %d\n",    wizlock);
+    fprintf(fp, "Build_Obj_AC   %d\n",    sysdata.build_obj_ac);
+    fprintf(fp, "Build_Obj_DR   %d\n",    sysdata.build_obj_dr);
+    fprintf(fp, "Build_Obj_HP   %d\n",    sysdata.build_obj_hp);
+    fprintf(fp, "Build_Obj_HR   %d\n",    sysdata.build_obj_hr);
+    fprintf(fp, "Build_Obj_MP   %d\n",    sysdata.build_obj_mp);
+    fprintf(fp, "Build_Obj_MV   %d\n",    sysdata.build_obj_mv);
+    fprintf(fp, "Build_Obj_SVS  %d\n",    sysdata.build_obj_svs);
+    fprintf(fp, "Damcap         %d\n",    sysdata.damcap);
+    fprintf(fp, "Expmult        %0.4f\n", sysdata.expmult);
+    fprintf(fp, "KillPerLev     %d\n",    sysdata.killperlev);
+    fprintf(fp, "Max_Move_Disp  %d\n",    sysdata.max_move_disp);
+    fprintf(fp, "Max_Pushback   %0.4f\n", sysdata.max_pushback);
+    fprintf(fp, "Min_Save_Level %lu\n",   sysdata.min_save_level);
+    fprintf(fp, "Mob_AC         %0.4f\n", sysdata.mob_ac);
+    fprintf(fp, "Mob_DR         %0.4f\n", sysdata.mob_dr);
+    fprintf(fp, "Mob_HP         %0.4f\n", sysdata.mob_hp);
+    fprintf(fp, "Mob_HR         %0.4f\n", sysdata.mob_hr);
+    fprintf(fp, "Mob_MP         %0.4f\n", sysdata.mob_mp);
+    fprintf(fp, "Mob_MV         %0.4f\n", sysdata.mob_mv);
+    fprintf(fp, "Mob_SVS        %0.4f\n", sysdata.mob_svs);
+    fprintf(fp, "Num_Greeting   %d\n",    sysdata.num_greeting);
+    fprintf(fp, "Playtesters    %s~\n",   sysdata.playtesters);
+    fprintf(fp, "Pulse          %lu\n",   sysdata.pulse);
+    fprintf(fp, "PulseCache     %lu\n",   sysdata.pulse_cache);
+    fprintf(fp, "Shownumbers    %d\n",    sysdata.shownumbers);
+    fprintf(fp, "Wizlock        %d\n",    wizlock);
     fprintf(fp, "End\n\n");
 
     file_close(fp);
@@ -243,6 +245,8 @@ void do_sysdata( CHAR_DATA * ch, char *argument )
         strncat(outbuf, catbuf, MSL - 1);
         snprintf(catbuf, MSL, "[Max Pushback   ]       [%15.4f]\r\n", sysdata.max_pushback);
         strncat(outbuf, catbuf, MSL - 1);
+        snprintf(catbuf, MSL, "[Min Save Level ]       [%15lu]\r\n", sysdata.min_save_level);
+        strncat(outbuf, catbuf, MSL - 1);
         snprintf(catbuf, MSL, "[Mob AC         ]       [%15.4f]\r\n", sysdata.mob_ac);
         strncat(outbuf, catbuf, MSL - 1);
         snprintf(catbuf, MSL, "[Mob DR         ]       [%15.4f]\r\n", sysdata.mob_dr);
@@ -285,6 +289,8 @@ void do_sysdata( CHAR_DATA * ch, char *argument )
         sysdata.max_move_disp = atoi(arg2) > 0 ? atoi(arg2) : 1;
     else if ( !str_prefix(arg1, "maxpushback") )
         sysdata.max_pushback = atof(arg2) != 0 ? atof(arg2) : 1;
+    else if ( !str_prefix(arg1, "minsavelevel") )
+        sysdata.min_save_level = atol(arg2) > 0 ? atol(arg2) : 1;
     else if ( !str_cmp(arg1, "mobac") )
         sysdata.mob_ac = atof(arg2) != 0 ? atof(arg2) : 1;
     else if ( !str_cmp(arg1, "mobdr") )
@@ -335,6 +341,7 @@ void init_sysdata( void )
     sysdata.killperlev = 60;
     sysdata.max_move_disp = 5;
     sysdata.max_pushback = 1.5;
+    sysdata.min_save_level = 1;
     sysdata.mob_ac = 1;
     sysdata.mob_dr = 1;
     sysdata.mob_hp = 1;
