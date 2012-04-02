@@ -1041,7 +1041,7 @@ void load_mobile( FILE * fp )
                 break;
 
             case 'L':
-                KEY("Level", pMobIndex->level, fread_number(fp));
+                KEY_("Level", pMobIndex->setLevel, fread_number(fp));
                 KEY_("LongDesc", pMobIndex->setDescrLong, fread_string(fp));
                 break;
 
@@ -1126,7 +1126,7 @@ void load_mobile( FILE * fp )
     LINK( pList, area_load->first_area_mobile, area_load->last_area_mobile, next, prev );
 
     mob_load = pMobIndex;
-    kill_table[URANGE( 0, pMobIndex->level, MAX_LEVEL - 1 )].number++;
+    kill_table[URANGE( 0, pMobIndex->getLevel(), MAX_LEVEL - 1 )].number++;
 
     return;
 }
@@ -1260,7 +1260,7 @@ void load_object( FILE * fp )
                 break;
 
             case 'L':
-                KEY("Level", pObjIndex->level, fread_number(fp));
+                KEY_("Level", pObjIndex->setLevel, fread_number(fp));
                 KEY_("LongDesc", pObjIndex->setDescrLong, fread_string(fp));
                 break;
 
@@ -2027,7 +2027,7 @@ void save_disabled( void )
     for ( li = disabled_list.begin(); li != disabled_list.end(); li++ )
     {
         p = *li;
-        fprintf(fp, "%s %d %s\n", p->command->name, p->level, p->disabled_by.c_str());
+        fprintf(fp, "%s %lu %s\n", p->command->name, p->level, p->disabled_by.c_str());
     }
 
     fprintf(fp, "End\n\n");
@@ -2303,7 +2303,7 @@ void reset_area( AREA_DATA * pArea )
                     continue;
                 }
 
-                level = pMobIndex->level;
+                level = pMobIndex->getLevel();
                 if ( pReset->count >= pReset->arg2 )
                     break;
 
@@ -2330,7 +2330,7 @@ void reset_area( AREA_DATA * pArea )
                 else
                     char_to_room( mob, pRoomIndex );
 
-                level = URANGE( 0, mob->level - 2, LEVEL_HERO );
+                level = URANGE( 0, mob->getLevel() - 2, LEVEL_HERO );
                 break;
 
             case 'O':
@@ -2358,7 +2358,7 @@ void reset_area( AREA_DATA * pArea )
                     break;
                 }
 
-                level = pObjIndex->level;
+                level = pObjIndex->getLevel();
                 obj = create_object( pObjIndex, level > 1 ? number_fuzzy( level ) : level );
                 obj->reset = pReset;
                 pReset->count++;
@@ -2396,8 +2396,8 @@ void reset_area( AREA_DATA * pArea )
                     break;
                 }
 
-                level = pObjIndex->level;
-                obj = create_object( pObjIndex, obj_to->level > 1 ? number_fuzzy( obj_to->level ) : obj_to->level );
+                level = pObjIndex->getLevel();
+                obj = create_object( pObjIndex, obj_to->getLevel() > 1 ? number_fuzzy( obj_to->getLevel() ) : obj_to->getLevel() );
                 obj->reset = pReset;
                 pReset->count++;
 
@@ -2476,7 +2476,7 @@ void reset_area( AREA_DATA * pArea )
                     if ( has_obj )
                         break;
 
-                    level = pObjIndex->level;
+                    level = pObjIndex->getLevel();
                     obj = create_object( pObjIndex, level > 1 ? number_fuzzy( level ) : level );
                     obj->reset = pReset;
                     pReset->count++;
@@ -2492,8 +2492,8 @@ void reset_area( AREA_DATA * pArea )
                     char objname[MSL];
                     char fixme[MSL]; strcpy(fixme,obj->getName_());
                     one_argument( fixme, objname );
-                    if ( obj->level > mob->get_level() )
-                        obj->level = mob->get_level();
+                    if ( obj->getLevel() > mob->getLevel() )
+                        obj->setLevel( mob->getLevel() );
                     do_wear( mob, objname );
                 }
                 break;
@@ -2643,7 +2643,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->description = pMobIndex->description;
     mob->npcdata->spec_fun = pMobIndex->spec_fun;
     mob->prompt = str_dup(DEFAULT_PROMPT);
-    mob->level = pMobIndex->level;
+    mob->setLevel( pMobIndex->getLevel() );
     mob->act = pMobIndex->act;
     mob->affected_by = pMobIndex->affected_by;
     mob->setAlignment( pMobIndex->alignment );
@@ -2652,32 +2652,32 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->setModHR( pMobIndex->getModHR() );
     mob->setModDR( pMobIndex->getModDR() );
 
-    mob->armor = interpolate( mob->level / 2, 100, 100 );
+    mob->armor = interpolate( mob->getLevel() / 2, 100, 100 );
     hold = mob->armor;
     hold *= sysdata.mob_ac;
     mob->armor = (int)hold;
 
-    mob->hitroll += (mob->get_level("psuedo") / 4);
+    mob->hitroll += (mob->getLevel( true ) / 4);
     hold = mob->hitroll;
     hold *= sysdata.mob_hr;
     mob->hitroll = (int)hold;
-    mob->damroll += (mob->get_level("psuedo") / 4);
+    mob->damroll += (mob->getLevel( true ) / 4);
     hold = mob->damroll;
     hold *= sysdata.mob_dr;
     mob->damroll = (int)hold;
 
-    mob->max_hit = mob->level * 15 + number_range( mob->level * mob->level / 2, mob->level * mob->level / 1 );
+    mob->max_hit = mob->getLevel() * 15 + number_range( mob->getLevel() * mob->getLevel() / 2, mob->getLevel() * mob->getLevel() / 1 );
     hold = mob->max_hit;
     hold *= sysdata.mob_hp;
     mob->max_hit = (int)hold;
     mob->hit = mob->max_hit;
 
-    mob->setExperience( exp_for_mobile( mob->level, mob ) );
+    mob->setExperience( exp_for_mobile( mob->getLevel(), mob ) );
 
     /*
      * mana for mobs...
      */
-    mob->max_mana = mob->level * 25;
+    mob->max_mana = mob->getLevel() * 25;
     hold = mob->max_mana;
     hold *= sysdata.mob_mp;
     mob->max_mana = (int)hold;
@@ -2686,7 +2686,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     /*
      * move for mobs...
      */
-    mob->max_move = mob->level * 25;
+    mob->max_move = mob->getLevel() * 25;
     hold = mob->max_move;
     hold *= sysdata.mob_mv;
     mob->max_move = (int)hold;
@@ -2704,7 +2704,7 @@ CHAR_DATA *create_mobile( MOB_INDEX_DATA * pMobIndex )
     mob->race_mods = pMobIndex->race_mods;
     mob->race = pMobIndex->race;
     mob->position = POS_STANDING;
-    mob->saving_throw = (mob->get_level("psuedo") / 10);
+    mob->saving_throw = (mob->getLevel( true ) / 10);
     hold = mob->saving_throw;
     hold *= sysdata.mob_svs;
     mob->saving_throw = (int)hold;
@@ -2754,20 +2754,20 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA * pObjIndex, int level )
     obj->pIndexData = pObjIndex;
     obj->in_room = NULL;
 
-    if ( pObjIndex->level < 3 )
+    if ( pObjIndex->getLevel() < 3 )
     {
-        if ( pObjIndex->level == 2 )
+        if ( pObjIndex->getLevel() == 2 )
         {
-            obj->level = 1;
+            obj->setLevel( 1 );
         }
         else
         {
-            obj->level = level;
+            obj->setLevel( level );
         }
     }
     else
     {
-        obj->level = pObjIndex->level;
+        obj->setLevel( pObjIndex->getLevel() );
     }
 
     obj->wear_loc = -1;
@@ -3327,7 +3327,7 @@ DO_FUN(do_areas)
         if ( pArea->flags.test(AFLAG_NO_SHOW) || pArea->flags.test(AFLAG_BUILDING) )
             continue;   /* for non-finished areas - don't show */
         if ( ( !fall )
-                && ( ( pArea->min_level > ( ch->get_level("psuedo") ) ) || ( pArea->max_level < ( ch->get_level("psuedo") ) ) ) )
+                && ( ( pArea->min_level > ( ch->getLevel( true ) ) ) || ( pArea->max_level < ( ch->getLevel( true ) ) ) ) )
             continue;
 
         foo++;
@@ -3538,9 +3538,9 @@ int number_range( int from, int to )
 /*
  * Generate a percentile roll.
  */
-int number_percent( void )
+uint_t number_percent( void )
 {
-    int percent;
+    uint_t percent;
 
     while ( ( percent = number_mm(  ) & ( 128 - 1 ) ) > 99 )
         ;
@@ -3836,7 +3836,7 @@ void message_update( void )
             }
 
             for ( ch = pRoom->first_person; ch != NULL; ch = ch->next_in_room )
-                if ( ch->level >= pReset->arg2 && ch->level <= pReset->arg3 )
+                if ( ch->getLevel() >= pReset->arg2 && ch->getLevel() <= pReset->arg3 )
                     send_to_char( pReset->notes, ch );
         }
     }

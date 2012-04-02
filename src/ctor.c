@@ -152,12 +152,7 @@ char_data::char_data()
     last_saved_aff = NULL;
     last_shield = NULL;
     leader = NULL;
-    level = 0;
     logon = current_time;
-    for ( short i = 0; i < MAX_CLASS; i++ )
-        lvl[i] = -1;
-    for ( short i = 0; i < MAX_CLASS; i++ )
-        lvl2[i] = -1;
     mana = 50;
     master = NULL;
     max_hit = 50;
@@ -215,7 +210,7 @@ disabled_data::disabled_data()
 {
     command = NULL;
     disabled_by.clear();
-    level = 0;
+    level = uintmin_t;
 
     disabled_list.push_back(this);
 }
@@ -304,7 +299,6 @@ mob_index_data::mob_index_data()
     killed = 0;
     for ( short i = 0; i < MAX_SKILL; i++ )
         learned[i] = 0;
-    level = 1;
     next = NULL;
     position = 0;
     pShop = NULL;
@@ -402,7 +396,6 @@ obj_data::obj_data()
     wear_loc = 0;
     weight = 0;
     cost = 0;
-    level = 0;
     timer = 0;
     for ( short i = 0; i < MAX_OBJ_VALUE; i++ )
         value[i] = 0;
@@ -427,7 +420,6 @@ obj_index_data::obj_index_data()
     item_type = 1;
     last_apply = NULL;
     last_trigger = NULL;
-    level = 1;
     max_durability = number_range(2, 100);
     next = NULL;
     obj_fun = NULL;
@@ -663,7 +655,7 @@ super_data::super_data()
     energy_max = 0;
     exp = 0;
     generation = 0;
-    level = 0;
+    level = uintmin_t;
     skills_learned = 0;
     skills_max = 0;
     pracs = 0;

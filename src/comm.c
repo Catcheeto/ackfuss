@@ -1021,14 +1021,11 @@ void bust_a_prompt( DESCRIPTOR_DATA * d )
                 i = buf2;
                 break;
             case 'g':
-                snprintf( buf2, MSL, "%d", money_value(ch->money) );
+                snprintf( buf2, MSL, "%lu", money_value(ch->money) );
                 i = buf2;
                 break;
             case 'a':
-                if ( ch->level < 5 )
-                    snprintf( buf2, MSL, "%ld", ch->getAlignment() );
-                else
-                    snprintf( buf2, MSL, "%s", IS_GOOD( ch ) ? "good" : IS_EVIL( ch ) ? "evil" : "neutral" );
+                snprintf( buf2, MSL, "%s", IS_GOOD( ch ) ? "good" : IS_EVIL( ch ) ? "evil" : "neutral" );
                 i = buf2;
                 break;
             case 'r':
@@ -1670,9 +1667,6 @@ void nanny( Brain *b, const string input )
         lines = ch->pcdata->pagelen;
         ch->pcdata->pagelen = 20;
 
-        if ( ch->lvl[ch->p_class] == -1 )
-            ch->lvl[ch->p_class] = ch->level;
-
         if ( ch->isHero() )
         {
             uint_t numbrands = brand_list.size();
@@ -2173,17 +2167,8 @@ void nanny( Brain *b, const string input )
     if ( b->getConnectionState( CON_READ_MOTD ) )
     {
         list<NOTE_DATA *>::iterator li;
-        /*
-         * Prime level idea dropped.  Give ch 1 level in their best class
-         */
-        if ( ch->level == 0 )
-        {
-            ch->p_class = ch->pcdata->order[0];
-            ch->lvl[ch->p_class] = 1;
-        }
 
         b->setConnectionState( CON_PLAYING );
-
 
         if ( ch->act.test(ACT_FULL_ANSI) )
         {
@@ -2194,9 +2179,9 @@ void nanny( Brain *b, const string input )
         }
         send_to_char( "\r\nWelcome to " mudnamecolor ".  May your visit here be ... mutated.\r\n", ch );
 
-        if ( ch->level == 0 )
+        if ( ch->getLevel() == uintmin_t ) // Initial newbie login, do some setup
         {
-            switch ( class_table[ch->p_class].attr_prime )
+            switch ( class_table[ch->pcdata->order[0]].attr_prime )
             {
                 case APPLY_STR:
                     ch->pcdata->max_str++;
@@ -2215,24 +2200,11 @@ void nanny( Brain *b, const string input )
                     break;
             }
 
-            ch->level = 1;
-
-            /*
-             * FIXME: this temp fix for m/c stuff
-             */
-            /*
-             * All Races get 5 classes now..
-             */
-
-            ch->lvl[ch->p_class] = 1;
-            for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-                if ( cnt != ch->p_class )
-                    ch->lvl[cnt] = 0;
+            ch->setLevel( THING_LEVEL_TIER1, ch->pcdata->order[0] );
 
             if ( server.total_pfiles == 1 ) /* First user, grand full admin. --Kline */
             {
-                ch->level = MAX_LEVEL;
-                ch->lvl[ch->p_class] = MAX_LEVEL;;
+                ch->setLevel( THING_LEVEL_TIER1, ch->pcdata->order[0], MAX_LEVEL );
                 ch->trust = MAX_LEVEL;
                 ch->act.flip(ACT_BUILDER);
                 send_to_char("@@e@@f*** AS THE FIRST LOGIN, YOU HAVE BEEN ADVANCED TO MAX LEVEL ***@@N\r\n", ch);
@@ -2288,14 +2260,14 @@ void nanny( Brain *b, const string input )
         /*
          * check for login failures, then clear count.
          */
-        if ( ch->pcdata->failures != 0 && ch->level != 1 )
+        if ( ch->pcdata->failures != 0 && ch->getLevel() != 1 )
         {
             snprintf( msg, MSL, "WARNING:  There have been %d failed login attempts.\r\n", ch->pcdata->failures );
             send_to_char( msg, ch );
             ch->pcdata->failures = 0;
         }
 
-        if ( ch->level > 1 )
+        if ( ch->getLevel() > 1 )
         {
             do_logins(ch);
 
@@ -2306,9 +2278,9 @@ void nanny( Brain *b, const string input )
                     snprintf( msg, MSL, "%s connected from %s ( last login was from %s ) !", ch->getName_(), b->getHost_(), ch->pcdata->host[0] );
                     Utils::Logger( 0, msg );
                     monitor_chan( msg, MONITOR_CONNECT );
-                    if ( ( ch->level > 80 ) )
+                    if ( ( ch->getLevel() >= LEVEL_HERO ) )
                     {
-                        snprintf( msg, MSL, "WARNING!!! %s logged in with level %d.", ch->getName_(), ch->level );
+                        snprintf( msg, MSL, "WARNING!!! %s logged in with level %lu.", ch->getName_(), ch->getLevel() );
                         Utils::Logger( 0, msg );
                     }
 
@@ -2457,7 +2429,7 @@ void nanny( Brain *b, const string input )
             ch->max_mana = ch->pcdata->mana_from_gain;
             ch->max_hit = ch->pcdata->hp_from_gain;
             ch->max_move = ch->pcdata->move_from_gain;
-            ch->saving_throw = ch->get_level("psuedo") / 10;
+            ch->saving_throw = ch->getLevel( true ) / 10;
             ch->hitroll = 0;
             ch->damroll = 0;
             ch->armor = 100;
@@ -3075,7 +3047,7 @@ void act( const char *format, CHAR_DATA * ch, const void *arg1, const void *arg2
                             if ( !IS_NPC(ch) && ch->act.test(ACT_WIZINVIS) && to->getTrust() < ch->pcdata->invis )
                                 can_see_message = FALSE;
                             if ( ( IS_AFFECTED( ch, AFF_SNEAK ) || item_has_apply( ch, ITEM_APPLY_SNEAK ) )
-                                    && ( ( ch->get_level("psuedo") - 20 + number_range( 1, 30 ) ) > to->get_level("psuedo") ) )
+                                    && ( ( ch->getLevel( true ) - 20 + number_range( 1, 30 ) ) > to->getLevel( true ) ) )
                                 can_see_message = FALSE;
                         }
                         break;
@@ -3315,7 +3287,7 @@ void copyover_recover(  )
                 this_char->max_mana = this_char->pcdata->mana_from_gain;
                 this_char->max_hit = this_char->pcdata->hp_from_gain;
                 this_char->max_move = this_char->pcdata->move_from_gain;
-                this_char->saving_throw = this_char->get_level("psuedo") / 10;
+                this_char->saving_throw = this_char->getLevel( true ) / 10;
                 this_char->hitroll = 0;
                 this_char->damroll = 0;
                 this_char->armor = 100;

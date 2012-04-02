@@ -59,7 +59,7 @@ DECLARE_DO_FUN(do_status);
 float number_speed P_((void));
 int number_fuzzy P_((int number));
 int number_range P_((int from, int to));
-int number_percent P_((void));
+uint_t number_percent P_((void));
 int number_door P_((void));
 int number_bits P_((int width));
 void init_mm P_((void));

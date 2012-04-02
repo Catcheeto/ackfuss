@@ -89,7 +89,7 @@ class disabled_data
         ~disabled_data();
         struct cmd_type const *command;
         string disabled_by;
-        short                 level;
+        uint_t                 level;
 };
 
 /*
@@ -428,7 +428,7 @@ class mob_index_data : public Thing {
         char *description;
         int hunt_flags;
         short killed;
-        short learned[MAX_SKILL];
+        uint_t learned[MAX_SKILL];
         MOB_INDEX_DATA *next;
         short position;
         SHOP_DATA *pShop;
@@ -593,7 +593,7 @@ class pc_data
         uint_t invis; /* wizinvis imm, level invis to */
         char *lastlogin;
         time_t last_note;
-        short learned[MAX_SKILL];
+        uint_t learned[MAX_SKILL];
         char *load_msg;
         short login_sex;
         int mana_from_gain;  /* saves non-item oriented mana total */
@@ -1052,7 +1052,7 @@ class super_data
         int energy_max;
         short exp;
         short generation;
-        int level;
+        uint_t level;
         int skills_learned; /* total # skills known */
         int skills_max;     /* total # skills may learn; based on gen, etc */
         int pracs;

@@ -87,7 +87,7 @@ DO_FUN(do_enchant)
     bool good_item = FALSE, legal_enchant = TRUE, bad_enchant_mix = FALSE;
     short qp_cost = 20;
     int mod = 0;
-    short min_level = 10;
+    uint_t min_level = 10;
     int new_apply = ITEM_APPLY_NONE;
     bitset<MAX_BITSET> new_extras;
 
@@ -264,8 +264,7 @@ DO_FUN(do_enchant)
         }
         return;
     }
-    if ( ( ( ch->get_level("maxremortal") < unique->level )
-            && ( IS_OBJ_STAT(unique, ITEM_EXTRA_REMORT) ) ) || ( ch->get_level("psuedo") < unique->level ) )
+    if ( ( !ch->isRemortal() || ( ch->getLevel() < unique->getLevel() ) ) && ( IS_OBJ_STAT( unique, ITEM_EXTRA_REMORT ) ) && !ch->isNPC() )
     {
         send_to_char( "You can't use this item in the first place..enchanting it is NOT going to help!\r\n", ch );
         return;
@@ -612,10 +611,10 @@ DO_FUN(do_enchant)
                 snprintf( cat_buf, MSL, "%s", "You do not have enough quest points for this upgrade.\r\n" );
             }
             strncat( msg_buf, cat_buf, MSL - 1 );
-            if ( ( min_level > unique->level ) && ( min_level > ch->get_level("psuedo") ) )
+            if ( ( min_level > unique->getLevel() ) && ( min_level > ch->getLevel( true ) ) )
             {
                 snprintf( cat_buf, MSL,
-                          "@@eWARNING: @@WEnchanting %s with these affects will make the item level %d, which is higher than your current ability to use.\r\n",
+                          "@@eWARNING: @@WEnchanting %s with these affects will make the item level %lu, which is higher than your current ability to use.\r\n",
                           unique->getDescrShort_(), min_level );
                 strncat( msg_buf, cat_buf, MSL - 1 );
             }
@@ -834,7 +833,7 @@ DO_FUN(do_enchant)
             unique->extra_flags.set(ITEM_EXTRA_UNIQUE);
         if ( IS_OBJ_STAT(unique, ITEM_EXTRA_REMORT) )
         {
-            min_level = UMAX( 80 + ( unique->level / 4 ), min_level );
+            min_level = UMAX( 80 + ( unique->getLevel() / 4 ), min_level );
             unique->extra_flags.reset(ITEM_EXTRA_REMORT);
         }
         if ( mod_item_weight + unique->weight > 0 )
@@ -863,8 +862,8 @@ DO_FUN(do_enchant)
             }
             strncat( enchant_buf, "\r\n", MSL - 1 );
         }
-        if ( unique->level < min_level )
-            unique->level = UMIN( 120, min_level );
+        if ( unique->getLevel() < min_level )
+            unique->setLevel( UMIN( 120, min_level ) );
 
         act( "$n dances about wildly, chanting wierd mantras, and gestures crazily over $p.", ch, matrix, NULL, TO_ROOM );
         act( "You enchant $p with additional powers!", ch, unique, NULL, TO_CHAR );
@@ -875,8 +874,8 @@ DO_FUN(do_enchant)
             char cat2_buf[MSL];
             AFFECT_DATA *one_aff;
 
-            snprintf( brandbuf, MSL, "UNIQUE ITEM: keyword: %s, Name: %s, flags: %s \r\n level: %d, affects:\r\n",
-                      unique->getName_(), unique->getDescrShort_(), extra_bit_name( unique->extra_flags ), unique->level );
+            snprintf( brandbuf, MSL, "UNIQUE ITEM: keyword: %s, Name: %s, flags: %s \r\n level: %lu, affects:\r\n",
+                      unique->getName_(), unique->getDescrShort_(), extra_bit_name( unique->extra_flags ), unique->getLevel() );
             for ( one_aff = unique->first_apply; one_aff != NULL; one_aff = one_aff->next )
             {
                 if ( one_aff->location != APPLY_NONE && one_aff->modifier != 0 )

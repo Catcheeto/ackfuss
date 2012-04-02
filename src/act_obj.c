@@ -2385,7 +2385,7 @@ DO_FUN(do_steal)
     char arg2[MAX_INPUT_LENGTH];
     CHAR_DATA *victim;
     OBJ_DATA *obj;
-    int chance = 0;
+    uint_t chance = 0;
     /*
      * do not allow steal in LIMBO
      */

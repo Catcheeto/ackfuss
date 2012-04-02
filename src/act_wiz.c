@@ -3209,7 +3209,7 @@ DO_FUN(do_mset)
 
     if ( !str_cmp( arg2, "title" ) )
     {
-        if ( ch->level < 85 )
+        if ( ch->getLevel() < MAX_LEVEL )
         {
             send_to_char( "This option only available to Creators.\r\n", ch );
             return;
@@ -3367,7 +3367,7 @@ DO_FUN(do_oset)
         return;
     }
 
-    if ( IS_OBJ_STAT(obj, ITEM_EXTRA_CLAN_EQ) && ch->level != MAX_LEVEL )
+    if ( IS_OBJ_STAT(obj, ITEM_EXTRA_CLAN_EQ) && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Only creators can OSET Clan equipment!\r\n", ch );
         return;
@@ -3385,7 +3385,7 @@ DO_FUN(do_oset)
     {
         int indexer = -1;
         char numbuf[10];
-        if ( ch->level < 85 )
+        if ( ch->getLevel() < MAX_LEVEL )
             return;
         snprintf( numbuf, 10, "%c", arg2[1] );
         if ( is_number( numbuf ) )
@@ -3499,10 +3499,10 @@ DO_FUN(do_oset)
 
     if ( !str_cmp( arg2, "level" ) )
     {
-        if ( ch->level < 85 )
+        if ( ch->getLevel() < MAX_LEVEL )
             return;
 
-        obj->level = value;
+        obj->setLevel( value );
         return;
     }
 
@@ -3739,7 +3739,7 @@ DO_FUN(do_users)
 DO_FUN(do_force)
 {
     char arg[MSL];
-    int trust;
+    uint_t trust;
     int cmd;
     list<CHAR_DATA *>::iterator li;
 
@@ -3777,7 +3777,7 @@ DO_FUN(do_force)
     {
         CHAR_DATA *vch;
 
-        if ( ch->level < MAX_LEVEL )
+        if ( ch->getLevel() < MAX_LEVEL )
         {
             send_to_char( "This option is only available to true Gods.\r\n", ch );
             return;
@@ -3886,7 +3886,7 @@ DO_FUN(do_invis)
             level = ch->getTrust();
         }
         level = UMAX( 1, atoi( argument ) );
-        level = UMIN( ch->level, level );
+        level = UMIN( ch->getLevel(), level );
 
         if ( ch->act.test(ACT_WIZINVIS) )
         {
@@ -4153,7 +4153,7 @@ DO_FUN(do_resetpassword)
         send_to_char( "This character is not playing at this time\r\n", ch );
         return;
     }
-    if ( ( ch->level != L_GOD ) && ch->level < victim->level )
+    if ( ( ch->getLevel() < MAX_LEVEL ) && ch->getLevel() < victim->getLevel() )
     {
         send_to_char( "You cannot change the password of immortals!\r\n", ch );
         return;
@@ -4301,11 +4301,10 @@ DO_FUN(do_setclass)
     char arg3[MSL];
     char buf[MSL];
     CHAR_DATA *victim;
-    int value;
-    int iClass;
+    uint_t value;
+    uint_t iClass;
     bool cok, remort;
     int p_class = 0;
-    int cnt;
     int lose;
     bool vamp = FALSE;
 
@@ -4317,7 +4316,7 @@ DO_FUN(do_setclass)
     if ( arg1[0] == '\0' || arg2[0] == '\0' )
     {
         send_to_char( "Syntax: SetClass <player> <class> <value>\r\n", ch );
-        send_to_char( "if value = -1 then player will NOT be able to level in that class.\r\n", ch );
+        send_to_char( "if value = 0 then player will NOT be able to level in that class.\r\n", ch );
         return;
     }
 
@@ -4368,7 +4367,7 @@ DO_FUN(do_setclass)
         {
             p_class = ADVANCE_ADEPT;
             advance_level( victim, p_class, TRUE, FALSE );
-            victim->pcdata->adept_level = 1;
+            victim->setLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT );
             snprintf( buf, MSL, " %s %s", victim->getName_(), victim->get_whoname() );
             do_whoname( ch, buf );
             victim->setExperience( 0 );
@@ -4383,9 +4382,9 @@ DO_FUN(do_setclass)
         return;
     }
 
-    value = is_number( arg3 ) ? atoi( arg3 ) : -9;
+    value = is_number( arg3 ) ? atoi( arg3 ) : uintmin_t;
 
-    if ( value == -9 )
+    if ( value == uintmin_t )
     {
         send_to_char( "Invalid value for value\r\n\r\n", ch );
         return;
@@ -4397,12 +4396,12 @@ DO_FUN(do_setclass)
         return;
     }
 
-    if ( ( value < -1 || value > MAX_LEVEL )
+    if ( ( value <= uintmin_t || value > MAX_LEVEL )
             /*       || ( ( vamp ) && ( value < -1 || value > MAX_VAMP_LEVEL ) ) */  )
     {
-        snprintf( buf, MSL, "%d is not a valid value.\r\n", value );
+        snprintf( buf, MSL, "%lu is not a valid value.\r\n", value );
         send_to_char( buf, ch );
-        snprintf( buf, MSL, "Use a value between -1 and %d.\r\n\r\n", MAX_LEVEL - 1 );
+        snprintf( buf, MSL, "Use a value between 0 and %d.\r\n\r\n", MAX_LEVEL - 1 );
         send_to_char( buf, ch );
         return;
     }
@@ -4421,40 +4420,40 @@ DO_FUN(do_setclass)
      *   -- Swiftest
      */
 
-    if ( value == ( remort ? victim->lvl2[p_class] : victim->lvl[p_class] ) )
+    if ( value == ( remort ? victim->getLevel( THING_LEVEL_TIER2, p_class ) : victim->getLevel( THING_LEVEL_TIER1, p_class ) ) )
     {
         send_to_char( "That wouldn't accomplish much!\r\n", ch );
         return;
     }
-    if ( ( value < ( remort ? victim->lvl2[p_class] : victim->lvl[p_class] ) )
+    if ( ( value < ( remort ? victim->getLevel( THING_LEVEL_TIER2, p_class ) : victim->getLevel( THING_LEVEL_TIER2, p_class ) ) )
             || ( ( vamp ) && ( value <= victim->pcdata->super->level ) ) )
 
     {
         int sn;
 
-        lose = ( remort ? victim->lvl2[p_class] - 1 : victim->lvl[p_class] - 1 );
+        lose = ( remort ? victim->getLevel( THING_LEVEL_TIER2, p_class ) - 1 : victim->getLevel( THING_LEVEL_TIER1, p_class ) - 1 );
 
         send_to_char( "Lowering a player's level!\r\n", ch );
         send_to_char( "**** OOOOHHHHHHHHHH  NNNNOOOO ****\r\n", victim );
 
         if ( vamp )
         {
-            if ( value != -1 )
+            if ( value > uintmin_t )
                 victim->pcdata->super->level = 1;
             else
-                victim->pcdata->super->level = -1;
+                victim->pcdata->super->level = uintmin_t;
             victim->pcdata->super->exp = 0;
         }
 
         else if ( remort )
         {
-            if ( value != -1 )
-                victim->lvl2[p_class] = 1;
+            if ( value > uintmin_t )
+                victim->setLevel( THING_LEVEL_TIER2, p_class );
             else
-                victim->lvl2[p_class] = -1;
+                victim->setLevel( THING_LEVEL_TIER2, p_class, uintmin_t );
         }
         else
-            victim->lvl[p_class] = 1;
+            victim->setLevel( THING_LEVEL_TIER1, p_class );
         victim->setExperience( 0 );
         if ( vamp )
         {
@@ -4497,23 +4496,23 @@ DO_FUN(do_setclass)
         send_to_char( "**** OOOOHHHHHHHHHH  YYYYEEEESSS ****\r\n", victim );
     }
 
-    if ( value != -1 && !remort && !( vamp ) )
+    if ( value > uintmin_t-1 && !remort && !( vamp ) )
     {
-        snprintf( buf, MSL, "You are now level %d in your %s class.\r\n", value, class_table[p_class].class_name );
+        snprintf( buf, MSL, "You are now level %lu in your %s class.\r\n", value, class_table[p_class].class_name );
         send_to_char( buf, victim );
-        for ( iClass = victim->lvl[p_class]; iClass < value; iClass++ )
+        for ( iClass = victim->getLevel( THING_LEVEL_TIER1, p_class ); iClass < value; iClass++ )
         {
-            victim->lvl[p_class] += 1;
+            victim->incrLevel( THING_LEVEL_TIER1, p_class );
             advance_level( victim, p_class, FALSE, remort );
         }
     }
     if ( remort )
     {
-        snprintf( buf, MSL, "You are now level %d in your %s class.\r\n", value, remort_table[p_class].class_name );
+        snprintf( buf, MSL, "You are now level %lu in your %s class.\r\n", value, remort_table[p_class].class_name );
         send_to_char( buf, victim );
-        for ( iClass = victim->lvl2[p_class]; iClass < value; iClass++ )
+        for ( iClass = victim->getLevel( THING_LEVEL_TIER2, p_class ); iClass < value; iClass++ )
         {
-            victim->lvl2[p_class] += 1;
+            victim->incrLevel( THING_LEVEL_TIER2, p_class );
             advance_level( victim, p_class, FALSE, remort );
         }
     }
@@ -4531,23 +4530,6 @@ DO_FUN(do_setclass)
 
     victim->setExperience( 0 );
     victim->trust = 0;
-
-    /*
-     * Make sure that ch->level holds vicitm's max level
-     */
-    victim->level = 0;
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        if ( victim->lvl[cnt] > victim->level )
-            victim->level = victim->lvl[cnt];
-
-    /*
-     * check for remort levels too...
-     */
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        if ( victim->lvl2[cnt] > victim->level )
-            victim->level = victim->lvl2[cnt];
-
-
     send_to_char( "Ok.\r\n", ch );
     return;
 }
@@ -4587,7 +4569,7 @@ DO_FUN(do_dog)
     CHAR_DATA *mob;
     CHAR_DATA *victim;
 
-    if ( ch->level < MAX_LEVEL )
+    if ( ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Only for creators.\r\n", ch );
         return;
@@ -4924,7 +4906,7 @@ DO_FUN(do_sstat)
             send_to_char( "No such skill/spell!\r\n", ch );
             return;
         }
-        snprintf( buf, MSL, "%17s - %3d%%\r\n", skill_table[skill].name, victim->pcdata->learned[skill] );
+        snprintf( buf, MSL, "%17s - %3lu%%\r\n", skill_table[skill].name, victim->pcdata->learned[skill] );
         send_to_char( buf, ch );
         return;
     }
@@ -4937,7 +4919,7 @@ DO_FUN(do_sstat)
         if ( skill_table[sn].name == NULL )
             break;
 
-        snprintf( buf, MSL, "%16s - %3d%%  ", skill_table[sn].name, victim->pcdata->learned[sn] );
+        snprintf( buf, MSL, "%16s - %3lu%%  ", skill_table[sn].name, victim->pcdata->learned[sn] );
         strncat( buf1, buf, MSL - 1 );
 
         if ( ++col % 3 == 0 )
@@ -5125,7 +5107,7 @@ void monitor_chan( const char *message, int channel )
     DESCRIPTOR_DATA *d = NULL;
     iterBrain di;
     int a;
-    int level = 85;
+    uint_t level = MAX_LEVEL;
 
 
     if ( ( area_resetting_global ) && ( channel == MONITOR_MAGIC ) )
@@ -5311,26 +5293,19 @@ DO_FUN(do_fhunt)
 
 DO_FUN(do_alink)
 {
-
-    AREA_DATA *this_area;
-    ROOM_INDEX_DATA *this_room;
-
     BUILD_DATA_LIST *pointer;
     ROOM_INDEX_DATA *current_room;
     int area_top, area_bottom;
     short doorway;
     char buf[MSL];
 
-
-    this_room = ch->in_room;
-    this_area = ch->in_room->area;
-    area_top = this_area->max_vnum;
-    area_bottom = this_area->min_vnum;
+    area_top = ch->in_room->area->max_vnum;
+    area_bottom = ch->in_room->area->min_vnum;
     snprintf( buf, MSL, "External room links for %s.\r\n  THIS DOES NOT INCLUDE ONE WAY DOORS INTO THIS AREA.\r\n",
-              this_area->name );
+              ch->in_room->area->name );
     send_to_char( buf, ch );
 
-    for ( pointer = this_area->first_area_room; pointer != NULL; pointer = pointer->next )
+    for ( pointer = ch->in_room->area->first_area_room; pointer != NULL; pointer = pointer->next )
     {
         current_room = (ROOM_INDEX_DATA *)pointer->data;
 
@@ -5394,10 +5369,6 @@ DO_FUN(do_gain_stat_reset)
 {
     CHAR_DATA *victim;
     OBJ_DATA *wear_object;
-    CHAR_DATA *rch;
-
-
-    rch = get_char( ch );
 
     if ( argument[0] == '\0' )
     {
@@ -5584,9 +5555,9 @@ DO_FUN(do_for)
 
             if ( IS_NPC( p ) && fMobs )
                 found = TRUE;
-            else if ( !IS_NPC( p ) && p->level >= LEVEL_IMMORTAL && fGods )
+            else if ( !IS_NPC( p ) && p->getLevel() >= LEVEL_IMMORTAL && fGods )
                 found = TRUE;
-            else if ( !IS_NPC( p ) && p->level < LEVEL_IMMORTAL && fMortals )
+            else if ( !IS_NPC( p ) && p->getLevel() < LEVEL_IMMORTAL && fMortals )
                 found = TRUE;
 
             /*
@@ -5657,9 +5628,9 @@ DO_FUN(do_for)
 
                     if ( IS_NPC( p ) && fMobs )
                         found = TRUE;
-                    else if ( !IS_NPC( p ) && ( p->level >= LEVEL_IMMORTAL ) && fGods )
+                    else if ( !IS_NPC( p ) && ( p->getLevel() >= LEVEL_IMMORTAL ) && fGods )
                         found = TRUE;
-                    else if ( !IS_NPC( p ) && ( p->level <= LEVEL_IMMORTAL ) && fMortals )
+                    else if ( !IS_NPC( p ) && ( p->getLevel() <= LEVEL_IMMORTAL ) && fMortals )
                         found = TRUE;
                 }  /* for everyone inside the room */
 
@@ -5725,7 +5696,7 @@ DO_FUN(do_otype)
             if ( fAll || is_name( arg, tab_item_types[( pObjIndex->item_type ) - 1].text ) )
             {
                 found = TRUE;
-                snprintf( buf, MSL, "<%d> %s [%5d] %s\r\n", pObjIndex->level,
+                snprintf( buf, MSL, "<%lu> %s [%5d] %s\r\n", pObjIndex->getLevel(),
                           ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) ?
                             "@@mRemort@@N" : "@@aMortal@@N" ), pObjIndex->vnum, pObjIndex->getDescrShort_() );
                 strncat( buf1, buf, MSL - 1 );
@@ -5784,10 +5755,10 @@ DO_FUN(do_owear)
             if ( fAll || !str_infix( arg, bs_show_values( tab_wear_flags, pObjIndex->wear_flags ) ) )
             {
                 found = TRUE;
-                snprintf( buf, MSL, "<%s> [%5d] [%3d] %s %s\r\n",
+                snprintf( buf, MSL, "<%s> [%5d] [%3lu] %s %s\r\n",
                           bs_show_values( tab_wear_flags, pObjIndex->wear_flags ),
                           pObjIndex->vnum,
-                          pObjIndex->level,
+                          pObjIndex->getLevel(),
                           ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) ?
                             "@@mRemort@@N" : "@@aMortal@@N" ), pObjIndex->getDescrShort_() );
                 strncat( buf1, buf, MSL - 1 );
@@ -6101,7 +6072,7 @@ DO_FUN(do_slay)
         return;
     }
 
-    if ( !IS_NPC( victim ) && victim->level >= ch->level )
+    if ( !IS_NPC( victim ) && victim->getLevel() >= ch->getLevel() )
     {
         send_to_char( "You failed.\r\n", ch );
         return;
@@ -6297,7 +6268,7 @@ DO_FUN(do_disable)
         {
             p = *li;
 
-            snprintf(buf, MSL, "%-12s %5d   %-12s\r\n", p->command->name, p->level, p->disabled_by.c_str());
+            snprintf(buf, MSL, "%-12s %5lu   %-12s\r\n", p->command->name, p->level, p->disabled_by.c_str());
             send_to_char(buf, ch);
         }
 

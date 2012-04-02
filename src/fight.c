@@ -303,7 +303,7 @@ void violence_update( void )
         if ( !IS_NPC( ch ) && ( stance_app[ch->stance].speed_mod > 0 ) )
         {
             ch->hit =
-                UMAX( 10, ch->hit - number_range( ch->get_level("psuedo") * 5 / 1000, ch->get_level("psuedo") * 10 / 1000 ) );
+                UMAX( 10, ch->hit - number_range( ch->getLevel( true ) * 5 / 1000, ch->getLevel( true ) * 10 / 1000 ) );
         }
 
         /*
@@ -322,13 +322,13 @@ void violence_update( void )
                 && ch->in_room != NULL && get_room_index( ch->in_room->vnum ) != NULL && item_has_apply( ch, ITEM_APPLY_HEATED ) )
         {
             OBJ_DATA *heated_item;
-            int heat_damage = 0;
+            uint_t heat_damage = 0;
 
             for ( heated_item = ch->first_carry; heated_item != NULL; heated_item = heated_item->next_in_carry_list )
             {
                 if ( IS_SET( heated_item->item_apply, ITEM_APPLY_HEATED ) && heated_item->wear_loc != WEAR_NONE )
                 {
-                    heat_damage = heated_item->level;
+                    heat_damage = heated_item->getLevel();
                     if ( IS_OBJ_STAT(heated_item, ITEM_EXTRA_REMORT) )
                         heat_damage *= 2;
                     obj_damage( heated_item, ch, heat_damage );
@@ -458,7 +458,7 @@ void violence_update( void )
             short cast_frequency;
             short index;
 
-            cast_frequency = ch->get_level("psuedo") / 2; /* maybe set in olc later? */
+            cast_frequency = ch->getLevel( true ) / 2; /* maybe set in olc later? */
             if ( ( number_range( 0, 99 ) < cast_frequency ) && ( ch->mana >= ( 40 * ch->max_mana / 100 ) ) )
             {
                 for ( index = 1; index < 32; index++ )
@@ -507,7 +507,7 @@ void violence_update( void )
         /*
          * Fun for the whole family!   RCH is a non-fighting mob
          */
-        if ( IS_NPC( victim ) && ( victim->get_level("psuedo") > 15 ) )
+        if ( IS_NPC( victim ) && ( victim->getLevel( true ) > 15 ) )
         {
             for ( rch = ch->in_room->first_person; rch != NULL; rch = rch_next )
             {
@@ -524,7 +524,7 @@ void violence_update( void )
                     {
                         if ( ( rch->npcdata->pIndexData == victim->npcdata->pIndexData )  /* is it the same as a target here?  */
                                 || ( ( number_percent(  ) < 20 )
-                                     && ( abs( rch->get_level("psuedo") - victim->get_level("psuedo") ) < 35 ) ) )
+                                     && ( abs( rch->getLevel( true ) - victim->getLevel( true ) ) < 35 ) ) )
                         {
                             CHAR_DATA *vch;
                             CHAR_DATA *target;
@@ -549,7 +549,7 @@ void violence_update( void )
 
                             if ( target != NULL )
                             {
-                                if ( abs( target->level - rch->level ) < 40 && rch != quest_mob ) /* Don't want the quest mob involved in the brawl. --Kline */
+                                if ( abs( target->getLevel() - rch->getLevel() ) < 40 && rch != quest_mob ) /* Don't want the quest mob involved in the brawl. --Kline */
                                     one_hit( rch, target, TYPE_UNDEFINED );
                             }
                         }
@@ -652,28 +652,28 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
     /*
      * The moment of excitement!
      */
-    diceroll = number_range( ( ch->get_level("psuedo") * 5 ), ( ch->get_level("psuedo") * 21 ) ) + GET_HITROLL( ch );
+    diceroll = number_range( ( ch->getLevel( true ) * 5 ), ( ch->getLevel( true ) * 21 ) ) + GET_HITROLL( ch );
 
     /* players get a tohit bonus for now  */
 
     if ( !IS_NPC( ch ) )
-        diceroll += number_range( ch->get_level("psuedo"), ( ch->get_level("psuedo") * 1 ) );
-    if ( ( remort_bonus = ch->get_level("psuedo") > 100 ) )
+        diceroll += number_range( ch->getLevel( true ), ( ch->getLevel( true ) * 1 ) );
+    if ( ( remort_bonus = ch->getLevel( true ) > 100 ) )
         diceroll += remort_bonus * 1;
 
     if ( IS_NPC( ch ) )
     {
-        diceroll += ( ch->get_level("psuedo") * 5 );
+        diceroll += ( ch->getLevel( true ) * 5 );
         if ( ch->act.test(ACT_SOLO) )
-            diceroll += ( ch->get_level("psuedo") * 5 );
+            diceroll += ( ch->getLevel( true ) * 5 );
     }
     if ( IS_AFFECTED( ch, AFF_CLOAK_ADEPT ) )
-        diceroll += ch->get_level("psuedo") * 2;
+        diceroll += ch->getLevel( true ) * 2;
 
     /* Player vs player bonus, to handle unbalanced hitroll vs ac */
-    if ( !IS_NPC( ch ) && !IS_NPC( victim ) && ch->get_level("psuedo") > 80 && victim->get_level("psuedo") > 80 )
+    if ( !IS_NPC( ch ) && !IS_NPC( victim ) && ch->getLevel( true ) > 80 && victim->getLevel( true ) > 80 )
         diceroll += number_range( 1000, 2000 );
-    if ( IS_NPC( ch ) && victim_ac < -3000 && ch->get_level("psuedo") > 110 && ( number_range( 0, 100 ) < 10 ) )
+    if ( IS_NPC( ch ) && victim_ac < -3000 && ch->getLevel( true ) > 110 && ( number_range( 0, 100 ) < 10 ) )
         diceroll += 3000;
 
     diceroll *= -1;
@@ -720,7 +720,7 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
         if ( wield )
             dam = number_range( wield->value[1], wield->value[2] );
         else
-            dam = number_range( ch->level / 3, ch->level / 2 );
+            dam = number_range( ch->getLevel() / 3, ch->getLevel() / 2 );
         if ( ch->act.test(ACT_SOLO ) )
             dam *= 1.5;
 
@@ -730,7 +730,7 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
         if ( wield != NULL )
             dam = number_range( wield->value[1], wield->value[2] );
         else
-            dam = UMAX( number_range( 2, 4 ), ch->level / 4 );
+            dam = UMAX( number_range( 2, 4 ), ch->getLevel() / 4 );
     }
     /*
      * Bonuses.
@@ -746,7 +746,7 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
                    dam * ch->pcdata->learned[gsn_enhanced_damage] / 150 : dam * .4;
     }
     if ( IS_NPC(ch) && IS_SET(ch->npcdata->skills, MOB_PROWESS) )
-        dam += number_range((int)(ch->level * 1.5), (int)(ch->level * 3));
+        dam += number_range((int)(ch->getLevel() * 1.5), (int)(ch->getLevel() * 3));
     if ( !IS_NPC(ch) && ch->pcdata->learned[gsn_combat_prowess] > 0 )
         dam += number_range((int)(ch->pcdata->learned[gsn_combat_prowess] * 1.5), (int)(ch->pcdata->learned[gsn_combat_prowess] * 3));
     if ( !IS_AWAKE( victim ) )
@@ -801,9 +801,9 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
             && ( number_range( 1, 4 ) != 3 )
             && ( number_percent(  ) <
                  ( IS_NPC( victim ) ?
-                   victim->get_level("psuedo") / 7 :
+                   victim->getLevel( true ) / 7 :
                    victim->pcdata->learned[gsn_shield_block] / 5 )
-                 + ( IS_NPC( victim ) ? 10 : ( 1 * ( victim->get_level("war") - ch->level ) + victim->get_level("kni") / 8 ) ) ) )
+                 + ( IS_NPC( victim ) ? 10 : ( 1 * ( victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) - ch->getLevel() ) + victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) / 8 ) ) ) )
         /*
          * Shield Block!
          */
@@ -817,13 +817,13 @@ void one_hit( CHAR_DATA * ch, CHAR_DATA * victim, int dt )
     {
         dam *= dam_mod;
         if ( ( wield )
-                && ( dam > 0 ) && ( IS_OBJ_STAT(wield, ITEM_EXTRA_LIFESTEALER) ) && ( number_range( 0, 99 ) < ( wield->level / 4 ) ) )
+                && ( dam > 0 ) && ( IS_OBJ_STAT(wield, ITEM_EXTRA_LIFESTEALER) ) && ( number_range( 0, 99 ) < ( wield->getLevel() / 4 ) ) )
         {
             act( "@@W$n screams in @@Ragony@@W as an evil @@da@@eur@@da@@W flows from $p!@@N", victim, wield, ch, TO_NOTVICT );
             act( "@@WYou feel a surge of health as $p sucks the life of $N@@N!!", ch, wield, victim, TO_CHAR );
             act( "@@WYou scream in @@Ragony@@W as $p shrieks, and shrouds you in an evil @@da@@eur@@da@@N!!", victim, wield, ch,
                  TO_CHAR );
-            if ( ( ch->get_level("sor") > 0 ) || ( ch->get_level("nec") > 0 ) )
+            if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_SORCERER ) > 0 ) || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_NECROMANCER ) > 0 ) )
             {
                 ch->hit = UMIN( ch->max_hit, ch->hit + number_range( (int)(dam * .075), (int)(dam * 1.72) ) );
             }
@@ -935,10 +935,10 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
          */
         if ( dt >= TYPE_HIT )
         {
-            if ( IS_NPC( ch ) && ( number_percent(  ) < ch->level / 6 ) && IS_SET( ch->npcdata->skills, MOB_DISARM ) )
+            if ( IS_NPC( ch ) && ( number_percent(  ) < ch->getLevel() / 6 ) && IS_SET( ch->npcdata->skills, MOB_DISARM ) )
                 disarm( ch, victim, NULL );
 
-            if ( IS_NPC( ch ) && ( number_percent(  ) < ch->level / 6 ) && IS_SET( ch->npcdata->skills, MOB_TRIP ) )
+            if ( IS_NPC( ch ) && ( number_percent(  ) < ch->getLevel() / 6 ) && IS_SET( ch->npcdata->skills, MOB_TRIP ) )
                 trip( ch, victim );
 
             if ( check_parry( ch, victim ) )
@@ -1111,11 +1111,11 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
                 {
                     char bufz[MSL];
 
-                    explosion->level = 120;
+                    explosion->setLevel( 120 );
                     explosion->setDescrShort( "@@mConflagration@@N" );
                     explosion->setDescrLong( "@@N A @@eFlaming @@NStaff of @@aIce@@N is supsended in mid air!" );
 
-                    elemental->level = 140;
+                    elemental->setLevel( 140 );
                     elemental->setName(".hidden");
                     elemental->setDescrShort( "@@NThe @@rConflict@@N of @@eFire @@Nand @@aIce@@N" );
                     elemental->setDescrLong( "@@NA @@rPillar@@N of @@eFire @@Nand @@aIce@@N immolates itself!" );
@@ -1132,7 +1132,7 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
                         for ( rch = ch->in_room->first_person; rch != NULL; rch = rch_next )
                         {
                             rch_next = rch->next_in_room;
-                            if ( rch->get_level("psuedo") < 70 )
+                            if ( rch->getLevel( true ) < 70 )
                                 continue;
                             send_to_char( "\r\n@@NYou are @@ablasted@@N by the @@econflagration@@N!\r\n", rch );
                             if ( number_range( 0, 99 ) < 50 )
@@ -1158,7 +1158,7 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
         else
         {
             float flame_damage;
-            flame_damage = dam * victim->get_level("psuedo") / 300;
+            flame_damage = dam * victim->getLevel( true ) / 300;
             if ( IS_NPC( ch ) )
             {
                 if ( ch->act.test(ACT_SOLO ) )
@@ -1233,13 +1233,13 @@ void damage( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
                 if ( IS_WOLF( victim ) && ( !IS_NPC( ch ) ) && ( ch->pcdata->learned[gsn_decapitate] != 0 )
                         && ( sil_weapon != NULL ) && ( IS_OBJ_STAT(sil_weapon, ITEM_EXTRA_SILVER) ) )
                 {
-                    int chance;
+                    uint_t chance;
 
-                    chance = IS_NPC( ch ) ? ch->level * 2 : ch->pcdata->learned[gsn_decapitate];
+                    chance = IS_NPC( ch ) ? ch->getLevel() * 2 : ch->pcdata->learned[gsn_decapitate];
                     chance += 25;
 
-                    if ( ( victim->pcdata->super->level * 5 ) > ch->level )
-                        chance -= ( victim->pcdata->super->level * 5 ) - ch->level;
+                    if ( ( victim->pcdata->super->level * 5 ) > ch->getLevel() )
+                        chance -= ( victim->pcdata->super->level * 5 ) - ch->getLevel();
 
                     if ( number_percent(  ) < chance )
                     {
@@ -1465,7 +1465,7 @@ bool is_safe( CHAR_DATA * ch, CHAR_DATA * victim )
             && ( ch->act.test(ACT_PKOK ) || ch->act.test(ACT_VAMPIRE ) ) )
         return false;
 
-    if ( ( ( victim->level < 10 ) || ( victim->level + 20 < ch->level ) ) && ( !IS_NPC( victim ) ) && ( !IS_NPC( ch ) ) )
+    if ( ( ( victim->getLevel() < 10 ) || ( victim->getLevel() + 20 < ch->getLevel() ) ) && ( !IS_NPC( victim ) ) && ( !IS_NPC( ch ) ) )
     {
         send_to_char( "The Gods prevent your foul deed.\r\n", ch );
         return true;
@@ -1631,15 +1631,15 @@ void check_killer( CHAR_DATA * ch, CHAR_DATA * victim )
         monitor_chan( buf, MONITOR_COMBAT );
     }
     diff = 3;
-    if ( ch->get_level("psuedo") > victim->get_level("psuedo") )
+    if ( ch->getLevel( true ) > victim->getLevel( true ) )
     {
-        diff += ( ch->get_level("psuedo") - victim->get_level("psuedo") ) / 7;
+        diff += ( ch->getLevel( true ) - victim->getLevel( true ) ) / 7;
         if ( diff > 5 )
             diff = 5;
     }
-    ch->pcdata->sentence += diff * ch->get_level("psuedo") * 3; /* Magic # - Ramias */
+    ch->pcdata->sentence += diff * ch->getLevel( true ) * 3; /* Magic # - Ramias */
     if ( IS_ADEPT(ch) )
-        ch->pcdata->sentence += diff * ch->get_level("psuedo") * 2;
+        ch->pcdata->sentence += diff * ch->getLevel( true ) * 2;
 
     ch->act.set(ACT_KILLER);
     save_char_obj( ch );
@@ -1648,15 +1648,15 @@ void check_killer( CHAR_DATA * ch, CHAR_DATA * victim )
     /*
      * MAG Create a hunter for the person
      */
-    diff = ch->get_level("psuedo");
+    diff = ch->getLevel( true );
 
     /*
      * Added if check back... meant to penalize for attacking lower
      * * level players -S-
      */
 
-    if ( ch->get_level("psuedo") > victim->get_level("psuedo") )
-        diff += ch->get_level("psuedo") - victim->get_level("psuedo");
+    if ( ch->getLevel( true ) > victim->getLevel( true ) )
+        diff += ch->getLevel( true ) - victim->getLevel( true );
     /*
         if (diff > MAX_LEVEL)
          diff=MAX_LEVEL;
@@ -1720,7 +1720,7 @@ bool check_parry( CHAR_DATA * ch, CHAR_DATA * victim )
         /*
          * Tuan was here.  :)
          */
-        chance = victim->get_level("psuedo") / 3.2 + get_curr_str( victim ) * 2 / 5;
+        chance = victim->getLevel( true ) / 3.2 + get_curr_str( victim ) * 2 / 5;
         if ( victim->act.test(ACT_SOLO ) )
             chance += 15;
     }
@@ -1741,7 +1741,7 @@ bool check_parry( CHAR_DATA * ch, CHAR_DATA * victim )
     if ( IS_AFFECTED( victim, AFF_CLOAK_ADEPT ) )
         chance += 5;
 
-    if ( number_percent(  ) < ( chance + ( victim->get_level("psuedo") - ch->get_level("psuedo") ) / 2 ) )
+    if ( number_percent(  ) < ( chance + ( victim->getLevel( true ) - ch->getLevel( true ) ) / 2 ) )
     {
 
         /*
@@ -1773,15 +1773,15 @@ bool check_dodge( CHAR_DATA * ch, CHAR_DATA * victim )
         /*
          * Tuan was here.  :)
          */
-        chance = victim->get_level("psuedo") / 3.1 + get_curr_dex( victim ) * 2 / 5;
+        chance = victim->getLevel( true ) / 3.1 + get_curr_dex( victim ) * 2 / 5;
         if ( victim->act.test(ACT_SOLO ) )
             chance += 15;
     }
     else
     {
         chance = ( victim->pcdata->learned[gsn_dodge] / 3.5 ) + get_curr_dex( victim ) * 3 / 5;
-        if ( ch->get_level("mon") > 0 )  /* Monk  */
-            chance += ch->get_level("mon") / 8;
+        if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 0 )  /* Monk  */
+            chance += ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) / 8;
     }
     if ( IS_AFFECTED( victim, AFF_CLOAK_ADEPT ) )
         chance += 5;
@@ -1790,7 +1790,7 @@ bool check_dodge( CHAR_DATA * ch, CHAR_DATA * victim )
         chance += 20;
 
 
-    if ( number_percent(  ) < ( chance + ( victim->get_level("psuedo") - ch->get_level("psuedo") ) / 2 ) )
+    if ( number_percent(  ) < ( chance + ( victim->getLevel( true ) - ch->getLevel( true ) ) / 2 ) )
     {
 
         /*
@@ -1815,7 +1815,7 @@ bool check_skills( CHAR_DATA * ch, CHAR_DATA * victim )
     if ( !IS_NPC( ch ) )
         return FALSE;
 
-    if ( number_percent(  ) < 30 + ( ch->level - victim->level ) )
+    if ( number_percent(  ) < 30 + ( ch->getLevel() - victim->getLevel() ) )
         return FALSE;
 
     /*
@@ -2213,8 +2213,8 @@ void make_corpse( CHAR_DATA * ch, char *argument )
             ROOM_INDEX_DATA *room;
             ROOM_AFFECT_DATA *raf;
             ROOM_AFFECT_DATA *raf_next;
-            corpse = create_object( get_obj_index( OBJ_VNUM_CAPTURED_SOUL ), ch->level );
-            corpse->level = ch->level;
+            corpse = create_object( get_obj_index( OBJ_VNUM_CAPTURED_SOUL ), ch->getLevel() );
+            corpse->setLevel( ch->getLevel() );
             obj_to_room( corpse, ch->in_room );
 
             for ( obj = ch->first_carry; obj != NULL; obj = obj_next )
@@ -2244,12 +2244,12 @@ void make_corpse( CHAR_DATA * ch, char *argument )
             name = ch->get_name();
             corpse = create_object( get_obj_index( OBJ_VNUM_CORPSE_NPC ), 0 );
             corpse->timer = number_range( 3, 6 );
-            corpse->level = ch->level; /* for animate spell */
+            corpse->setLevel( ch->getLevel() ); /* for animate spell */
             /*
              * Takes a mob 8 rl hours to gain full gold.
              */
             lifetime = current_time - ( ch->logon );
-            gold = 5 * ( ch->level ) * ( UMIN( 100, lifetime * 100 / ( 8 * 3600 ) ) ) / 100;
+            gold = 5 * ( ch->getLevel() ) * ( UMIN( 100, lifetime * 100 / ( 8 * 3600 ) ) ) / 100;
             /*
              * Then take from 1/5 of maximum (i.e. level) to maximum gold.
              */
@@ -2443,7 +2443,7 @@ void raw_kill( CHAR_DATA * victim, char *argument )
     if ( IS_NPC( victim ) && !victim->act.test(ACT_INTELLIGENT ) )
     {
         victim->npcdata->pIndexData->killed++;
-        kill_table[URANGE( 0, victim->level, MAX_LEVEL - 1 )].killed++;
+        kill_table[URANGE( 0, victim->getLevel(), MAX_LEVEL - 1 )].killed++;
         extract_char( victim, TRUE );
         return;
 
@@ -2522,14 +2522,14 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
 
     gain = victim->getExperience();  /* Now share this out... */
     if ( victim->act.test(ACT_INTELLIGENT ) )
-        gain = exp_for_mobile( victim->level, victim );
+        gain = exp_for_mobile( victim->getLevel(), victim );
 
     for ( gch = ch->in_room->first_person; gch != NULL; gch = gch->next_in_room )
     {
         if ( is_same_group( gch, ch ) )
         {
             members++;
-            tot_level += gch->get_level("psuedo");
+            tot_level += gch->getLevel( true );
             gain *= 1.10; /* Group bonus */
         }
     }
@@ -2569,7 +2569,7 @@ void group_gain( CHAR_DATA * ch, CHAR_DATA * victim )
         if ( check_charm_aff(gch, CHARM_AFF_EXP) )
             gain *= ((100 + get_charm_bonus(gch, CHARM_AFF_EXP)) / 100);
 
-        percent = (gch->get_level("psuedo") / tot_level);
+        percent = (gch->getLevel( true ) / tot_level);
         gain *= percent;
 
         if ( gain < 0 )
@@ -2960,7 +2960,7 @@ void dam_message( CHAR_DATA * ch, CHAR_DATA * victim, float dam, int dt )
  */
 void disarm( CHAR_DATA * ch, CHAR_DATA * victim, OBJ_DATA * obj )
 {
-    int chance;
+    uint_t chance;
 
     set_fighting( ch, victim, TRUE );
     if ( obj == NULL )
@@ -3020,7 +3020,7 @@ chance = IS_NPC( victim ) ? IS_SET( victim->npcdata->skills, MOB_NODISARM ) ? 90
  */
 void trip( CHAR_DATA * ch, CHAR_DATA * victim )
 {
-    int chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("trip") )
         return;
@@ -3272,9 +3272,8 @@ DO_FUN(do_backstab)
     OBJ_DATA *obj;
     int cnt;
     int best;
-    int level;
+    uint_t chance, level;
     int mult;
-    int chance;
     float dam;
     bool crack = FALSE;
 
@@ -3299,19 +3298,19 @@ DO_FUN(do_backstab)
 
     if ( !IS_NPC( ch ) )
     {
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ch->lvl[cnt] >= skill_table[gsn_backstab].skill_level[cnt] && ch->lvl[cnt] > level )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[gsn_backstab].skill_level[cnt] && ch->getLevel( THING_LEVEL_TIER1, cnt ) > level )
             {
                 best = cnt;
-                level = ch->lvl[cnt];
+                level = ch->getLevel( THING_LEVEL_TIER1, cnt );
             }
-        if ( ch->get_level("ass") > 0 )
-            level = level + ch->get_level("ass") / 2;
+        if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) > 0 )
+            level = level + ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) / 2;
     }
     else
     {
         best = ch->p_class;
-        level = ch->level;
+        level = ch->getLevel();
     }
 
     if ( best == -1 )
@@ -3384,7 +3383,7 @@ DO_FUN(do_backstab)
     if ( IS_AFFECTED( victim, AFF_INVISIBLE ) || item_has_apply( victim, ITEM_APPLY_INV ) )
         chance -= 10;
 
-    if ( ch->get_level("psuedo") >= victim->get_level("psuedo") )
+    if ( ch->getLevel( true ) >= victim->getLevel( true ) )
         chance += 10;
     else
         chance -= 10;
@@ -3548,7 +3547,7 @@ DO_FUN(do_flee)
         return;
     }
 
-    cost = ch->get_level("psuedo") * 3;
+    cost = ch->getLevel( true ) * 3;
     if ( IS_ADEPT(ch) )
         cost = 0;
     cost = UMIN( cost, ch->getExperience() );
@@ -3564,24 +3563,22 @@ DO_FUN(do_rescue)
     char arg[MAX_INPUT_LENGTH];
     CHAR_DATA *victim;
     CHAR_DATA *fch;
-    int best;
+    uint_t best = uintmin_t;
     int cnt;
 
     if ( ch->check_cooldown("rescue") )
         return;
 
-    best = -1;
-
     if ( !IS_NPC( ch ) )
     {
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ch->lvl[cnt] >= skill_table[gsn_rescue].skill_level[cnt] && ch->lvl[cnt] >= best )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[gsn_rescue].skill_level[cnt] && ch->getLevel( THING_LEVEL_TIER1, cnt ) > best )
                 best = cnt;
     }
     else
-        best = ch->level;
+        best = ch->getLevel();
 
-    if ( best == -1 )
+    if ( best == uintmin_t )
     {
         send_to_char( "You don't know how to rescue!!\r\n", ch );
         return;
@@ -3649,14 +3646,12 @@ DO_FUN(do_disarm)
 {
     CHAR_DATA *victim;
     OBJ_DATA *obj;
-    int percent;
-    int best;
+    uint_t percent;
+    uint_t best = uintmin_t;
     int cnt;
 
     if ( ch->check_cooldown("disarm") )
         return;
-
-    best = -1;
 
     if ( !IS_NPC( ch ) && IS_WOLF( ch ) && ( IS_SHIFTED( ch ) || IS_RAGED( ch ) ) )
     {
@@ -3667,14 +3662,14 @@ DO_FUN(do_disarm)
 
     if ( !IS_NPC( ch ) )
     {
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ch->lvl[cnt] >= skill_table[gsn_disarm].skill_level[cnt] && ch->lvl[cnt] >= best )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[gsn_disarm].skill_level[cnt] && ch->getLevel( THING_LEVEL_TIER1, cnt ) >= best )
                 best = cnt;
     }
     else
-        best = ch->level;
+        best = ch->getLevel();
 
-    if ( best == -1 )
+    if ( best == uintmin_t )
     {
         send_to_char( "You don't know how to disarm!\r\n", ch );
         return;
@@ -3708,7 +3703,7 @@ DO_FUN(do_disarm)
 
 
     ch->set_cooldown("disarm");
-    percent = number_percent(  ) + victim->level - ch->level;
+    percent = number_percent(  ) + victim->getLevel() - ch->getLevel();
     if ( IS_NPC( ch ) || percent < ch->pcdata->learned[gsn_disarm] * 2 / 3 )
         disarm( ch, victim, obj );
     else
@@ -3723,7 +3718,7 @@ DO_FUN(do_circle)
     OBJ_DATA *obj;
     int cnt;
     int best;
-    int level;
+    uint_t level = uintmin_t;
     int mult;
     float chance;
     float dam;
@@ -3747,24 +3742,22 @@ DO_FUN(do_circle)
       ******************************************************************/
 
     best = -1;
-    level = 0;
-
 
     if ( !IS_NPC( ch ) )
     {
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ch->lvl[cnt] >= skill_table[gsn_circle].skill_level[cnt] && ch->lvl[cnt] > level )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[gsn_circle].skill_level[cnt] && ch->getLevel( THING_LEVEL_TIER1, cnt ) > level )
             {
                 best = cnt;
-                level = ch->lvl[cnt];
+                level = ch->getLevel( THING_LEVEL_TIER1, cnt );
             }
-        if ( ch->get_level("ass") > 0 )
-            level += ch->get_level("ass") / 2;
+        if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) > 0 )
+            level += ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) / 2;
     }
     else
     {
         best = ch->p_class;
-        level = ch->level;
+        level = ch->getLevel();
     }
 
     if ( best == -1 )
@@ -3838,7 +3831,7 @@ DO_FUN(do_circle)
     if ( IS_AFFECTED( victim, AFF_INVISIBLE ) || item_has_apply( victim, ITEM_APPLY_INV ) )
         chance -= 10;
 
-    if ( ch->get_level("psuedo") >= victim->get_level("psuedo") )
+    if ( ch->getLevel( true ) >= victim->getLevel( true ) )
         chance += 10;
     else
         chance -= 10;
@@ -3930,10 +3923,10 @@ DO_FUN(do_trip)
          * best = cnt;
          */
         if ( ch->pcdata->learned[gsn_trip] > 75 )
-            best = UMAX( 79, ch->get_level("psuedo") );
+            best = UMAX( 79, ch->getLevel( true ) );
     }
     else
-        best = ch->level;
+        best = ch->getLevel();
 
     if ( best == -1 )
     {
@@ -4008,10 +4001,10 @@ DO_FUN(do_dirt)
          * best = cnt;
          */
         if ( ch->pcdata->learned[gsn_dirt] > 75 )
-            best = UMAX( 79, ch->get_level("psuedo") );
+            best = UMAX( 79, ch->getLevel( true ) );
     }
     else
-        best = ch->level;
+        best = ch->getLevel();
 
     if ( best == -1 )
     {
@@ -4101,10 +4094,10 @@ DO_FUN(do_bash)
          * best = cnt;
          */
         if ( ch->pcdata->learned[gsn_bash] > 75 )
-            best = UMAX( 79, ch->get_level("psuedo") );
+            best = UMAX( 79, ch->getLevel( true ) );
     }
     else
-        best = ch->level;
+        best = ch->getLevel();
 
     if ( best == -1 )
     {
@@ -4143,7 +4136,7 @@ DO_FUN(do_bash)
 
     ch->set_cooldown("bash");
 
-    if ( ( IS_NPC( ch ) && ( number_percent(  ) > 75 + ( ch->level ) / 2 ) )
+    if ( ( IS_NPC( ch ) && ( number_percent(  ) > 75 + ( ch->getLevel() ) / 2 ) )
             || ( !IS_NPC( ch ) && ( 2 * number_percent(  ) > ch->pcdata->learned[gsn_bash] ) ) )
     {
         act( "Your bash misses $M, and you fall!", ch, NULL, victim, TO_CHAR );
@@ -4204,7 +4197,7 @@ DO_FUN(do_berserk)
     if ( ch->pcdata->order[0] == 2 )
         prime = TRUE;
 
-    level = ch->get_level("war");
+    level = ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR );
 
 
     if ( ch->fighting == NULL )
@@ -4277,7 +4270,7 @@ DO_FUN(do_punch)
     CHAR_DATA *victim;
     int dam;
     bool prime;
-    int chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("punch") )
         return;
@@ -4307,13 +4300,13 @@ DO_FUN(do_punch)
         prime = TRUE;
 
     if ( IS_NPC( ch ) )
-        dam = number_range( ch->level / 3, ch->level / 2 );
+        dam = number_range( ch->getLevel() / 3, ch->getLevel() / 2 );
     else
-        dam = number_range( ch->get_level("war") / 2, ch->get_level("war") * ( prime ? 2 : 1 ) );
+        dam = number_range( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) / 2, ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) * ( prime ? 2 : 1 ) );
 
     chance = ( IS_NPC( ch ) ? 50 : ch->pcdata->learned[gsn_punch] / 2 );
 
-    chance += ( ch->get_level("war") - victim->level );
+    chance += ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) - victim->getLevel() );
 
     ch->set_cooldown("punch");
 
@@ -4362,7 +4355,7 @@ DO_FUN(do_headbutt)
     CHAR_DATA *victim;
     int dam;
     bool prime;
-    int chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("headbutt") )
         return;
@@ -4398,13 +4391,13 @@ DO_FUN(do_headbutt)
         prime = TRUE;
 
     if ( IS_NPC( ch ) )
-        dam = number_range( ch->level / 3, ch->level / 2 );
+        dam = number_range( ch->getLevel() / 3, ch->getLevel() / 2 );
     else
-        dam = number_range( ch->get_level("war") / 2, ch->get_level("war") * ( prime ? 2 : 1 ) );
+        dam = number_range( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) / 2, ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) * ( prime ? 2 : 1 ) );
 
     chance = ( IS_NPC( ch ) ? 50 : ch->pcdata->learned[gsn_headbutt] / 2 );
 
-    chance += ( ch->get_level("war") - victim->level );
+    chance += ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) - victim->getLevel() );
 
     ch->set_cooldown("headbutt");
 
@@ -4457,7 +4450,7 @@ DO_FUN(do_charge)
 
     CHAR_DATA *victim;
     float dam;
-    int chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("charge") )
         return;
@@ -4468,7 +4461,7 @@ DO_FUN(do_charge)
         return;
     }
 
-    if ( ( IS_NPC( ch ) ) && ( ch->get_level("psuedo") < 80 ) )
+    if ( ( IS_NPC( ch ) ) && ( ch->getLevel( true ) < 80 ) )
         return;
 
     if ( ( ( victim = get_char_room( ch, argument ) ) == NULL ) && ch->fighting == NULL )
@@ -4487,18 +4480,17 @@ DO_FUN(do_charge)
         return;
     }
 
-    dam = number_range( ch->get_level("psuedo"), ch->get_level("psuedo") * 3 );
+    dam = number_range( ch->getLevel( true ), ch->getLevel( true ) * 3 );
 
     if ( !IS_NPC( ch ) )
         chance = ch->pcdata->learned[gsn_charge] / 2;
     else
         chance = 50;
 
-    chance += ( ( ch->get_level("psuedo") - ( victim->get_level("psuedo") - 30 ) ) / 2 );
+    chance += ( ( ch->getLevel( true ) - ( victim->getLevel( true ) - 30 ) ) / 2 );
     if ( !IS_NPC( ch ) && ch->pcdata->order[0] == 3 )
         chance += 10;
 
-    
     ch->set_cooldown("charge");
 
     check_killer( ch, victim );
@@ -4554,7 +4546,7 @@ DO_FUN(do_knee)
     CHAR_DATA *victim;
     int dam;
     bool prime;
-    int chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("knee") )
         return;
@@ -4592,13 +4584,13 @@ DO_FUN(do_knee)
         prime = TRUE;
 
     if ( IS_NPC( ch ) )
-        dam = number_range( ch->level / 3, ch->level / 2 );
+        dam = number_range( ch->getLevel() / 3, ch->getLevel() / 2 );
     else
-        dam = number_range( ch->get_level("war") / 2, ch->get_level("war") * ( prime ? 2 : 1 ) );
+        dam = number_range( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) / 2, ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) * ( prime ? 2 : 1 ) );
 
     chance = ( IS_NPC( ch ) ? 50 : ch->pcdata->learned[gsn_knee] / 2 );
 
-    chance += ( ch->get_level("war") - victim->level );
+    chance += ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) - victim->getLevel() );
 
     ch->set_cooldown("knee");
 
@@ -4651,7 +4643,7 @@ DO_FUN(do_kick)
     CHAR_DATA *victim;
     int dam;
     bool prime;
-    int chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("kick") )
         return;
@@ -4685,13 +4677,13 @@ DO_FUN(do_kick)
         prime = TRUE;
 
     if ( IS_NPC( ch ) )
-        dam = number_range( ch->level / 3, ch->level / 2 );
+        dam = number_range( ch->getLevel() / 3, ch->getLevel() / 2 );
     else
-        dam = number_range( ch->get_level("war") / 2, ch->get_level("war") * ( prime ? 2 : 1 ) );
+        dam = number_range( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) / 2, ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) * ( prime ? 2 : 1 ) );
 
     chance = ( IS_NPC( ch ) ? 50 : ch->pcdata->learned[gsn_kick] / 2 );
 
-    chance += ( ch->get_level("war") - ( victim->level + 5 ) );
+    chance += ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ) - ( victim->getLevel() + 5 ) );
 
     ch->set_cooldown("kick");
 
@@ -5269,7 +5261,7 @@ DO_FUN(do_stake)
 
     CHAR_DATA *victim;
     OBJ_DATA *stake;
-    int chance;
+    uint_t chance;
     char arg[MAX_INPUT_LENGTH];
     int sn;
 
@@ -5310,15 +5302,15 @@ DO_FUN(do_stake)
         return;
     }
 
-    chance = IS_NPC( ch ) ? ch->level * 2 : ch->pcdata->learned[gsn_stake];
+    chance = IS_NPC( ch ) ? ch->getLevel() * 2 : ch->pcdata->learned[gsn_stake];
     if ( !IS_AWAKE( victim ) )
         chance += 25;
 
     /*
      * Make it harder to stake higher level targets
      */
-    if ( ( victim->pcdata->super->level * 5 ) > ch->level )
-        chance -= ( victim->pcdata->super->level * 5 ) - ch->level;
+    if ( ( victim->pcdata->super->level * 5 ) > ch->getLevel() )
+        chance -= ( victim->pcdata->super->level * 5 ) - ch->getLevel();
 
     if ( victim->hit > 0 && IS_AWAKE( victim ) ) /* i.e. not vulnerable! */
         chance = 0;
@@ -5409,7 +5401,7 @@ DO_FUN(do_stun)
      * The lower the victim's hp, the greater the chance
      */
 
-    chance2 = IS_NPC( ch ) ? ch->level * 2 : ch->pcdata->learned[gsn_stun];
+    chance2 = IS_NPC( ch ) ? ch->getLevel() * 2 : ch->pcdata->learned[gsn_stun];
 
     ch->set_cooldown("stun");
 
@@ -5422,20 +5414,20 @@ DO_FUN(do_stun)
         act( "$n slams into you, leaving you stunned.", ch, NULL, victim, TO_VICT );
         act( "$n slams into $N, leaving $M stunned.", ch, NULL, victim, TO_NOTVICT );
 
-        victim->stun_timer += number_range( 1, ch->get_level("psuedo") / 30 );
-        if ( ch->get_level("kni") > 40 )
+        victim->stun_timer += number_range( 1, ch->getLevel( true ) / 30 );
+        if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 40 )
             victim->stun_timer += number_range( 1, 2 );
 
         /*      if ( !IS_NPC( ch ) )
               {
-                if( ch->get_level("mon") > ch->get_level("kni") )
+                if( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) )
                 {
-              victim->stun_timer += ch->get_level("mon") / 15;
+              victim->stun_timer += ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) / 15;
               return;
                 }
                 else
                 {
-                  set_stun( victim, ch->get_level("kni") / 15 );
+                  set_stun( victim, ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) / 15 );
                   return;
                 }
               }   */
@@ -5458,8 +5450,8 @@ DO_FUN(do_feed)
 {
     CHAR_DATA *victim;
     char arg[MAX_INPUT_LENGTH];
-    int chance;
-    int bloodgain = 0;
+    uint_t chance;
+    uint_t bloodgain = 0;
     one_argument( argument, arg );
 
     if ( !IS_VAMP( ch ) )
@@ -5499,7 +5491,7 @@ DO_FUN(do_feed)
         return;
     }
 
-    chance = IS_NPC( ch ) ? ch->level : ch->pcdata->learned[gsn_feed];
+    chance = IS_NPC( ch ) ? ch->getLevel() : ch->pcdata->learned[gsn_feed];
     ch->set_cooldown("feed");
     check_killer( ch, victim );
     if ( number_percent(  ) < chance )
@@ -5519,8 +5511,8 @@ DO_FUN(do_feed)
         {
 
             bloodgain = ( ( 20 - ch->pcdata->super->generation ) + ch->pcdata->super->level );
-            if ( bloodgain > victim->level )
-                bloodgain = victim->level;
+            if ( bloodgain > victim->getLevel() )
+                bloodgain = victim->getLevel();
         }
 
         if ( ( ch->pcdata->super->energy + bloodgain ) > ch->pcdata->super->energy_max )
@@ -5549,7 +5541,7 @@ DO_FUN(do_feed)
                    * victim->pcdata->super->energy = 0;
                    * }
                    * if ( !IS_NPC(ch) && IS_NPC(victim) )
-                   * gain_bloodlust( ch, victim->level*2 );
+                   * gain_bloodlust( ch, victim->getLevel()*2 );
                    * if ( IS_NPC(ch) && !IS_NPC(victim) )
                    * victim->pcdata->super->energy = 0;     */
         }
@@ -5832,13 +5824,13 @@ float get_speed( CHAR_DATA *ch, int slot )
         {
             if ( slot == SPEED_TAIL )
                 value = number_range(30, 60);
-            for ( i = ch->level; i > 0; i-- )
+            for ( i = ch->getLevel(); i > 0; i-- )
                 value -= 0.01;
         }
     }
     else
     {
-        for ( i = ch->level; i > 0 && value > 0.99; i -= 13 )
+        for ( i = ch->getLevel(); i > 0 && value > 0.99; i -= 13 )
             value -= 0.14;
     }
     value += stance_app[ch->stance].speed_mod;
@@ -5933,7 +5925,7 @@ float combat_damcap( CHAR_DATA *ch, CHAR_DATA *victim, float dam, int dt )
     if ( dam > sysdata.damcap )
     {
         snprintf( buf, MSL, "Combat: %1.0f damage by %s, attacking %s, dt %d", dam, ch->get_name(), victim->get_name(), dt );
-        if ( ch->level < 82 )
+        if ( ch->getLevel() < 82 )
         {
             monitor_chan( buf, MONITOR_COMBAT );
             Utils::Logger( 0, buf );
@@ -5994,7 +5986,7 @@ void damage_gear( CHAR_DATA *ch )
 
     for ( obj = ch->first_carry; obj != NULL; obj = obj->next_in_carry_list )
     {
-        if ( obj->level == 1 ) // Save newbie gear
+        if ( obj->getLevel() == 1 ) // Save newbie gear
             continue;
         if ( obj->wear_loc == WEAR_NONE )
             continue;
@@ -6078,58 +6070,58 @@ DO_FUN(do_stance)
                     snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_CASTER: /* Mage */
-                    if ( ( ch->get_level("mag") > 50 ) /* mage */
-                            || ( ch->get_level("cle") > 70 ) /* cleric */
-                            || ( ch->get_level("psi") > 60 ) )  /* psi */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_MAGE ) > 50 ) /* mage */
+                            || ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_CLERIC ) > 70 ) /* cleric */
+                            || ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_PSIONICIST ) > 60 ) )  /* psi */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_AMBUSH: /* Ninja */
-                    if ( ch->get_level("ass") > 30 ) /* assassin */
+                    if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) > 30 ) /* assassin */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_AC_BEST: /* Shadows */
-                    if ( ( ch->get_level("mon") > 65 )  /* monk */
-                            || ( ch->get_level("ass") > 30 ) ) /* assassin */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 65 )  /* monk */
+                            || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) > 30 ) ) /* assassin */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_HR_BEST: /* Essence */
-                    if ( ( ch->get_level("kni") > 45 )  /* knight */
-                            || ( ch->get_level("mon") > 20 ) ) /* monk */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 45 )  /* knight */
+                            || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 20 ) ) /* monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_DR_BEST: /* Beast */
-                    if ( ( ch->get_level("kni") > 35 )  /* knight */
-                            || ( ch->get_level("mon") > 10 ) ) /* monk */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 35 )  /* knight */
+                            || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 10 ) ) /* monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_AC_WORST: /* Flame */
-                    if ( ch->get_level("mon") > 45 ) /* monk */
+                    if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 45 ) /* monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_HR_WORST: /* Spirit */
-                    if ( ch->get_level("mon") > 60 ) /* monk */
+                    if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 60 ) /* monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_DR_WORST: /* Void */
-                    if ( ch->get_level("mon") > 70 ) /* monk */
+                    if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 70 ) /* monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_SUPER_FIGHTER: /* Dragon */
-                    if ( ( ch->get_level("mon") > 79 ) && ( ch->get_level("kni") > 79 ) ) /* both knight and monk */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 79 ) && ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 79 ) ) /* both knight and monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_SUPER_SPEED: /* Snake */
-                    if ( ( ch->get_level("mon") > 70 ) && ( ch->get_level("kni") > 70 ) ) /* both knight and monk */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 70 ) && ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 70 ) ) /* both knight and monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_WIZARD: /* Wizard */
-                    if ( ( ch->get_level("sor") > 20 )  /* sorc */
-                            || ( ch->get_level("nec") > 40 )   /* necro */
-                            || ( ch->get_level("mon") > 60 ) ) /* monk */
+                    if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_SORCERER ) > 20 )  /* sorc */
+                            || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_NECROMANCER ) > 40 )   /* necro */
+                            || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 60 ) ) /* monk */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
                 case STANCE_MAGI: /* Magi */
-                    if ( IS_ADEPT(ch) && ch->get_level("adept") > 10 )  /*adept */
+                    if ( ch->isAdept() && ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) > 10 )  /*adept */
                         snprintf( cat_buf, MSL, "%s\r\n", stance_app[i].name );
                     break;
 
@@ -6165,32 +6157,32 @@ DO_FUN(do_stance)
                     break;
                 }
             case STANCE_CASTER:
-                if ( ( ch->get_level("mag") > 50 ) /* mage */
-                        || ( ch->get_level("cle") > 70 ) /* cleric */
-                        || ( ch->get_level("psi") > 60 ) )  /* psi */
+                if ( ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_MAGE ) > 50 ) /* mage */
+                        || ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_CLERIC ) > 70 ) /* cleric */
+                        || ( ch->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_PSIONICIST ) > 60 ) )  /* psi */
                 {
                     legal_stance = TRUE;
                     break;
                 }
                 break;
             case STANCE_WIZARD:
-                if ( ( ch->get_level("sor") > 20 )  /* sorc */
-                        || ( ch->get_level("nec") > 40 )   /* necro */
-                        || ( ch->get_level("mon") > 60 ) ) /* monk */
+                if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_SORCERER ) > 20 )  /* sorc */
+                        || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_NECROMANCER ) > 40 )   /* necro */
+                        || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 60 ) ) /* monk */
                 {
                     legal_stance = TRUE;
                     break;
                 }
                 break;
             case STANCE_MAGI:
-                if ( IS_ADEPT(ch) && ch->get_level("adept") > 10 )  /*adept */
+                if ( ch->isAdept() && ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) > 10 )  /*adept */
                 {
                     legal_stance = TRUE;
                     break;
                 }
                 break;
             case STANCE_AMBUSH:
-                if ( ch->get_level("ass") > 30 ) /* assassin */
+                if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) > 30 ) /* assassin */
                 {
                     CHAR_DATA *other;
                     for ( other = ch->in_room->first_person; other != NULL; other = other->next_in_room )
@@ -6208,8 +6200,8 @@ DO_FUN(do_stance)
                 }
                 break;
             case STANCE_AC_BEST:
-                if ( ( ch->get_level("kni") > 65 )  /* knight */
-                        || ( ch->get_level("ass") > 30 ) ) /* assassin */
+                if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 65 )  /* knight */
+                        || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) > 30 ) ) /* assassin */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6217,8 +6209,8 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_HR_BEST:
-                if ( ( ch->get_level("kni") > 45 )  /* knight */
-                        || ( ch->get_level("mon") > 20 ) ) /* monk */
+                if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 45 )  /* knight */
+                        || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 20 ) ) /* monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6226,8 +6218,8 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_DR_BEST:
-                if ( ( ch->get_level("kni") > 35 )  /* knight */
-                        || ( ch->get_level("mon") > 10 ) ) /* monk */
+                if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 35 )  /* knight */
+                        || ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 10 ) ) /* monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6235,7 +6227,7 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_AC_WORST:
-                if ( ch->get_level("mon") > 45 ) /* monk */
+                if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 45 ) /* monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6243,7 +6235,7 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_HR_WORST:
-                if ( ch->get_level("mon") > 60 ) /* monk */
+                if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 60 ) /* monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6251,7 +6243,7 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_DR_WORST:
-                if ( ch->get_level("mon") > 70 ) /* monk */
+                if ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 70 ) /* monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6259,7 +6251,7 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_SUPER_FIGHTER:
-                if ( ( ch->get_level("kni") > 79 ) && ( ch->get_level("mon") > 79 ) ) /* both knight and monk */
+                if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 79 ) && ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 79 ) ) /* both knight and monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6267,7 +6259,7 @@ DO_FUN(do_stance)
                 break;
 
             case STANCE_SUPER_SPEED:
-                if ( ( ch->get_level("kni") > 70 ) && ( ch->get_level("mon") > 70 ) ) /* both knight and monk */
+                if ( ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ) > 70 ) && ( ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ) > 70 ) ) /* both knight and monk */
                 {
                     legal_stance = TRUE;
                     break;
@@ -6281,19 +6273,19 @@ DO_FUN(do_stance)
         {
             char stance_buf[MSL];
             if ( stance_app[i].ac_mod > 0 )
-                ch->setModAC( stance_app[i].ac_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->setModAC( stance_app[i].ac_mod * ( 20 - ch->getLevel( true ) / 12 ) );
             else
-                ch->setModAC( stance_app[i].ac_mod * ch->get_level("psuedo") / 12 );
+                ch->setModAC( stance_app[i].ac_mod * ch->getLevel( true ) / 12 );
 
             if ( stance_app[i].dr_mod < 0 )
-                ch->setModDR( stance_app[i].dr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->setModDR( stance_app[i].dr_mod * ( 20 - ch->getLevel( true ) / 12 ) );
             else
-                ch->setModDR( stance_app[i].dr_mod * ch->get_level("psuedo") / 10 );
+                ch->setModDR( stance_app[i].dr_mod * ch->getLevel( true ) / 10 );
 
             if ( stance_app[i].hr_mod < 0 )
-                ch->setModHR( stance_app[i].hr_mod * ( 20 - ch->get_level("psuedo") / 12 ) );
+                ch->setModHR( stance_app[i].hr_mod * ( 20 - ch->getLevel( true ) / 12 ) );
             else
-                ch->setModHR( stance_app[i].hr_mod * ch->get_level("psuedo") / 10 );
+                ch->setModHR( stance_app[i].hr_mod * ch->getLevel( true ) / 10 );
 
             ch->stance = i;
             snprintf( stance_buf, MSL, "$n assumes the Stance of the %s!", stance_app[i].name );

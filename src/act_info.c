@@ -1464,7 +1464,7 @@ DO_FUN(do_score)
             snprintf( buf, MSL, "@@eBLOODLUST@@W: @@e%d@@W/@@e%d@@N", ch->pcdata->super->energy, ch->pcdata->super->energy_max );
             snprintf( buf2, MSL, "@@c|%s @@c|\r\n", center_text( buf, 62 ) );
             send_to_char( buf2, ch );
-            snprintf( buf, MSL, "@@dKindred Rank:@@N %d  @@rGeneration:@@N %d   @@mKnowledge Avail:@@N %d",
+            snprintf( buf, MSL, "@@dKindred Rank:@@N %lu  @@rGeneration:@@N %d   @@mKnowledge Avail:@@N %d",
                       ch->pcdata->super->level, ch->pcdata->super->generation, ch->pcdata->super->pracs );
             snprintf( buf2, MSL, "@@c|%s @@c|\r\n", center_text( buf, 62 ) );
             send_to_char( buf2, ch );
@@ -1478,7 +1478,7 @@ DO_FUN(do_score)
             snprintf( buf, MSL, "@@eRAGE@@W: @@e%d@@W/@@e%d@@N", ch->pcdata->super->energy, ch->pcdata->super->energy_max );
             snprintf( buf2, MSL, "@@c|%s @@c|\r\n", center_text( buf, 62 ) );
             send_to_char( buf2, ch );
-            snprintf( buf, MSL, "@@rTribe Rank@@W:@@N %d  @@yTribe Standing@@W:@@N %s   @@GKnowledge Avail:@@N %d",
+            snprintf( buf, MSL, "@@rTribe Rank@@W:@@N %lu  @@yTribe Standing@@W:@@N %s   @@GKnowledge Avail:@@N %d",
                       ch->pcdata->super->level, get_tribe_standing_name( ch->pcdata->super->generation ), ch->pcdata->super->pracs );
             snprintf( buf2, MSL, "@@c|%s @@c|\r\n", center_text( buf, 62 ) );
             send_to_char( buf2, ch );
@@ -2433,7 +2433,7 @@ DO_FUN(do_practice)
     }
     else
     {
-        int adept;
+        uint_t adept;
         bool ok;
 
         if ( !IS_AWAKE( ch ) )
@@ -4301,7 +4301,7 @@ DO_FUN(do_gain)
 DO_FUN(do_assassinate)
 {
     char buf[MSL];
-    int cost;
+    uint_t cost;
     int change = 0;
     char givebuf[MSL], changebuf[MSL];
     char *cost_string;
@@ -4335,7 +4335,7 @@ DO_FUN(do_assassinate)
 
     if ( argument[0] == '\0' )
     {
-        snprintf( buf, MSL, "$N tells you, 'The cost is %d GP.'", cost );
+        snprintf( buf, MSL, "$N tells you, 'The cost is %lu GP.'", cost );
         act( buf, ch, NULL, mob, TO_CHAR );
         return;
     }

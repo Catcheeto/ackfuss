@@ -426,7 +426,7 @@ DO_FUN(build_showmob)
               ( ( pMob->race > -1 ) && ( pMob->race < MAX_RACE ) ) ? race_table[pMob->race].race_title : "Illegal Race" );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, " @@WLv: @@y%d.    @@WAlign: @@y%d.\r\n", pMob->level, pMob->alignment );
+    snprintf( buf, MSL, " @@WLv: @@y%lu.    @@WAlign: @@y%d.\r\n", pMob->getLevel(), pMob->alignment );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WModifiers: AC: @@y%ld.  @@WHitroll: @@y%ld.  @@WDamroll: @@y%ld.\r\n",
@@ -524,7 +524,7 @@ DO_FUN(build_showobj)
     if ( !build_canread( obj->area, ch, 1 ) )
         return;
 
-    snprintf( buf, MSL, "@@WName: @@y%s  @@WLevel: @@y%d.\r\n", obj->getName_(), obj->level );
+    snprintf( buf, MSL, "@@WName: @@y%s  @@WLevel: @@y%lu.\r\n", obj->getName_(), obj->getLevel() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "@@WVnum: @@y%d.  @@WType: @@y%s.\r\n", obj->vnum, tab_item_types[( obj->item_type ) - 1].text );
@@ -1597,7 +1597,7 @@ DO_FUN(build_setmob)
             send_to_char( "Level range is 1 to 140.\r\n", ch );
             return;
         }
-        pMob->level = value;
+        pMob->setLevel( value );
         area_modified( pArea );
         return;
     }
@@ -2427,13 +2427,13 @@ DO_FUN(build_setobject)
         float mult = 0.0;
         float ac = 0, dr = 0, hp = 0, hr = 0, mp = 0, mv = 0, svs = 0;
 
-        if ( pObj->level < 1 ) /* Should never happen anyhow, but sanity checks are never bad */
+        if ( pObj->getLevel() < 1 ) /* Should never happen anyhow, but sanity checks are never bad */
         {
             send_to_char("You can only auto-object items that are at least level 1.\r\n", ch);
             return;
         }
 
-        mult = (float)pObj->level / 120.0000;
+        mult = (float)pObj->getLevel() / 120.0000;
 
         if ( IS_OBJ_STAT(pObj, ITEM_EXTRA_RARE) )
         {
@@ -2535,7 +2535,7 @@ DO_FUN(build_setobject)
         snprintf(buf, MSL, "%d aff %ssaving_spell %.0f", pObj->vnum, svs == 0 ? "-" : "", svs);
         build_setobject(ch, buf);
 
-        snprintf(buf, MSL, "Auto-object complete based on item level %d. Stats are %0.2f%% of max.\r\n", pObj->level, (mult * 100));
+        snprintf(buf, MSL, "Auto-object complete based on item level %lu. Stats are %0.2f%% of max.\r\n", pObj->getLevel(), (mult * 100));
         send_to_char(buf, ch);
 
         return;
@@ -2571,7 +2571,7 @@ DO_FUN(build_setobject)
 
         pObj->max_durability = value * 5;
         pObj->durability = pObj->max_durability;
-        pObj->level = value;
+        pObj->setLevel( value );
         return;
     }
 
@@ -3104,7 +3104,7 @@ DO_FUN(build_addmob)
     pList = new BUILD_DATA_LIST;
     pList->data = pMobIndex;
     LINK( pList, pArea->first_area_mobile, pArea->last_area_mobile, next, prev );
-    kill_table[URANGE( 0, pMobIndex->level, MAX_LEVEL - 1 )].number++;
+    kill_table[URANGE( 0, pMobIndex->getLevel(), MAX_LEVEL - 1 )].number++;
 
     return;
 }
@@ -5928,7 +5928,7 @@ DO_FUN(build_clone)
          * Copy details across...
          */
         this_obj->setName( obj->getName() );
-        this_obj->level = obj->level;
+        this_obj->setLevel( obj->getLevel() );
         this_obj->setDescrShort( obj->getDescrShort() );
         this_obj->setDescrLong( obj->getDescrLong() );
         this_obj->item_type = obj->item_type;
@@ -6006,7 +6006,7 @@ DO_FUN(build_clone)
         this_mob->act = mob->act;
         this_mob->affected_by = mob->affected_by;
         this_mob->alignment = mob->alignment;
-        this_mob->level = mob->level;
+        this_mob->setLevel( mob->getLevel() );
         this_mob->sex = mob->sex;
         this_mob->setModAC( mob->getModAC() );
         this_mob->setModHR( mob->getModHR() );
