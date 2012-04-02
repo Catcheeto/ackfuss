@@ -1392,7 +1392,7 @@ DO_FUN(do_sneak)
 DO_FUN(do_warcry) /* Thanks Koron, saved me re-inventing the wheel :) --Kline */
 {
     AFFECT_DATA af;
-    short chance;
+    uint_t chance;
 
     if ( ch->check_cooldown("warcry") )
         return;

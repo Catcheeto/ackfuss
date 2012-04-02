@@ -179,7 +179,7 @@ int get_curr_str( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) )
     {
-        return ( 13 + ( ch->level / 16 ) );
+        return ( 13 + ( ch->getLevel() / 16 ) );
     }
 
     max = ch->pcdata->max_str;
@@ -198,7 +198,7 @@ int get_curr_int( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) )
     {
-        return ( 15 + number_fuzzy( ( ch->level / 20 ) ) );
+        return ( 15 + number_fuzzy( ( ch->getLevel() / 20 ) ) );
     }
 
     max = ch->pcdata->max_int;
@@ -217,7 +217,7 @@ int get_curr_wis( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) )
     {
-        return ( 15 + number_fuzzy( ( ch->level / 20 ) ) );
+        return ( 15 + number_fuzzy( ( ch->getLevel() / 20 ) ) );
     }
 
     max = ch->pcdata->max_wis;
@@ -236,7 +236,7 @@ int get_curr_dex( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) )
     {
-        return ( 16 + number_fuzzy( ( ch->level / 25 ) ) );
+        return ( 16 + number_fuzzy( ( ch->getLevel() / 25 ) ) );
     }
 
     max = ch->pcdata->max_dex;
@@ -255,7 +255,7 @@ int get_curr_con( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) )
     {
-        return ( 15 + number_fuzzy( ( ch->level / 12 ) ) );
+        return ( 15 + number_fuzzy( ( ch->getLevel() / 12 ) ) );
     }
 
     max = ch->pcdata->max_con;
@@ -270,7 +270,7 @@ int get_curr_con( CHAR_DATA * ch )
  */
 int can_carry_n( CHAR_DATA * ch )
 {
-    if ( !IS_NPC( ch ) && ch->level >= LEVEL_IMMORTAL )
+    if ( !IS_NPC( ch ) && ch->getLevel() >= LEVEL_IMMORTAL )
         return 500;
 
     /*
@@ -288,7 +288,7 @@ int can_carry_n( CHAR_DATA * ch )
  */
 int can_carry_w( CHAR_DATA * ch )
 {
-    if ( !IS_NPC( ch ) && ch->level >= LEVEL_IMMORTAL )
+    if ( !IS_NPC( ch ) && ch->getLevel() >= LEVEL_IMMORTAL )
         return 9999999;
 
     /*    if ( IS_NPC(ch) && ch->act.test(ACT_PET) )
@@ -855,7 +855,7 @@ void char_to_room( CHAR_DATA * ch, ROOM_INDEX_DATA * pRoomIndex )
                 }
                 else
                 {
-                    caster_level = raf->caster->level;
+                    caster_level = raf->caster->getLevel();
                 }
                 if ( !saves_spell( caster_level, ch ) )
                 {
@@ -2308,7 +2308,7 @@ bool can_drop_obj( CHAR_DATA * ch, OBJ_DATA * obj )
     if ( !IS_OBJ_STAT(obj, ITEM_EXTRA_NO_DROP) )
         return TRUE;
 
-    if ( !IS_NPC( ch ) && ch->level >= LEVEL_IMMORTAL )
+    if ( !IS_NPC( ch ) && ch->getLevel() >= LEVEL_IMMORTAL )
         return TRUE;
 
     return FALSE;
@@ -2332,17 +2332,7 @@ bool can_use( CHAR_DATA * ch, OBJ_DATA * obj )
 }
 
 
-/*
- * Return names of classes which can use an object
- * -- Stephen
- */
-
-char *who_can_use( OBJ_DATA * obj )
-{
-    return ( " all classes." );
-}
-
-void notify( char *message, int lv )
+void notify( char *message, uint_t lv )
 {
     /*
      * This function sends <message>
@@ -2359,7 +2349,7 @@ void notify( char *message, int lv )
     {
         d = *di;
         if ( d->getConnectionState( CON_PLAYING )
-                && ( d->character->level >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_NOTIFY) )
+                && ( d->character->getLevel() >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_NOTIFY) )
             send_to_char( buf, d->character );
     }
     return;
@@ -2383,7 +2373,7 @@ void auction( char *message )
 
 
 
-void info( char *message, int lv )
+void info( char *message, uint_t lv )
 {
     /*
      * This function sends <message>
@@ -2399,7 +2389,7 @@ void info( char *message, int lv )
     {
         d = *di;
         if ( d->getConnectionState( CON_PLAYING )
-                && ( d->character->level >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_INFO) )
+                && ( d->character->getLevel() >= lv ) && !IS_NPC( d->character ) && !d->character->deaf.test(CHANNEL_INFO) )
         {
             snprintf( buf, MSL, "%s[INFO]: %s%s\r\n",
                       color_string( d->character, "info" ), message, color_string( d->character, "normal" ) );
@@ -2410,7 +2400,7 @@ void info( char *message, int lv )
 }
 
 
-void log_chan( const char *message, int lv )
+void log_chan( const char *message, uint_t lv )
 {
     /*
      * Used to send messages to Immortals.
@@ -2426,7 +2416,7 @@ void log_chan( const char *message, int lv )
         d = *di;
         if ( d->getConnectionState( CON_PLAYING )
                 && ( d->character->getTrust() == MAX_LEVEL )
-                && ( !IS_NPC( d->character ) ) && ( d->character->level >= lv ) && ( !d->character->deaf.test(CHANNEL_LOG) ) )
+                && ( !IS_NPC( d->character ) ) && ( d->character->getLevel() >= lv ) && ( !d->character->deaf.test(CHANNEL_LOG) ) )
             send_to_char( buf, d->character );
     }
     return;
@@ -2494,11 +2484,11 @@ CHAR_DATA *switch_char( CHAR_DATA * victim, int mvnum, int poly_level )
             mob->move = victim->move;
 
         case 3: /* Level 3 */
-            mob->level = victim->level;
+            mob->setLevel( victim->getLevel() );
             mob->money = victim->money;
             mob->setExperience( victim->getExperience() );
-            for ( foo = 0; foo < MAX_CLASS; foo++ )
-                mob->lvl[foo] = victim->lvl[foo];
+            for ( foo = 0; foo < MAX_THING_LEVEL_TIER1_CLASS; foo++ )
+                mob->setLevel( THING_LEVEL_TIER1, foo, victim->getLevel( THING_LEVEL_TIER1, foo ) );
 
         case 2: /* Level 2 */
             while ( ( eq = victim->first_carry ) != NULL )
@@ -2569,11 +2559,11 @@ CHAR_DATA *unswitch_char( CHAR_DATA * victim )
             original->move = victim->move;
 
         case 3:
-            original->level = victim->level;
+            original->setLevel( victim->getLevel() );
             original->setExperience( victim->getExperience() );
             original->money = victim->money;
-            for ( foo = 0; foo < MAX_CLASS; foo++ )
-                original->lvl[foo] = victim->lvl[foo];
+            for ( foo = 0; foo < MAX_THING_LEVEL_TIER1_CLASS; foo++ )
+                original->setLevel( THING_LEVEL_TIER1, foo, victim->getLevel( THING_LEVEL_TIER1, foo ) );
 
         case 2:
             while ( ( eq = victim->first_carry ) != NULL )

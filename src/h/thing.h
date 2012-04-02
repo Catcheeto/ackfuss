@@ -79,7 +79,7 @@ class Thing {
         uint_t incrExperience( const uint_t amount );
         uint_t setExperience( const uint_t amount );
         uint_t decrLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const uint_t amount = 1 );
-        uint_t getLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const bool psuedo = false ) const;
+        uint_t getLevel( const uint_t tier = MAX_THING_LEVEL_TIER, const uint_t tclass = MAX_THING_LEVEL_TIER_CLASS, const bool psuedo = false ) const;
         uint_t incrLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const uint_t amount = 1 );
         uint_t setLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const uint_t amount = 1 );
         uint_t getTrust() const;
@@ -106,7 +106,7 @@ class Thing {
         string setName( const string name ) { return m_name = name; }
         string getNameWho() const;
         #define getNameWho_( T ) getNameWho( T ).c_str()
-        string setNameWho( const string name ) { return m_name_who = name; }
+        string setNameWho( const string name = "" ) { if ( name.empty() ) { m_name_who.clear(); return m_name_who; } else return m_name_who = name; }
 
         // 'Object' Manipulation
         bool dropThing( const Thing* what );
@@ -142,7 +142,7 @@ class Thing {
 
         // Level
         uint_t m_experience;
-        uint_t m_level[MAX_THING_LEVEL_TIER][MAX_THING_LEVEL_TIER3_CLASS];
+        uint_t m_level[MAX_THING_LEVEL_TIER][MAX_THING_LEVEL_TIER_CLASS];
         uint_t m_trust;
 
         // Name

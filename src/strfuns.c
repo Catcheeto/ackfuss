@@ -2133,7 +2133,7 @@ const char *who_pers( CHAR_DATA *pers )
  snprintf( ntbuf, MSL, "%s", color_format(buf2,33,true) );
 
  /* Make the magic happen */
- snprintf( buf1, MSL, "%s  %3s%5s  %s @@R|@@N %s @@e%-7s@@N", pers->get_whoname(), race_table[pers->race].race_name, clan_table[pers->getClan()].clan_name, flags1, ntbuf, flags2 );
+ snprintf( buf1, MSL, "%s  %3s%5s  %s @@R|@@N %s @@e%-7s@@N", pers->getNameWho_(), race_table[pers->race].race_name, clan_table[pers->getClan()].clan_name, flags1, ntbuf, flags2 );
  output = str_dup( buf1 );
 
  return output;

@@ -637,7 +637,7 @@ DO_FUN(build_showarea)
 
     snprintf( buffer, MSL, "Min Vnum: %5d    Max Vnum: %5d\r\n", pArea->min_vnum, pArea->max_vnum );
     strncat( buf, buffer, MSL - 1 );
-    snprintf( buffer, MSL, "Min Level: %5d    Max Level: %5d \r\n", pArea->min_level, pArea->max_level );
+    snprintf( buffer, MSL, "Min Level: %5lu    Max Level: %5lu \r\n", pArea->min_level, pArea->max_level );
     strncat( buf, buffer, MSL - 1 );
 
     if ( pArea->flags.test(AFLAG_PAYAREA) )

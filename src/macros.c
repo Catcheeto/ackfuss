@@ -56,8 +56,7 @@
 
 void reset_gain_stats( CHAR_DATA * ch )
 {
-    short index = 0;
-    short index2 = 0;
+    uint_t index = 0, index2 = 0;
     short add_move = 0;
     short add_mana = 0;
     short add_hp = 0;
@@ -67,10 +66,10 @@ void reset_gain_stats( CHAR_DATA * ch )
     ch->pcdata->move_from_gain = 0;
 
 
-    for ( index = 0; index < MAX_CLASS; index++ )
+    for ( index = 0; index < MAX_THING_LEVEL_TIER2_CLASS; index++ )
     {
-        if ( ch->lvl[index] > 0 )
-            for ( index2 = 1; index2 <= ch->lvl[index]; index2++ )
+        if ( ch->getLevel( THING_LEVEL_TIER1, index ) > 0 )
+            for ( index2 = 1; index2 <= ch->getLevel( THING_LEVEL_TIER1, index ); index2++ )
             {
                 add_hp = con_app[ch->pcdata->max_con].hitp + number_range( class_table[index].hp_min,
                          class_table[index].hp_max );
@@ -87,8 +86,8 @@ void reset_gain_stats( CHAR_DATA * ch )
                 ch->pcdata->move_from_gain += add_move;
 
             }
-        if ( ch->lvl2[index] > 0 )
-            for ( index2 = 1; index2 <= ch->lvl2[index]; index2++ )
+        if ( ch->getLevel( THING_LEVEL_TIER2, index ) > 0 )
+            for ( index2 = 1; index2 <= ch->getLevel( THING_LEVEL_TIER2, index ); index2++ )
             {
                 add_hp = con_app[ch->pcdata->max_con].hitp + number_range( remort_table[index].hp_min,
                          remort_table[index].hp_max );
@@ -187,18 +186,18 @@ int exp_to_level( CHAR_DATA * ch, int p_class, int index )
      * To get remort costs, call with index == 5
      */
 
-    int max_level = 0;
+    uint_t max_level = 0;
     int level, next_level_index, diff, totlevels = 0;
     float cost;
     short i, mult;
 
 
-    if ( (index == 5) && (ch->lvl2[p_class] <= 0) ) /* Freebie on that first one ;) */
+    if ( (index == 5) && (ch->getLevel( THING_LEVEL_TIER2, p_class ) <= 0) ) /* Freebie on that first one ;) */
         return 0;
 
-    for ( i = 0; i < MAX_CLASS; i++ ) /* Find the highest level of any class a player has */
-        if ( ch->lvl[i] > max_level )
-            max_level = ch->lvl[i];
+    for ( i = 0; i < MAX_THING_LEVEL_TIER1_CLASS; i++ ) /* Find the highest level of any class a player has */
+        if ( ch->getLevel( THING_LEVEL_TIER1, i ) > max_level )
+            max_level = ch->getLevel( THING_LEVEL_TIER1, i );
 
     switch ( index ) /* Classes cost less -> more based on order */
     {
@@ -211,24 +210,24 @@ int exp_to_level( CHAR_DATA * ch, int p_class, int index )
     }
 
     if ( index == 5 )
-        level = UMAX(0, ch->lvl2[p_class]); /* Grab the remort class level */
+        level = UMAX(0, ch->getLevel( THING_LEVEL_TIER2, p_class )); /* Grab the remort class level */
     else
-        level = UMAX(0, ch->lvl[p_class]); /* Grab the mortal class level */
+        level = UMAX(0, ch->getLevel( THING_LEVEL_TIER1, p_class )); /* Grab the mortal class level */
 
     /*
      * Adjust level to make costs higher
      */
-    for ( i = 0; i < MAX_CLASS; i++ )
+    for ( i = 0; i < MAX_THING_LEVEL_TIER2_CLASS; i++ )
     {
-        totlevels += ch->lvl[i];
-        if ( ch->lvl2[i] > 0 )
-            totlevels += ch->lvl2[i];
+        totlevels += ch->getLevel( THING_LEVEL_TIER1, i );
+        if ( ch->getLevel( THING_LEVEL_TIER2, i ) > 0 )
+            totlevels += ch->getLevel( THING_LEVEL_TIER2, i );
     }
 
     if ( index != 5 )
-        next_level_index = ch->lvl[p_class];
+        next_level_index = ch->getLevel( THING_LEVEL_TIER1, p_class );
     else
-        next_level_index = UMIN((ch->lvl2[p_class] + 20), 79);
+        next_level_index = UMIN((ch->getLevel( THING_LEVEL_TIER2, p_class ) + 20), 79);
 
     if ( next_level_index < 0 )
         next_level_index = 0;
@@ -238,7 +237,7 @@ int exp_to_level( CHAR_DATA * ch, int p_class, int index )
     /*
      * Now multiply by a factor dependant on total number of levels
      */
-    diff = (totlevels / MAX_CLASS) - (level + 20);
+    diff = (totlevels / MAX_THING_LEVEL_TIER2_CLASS) - (level + 20);
 
     if ( index == 5 )
         diff -= 30;
@@ -253,7 +252,7 @@ int exp_to_level( CHAR_DATA * ch, int p_class, int index )
     /*
      * REALLY discourage uneven levelling :P
      */
-    if ( (index != 5) && ((ch->level - ch->lvl[p_class]) > 25) )
+    if ( (index != 5) && ((ch->getLevel() - ch->getLevel( THING_LEVEL_TIER1, p_class )) > 25) )
         cost *= (diff / 7);
 
     /*
@@ -491,14 +490,14 @@ int exp_for_mobile( int level, CHAR_DATA * mob )
 int skill_table_lookup( CHAR_DATA * ch, int sn, int return_type )
 {
     int best_class = -1;
-    int best_level = -1;
+    uint_t best_level = uintmin_t;
     int return_value;
     int cnt;
 
     if ( IS_NPC( ch ) )
     {
         best_class = ch->p_class;
-        best_level = ch->level;
+        best_level = ch->getLevel();
     }
     else
     {
@@ -509,21 +508,21 @@ int skill_table_lookup( CHAR_DATA * ch, int sn, int return_type )
         switch ( skill_table[sn].flag1 )
         {
             case MORTAL:
-                for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+                for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
                 {
-                    if ( ch->lvl[cnt] >= skill_table[sn].skill_level[cnt] && ch->lvl[cnt] > best_level )
+                    if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[sn].skill_level[cnt] && ch->getLevel( THING_LEVEL_TIER1, cnt ) > best_level )
                     {
-                        best_level = ch->lvl[cnt];
+                        best_level = ch->getLevel( THING_LEVEL_TIER1, cnt );
                         best_class = cnt;
                     }
                 }
                 break;
             case REMORT:
-                for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+                for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
                 {
-                    if ( ch->lvl2[cnt] >= skill_table[sn].skill_level[cnt] && ch->lvl2[cnt] > best_level )
+                    if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) >= skill_table[sn].skill_level[cnt] && ch->getLevel( THING_LEVEL_TIER2, cnt ) > best_level )
                     {
-                        best_level = ch->lvl2[cnt];
+                        best_level = ch->getLevel( THING_LEVEL_TIER2, cnt );
                         best_class = cnt;
                     }
                 }
@@ -642,7 +641,7 @@ int get_item_value( OBJ_DATA * obj )
         }
     }
 
-    cost = obj->level * 1 + ac_mod * 8 + dr_mod * 5 + hr_mod * 5 + save_mod * 2 + hp_mod * 4 + mana_mod * 3 + move_mod;
+    cost = obj->getLevel() * 1 + ac_mod * 8 + dr_mod * 5 + hr_mod * 5 + save_mod * 2 + hp_mod * 4 + mana_mod * 3 + move_mod;
 
     if ( IS_SET( obj->item_apply, ITEM_APPLY_ENHANCED ) )
         cost = cost * 1.3;

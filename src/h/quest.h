@@ -15,9 +15,9 @@
 #endif
 
 DECLARE_DO_FUN(do_iquest);
-CHAR_DATA *get_quest_target P_((int min_level, int max_level));
+CHAR_DATA *get_quest_target P_((uint_t min_level, uint_t max_level));
 OBJ_DATA *load_quest_object P_((CHAR_DATA * target));
-CHAR_DATA *get_quest_giver P_((int min_level, int max_level));
+CHAR_DATA *get_quest_giver P_((uint_t min_level, uint_t max_level));
 void quest_inform P_((void));
 void quest_complete P_((CHAR_DATA * ch));
 void quest_cancel P_((void));

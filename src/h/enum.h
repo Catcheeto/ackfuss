@@ -83,6 +83,8 @@ enum uintThing_m_level_tier3_class {
     MAX_THING_LEVEL_TIER3_CLASS   = MAX_THING_LEVEL_TIER2_CLASS
 };
 
+#define MAX_THING_LEVEL_TIER_CLASS MAX_THING_LEVEL_TIER3_CLASS
+
 // uint_t    THING_FLAG_ACT
 enum uintThing_flag_act {
     THING_FLAG_ACT_CBOSS      = 0,

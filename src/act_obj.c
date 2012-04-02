@@ -3811,7 +3811,7 @@ DO_FUN(do_bid)
 
 DO_FUN(do_auction)
 {
-    int auction_reserve = 0;
+    uint_t auction_reserve = 0;
     char buf[MAX_STRING_LENGTH];
     char arg[MAX_STRING_LENGTH];
     double reserve;
@@ -3975,7 +3975,7 @@ DO_FUN(do_auction)
     auction_owner = ch;
     auction_bidder = NULL;
     auction_bid = 0;
-    auction_reserve = (int)reserve;
+    auction_reserve = (uint_t)reserve;
     if ( auction_reserve > 0 )
         auction_bid = auction_reserve;
     auction_stage = 0;

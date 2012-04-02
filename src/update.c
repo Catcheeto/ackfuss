@@ -133,7 +133,7 @@ extern OBJ_DATA *auction_item;
 extern CHAR_DATA *auction_owner;
 extern CHAR_DATA *auction_bidder;
 extern uint_t auction_bid;
-extern int auction_reserve;
+extern uint_t auction_reserve;
 extern int auction_stage;
 extern int saving_area;
 extern bool auction_flop;
@@ -369,9 +369,9 @@ int hit_gain( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) && !ch->act.test(ACT_INTELLIGENT) )
 
-        gain = ( 5 + ch->level / 30 );
+        gain = ( 5 + ch->getLevel() / 30 );
 
-    gain = ( 5 + ch->level / 20 );
+    gain = ( 5 + ch->getLevel() / 20 );
 
     if ( ch->in_room->room_flags.test(RFLAG_REGEN) )
         gain *= 2;
@@ -398,7 +398,7 @@ int hit_gain( CHAR_DATA * ch )
         else if ( IS_VAMP( ch ) && ch->pcdata->super->energy < 8 )
             gain /= 2;
         if ( IS_VAMP( ch ) && ch->pcdata->super->energy == -10 )
-            gain = ( 5 + ch->level / 25 );
+            gain = ( 5 + ch->getLevel() / 25 );
 
 
     }
@@ -473,11 +473,11 @@ int mana_gain( CHAR_DATA * ch )
         return 0;
     if ( IS_NPC( ch ) && !ch->act.test(ACT_INTELLIGENT) )
     {
-        gain = ( 1 + ch->level / 30 );
+        gain = ( 1 + ch->getLevel() / 30 );
     }
     else
     {
-        gain = ( 5 + ch->level / 20 );
+        gain = ( 5 + ch->getLevel() / 20 );
 
         if ( ch->in_room->room_flags.test(RFLAG_REGEN) )
             gain *= 2;
@@ -503,7 +503,7 @@ int mana_gain( CHAR_DATA * ch )
             else if ( IS_VAMP( ch ) && ch->pcdata->super->energy < 8 )
                 gain /= 2;
             if ( IS_VAMP( ch ) && ch->pcdata->super->energy == -10 )
-                gain = ( 5 + ch->level / 25 );
+                gain = ( 5 + ch->getLevel() / 25 );
 
             if ( IS_WOLF( ch ) && IS_RAGED( ch ) )
                 gain = 0;
@@ -574,11 +574,11 @@ int move_gain( CHAR_DATA * ch )
 
     if ( IS_NPC( ch ) )
     {
-        gain = ch->level;
+        gain = ch->getLevel();
     }
     else
     {
-        gain = ( 10 + ch->level / 4 );
+        gain = ( 10 + ch->getLevel() / 4 );
 
         if ( ch->in_room->room_flags.test(RFLAG_REGEN) )
             gain *= 2;
@@ -604,7 +604,7 @@ int move_gain( CHAR_DATA * ch )
         else if ( IS_VAMP( ch ) && ch->pcdata->super->energy < 8 )
             gain /= 2;
         if ( IS_VAMP( ch ) && ch->pcdata->super->energy == -10 )
-            gain = ( 5 + ch->level / 25 );
+            gain = ( 5 + ch->getLevel() / 25 );
 
 
     }
@@ -674,7 +674,7 @@ void condition_gain( CHAR_DATA * ch, int iCond, int value )
 {
     int condition;
 
-    if ( value == 0 || IS_NPC( ch ) || ch->level >= LEVEL_HERO )
+    if ( value == 0 || IS_NPC( ch ) || ch->getLevel() >= LEVEL_HERO )
         return;
 
     condition = ch->pcdata->condition[iCond];
@@ -1319,7 +1319,7 @@ void char_update( void )
          * Find dude with oldest save time.
          */
         if ( !IS_NPC( ch )
-                && ( ch->desc == NULL || ch->desc->getConnectionState( CON_PLAYING ) ) && ch->level >= 2 && ch->pcdata->save_time < save_time )
+                && ( ch->desc == NULL || ch->desc->getConnectionState( CON_PLAYING ) ) && ch->getLevel() >= 2 && ch->pcdata->save_time < save_time )
         {
             ch_save = ch;
             save_time = ch->pcdata->save_time;
@@ -1353,7 +1353,7 @@ void char_update( void )
 
         }
 
-        if ( ( !IS_NPC( ch ) && ch->level < LEVEL_IMMORTAL ) )
+        if ( ( !IS_NPC( ch ) && ch->getLevel() < LEVEL_IMMORTAL ) )
         {
 
             OBJ_DATA *obj;
@@ -1379,7 +1379,7 @@ void char_update( void )
                         }
                         else
                         {
-                            replacer = create_object( new_index, obj->level );
+                            replacer = create_object( new_index, obj->getLevel() );
                             if ( obj->carried_by != NULL )
                                 obj_to_char( replacer, obj->carried_by );
                             else if ( obj->in_room != NULL )
@@ -1754,7 +1754,7 @@ void obj_update( void )
             }
             else
             {
-                replacer = create_object( new_index, obj->level );
+                replacer = create_object( new_index, obj->getLevel() );
                 if ( obj->carried_by != NULL )
                     obj_to_char( replacer, obj->carried_by );
                 else if ( obj->in_room != NULL )
@@ -1816,7 +1816,7 @@ void aggr_update( void )
         {
             vch_next = vch->next_in_room;
 
-            if ( (IS_NPC(vch) && !vch->act.test(ACT_INTELLIGENT)) || vch->level >= LEVEL_IMMORTAL || (ch->act.test(ACT_WIMPY) && IS_AWAKE(vch)) || !can_see(ch, vch) || (IS_UNDEAD(ch) && IS_VAMP(vch)) )
+            if ( (IS_NPC(vch) && !vch->act.test(ACT_INTELLIGENT)) || vch->getLevel() >= LEVEL_IMMORTAL || (ch->act.test(ACT_WIMPY) && IS_AWAKE(vch)) || !can_see(ch, vch) || (IS_UNDEAD(ch) && IS_VAMP(vch)) )
                 continue;
 
             if ( (IS_AFFECTED(vch, AFF_SNEAK) || item_has_apply(vch, ITEM_APPLY_SNEAK)) && (number_percent() < 50 + (2 * (vch->getLevel( true ) - ch->getLevel( true )))) )
@@ -2025,7 +2025,7 @@ bool check_rewield( CHAR_DATA * ch )
     OBJ_DATA *obj;
     OBJ_DATA *weapon = NULL;
     int dam;
-    int chance;
+    uint_t chance;
     bool pickup;
     char buf[MAX_STRING_LENGTH];
 
@@ -2112,7 +2112,7 @@ bool check_reequip( CHAR_DATA * ch )
     OBJ_DATA *obj2;
     OBJ_DATA *armor = NULL;
     OBJ_DATA *light = NULL;
-    int chance;
+    uint_t chance;
     bool pickup;
     bool ident;
     char buf[MAX_STRING_LENGTH];
@@ -2314,8 +2314,8 @@ void auction_update( void )
             if ( auction_bidder == NULL )
             {
                 snprintf( buf, MSL,
-                          "@@N%s (level:%d, valued at %s) has been offered for auction.  A @@e10%% fee@@N will be charged, the higher of the reserve price or highest bid.",
-                          auction_item->getDescrShort_(), auction_item->level, cost_to_money( auction_item->cost ) );
+                          "@@N%s (level:%lu, valued at %s) has been offered for auction.  A @@e10%% fee@@N will be charged, the higher of the reserve price or highest bid.",
+                          auction_item->getDescrShort_(), auction_item->getLevel(), cost_to_money( auction_item->cost ) );
             }
             else
             {

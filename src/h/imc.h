@@ -41,10 +41,10 @@
 #define IMC_WHO_FILE     IMC_DIR "imc.who"
 
 #define CH_IMCDATA(ch)           ((ch)->pcdata->imcchardata)
-#define CH_IMCLEVEL(ch)          ((ch)->level)
+#define CH_IMCLEVEL(ch)          ((ch)->getLevel())
 #define CH_IMCSEX(ch)            ((ch)->sex)
 #define CH_IMCTITLE(ch)          ((ch)->get_title())
-#define CH_IMCRANK(ch)           (str_cmp(ch->pcdata->who_name,"off") ? ch->pcdata->who_name : (ch)->isImmortal() ? "Imm" : class_table[(ch)->p_class].who_name)
+#define CH_IMCRANK(ch)           ((ch)->isImmortal() ? (ch)->getNameWho_() : class_table[(ch)->pcdata->order[0]].who_name)
 
 #define IMC_BUFF_SIZE 16384
 

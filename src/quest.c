@@ -272,8 +272,8 @@ DO_FUN(do_iquest)
 
         snprintf( buf, MSL, "Quest Object is worth: %d QP, %d Prac, %d to %d Exp, %s\r\n",
                   quest_object->value[0], quest_object->value[1],
-                  static_cast<int>((exp_mob_base(quest_mob->level) * sysdata.killperlev) * 0.02),
-                  static_cast<int>((exp_mob_base(quest_mob->level) * sysdata.killperlev) * 0.04),
+                  static_cast<int>((exp_mob_base(quest_mob->getLevel()) * sysdata.killperlev) * 0.02),
+                  static_cast<int>((exp_mob_base(quest_mob->getLevel()) * sysdata.killperlev) * 0.04),
                   cost_to_money(quest_object->value[2]) );
         send_to_char( buf, ch );
 
@@ -327,7 +327,7 @@ DO_FUN(do_iquest)
             if ( !d->getConnectionState( CON_PLAYING ) || d->character->isImmortal() )
                 continue;
             player_count += 1;
-            total_levels += d->character->level;
+            total_levels += d->character->getLevel();
         }
         average_level = ( ( ( total_levels == 0 ) ? 30 : total_levels ) / ( ( player_count == 0 ) ? 1 : player_count ) );
         a = average_level - 20;
@@ -357,9 +357,9 @@ DO_FUN(do_iquest)
         /*
          * Set values on quest item for Qp, Pracs, Exp, Gold
          */
-        quest_object->value[0] = UMAX( 1, ( quest_target->level / 30 ) );
-        quest_object->value[1] = UMAX( 1, ( quest_target->level / 25 ) );
-        quest_object->value[2] = ( quest_target->level * 20 );
+        quest_object->value[0] = UMAX( 1, ( quest_target->getLevel() / 30 ) );
+        quest_object->value[1] = UMAX( 1, ( quest_target->getLevel() / 25 ) );
+        quest_object->value[2] = ( quest_target->getLevel() * 20 );
         quest_object->value[3] = average_level;
 
         if ( number_percent() < 10 )
@@ -401,8 +401,8 @@ DO_FUN(do_iquest)
 
         snprintf( buf, MSL, "Quest Object is worth: %d QP, %d Prac, %d to %d Exp, %s\r\n",
                   quest_object->value[0], quest_object->value[1],
-                  static_cast<int>((exp_mob_base(quest_mob->level) * sysdata.killperlev) * 0.02),
-                  static_cast<int>((exp_mob_base(quest_mob->level) * sysdata.killperlev) * 0.04),
+                  static_cast<int>((exp_mob_base(quest_mob->getLevel()) * sysdata.killperlev) * 0.02),
+                  static_cast<int>((exp_mob_base(quest_mob->getLevel()) * sysdata.killperlev) * 0.04),
                   cost_to_money(quest_object->value[2]) );
         send_to_char( buf, ch );
 
@@ -428,7 +428,7 @@ DO_FUN(do_iquest)
  * Returns NULL if it didn't get a mobile this time.
  */
 
-CHAR_DATA *get_quest_target( int min_level, int max_level )
+CHAR_DATA *get_quest_target( uint_t min_level, uint_t max_level )
 {
     CHAR_DATA *target = NULL;
     list<CHAR_DATA *>::iterator li;
@@ -455,8 +455,8 @@ CHAR_DATA *get_quest_target( int min_level, int max_level )
          * as train/prac mobs, healers, etc
          */
 
-        if ( ( target->level < min_level )
-                || ( target->level > max_level )
+        if ( ( target->getLevel() < min_level )
+                || ( target->getLevel() > max_level )
                 || ( IS_VAMP( target ) )
                 || ( target->in_room->area->flags.test(AFLAG_NO_SHOW) )
                 || ( target->act.test(ACT_SENTINEL) )
@@ -504,7 +504,7 @@ OBJ_DATA *load_quest_object( CHAR_DATA * target )
     return object;
 }
 
-CHAR_DATA *get_quest_giver( int min_level, int max_level )
+CHAR_DATA *get_quest_giver( uint_t min_level, uint_t max_level )
 {
     CHAR_DATA *target = NULL;
     list<CHAR_DATA *>::iterator li;
@@ -529,8 +529,8 @@ CHAR_DATA *get_quest_giver( int min_level, int max_level )
          * as train/prac mobs, healers, etc
          */
 
-        if ( ( target->level < min_level )
-                || ( target->level > max_level )
+        if ( ( target->getLevel() < min_level )
+                || ( target->getLevel() > max_level )
                 || ( IS_VAMP( target ) )
                 || ( target->in_room->area->flags.test(AFLAG_NO_SHOW) )
                 || ( target->act.test(ACT_SENTINEL) )
@@ -675,7 +675,7 @@ void generate_auto_quest(  )
             if ( d->character->isImmortal() ) /* Imms shouldn't count against the quest level. --Kline */
                 continue;
             player_count++;
-            total_levels += d->character->level;
+            total_levels += d->character->getLevel();
         }
         player_count = UMAX( 1, player_count );
         if ( total_levels > 0 ) /* If we don't have any players on, don't want a div by 0 error. --Kline */
@@ -752,9 +752,9 @@ void generate_auto_quest(  )
         /*
          * Set values on quest item for Qp, Pracs, Exp, Gold
          */
-        quest_object->value[0] = UMAX( 1, ( quest_target->level / 20 ) );
-        quest_object->value[1] = UMAX( 1, ( quest_target->level / 18 ) );
-        quest_object->value[2] = ( quest_target->level * 20 );
+        quest_object->value[0] = UMAX( 1, ( quest_target->getLevel() / 20 ) );
+        quest_object->value[1] = UMAX( 1, ( quest_target->getLevel() / 18 ) );
+        quest_object->value[2] = ( quest_target->getLevel() * 20 );
         quest_object->value[3] = average_level;
 
         if ( number_percent() < 10 )
@@ -811,7 +811,7 @@ void crusade_reward( CHAR_DATA *ch )
     send_to_char( buf, ch );
     ch->pcdata->practice += reward;
 
-    reward = (exp_mob_base(quest_mob->level) * sysdata.killperlev);
+    reward = (exp_mob_base(quest_mob->getLevel()) * sysdata.killperlev);
     reward = number_range(static_cast<int>(reward * 0.02), static_cast<int>(reward * 0.04));
     snprintf( buf, MSL, "You receive %d experience points!\r\n", reward );
     send_to_char( buf, ch );
@@ -907,7 +907,7 @@ void ask_quest_question( CHAR_DATA *ch, char *argument )
     if ( !str_cmp( argument, "what level are you?" ) )
         if ( quest_mob )
         {
-            int lvl = number_range( (quest_mob->level - 3), (quest_mob->level + 3) );
+            int lvl = number_range( (quest_mob->getLevel() - 3), (quest_mob->getLevel() + 3) );
             snprintf( buf, MSL, "@@NI am somewhere around the level of %d!", lvl > 0 ? lvl : 1 );
             do_crusade( quest_mob, buf );
         }

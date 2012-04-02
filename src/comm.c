@@ -153,7 +153,7 @@ OBJ_DATA *auction_item; /* Item being sold      */
 CHAR_DATA *auction_owner;  /* Item's owner         */
 CHAR_DATA *auction_bidder; /* Last bidder for item    */
 uint_t *auction_bid; /* Latest price offered    */
-int *auction_reserve;   /* Reserve Price     */
+uint_t *auction_reserve;   /* Reserve Price     */
 int *auction_stage;  /* start, 1st, 2nd, gone   */
 bool auction_flop;   /* Update called externally?    */
 

@@ -8,11 +8,15 @@
 
 #define DEC_MAGE_H
 
+#ifndef DEC_BASECLASS_H
+#include "baseclass.h"
+#endif
+
 /*
  * Magic...Sparkly!
  */
 
 class Mage : public BaseClass {
     public:
-        string getName() const { return "Mage"; }
+        string getName() const { return "Mage"; };
 };

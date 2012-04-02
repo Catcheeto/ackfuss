@@ -82,10 +82,7 @@ char_data::~char_data()
         extract_obj(first_carry);
 
     while ( first_affect != NULL )
-    {
         affect_remove(this, first_affect);
-        delete first_affect;
-    }
 
     imc_freechardata(this);
 #ifdef I3
@@ -226,7 +223,6 @@ pc_data::~pc_data()
     free_string(title);
     for ( short i = 0; i < MAX_HOSTS; i++ )
         free_string(whitelist[i]);
-    free_string(who_name);
 }
 
 quest_info::~quest_info()

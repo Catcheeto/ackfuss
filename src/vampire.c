@@ -287,7 +287,7 @@ void do_family( CHAR_DATA * ch, char *argument )
     bool found;
     short index;
 
-    if ( ch->level < 85 )
+    if ( ch->getLevel() < MAX_LEVEL )
         if ( !IS_VAMP( ch ) )
         {
             send_to_char( "Huh?\r\n", ch );
@@ -333,7 +333,7 @@ void do_family( CHAR_DATA * ch, char *argument )
 
 
 
-                    snprintf( buf, MSL, "%-15s @@NGen: @@r%d   @@NRank: @@d%d@@N  @@NBloodlust: @@e%d@@N/@@e%d@@N   %-15s\r\n",
+                    snprintf( buf, MSL, "%-15s @@NGen: @@r%d   @@NRank: @@d%lu@@N  @@NBloodlust: @@e%d@@N/@@e%d@@N   %-15s\r\n",
                               victim->getName_(), victim->pcdata->super->generation, victim->pcdata->super->level, victim->pcdata->super->energy,
                               victim->pcdata->super->energy_max, victim->in_room->name );
                     send_to_char( buf, ch );
@@ -362,7 +362,7 @@ void do_family( CHAR_DATA * ch, char *argument )
                     continue;
 
                 found = TRUE;
-                snprintf( buf, MSL, "%-15s @@NGeneration: @@r%d     @@NRank: @@d%d@@N\r\n",
+                snprintf( buf, MSL, "%-15s @@NGeneration: @@r%d     @@NRank: @@d%lu@@N\r\n",
                           victim->getName_(), victim->pcdata->super->generation, victim->pcdata->super->level );
                 send_to_char( buf, ch );
             }

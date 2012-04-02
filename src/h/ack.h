@@ -827,10 +827,10 @@ class area_data
         BUILD_DATA_LIST         *last_area_shop;
         RESET_DATA              *last_reset;
         char                    *level_label;
-        short                   max_level;
+        uint_t                  max_level;
         int                     max_vnum;
         bool                    modified;
-        short                   min_level;
+        uint_t                  min_level;
         int                     min_vnum;
         char                    *name;
         char                    *owner;

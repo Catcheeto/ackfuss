@@ -101,7 +101,7 @@ void do_tribe( CHAR_DATA * ch, char *argument )
     if ( IS_NPC( ch ) )
         return;
 
-    if ( ch->level < 85 )
+    if ( ch->getLevel() < MAX_LEVEL )
         if ( !IS_WOLF( ch ) )
         {
             send_to_char( "Huh?\r\n", ch );
@@ -158,7 +158,7 @@ void do_tribe( CHAR_DATA * ch, char *argument )
 
 
 
-                        snprintf( buf, MSL, "%-15s @@NStanding: @@r%s   @@NRank: @@d%d@@N  @@NRage: @@e%d@@N/@@e%d@@N   %-15s\r\n",
+                        snprintf( buf, MSL, "%-15s @@NStanding: @@r%s   @@NRank: @@d%lu@@N  @@NRage: @@e%d@@N/@@e%d@@N   %-15s\r\n",
                                   victim->getName_(), get_tribe_standing_name( victim->pcdata->super->generation ), victim->pcdata->super->level,
                                   victim->pcdata->super->energy, victim->pcdata->super->energy_max, victim->in_room->name );
                         send_to_char( buf, ch );
@@ -187,7 +187,7 @@ void do_tribe( CHAR_DATA * ch, char *argument )
                         continue;
 
                     found = TRUE;
-                    snprintf( buf, MSL, "%-15s @@NStanding: @@r%s   @@NRank: @@d%d@@N\r\n",
+                    snprintf( buf, MSL, "%-15s @@NStanding: @@r%s   @@NRank: @@d%lu@@N\r\n",
                               victim->getName_(), get_tribe_standing_name( victim->pcdata->super->generation ), victim->pcdata->super->level );
                     send_to_char( buf, ch );
                 }

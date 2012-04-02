@@ -88,8 +88,11 @@
 
    16 -> 17:
      Moved bitset fields to read/write as strings instead of values.
+
+   17 -> 18:
+     Moved all lvl, lvl2, level fields into Tiers under Thing::get/setLevel
 */
-#define SAVE_REVISION 17
+#define SAVE_REVISION 18
 
 /*
  * Game parameters.

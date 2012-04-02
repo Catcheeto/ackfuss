@@ -326,7 +326,7 @@ Brain::Brain()
     m_world = NULL;
 }
 
-Brain::~Brain()
-{
-    delete[] m_host;
-}
+//Brain::~Brain()
+//{
+//    delete[] m_host;
+//}

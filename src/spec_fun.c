@@ -261,7 +261,7 @@ bool dragon( CHAR_DATA * ch, char *spell_name )
 
     if ( ( sn = skill_lookup( spell_name ) ) < 0 )
         return FALSE;
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 
@@ -327,7 +327,7 @@ SPEC_FUN(spec_breath_gas)
 
     if ( ( sn = skill_lookup( "gas breath" ) ) < 0 )
         return FALSE;
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, NULL, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, NULL, NULL );
     return TRUE;
 }
 
@@ -370,7 +370,7 @@ SPEC_FUN(spec_cast_adept)
     if ( victim == NULL )
         return FALSE;
 
-    cl = number_range( 1, ch->level );
+    cl = number_range( 1, ch->getLevel() );
 
     if ( IS_GHOST(victim) )
     {
@@ -433,7 +433,7 @@ SPEC_FUN(spec_cast_adept)
                     snprintf( buffer, 255, "$n utters the words 'Christmas is here! Rejoice!'." );
 
                 act( buffer, ch, NULL, NULL, TO_ROOM );
-                spell_refresh( skill_lookup( "refresh" ), ch->level, ch, victim, NULL );
+                spell_refresh( skill_lookup( "refresh" ), ch->getLevel(), ch, victim, NULL );
                 return TRUE;
             }
 
@@ -466,7 +466,7 @@ SPEC_FUN(spec_cast_adept)
                     snprintf( buffer, 255, "$n utters the words 'Kline's birthday is here! Rejoice!'." );
 
                 act( buffer, ch, NULL, NULL, TO_ROOM );
-                spell_heal( skill_lookup( "heal" ), ch->level, ch, victim, NULL );
+                spell_heal( skill_lookup( "heal" ), ch->getLevel(), ch, victim, NULL );
 
                 return TRUE;
             }
@@ -496,7 +496,7 @@ SPEC_FUN(spec_cast_cleric)
 
     for ( ;; )
     {
-        int min_level;
+        uint_t min_level;
 
         switch ( number_bits( 4 ) )
         {
@@ -544,11 +544,11 @@ SPEC_FUN(spec_cast_cleric)
                 break;
         }
 
-        if ( ch->level >= min_level )
+        if ( ch->getLevel() >= min_level )
             break;
         /*
          * Can add infinite loop checking here, but its kinda pointless,
-         * * as no mob can have ch->level < 0
+         * * as no mob can have ch->getLevel() < 0
          */
     }
 
@@ -556,7 +556,7 @@ SPEC_FUN(spec_cast_cleric)
         return FALSE;
 
     act( "The eyes of $n glow brightly!", ch, NULL, NULL, TO_ROOM );
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 
@@ -581,7 +581,7 @@ SPEC_FUN(spec_cast_judge)
     spell = "high explosive";
     if ( ( sn = skill_lookup( spell ) ) < 0 )
         return FALSE;
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 
@@ -605,7 +605,7 @@ SPEC_FUN(spec_cast_mage)
 
     for ( ;; )
     {
-        int min_level;
+        uint_t min_level;
 
         switch ( number_bits( 4 ) )
         {
@@ -649,11 +649,11 @@ SPEC_FUN(spec_cast_mage)
                 break;
         }
 
-        if ( ch->level >= min_level )
+        if ( ch->getLevel() >= min_level )
             break;
         /*
          * Can add infinite loop checking here, but its kinda pointless,
-         * * as no mob can have ch->level < 0.  -- Alty
+         * * as no mob can have ch->getLevel() < 0.  -- Alty
          */
     }
 
@@ -661,7 +661,7 @@ SPEC_FUN(spec_cast_mage)
         return FALSE;
 
     act( "An eerie sound comes from $n as $e stares at $N!!", ch, NULL, victim, TO_ROOM );
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 
@@ -685,7 +685,7 @@ SPEC_FUN(spec_cast_undead)
 
     for ( ;; )
     {
-        int min_level;
+        uint_t min_level;
 
         switch ( number_bits( 4 ) )
         {
@@ -727,18 +727,18 @@ SPEC_FUN(spec_cast_undead)
                 break;
         }
 
-        if ( ch->level >= min_level )
+        if ( ch->getLevel() >= min_level )
             break;
         /*
          * Can add infinite loop checking here, but its kinda pointless,
-         * * as no mob can have ch->level < 0. -- Alty
+         * * as no mob can have ch->getLevel() < 0. -- Alty
          */
     }
 
     if ( ( sn = skill_lookup( spell ) ) < 0 )
         return FALSE;
     act( "$n summons forth the powers of darkness!", ch, NULL, NULL, TO_ROOM );
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 
@@ -992,13 +992,13 @@ SPEC_FUN(spec_poison)
 {
     CHAR_DATA *victim;
 
-    if ( ch->position != POS_FIGHTING || ( victim = ch->fighting ) == NULL || number_percent(  ) > 2 * ch->level )
+    if ( ch->position != POS_FIGHTING || ( victim = ch->fighting ) == NULL || number_percent(  ) > 2 * ch->getLevel() )
         return FALSE;
 
     act( "You bite $N!", ch, NULL, victim, TO_CHAR );
     act( "$n bites $N!", ch, NULL, victim, TO_NOTVICT );
     act( "$n bites you!", ch, NULL, victim, TO_VICT );
-    spell_poison( gsn_poison, ch->level, ch, victim, NULL );
+    spell_poison( gsn_poison, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 
@@ -1013,10 +1013,10 @@ SPEC_FUN(spec_thief)
 
     for ( victim = ch->in_room->first_person; victim != NULL; victim = victim->next_in_room )
     {
-        if ( IS_NPC( victim ) || victim->level >= LEVEL_IMMORTAL || number_bits( 2 ) != 0 || !can_see( ch, victim ) )  /* Thx Glop */
+        if ( IS_NPC( victim ) || victim->getLevel() >= LEVEL_IMMORTAL || number_bits( 2 ) != 0 || !can_see( ch, victim ) )  /* Thx Glop */
             continue;
 
-        if ( IS_AWAKE( victim ) && number_range( 0, ch->level ) == 0 )
+        if ( IS_AWAKE( victim ) && number_range( 0, ch->getLevel() ) == 0 )
         {
             act( "You discover $n's hands in your wallet!", ch, NULL, victim, TO_VICT );
             act( "$N discovers $n's hands in $S wallet!", ch, NULL, victim, TO_NOTVICT );
@@ -1156,7 +1156,8 @@ SPEC_FUN(spec_undead)
     CHAR_DATA *ach = NULL;
     list<CHAR_DATA *>::iterator li;
     char *spell;
-    int sn, sum_lev;
+    int sn;
+    uint_t sum_lev;
 
     if ( ch->position != POS_FIGHTING )
         return FALSE;
@@ -1173,7 +1174,7 @@ SPEC_FUN(spec_undead)
 
     for ( ;; )
     {
-        int min_level;
+        uint_t min_level;
 
         switch ( number_bits( 4 ) )
         {
@@ -1219,11 +1220,11 @@ SPEC_FUN(spec_undead)
                 break;
         }
 
-        if ( ch->level >= min_level )
+        if ( ch->getLevel() >= min_level )
             break;
         /*
          * Can put infinite loop checking here if you want, but its pointless
-         * * since nothing can have a ch->level < 0. -- Alty
+         * * since nothing can have a ch->getLevel() < 0. -- Alty
          */
     }
 
@@ -1232,11 +1233,11 @@ SPEC_FUN(spec_undead)
 
     if ( !str_cmp( spell, "summon" ) )  /* CHECK FOR NPC!!!!!!!!!!!!! */
     {
-        sum_lev = ch->level * 2 / 3;
+        sum_lev = ch->getLevel() * 2 / 3;
         for ( li = char_list.begin(); li != char_list.end(); li++ )
         {
             ach = *li;
-            if ( !ach->act.test(ACT_UNDEAD) || ach->level > sum_lev || !IS_NPC( ach ) /* Kavir got summoned!  :P */
+            if ( !ach->act.test(ACT_UNDEAD) || ach->getLevel() > sum_lev || !IS_NPC( ach ) /* Kavir got summoned!  :P */
                     || ach->in_room == ch->in_room || !can_see( ch, ach ) || number_bits( 2 ) != 0 )
                 continue;
 
@@ -1255,7 +1256,7 @@ SPEC_FUN(spec_undead)
     }
     else
     {
-        ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+        ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     }
 
     return TRUE;
@@ -1351,7 +1352,7 @@ SPEC_FUN(spec_rewield)
     OBJ_DATA *obj;
     OBJ_DATA *weapon = NULL;
     int dam;
-    int chance;
+    uint_t chance;
     bool pickup;
     char buf[MAX_STRING_LENGTH];
 
@@ -1517,7 +1518,7 @@ SPEC_FUN(spec_cast_bigtime)
 
     for ( crun = 0;; crun++ )
     {
-        int min_level;
+        uint_t min_level;
 
         switch ( number_bits( 4 ) )
         {
@@ -1559,10 +1560,10 @@ SPEC_FUN(spec_cast_bigtime)
                 break;
         }
 
-        if ( ch->level >= min_level )
+        if ( ch->getLevel() >= min_level )
             break;
         /*
-         * Stop infinite recursion on low level mobs.. (ch->level < 12)
+         * Stop infinite recursion on low level mobs.. (ch->getLevel() < 12)
          * * -- Alty
          */
         if ( crun > 10 )
@@ -1572,7 +1573,7 @@ SPEC_FUN(spec_cast_bigtime)
     if ( ( sn = skill_lookup( spell ) ) < 0 )
         return FALSE;
     act( "$n invokes the dark powers!!", ch, NULL, NULL, TO_ROOM );
-    ( *skill_table[sn].spell_fun ) ( sn, ch->level, ch, victim, NULL );
+    ( *skill_table[sn].spell_fun ) ( sn, ch->getLevel(), ch, victim, NULL );
     return TRUE;
 }
 

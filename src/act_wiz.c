@@ -4368,8 +4368,7 @@ DO_FUN(do_setclass)
             p_class = ADVANCE_ADEPT;
             advance_level( victim, p_class, TRUE, FALSE );
             victim->setLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT );
-            snprintf( buf, MSL, " %s %s", victim->getName_(), victim->get_whoname() );
-            do_whoname( ch, buf );
+            victim->setNameWho();
             victim->setExperience( 0 );
             do_save( victim, "auto" );
             return;
@@ -4766,8 +4765,7 @@ DO_FUN(do_whoname)
 
     if ( !str_cmp( argument, "off" ) )
     {
-        free_string( victim->pcdata->who_name );
-        victim->pcdata->who_name = str_dup( "off" );
+        victim->setNameWho();
         send_to_char( "Who name set to default value.\r\n", ch );
         return;
     }
@@ -4806,8 +4804,7 @@ DO_FUN(do_whoname)
         snprintf( argument, MSL, "%s", foo );
     }
 
-    free_string( victim->pcdata->who_name );
-    victim->pcdata->who_name = str_dup( argument );
+    victim->setNameWho( argument );
     send_to_char( "Ok, done.\r\n", ch );
     return;
 }

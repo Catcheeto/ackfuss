@@ -520,7 +520,7 @@ DO_FUN(do_hunt)
 {
     CHAR_DATA *victim;
     char arg[MAX_INPUT_LENGTH];
-    short chance;
+    uint_t chance;
 
     if ( IS_NPC( ch ) && ( ch->hunting || ch->hunt_obj ) )
         return;

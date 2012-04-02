@@ -280,10 +280,10 @@ uint_t Thing::setExperience( const uint_t amount )
 
 uint_t Thing::decrLevel( const uint_t tier, const uint_t tclass, const uint_t amount )
 {
-    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+    if ( tier < uintmin_t || tier >= MAX_THING_LEVEL_TIER )
         return 0;
 
-    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_TIER_CLASS )
         return 0;
 
     if ( amount <= uintmin_t || amount >= uintmax_t )
@@ -299,36 +299,27 @@ uint_t Thing::getLevel( const uint_t tier, const uint_t tclass, const bool psued
 {
     uint_t i = 0, x = 0, value = 0;
 
-    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+    if ( tier < uintmin_t || tier > MAX_THING_LEVEL_TIER )
         return value = getLevel();
 
-    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+    if ( tclass < uintmin_t || tclass > MAX_THING_LEVEL_TIER_CLASS )
         return value = getLevel();
 
     if ( psuedo )
     {
-        if ( isRemortal() )
-        {
-            for ( i = 0; i < MAX_THING_LEVEL_CLASS_REMORTAL; i++ )
-                value += m_level[THING_LEVEL_TIER_REMORTAL][i];
-            value /= 4;
+        for ( i = 0; i < MAX_THING_LEVEL_TIER2_CLASS; i++ )
+            value += m_level[THING_LEVEL_TIER2][i];
+        value /= 4;
 
-            return value += getLevel();
-        }
-        else
-            return value = getLevel();
+        return value += getLevel();
     }
 
-    if ( tier == MAX_THING_LEVEL_TIER && tclass == MAX_THING_LEVEL_CLASS_ADEPT && !psuedo ) // return the highest value of all classes
+    if ( tier == MAX_THING_LEVEL_TIER && tclass == MAX_THING_LEVEL_TIER_CLASS && !psuedo ) // return the highest value of all classes
     {
         for ( i = 0; i < MAX_THING_LEVEL_TIER; i++ )
-        {
-            for ( x = 0; x < MAX_THING_LEVEL_CLASS_ADEPT; x++ )
-            {
+            for ( x = 0; x < MAX_THING_LEVEL_TIER_CLASS; x++ )
                 if ( m_level[i][x] > value )
                    value = m_level[i][x];
-            }
-        }
 
         return value;
     }
@@ -338,10 +329,10 @@ uint_t Thing::getLevel( const uint_t tier, const uint_t tclass, const bool psued
 
 uint_t Thing::incrLevel( const uint_t tier, const uint_t tclass, const uint_t amount )
 {
-    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+    if ( tier < uintmin_t || tier >= MAX_THING_LEVEL_TIER )
         return 0;
 
-    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_TIER_CLASS )
         return 0;
 
     if ( amount <= uintmin_t || amount >= uintmax_t )
@@ -355,10 +346,11 @@ uint_t Thing::incrLevel( const uint_t tier, const uint_t tclass, const uint_t am
 
 uint_t Thing::setLevel( const uint_t tier, const uint_t tclass, const uint_t amount )
 {
-    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+Utils::Logger( 0, Utils::FormatString( 0, "tier: %lu -- tclass: %lu -- amount: %lu", tier, tclass, amount ) );
+    if ( tier < uintmin_t || tier >= MAX_THING_LEVEL_TIER )
         return 0;
 
-    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_TIER_CLASS )
         return 0;
 
     if ( amount <= uintmin_t || amount >= uintmax_t )
@@ -397,8 +389,8 @@ bool Thing::isAdept() const
 {
     uint_t i = 0;
 
-    for ( i = 0; i < MAX_THING_LEVEL_CLASS_ADEPT; i++ )
-        if ( m_level[THING_LEVEL_TIER_ADEPT][i] > uintmin_t )
+    for ( i = 0; i < MAX_THING_LEVEL_TIER3_CLASS; i++ )
+        if ( m_level[THING_LEVEL_TIER3][i] > uintmin_t )
             return true;
 
     return false;
@@ -408,8 +400,8 @@ bool Thing::isRemortal() const
 {
     uint_t i = 0;
 
-    for ( i = 0; i < MAX_THING_LEVEL_CLASS_REMORTAL; i++ )
-        if ( m_level[THING_LEVEL_TIER_REMORTAL][i] > uintmin_t )
+    for ( i = 0; i < MAX_THING_LEVEL_TIER2_CLASS; i++ )
+        if ( m_level[THING_LEVEL_TIER2][i] > uintmin_t )
             return true;
 
     return false;
@@ -452,7 +444,7 @@ string Thing::getNameWho() const
         return output = "";
     else if ( isImmortal() )
     {
-        if ( m_name_who.compare( "off" ) != 0 )
+        if ( !m_name_who.empty() )
             return output = m_name_who;
 
         switch ( getLevel() )
@@ -468,7 +460,7 @@ string Thing::getNameWho() const
     }
     else if ( isAdept() )
     {
-        if ( m_name_who.compare( "off" ) != 0 )
+        if ( !m_name_who.empty() )
             return output = m_name_who;
 
         switch ( getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) )
@@ -499,21 +491,21 @@ string Thing::getNameWho() const
     }
     else if ( isRemortal() )
     {
-        return output = Utils::FormatString( "@@m%2lu %2lu %2lu %2lu %2lu@@N",
-            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_SORCERER ),
-            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_MONK ),
-            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_ASSASSIN ),
-            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_KNIGHT ),
-            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_NECROMANCER ) );
+        return output = Utils::FormatString( 0, "@@m%2lu %2lu %2lu %2lu %2lu@@N",
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_SORCERER ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_NECROMANCER ) );
     }
     else
     {
-        return output = Utils::FormatString( "@@b%2lu %2lu %2lu %2lu %2lu@@N",
-            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_MAGE ),
-            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLERIC ),
-            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_THIEF ),
-            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_WARRIOR ),
-            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_PSIONICIST ) );
+        return output = Utils::FormatString( 0, "@@b%2lu %2lu %2lu %2lu %2lu@@N",
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_MAGE ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_CLERIC ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_THIEF ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_PSIONICIST ) );
     }
 }
 
@@ -586,7 +578,7 @@ Thing::Thing()
     // Level
     m_experience = uintmin_t;
     for ( uint_t i = 0; i < MAX_THING_LEVEL_TIER; i++ )
-        for ( uint_t x = 0; x < MAX_THING_LEVEL_CLASS_ADEPT; x++ )
+        for ( uint_t x = 0; x < MAX_THING_LEVEL_TIER_CLASS; x++ )
             m_level[i][x] = uintmin_t;
     m_trust = uintmin_t;
 

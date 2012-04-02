@@ -247,7 +247,7 @@ void build_save_area(  )
 
     fprintf( SaveFile, "Keyword   %s~\n", CurSaveArea->keyword );
     fprintf( SaveFile, "LevLabel  %s~\n", CurSaveArea->level_label );
-    fprintf( SaveFile, "LevRange  %d %d\n", CurSaveArea->min_level, CurSaveArea->max_level );
+    fprintf( SaveFile, "LevRange  %lu %lu\n", CurSaveArea->min_level, CurSaveArea->max_level );
     fprintf( SaveFile, "Name      %s~\n", CurSaveArea->name );
     fprintf( SaveFile, "Number    %d\n", CurSaveArea->area_num );
     fprintf( SaveFile, "Owner     %s~\n", CurSaveArea->owner );

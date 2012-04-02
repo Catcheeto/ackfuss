@@ -222,7 +222,7 @@ DO_FUN(do_dismount)
     {
         if ( valid_ride( ch->in_room->vnum, ch->riding ) )
         {
-            if ( ch->in_room->sector_type >= SECT_WATER_SWIM && ch->level < 5 && !IS_AFFECTED( ch, AFF_FLYING ) )
+            if ( ch->in_room->sector_type >= SECT_WATER_SWIM && ch->getLevel() < 5 && !IS_AFFECTED( ch, AFF_FLYING ) )
                 act( "Here? That's not too wise.", ch, 0, 0, TO_CHAR );
             else
             {

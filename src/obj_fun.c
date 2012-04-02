@@ -213,7 +213,7 @@ OBJ_FUN(objfun_infused_soul)
             return;
         act( "$p glows brightly at $n!", victim, obj, NULL, TO_ROOM );
         act( "$p glows brightly at you!", victim, obj, NULL, TO_CHAR );
-        obj_cast_spell( sn, obj->level, keeper, victim, obj );
+        obj_cast_spell( sn, obj->getLevel(), keeper, victim, obj );
         return;
     }
     else
@@ -280,7 +280,7 @@ OBJ_FUN(objfun_cast_fight)
         return;
     act( "$p glows brightly at $n!", victim, obj, NULL, TO_ROOM );
     act( "$p glows brightly at you!", victim, obj, NULL, TO_CHAR );
-    obj_cast_spell( sn, obj->level, keeper, victim, obj );
+    obj_cast_spell( sn, obj->getLevel(), keeper, victim, obj );
     return;
 }
 
@@ -306,7 +306,7 @@ OBJ_FUN(objfun_sword_aggro)
     for ( vch = keeper->in_room->first_person; vch != NULL; vch = vch->next_in_room )
     {
         if ( IS_NPC( vch )
-                && ( vch->level > keeper->level )
+                && ( vch->getLevel() > keeper->getLevel() )
                 && vch->act.test(ACT_AGGRESSIVE) && vch->fighting == NULL && number_bits( 4 ) == 0 )
         {
             act( "$p carried by $n glows in $s hands.", keeper, obj, NULL, TO_ROOM );
@@ -385,7 +385,7 @@ OBJ_FUN(objfun_flaming)
         return;
     act( "$p flames at $n!", victim, obj, NULL, TO_ROOM );
     act( "$p flames brightly at you!", victim, obj, NULL, TO_CHAR );
-    obj_cast_spell( sn, obj->level, keeper, victim, obj );
+    obj_cast_spell( sn, obj->getLevel(), keeper, victim, obj );
     return;
 }
 
@@ -450,7 +450,7 @@ OBJ_FUN(objfun_healing)
         return;
     act( "$p blankets $n @@Win a @@mhealing @@Waura@@N!", keeper, obj, NULL, TO_ROOM );
     act( "$p blankets you in a @@mhealing @@Waura@@N!", keeper, obj, NULL, TO_CHAR );
-    obj_cast_spell( sn, obj->level, keeper, keeper, obj );
+    obj_cast_spell( sn, obj->getLevel(), keeper, keeper, obj );
     return;
 }
 
@@ -517,7 +517,7 @@ OBJ_FUN(objfun_dispeller)
         return;
     act( "$p @@apeers@@N deeply into the mind of $n!", victim, obj, NULL, TO_ROOM );
     act( "$p @@apeers @@Ninto your thoughts!", victim, obj, NULL, TO_CHAR );
-    obj_cast_spell( sn, obj->level, keeper, victim, obj );
+    obj_cast_spell( sn, obj->getLevel(), keeper, victim, obj );
     return;
 }
 
@@ -528,6 +528,6 @@ OBJ_FUN(objfun_regen)
 
     if ( obj->wear_loc < 0 )
         return;
-    keeper->hit = UMIN( keeper->max_hit, keeper->hit + ( number_range( obj->level / 20, obj->level / 5 ) ) );
+    keeper->hit = UMIN( keeper->max_hit, keeper->hit + ( number_range( obj->getLevel() / 20, obj->getLevel() / 5 ) ) );
     return;
 }

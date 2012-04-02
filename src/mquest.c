@@ -940,7 +940,7 @@ void generate_killing_quest( CHAR_DATA *ch )
     return;
 }
 
-CHAR_DATA *get_quest_kill( int min_lev, int max_lev, CHAR_DATA *ch )
+CHAR_DATA *get_quest_kill( uint_t min_lev, uint_t max_lev, CHAR_DATA *ch )
 {
     CHAR_DATA *mob = NULL;
     list<CHAR_DATA *>::iterator li;
@@ -1057,7 +1057,7 @@ void generate_retrieval_quest( CHAR_DATA *ch )
     return;
 }
 
-OBJ_DATA *get_quest_item( int min_lev, int max_lev, CHAR_DATA *ch )
+OBJ_DATA *get_quest_item( uint_t min_lev, uint_t max_lev, CHAR_DATA *ch )
 {
     OBJ_DATA *obj = NULL;
     int i = number_range(0, obj_index_list.size() - 1);
@@ -1086,8 +1086,8 @@ OBJ_DATA *get_quest_item( int min_lev, int max_lev, CHAR_DATA *ch )
                     || (obj->carried_by != NULL && (!IS_NPC(obj->carried_by)
                                                     || (IS_NPC(obj->carried_by) && obj->carried_by->npcdata->pIndexData->pShop != NULL)))  /* held by PC or held by NPC that is a shopkeeper */
                     || (obj->weight > 15)
-                    || (obj->level > max_lev)
-                    || (obj->level < min_lev))
+                    || (obj->getLevel() > max_lev)
+                    || (obj->getLevel() < min_lev))
                 continue;
 
             if ( number_percent() < 5 ) /* Add variety to actually selecting the first obj we find in the obj_list */
@@ -1108,8 +1108,8 @@ OBJ_DATA *get_quest_item( int min_lev, int max_lev, CHAR_DATA *ch )
                     || (obj->carried_by != NULL && (!IS_NPC(obj->carried_by)
                                                     || (IS_NPC(obj->carried_by) && obj->carried_by->npcdata->pIndexData->pShop != NULL))) /* held by PC or held by NPC that is a shopkeeper */
                     || (obj->weight > 15)
-                    || (obj->level > max_lev)
-                    || (obj->level < min_lev))
+                    || (obj->getLevel() > max_lev)
+                    || (obj->getLevel() < min_lev))
                 continue;
 
             if ( number_percent() < 5 ) /* Add variety to actually selecting the first obj we find in the obj_list */

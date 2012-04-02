@@ -105,9 +105,8 @@
 /* Calculate mana cost */
 int mana_cost( CHAR_DATA * ch, int sn )
 {
-    int best;
+    uint_t best, skill_lev;
     int foo;
-    int skill_lev;
     float cost, mincost;
     int p_class = 0;
 
@@ -132,11 +131,11 @@ int mana_cost( CHAR_DATA * ch, int sn )
     }
     else
     {
-        best = -1;
+        best = 0;
         for ( foo = 0; foo < MAX_CLASS; foo++ )
-            if ( ch->lvl[foo] >= skill_table[sn].skill_level[foo] && ch->lvl[foo] > best )
+            if ( ch->getLevel( THING_LEVEL_TIER1, foo ) >= skill_table[sn].skill_level[foo] && ch->getLevel( THING_LEVEL_TIER1, foo ) > best )
             {
-                best = ch->lvl[foo];
+                best = ch->getLevel( THING_LEVEL_TIER1, foo );
                 p_class = foo;
             }
     }
@@ -147,7 +146,7 @@ int mana_cost( CHAR_DATA * ch, int sn )
             best = ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) * 4;
     }
 
-    if ( ( best == -1 ) && ( IS_NPC( ch ) ) )
+    if ( ( best == uintmin_t ) && ( IS_NPC( ch ) ) )
     {
         if ( ( ch->act.test(ACT_INTELLIGENT ) ) && ( sn == skill_lookup( "ethereal" ) ) )
         {
@@ -158,7 +157,7 @@ int mana_cost( CHAR_DATA * ch, int sn )
             return 1000;
         }
     }
-    else if ( ( best == -1 ) && ( ( !IS_NPC( ch ) ) && ( !is_name( skill_table[sn].name, race_table[ch->race].skill ) ) ) )
+    else if ( ( best == uintmin_t ) && ( ( !IS_NPC( ch ) ) && ( !is_name( skill_table[sn].name, race_table[ch->race].skill ) ) ) )
         return ( 1000 );
 
 
@@ -178,7 +177,7 @@ int mana_cost( CHAR_DATA * ch, int sn )
     if ( IS_VAMP( ch ) && ( skill_table[sn].flag2 == VAMP ) )
         mincost = skill_table[sn].min_mana;
     if ( IS_NPC( ch ) && ch->act.test(ACT_INTELLIGENT ) )
-        mincost = skill_table[sn].min_mana + ( 200 - ch->level );
+        mincost = skill_table[sn].min_mana + ( 200 - ch->getLevel() );
     if ( skill_table[sn].flag2 == WOLF )
     {
         if ( IS_NPC( ch ) )
@@ -377,7 +376,7 @@ void say_spell( CHAR_DATA * ch, int sn )
  */
 bool saves_spell( int level, CHAR_DATA * victim )
 {
-    int save;
+    uint_t save;
     bool saved = FALSE;
     save = 40 +
            ( ( victim->getLevel( true ) > 60 ?
@@ -399,7 +398,7 @@ bool saves_spell( int level, CHAR_DATA * victim )
     if ( number_percent(  ) < save )
         saved = TRUE;
 
-    snprintf( log_buf, (2 * MIL), "%s lvl %d wismod %d savemod %d save total %d against level %d, %s ).",
+    snprintf( log_buf, (2 * MIL), "%s lvl %lu wismod %d savemod %d save total %lu against level %d, %s ).",
               victim->getName_(), victim->getLevel( true ),
               wis_app[get_curr_wis( victim )].spell_save,
               victim->saving_throw, save, level, ( saved ? "@@aSAVED@@N" : "@@eFAILED@@N" ) );
@@ -509,11 +508,11 @@ void cast( CHAR_DATA * ch, char *argument )
     void *vo;
     int mana;
     int sn;
-    int best;   /* The best class to use for the job :P */
+    uint_t cast_chance = uintmin_t, best = uintmin_t;
     int cnt;
     bool char_login = FALSE;
-    int cast_chance = 0;
     bool multi_cast = FALSE;
+    bool can_cast = false;
     /* ZENFIX --ch's are surviving multiple kills per combat round */
 
     if ( !IS_NPC( ch ) && ( ch->desc != NULL ) && ch->desc->getConnectionState( CON_SETTING_STATS ) )
@@ -521,7 +520,7 @@ void cast( CHAR_DATA * ch, char *argument )
 
 
     /*
-     * Modified to reference ch's highest ch->lvl[] value which
+     * Modified to reference ch's highest ch->getLevel( THING_LEVEL_TIER1, ] value which
      * * apllies to the spell.  -S-
      */
 
@@ -544,8 +543,6 @@ void cast( CHAR_DATA * ch, char *argument )
         send_to_char( "Cast which what where?\r\n", ch );
         return;
     }
-
-    best = -1;  /* Default 'no way' value */
 
     if ( ( sn = skill_lookup( arg1 ) ) == -1 )
     {
@@ -571,25 +568,25 @@ void cast( CHAR_DATA * ch, char *argument )
         best = UMIN( 90, ch->getLevel( true ) );
         if ( ( skill_table[sn].flag1 == REMORT )
                 && ( ( ( ch->act.test(ACT_PET ) ) || ( IS_AFFECTED( ch, AFF_CHARM ) ) ) && ( ch->rider == NULL ) ) )
-            best = -1;
+            can_cast = false;
 
 
 
         if ( skill_table[sn].flag1 == ADEPT )
-            best = -1;
+            can_cast = false;
         if ( ( skill_table[sn].flag2 == VAMP ) || ( skill_table[sn].flag2 == WOLF ) )
-            best = -1;
+            can_cast = false;
 
     }
     else
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
         {
-            if ( ( ( ch->lvl[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == MORTAL ) )
-                    && best < ch->lvl[cnt] )
-                best = ch->lvl[cnt];
-            if ( ( ( ch->lvl2[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == REMORT ) )
-                    && best < ch->lvl2[cnt] )
-                best = ch->lvl[cnt];
+            if ( ( ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == MORTAL ) )
+                    && best < ch->getLevel( THING_LEVEL_TIER1, cnt ) )
+                best = ch->getLevel( THING_LEVEL_TIER1, cnt );
+            if ( ( ( ch->getLevel( THING_LEVEL_TIER2, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == REMORT ) )
+                    && best < ch->getLevel( THING_LEVEL_TIER2, cnt ) )
+                best = ch->getLevel( THING_LEVEL_TIER1, cnt );
         }
     if ( !IS_NPC( ch ) )
         if ( ( IS_VAMP( ch ) ) && ( skill_table[sn].flag2 == VAMP ) )
@@ -597,7 +594,7 @@ void cast( CHAR_DATA * ch, char *argument )
     if ( IS_ADEPT(ch) && ( skill_table[sn].flag1 == ADEPT ) )
         best = ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) * 4;
     if ( IS_NPC( ch ) && ( skill_table[sn].flag1 == ADEPT ) )
-        best = -1;
+        can_cast = false;
     if ( !IS_NPC( ch ) )
         if ( skill_table[sn].flag2 == WOLF && IS_WOLF( ch ) )
             best = ch->pcdata->super->level * 4;
@@ -608,7 +605,7 @@ void cast( CHAR_DATA * ch, char *argument )
     if ( ( !IS_NPC( ch ) ) && ( is_name( skill_table[sn].name, race_table[ch->race].skill ) ) )
         best = 60;
 
-    if ( ( best == -1 )
+    if ( ( !can_cast )
             || ( ( skill_table[sn].flag2 == VAMP )
                  && ( !IS_VAMP( ch ) ) ) || ( ( skill_table[sn].flag2 == WOLF ) && ( !IS_WOLF( ch ) ) ) )
     {
@@ -782,7 +779,7 @@ void cast( CHAR_DATA * ch, char *argument )
     if ( str_cmp( skill_table[sn].name, "ventriloquate" ) )
         say_spell( ch, sn );
 
-    cast_chance = ( ( IS_NPC( ch ) ? ch->level : ch->pcdata->learned[sn] ) + ( int_app[get_curr_int( ch )].spell_mod ) );
+    cast_chance = ( ( IS_NPC( ch ) ? ch->getLevel() : ch->pcdata->learned[sn] ) + ( int_app[get_curr_int( ch )].spell_mod ) );
 
     if ( !IS_NPC( ch ) && ( skill_table[sn].flag2 == NORM ) )
     {
@@ -1349,7 +1346,7 @@ bool spell_charm_person( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
         return FALSE;
     }
 
-    if ( IS_AFFECTED( ch, AFF_CHARM ) || level - 5 < victim->level || saves_spell( level, victim ) )
+    if ( IS_AFFECTED( ch, AFF_CHARM ) || level - 5 < victim->getLevel() || saves_spell( level, victim ) )
         return TRUE;
 
     if ( IS_VAMP( victim ) && ( IS_NPC( victim ) ) )
@@ -1777,7 +1774,7 @@ bool spell_dispel_magic( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     AFFECT_DATA *paf;
     AFFECT_DATA *paf_next;
     OBJ_DATA *ob;
-    int chance;
+    uint_t chance;
     if ( !IS_NPC( ch ) && IS_WOLF( ch ) && ( IS_SHIFTED( ch ) || IS_RAGED( ch ) ) )
     {
         send_to_char( "You are too @@rENRAGED @@NTo cast spells!\r\n", ch );
@@ -1835,7 +1832,7 @@ bool spell_dispel_magic( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
 
 
         if ( ( IS_AFFECTED( victim, AFF_CLOAK_REFLECTION ) )
-                && ( ch != victim ) && ( number_percent(  ) < ( victim->level - 50 ) ) )
+                && ( ch != victim ) && ( number_percent(  ) < ( victim->getLevel() - 50 ) ) )
         {
 
             act( "@@N$n's @@lc@@el@@ro@@ya@@ak@@N glows brightly as $N's spell hits it@@N!!", victim, NULL, ch, TO_ROOM );
@@ -1857,7 +1854,7 @@ bool spell_dispel_magic( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
 
 
         if ( ( IS_AFFECTED( victim, AFF_CLOAK_ABSORPTION ) )
-                && ( ch != victim ) && ( number_percent(  ) < ( victim->level - 40 ) ) )
+                && ( ch != victim ) && ( number_percent(  ) < ( victim->getLevel() - 40 ) ) )
         {
 
             act( "@@N$n's @@lcloak@@N glows brightly as $N's spell hits it, then fades@@N!!", victim, NULL, ch, TO_ROOM );
@@ -2151,7 +2148,7 @@ bool spell_enchant_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
+    if ( ch->isImmortal() && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -2170,12 +2167,12 @@ bool spell_enchant_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     paf = new AFFECT_DATA;
     paf->type = sn;
     paf->location = APPLY_HITROLL;
-    paf->modifier = UMIN( ( level / 30 ) + 1, ob->level );
+    paf->modifier = UMIN( ( level / 30 ) + 1, ob->getLevel() );
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
     paf = new AFFECT_DATA;
     paf->location = APPLY_DAMROLL;
-    paf->modifier = UMIN( ( level / 40 ) + 1, ob->level );
+    paf->modifier = UMIN( ( level / 40 ) + 1, ob->getLevel() );
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
 
@@ -2248,7 +2245,7 @@ bool spell_energy_drain( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
         return TRUE;
 
     ch->setAlignment( UMAX( -1000, ch->getAlignment() - 200 ) );
-    if ( victim->level <= 2 )
+    if ( victim->getLevel() <= 2 )
     {
         dam = ch->hit + 1;
     }
@@ -2567,14 +2564,14 @@ bool spell_identify( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
     AFFECT_DATA *paf;
 
     snprintf( buf, MSL,
-              "@@NObject '%s' is @@etype@@N %s, @@aextra flags@@N %s.\r\n@@mWorn@@N: %s, @@cWeight@@N: %d, @@lDurability@@N: %d/%d (%1.0f%%), @@yvalue@@N: %s @@N, @@rlevel@@N: %d.\r\n",
+              "@@NObject '%s' is @@etype@@N %s, @@aextra flags@@N %s.\r\n@@mWorn@@N: %s, @@cWeight@@N: %d, @@lDurability@@N: %d/%d (%1.0f%%), @@yvalue@@N: %s @@N, @@rlevel@@N: %lu.\r\n",
               ob->getDescrShort_(),
               item_type_name( ob ),
               extra_bit_name( ob->extra_flags ),
               wear_bit_name( ob->wear_flags ),
               ob->weight,
               ob->durability == 1 ? 0 : ob->durability, ob->max_durability,
-              ob->durability == 1 ? 0 : (float)(((float)ob->durability / (float)ob->max_durability) * 100), cost_to_money( ob->cost ), ob->level );
+              ob->durability == 1 ? 0 : (float)(((float)ob->durability / (float)ob->max_durability) * 100), cost_to_money( ob->cost ), ob->getLevel() );
     send_to_char( buf, ch );
 
     switch ( ob->item_type )
@@ -3067,7 +3064,7 @@ bool spell_sleep( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     CHAR_DATA *victim = ( CHAR_DATA * ) vo;
     AFFECT_DATA af;
 
-    if ( level < victim->level || saves_spell( level, victim ) )
+    if ( level < victim->getLevel() || saves_spell( level, victim ) )
         return TRUE;
 
     af.type = sn;
@@ -3126,15 +3123,15 @@ bool spell_summon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
             || victim->in_room->room_flags.test(RFLAG_SAFE)
             || victim->in_room->room_flags.test(RFLAG_NO_RECALL)
             || !victim->in_room->area->flags.test(AFLAG_NO_TELEPORT)
-            || victim->level >= level + 10
+            || victim->getLevel() >= level + 10
             || victim->fighting != NULL
             || ( IS_NPC( victim ) && saves_spell( level, victim ) )
-            || room_is_private( ch->in_room ) || ( ch->in_room->area->max_level < ( victim->level - 15 ) ) )
+            || room_is_private( ch->in_room ) || ( ch->in_room->area->max_level < ( victim->getLevel() - 15 ) ) )
     {
         send_to_char( "You failed.\r\n", ch );
         return TRUE;
     }
-    if ( ( victim->act.test(ACT_NO_SUMMON ) ) || ( IS_NPC( victim ) && ( victim->level > ( level - 21 ) ) ) )
+    if ( ( victim->act.test(ACT_NO_SUMMON ) ) || ( IS_NPC( victim ) && ( victim->getLevel() > ( level - 21 ) ) ) )
     {
         send_to_char( "You seemed unable to snatch your victim!\r\n", ch );
         send_to_char( "You feel a slight tugging sensation.\r\n", victim );
@@ -3251,7 +3248,7 @@ bool spell_word_of_recall( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
         return FALSE;
     }
 
-    if ( IS_NPC( victim ) || victim->level < 6 )
+    if ( IS_NPC( victim ) || victim->getLevel() < 6 )
         location = get_room_index( ROOM_VNUM_TEMPLE );
     else
         location = get_room_index( race_table[victim->race].recall );
@@ -3759,7 +3756,7 @@ bool spell_phobia( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     CHAR_DATA *victim = ( CHAR_DATA * ) vo;
     int dam;
 
-    if ( ( victim->level ) > ( level + 8 ) )
+    if ( ( victim->getLevel() ) > ( level + 8 ) )
     {
         send_to_char( "Your spell fails to take affect!\r\n", ch );
         return TRUE;
@@ -3910,10 +3907,10 @@ bool spell_suffocate( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
 
     dam = dice( level / 3, 2 );
 
-    if ( ( level + 5 ) > victim->level )
-        dam += ( ( ( level + 5 ) - victim->level ) * 2 );
+    if ( ( level + 5 ) > victim->getLevel() )
+        dam += ( ( ( level + 5 ) - victim->getLevel() ) * 2 );
     else
-        dam -= ( ( victim->level - level ) * 2 );
+        dam -= ( ( victim->getLevel() - level ) * 2 );
 
     act( "$n chokes and gags!", victim, NULL, NULL, TO_ROOM );
     send_to_char( "You feel your throat squeezed by an invisible force!\r\n", victim );
@@ -3930,7 +3927,7 @@ bool spell_enhance_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
+    if ( ch->isImmortal() && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -3982,7 +3979,7 @@ bool spell_mind_bolt( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
     int dam;
 
 
-    cnt = ( level >= 12 ) + ( level >= 30 ) + ( level >= 60 ) + ( ch->level >= 75 );
+    cnt = ( level >= 12 ) + ( level >= 30 ) + ( level >= 60 ) + ( ch->getLevel() >= 75 );
     for ( foo = 0; foo < cnt; foo++ )
     {
         if ( number_range( 0, 99 ) < 30 )
@@ -4093,7 +4090,7 @@ bool spell_dimension_blade( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DAT
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
+    if ( ch->isImmortal() && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -4178,7 +4175,7 @@ bool spell_animate( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
         act( "$n's eyes glow black!", corpse, NULL, NULL, TO_ROOM );
     }
 
-    corpse->level = ob->level; /* Level of (N)PC before death */
+    corpse->setLevel( ob->getLevel() ); /* Level of (N)PC before death */
     corpse->max_hit = dice( 5, level );
     corpse->hit = corpse->max_hit;
     corpse->max_move = dice( 10, level );
@@ -4331,12 +4328,12 @@ bool spell_know_critical( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
 bool spell_calm( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
 {
     CHAR_DATA *ppl;
-    int chance;
+    uint_t chance;
 
     for ( ppl = ch->in_room->first_person; ppl != NULL; ppl = ppl->next_in_room )
         if ( IS_NPC( ppl ) && ppl != ch )
         {
-            chance = ( ( IS_NPC( ch ) ? 50 : ch->pcdata->learned[sn] / 2 ) + ( 5 * ( level - ppl->level ) ) );
+            chance = ( ( IS_NPC( ch ) ? 50 : ch->pcdata->learned[sn] / 2 ) + ( 5 * ( level - ppl->getLevel() ) ) );
             if ( number_percent(  ) < chance )
                 stop_fighting( ppl );
         }
@@ -4371,7 +4368,7 @@ bool spell_hypnosis( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
         return FALSE;
     }
 
-    if ( IS_AFFECTED( ch, AFF_CHARM ) || level - 5 < victim->level || saves_spell( level, victim ) )
+    if ( IS_AFFECTED( ch, AFF_CHARM ) || level - 5 < victim->getLevel() || saves_spell( level, victim ) )
         return TRUE;
     if ( IS_VAMP( victim ) && ( IS_NPC( victim ) ) )
     {
@@ -4625,10 +4622,10 @@ bool spell_stalker( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
     char_to_room( stalker, ch->in_room );
     act( "$n appears before you suddenly.", stalker, NULL, NULL, TO_ROOM );
 
-    stalker->level = victim->level;
+    stalker->setLevel( victim->getLevel() );
     stalker->max_hit = victim->max_hit;
     stalker->hit = stalker->max_hit;
-    stalker->setExperience( victim->level * 10 );  /* not much exp :P */
+    stalker->setExperience( victim->getLevel() * 10 );  /* not much exp :P */
 
     if ( set_hunt( stalker, ch, victim, NULL, HUNT_MERC, HUNT_CR ) )
         act( "$n sniffs the air in search of $s prey.", stalker, NULL, NULL, TO_ROOM );
@@ -4638,7 +4635,7 @@ bool spell_stalker( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
 
         slot = skill_lookup( "hellspawn" );
         if ( slot != 0 ) /* Check to be sure... should never == 0 */
-            ( *skill_table[slot].spell_fun ) ( slot, stalker->level, stalker, ch, NULL );
+            ( *skill_table[slot].spell_fun ) ( slot, stalker->getLevel(), stalker, ch, NULL );
 
         do_say( stalker, "How dare you waste my time!!" );
         act( "$n returns to the dark planes, vanishing suddenly!", stalker, NULL, NULL, TO_ROOM );
@@ -5135,7 +5132,7 @@ bool spell_poison_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
+    if ( ch->isImmortal() && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -5163,7 +5160,7 @@ bool spell_poison_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
     paf = new AFFECT_DATA;
     paf->type = sn;
     paf->location = APPLY_DAMROLL;
-    paf->modifier = UMIN( ( level / 30 ) + 1, ob->level );
+    paf->modifier = UMIN( ( level / 30 ) + 1, ob->getLevel() );
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
     return TRUE;
@@ -5827,7 +5824,7 @@ bool spell_cloak_flaming( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
 
 
     af.type = sn;
-    af.duration = ch->level / 8;
+    af.duration = ch->getLevel() / 8;
     af.location = 0;
     af.modifier = 0;
     af.bitvector = AFF_CLOAK_FLAMING;
@@ -5849,7 +5846,7 @@ bool spell_cloak_reflect( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
 
 
     af.type = sn;
-    af.duration = ch->level / 8;
+    af.duration = ch->getLevel() / 8;
     af.location = 0;
     af.modifier = 0;
     af.bitvector = AFF_CLOAK_REFLECTION;
@@ -5870,7 +5867,7 @@ bool spell_cloak_absorb( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
 
 
     af.type = sn;
-    af.duration = ch->level / 8;
+    af.duration = ch->getLevel() / 8;
     af.location = 0;
     af.modifier = 0;
     af.bitvector = AFF_CLOAK_ABSORPTION;
@@ -5929,8 +5926,7 @@ bool spell_room_dispel( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     ROOM_INDEX_DATA *room;
     ROOM_AFFECT_DATA *raf;
     ROOM_AFFECT_DATA *raf_next;
-    int chance = 0;
-
+    uint_t chance = 0;
 
     room = ch->in_room;
 
@@ -5940,7 +5936,7 @@ bool spell_room_dispel( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     if ( IS_NPC( ch ) && ch->act.test(ACT_INTELLIGENT ) )
         chance = 1000;
     else
-        chance = ch->level + 20;
+        chance = ch->getLevel() + 20;
 
 
     act( "$n gestures demonically at the magical spells around the room.", ch, NULL, NULL, TO_ROOM );
@@ -6037,7 +6033,7 @@ bool spell_condense_soul( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
         return FALSE;
     }
 
-    if ( ob->level < 80 )
+    if ( ob->getLevel() < MAX_TIER1_LEVEL )
     {
         send_to_char( "Bah!! That soul is to weak to use!!\r\n", ch );
         return FALSE;
@@ -6084,7 +6080,7 @@ bool spell_infuse( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     /*
      * Quick way to stop imms (Bash?) enchanting weapons for players
      */
-    if ( ch->isImmortal() && ch->level < MAX_LEVEL )
+    if ( ch->isImmortal() && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Nothing Happens.\r\n", ch );
         return FALSE;
@@ -6126,26 +6122,26 @@ bool spell_infuse( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     paf = new AFFECT_DATA;
     paf->type = sn;
     paf->location = APPLY_DAMROLL;
-    paf->modifier = ( obj_soul->level / 8 );
+    paf->modifier = ( obj_soul->getLevel() / 8 );
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
     paf = new AFFECT_DATA;
     paf->type = sn;
     paf->location = APPLY_AC;
-    paf->modifier = ( obj_soul->level / 2 );
+    paf->modifier = ( obj_soul->getLevel() / 2 );
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
     paf = new AFFECT_DATA;
     paf->type = sn;
     paf->location = APPLY_MANA;
-    paf->modifier = obj_soul->level / 3;
+    paf->modifier = obj_soul->getLevel() / 3;
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
 
     paf = new AFFECT_DATA;
     paf->type = sn;
     paf->location = APPLY_HITROLL;
-    paf->modifier = ( obj_soul->level / 8 );
+    paf->modifier = ( obj_soul->getLevel() / 8 );
     LINK( paf, ob->first_apply, ob->last_apply, next, prev );
 
     ob->extra_flags.set(ITEM_EXTRA_NO_DISARM);
@@ -6678,7 +6674,7 @@ bool spell_retri_strike( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
                 act( "@@WYou are @@eimmolated@@N by the fury released from the $p@@W, and fall to the ground!", vch, staff_obj,
                      NULL, TO_CHAR );
                 if ( !sp_damage
-                        ( obj, ch, vch, number_range( staff_obj->level * 6, staff_obj->level * 10 ), REALM_LIGHT, sn, FALSE ) )
+                        ( obj, ch, vch, number_range( staff_obj->getLevel() * 6, staff_obj->getLevel() * 10 ), REALM_LIGHT, sn, FALSE ) )
                     continue;
                 for ( heated_item = vch->first_carry; heated_item != NULL; heated_item = heated_item->next_in_carry_list )
                 {

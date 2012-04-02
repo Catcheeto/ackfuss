@@ -1397,7 +1397,7 @@ DO_FUN(do_score)
 
     if ( ch->isAdept() )
     {
-        snprintf( buf, MSL, "@@WADEPT@@N: %s ", ch->get_whoname() );
+        snprintf( buf, MSL, "@@WADEPT@@N: %s ", ch->getNameWho_() );
         buf2[0] = '\0';
         strncat( buf2, buf, MSL - 1 );
         snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
@@ -4224,8 +4224,7 @@ DO_FUN(do_gain)
         ch->incrLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT, 1 );
         snprintf( buf, MSL, "%s @@W advances in the way of the Adept!!\r\n", ch->getName_() );
         info( buf, 1 );
-        free_string( ch->pcdata->who_name );
-        ch->pcdata->who_name = str_dup( ch->get_whoname() );
+        ch->setNameWho( ch->getNameWho() );
         do_save( ch, "auto" );
         if ( ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) == 1 )
             ch->setExperience( ch->getExperience() / 1000 );
@@ -4362,13 +4361,11 @@ DO_FUN(do_assassinate)
         return;
     }
 
-
     if ( money_value(ch->money) < cost )
     {
         act( "$N tells you, 'You can't afford my services!'", ch, NULL, mob, TO_CHAR );
         return;
     }
-
 
     if ( !set_hunt( mob, ch, victim, NULL, HUNT_WORLD | HUNT_MERC, HUNT_INFORM | HUNT_CR ) )
     {
@@ -4700,7 +4697,7 @@ DO_FUN(do_worth)
     {
 
         cost = exp_to_level_adept( ch );
-        snprintf( buf, MSL, " %-14s  %9d %9lu.\r\n", ch->get_whoname(), cost, UMAX( 0, cost - ch->getExperience() ) );
+        snprintf( buf, MSL, " %-14s  %9d %9lu.\r\n", ch->getNameWho_(), cost, UMAX( 0, cost - ch->getExperience() ) );
         send_to_char( buf, ch );
         return;
     }
@@ -4784,11 +4781,11 @@ DO_FUN(do_whois)
     snprintf( buf, MSL, "-=-=-=-=-=-=-=-=-=-=- %9s -=-=-=-=-=-=-=-=-=-=-\r\n", victim->getName_() );
     if ( victim->isImmortal() )
     {
-        snprintf( buf + strlen( buf ), MSL, " [ %3s ]\r\n", victim->pcdata->who_name );
+        snprintf( buf + strlen( buf ), MSL, " [ %3s ]\r\n", victim->getNameWho_() );
     }
     else if ( victim->isAdept() )
     {
-        snprintf( buf + strlen( buf ), MSL, " %s \r\n", victim->get_whoname() );
+        snprintf( buf + strlen( buf ), MSL, " %s \r\n", victim->getNameWho_() );
     }
     else
     {

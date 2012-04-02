@@ -210,6 +210,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
 
     fprintf( fp, "Revision       %d\n", SAVE_REVISION );
     fprintf( fp, "Name           %s~\n", ch->getName_() );
+    fprintf( fp, "NameWho        %s~\n", ch->getNameWho_() );
 
     outstr.clear();
     fprintf( fp, "Act            " );
@@ -245,22 +246,19 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "LoginSex       %d\n", ch->pcdata->login_sex );
     fprintf( fp, "Class          %d\n", ch->p_class );
     fprintf( fp, "Race           %d\n", ch->race );
-    fprintf( fp, "Level          %d\n", ch->level );
     if ( !IS_NPC(ch) )
     {
         fprintf( fp, "Sentence       %d\n", ch->pcdata->sentence );
         fprintf( fp, "Invis          %lu\n", ch->pcdata->invis );
     }
 
-    fprintf( fp, "m/c            " );
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        fprintf( fp, "%2d ", ch->lvl[cnt] );
-    fprintf( fp, "\n" );
-
-    fprintf( fp, "Remort         " );
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        fprintf( fp, "%2d ", ch->lvl2[cnt] );
-    fprintf( fp, "\n" );
+    for ( uint_t i = 0; i < MAX_THING_LEVEL_TIER; i++ )
+    {
+        fprintf( fp, "Tier%lu ", i + 1 ); // +1 for easier logical readability
+        for ( uint_t x = 0; x < MAX_THING_LEVEL_TIER_CLASS; x++ )
+            fprintf( fp, "%lu ", ch->getLevel( i, x ) );
+        fprintf( fp, "\n" );
+    }
 
     fprintf( fp, "Trust          %d\n", ch->trust );
     fprintf( fp, "Wizbit         %d\n", ch->wizbit );
@@ -335,10 +333,6 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "Roomenter      %s~\n", ch->pcdata->room_enter );
         fprintf( fp, "Roomexit       %s~\n", ch->pcdata->room_exit );
         fprintf( fp, "Title          %s~\n", ch->pcdata->title );
-        /*
-         * We add a '*' to preserve leading spaces... strip * on load
-         */
-        fprintf( fp, "Whoname        *%s~\n", ch->pcdata->who_name );
         fprintf( fp, "Host           ");
         for ( cnt = 0; cnt < MAX_HOSTS; cnt++ )
             fprintf(fp, "%s~", ch->pcdata->host[cnt]);
@@ -434,7 +428,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "SupEnergyMax   %d\n", ch->pcdata->super->energy_max );
         fprintf( fp, "SupExp         %d\n", ch->pcdata->super->exp );
         fprintf( fp, "SupGeneration  %d\n", ch->pcdata->super->generation );
-        fprintf( fp, "SupLevel       %d\n", ch->pcdata->super->level );
+        fprintf( fp, "SupLevel       %lu\n", ch->pcdata->super->level );
         fprintf( fp, "SupPracs       %d\n", ch->pcdata->super->pracs );
         fprintf( fp, "SupSkillLearn  %d\n", ch->pcdata->super->skills_learned );
         fprintf( fp, "SupSkillMax    %d\n", ch->pcdata->super->skills_max );
@@ -453,7 +447,7 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         {
             if ( skill_table[sn].name != NULL && ch->pcdata->learned[sn] > 0 )
             {
-                fprintf( fp, "Skill          %d '%s'\n", ch->pcdata->learned[sn], skill_table[sn].name );
+                fprintf( fp, "Skill          %lu '%s'\n", ch->pcdata->learned[sn], skill_table[sn].name );
             }
         }
         imc_savechar( ch, fp );
@@ -498,7 +492,7 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
      * Also bypass no-save objects -S-
      */
 
-    if ( ch->getLevel( true ) + 5 < ( obj->level )
+    if ( ch->getLevel( true ) + 5 < ( obj->getLevel() )
             || obj->item_type == ITEM_KEY || obj->item_type == ITEM_BEACON || IS_OBJ_STAT(obj, ITEM_EXTRA_NO_SAVE) )
         return;
 
@@ -533,7 +527,7 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
     fprintf( fp, "ClassFlags   %d\n", obj->item_apply );
     fprintf( fp, "ItemType     %d\n", obj->item_type );
     fprintf( fp, "Weight       %d\n", obj->weight );
-    fprintf( fp, "Level        %d\n", obj->level );
+    fprintf( fp, "Level        %lu\n", obj->getLevel() );
     fprintf( fp, "Timer        %d\n", obj->timer );
     fprintf( fp, "Cost         %d\n", obj->cost );
     fprintf( fp, "Values       %d %d %d %d %d %d %d %d %d %d\n",
@@ -823,7 +817,6 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 KEY( "Armor", ch->armor, fread_number( fp ) );
                 if ( !IS_NPC(ch) )
                 {
-                    KEY( "Adeptlevel", ch->pcdata->adept_level, fread_number( fp ) );
                     SKEY( "AssistMsg", ch->pcdata->assist_msg, fread_string( fp ) );
                     SKEY( "Alias_Name0", ch->pcdata->alias_name[0], fread_string( fp ) );
                     SKEY( "Alias_Name1", ch->pcdata->alias_name[1], fread_string( fp ) );
@@ -1072,7 +1065,6 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
 
 
             case 'L':
-                KEY( "Level", ch->level, fread_number( fp ) );
                 KEY_( "LongDescr", ch->setDescrLong, fread_string( fp ) );
 
                 if ( !IS_NPC( ch ) )
@@ -1123,18 +1115,6 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     fMatch = TRUE;
                     break;
                 }
-
-                if ( !str_cmp( word, "m/c" ) )
-                {
-                    switch ( cur_revision )
-                    {
-                        default:
-                            for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-                                ch->lvl[cnt] = fread_number( fp );
-                            break;
-                    }
-                    fMatch = TRUE;
-                }
                 break;
 
             case 'N':
@@ -1147,6 +1127,7 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     fMatch = TRUE;
                     break;
                 }
+                KEY_( "NameWho", ch->setNameWho, fread_string( fp ) );
                 if ( !IS_NPC(ch) )
                     KEY( "Note", ch->pcdata->last_note, fread_number( fp ) );
                 break;
@@ -1248,14 +1229,6 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                     KEY( "RulerRank", ch->pcdata->ruler_rank, fread_number( fp ) );
                 }
 
-                if ( !str_cmp( word, "Remort" ) )
-                {
-                    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-                        ch->lvl2[cnt] = fread_number( fp );
-                    fMatch = TRUE;
-                    break;
-                }
-
                 if ( !str_cmp( word, "Room" ) )
                 {
                     ch->in_room = get_room_index( fread_number( fp ) );
@@ -1311,6 +1284,15 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 break;
 
             case 'T':
+                for ( uint_t i = 0; i < MAX_THING_LEVEL_TIER; i++ )
+                {
+                    if ( !str_cmp( word, Utils::FormatString( 0, "Tier%lu", i + 1 ).c_str() ) ) // +1 for easier logical readability
+                    {
+                        Utils::Logger( 0, Utils::FormatString( 0, "Found Tier%lu", i + 1) );
+                        for ( uint_t x = 0; x < MAX_THING_LEVEL_TIER_CLASS; x++ )
+                            ch->setLevel( i, x, fread_number( fp ) );
+                    }
+                }
                 KEY( "Trust", ch->trust, fread_number( fp ) );
                 if ( !IS_NPC( ch ) )
                 {
@@ -1345,21 +1327,6 @@ void fread_char( CHAR_DATA * ch, FILE * fp )
                 }
                 KEY( "Wimpy", ch->wimpy, fread_number( fp ) );
                 KEY( "Wizbit", ch->wizbit, fread_number( fp ) );
-                if ( !str_cmp( word, "Whoname" ) && !IS_NPC( ch ) )
-                {
-                    char buf[MSL];
-
-                    if ( ch->pcdata->who_name != NULL )
-                        free_string( ch->pcdata->who_name );
-                    ch->pcdata->who_name = fread_string( fp );
-                    snprintf( buf, MSL, "%s", ch->pcdata->who_name + 1 );
-
-                    free_string( ch->pcdata->who_name );
-                    ch->pcdata->who_name = str_dup( buf );
-                    fMatch = TRUE;
-                    break;
-                }
-
                 break;
         }
 
@@ -1557,7 +1524,7 @@ void fread_obj( CHAR_DATA * ch, FILE * fp )
                 break;
 
             case 'L':
-                KEY( "Level", obj->level, fread_number( fp ) );
+                KEY_( "Level", obj->setLevel, fread_number( fp ) );
                 KEY_( "LongDescr", obj->setDescrLong, fread_string( fp ) );
                 break;
 
@@ -1861,7 +1828,7 @@ void fread_corpse( FILE * fp )
                 break;
 
             case 'L':
-                KEY( "Level", obj->level, fread_number( fp ) );
+                KEY_( "Level", obj->setLevel, fread_number( fp ) );
                 KEY_( "LongDescr", obj->setDescrLong, fread_string( fp ) );
                 break;
 
@@ -2065,7 +2032,7 @@ void fwrite_corpse( OBJ_DATA * obj, FILE * fp, int iNest )
      */
     fprintf( fp, "ItemType     %d\n", obj->item_type );
     fprintf( fp, "Weight       %d\n", obj->weight );
-    fprintf( fp, "Level        %d\n", obj->level );
+    fprintf( fp, "Level        %lu\n", obj->getLevel() );
     fprintf( fp, "Timer        %d\n", obj->timer );
     fprintf( fp, "Cost         %d\n", obj->cost );
     fprintf( fp, "Values       %d %d %d %d\n", obj->value[0], obj->value[1], obj->value[2], obj->value[3] );
