@@ -141,7 +141,7 @@ DO_FUN(do_mount)
             return;
         }
 
-        if ( IS_NPC( ch ) || ch->pcdata->learned[gsn_mount] == 0 || ( ch->get_level("psuedo") < mount->get_level("psuedo") ) )
+        if ( IS_NPC( ch ) || ch->pcdata->learned[gsn_mount] == 0 || ( ch->getLevel( true ) < mount->getLevel( true ) ) )
         {
             act( "You are not skillful enough to ride $N.", ch, NULL, mount, TO_CHAR );
             return;

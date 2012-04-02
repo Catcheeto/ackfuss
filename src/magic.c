@@ -115,7 +115,7 @@ int mana_cost( CHAR_DATA * ch, int sn )
 
     if ( IS_NPC( ch ) )
     {
-        best = ch->get_level("psuedo");
+        best = ch->getLevel( true );
         for ( foo = 0; foo < MAX_CLASS; foo++ )
             if ( best >= skill_table[sn].skill_level[foo] )
             {
@@ -143,8 +143,8 @@ int mana_cost( CHAR_DATA * ch, int sn )
     if ( skill_table[sn].flag1 == ADEPT )
     {
         best = -1;
-        if ( IS_ADEPT(ch) && ch->get_level("adept") >= skill_table[sn].skill_level[0] )
-            best = ch->get_level("adept") * 4;
+        if ( IS_ADEPT(ch) && ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) >= skill_table[sn].skill_level[0] )
+            best = ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) * 4;
     }
 
     if ( ( best == -1 ) && ( IS_NPC( ch ) ) )
@@ -380,9 +380,9 @@ bool saves_spell( int level, CHAR_DATA * victim )
     int save;
     bool saved = FALSE;
     save = 40 +
-           ( ( victim->get_level("psuedo") > 60 ?
-               victim->get_level("psuedo") * 2 / 3 :
-               victim->get_level("psuedo") ) - level - URANGE( -40, victim->saving_throw, 40 ) );
+           ( ( victim->getLevel( true ) > 60 ?
+               victim->getLevel( true ) * 2 / 3 :
+               victim->getLevel( true ) ) - level - URANGE( -40, victim->saving_throw, 40 ) );
     save -= wis_app[get_curr_wis( victim )].spell_save;
     if ( ( IS_NPC( victim ) ) && ( victim->act.test(ACT_SOLO ) ) )
         save += 20;
@@ -400,7 +400,7 @@ bool saves_spell( int level, CHAR_DATA * victim )
         saved = TRUE;
 
     snprintf( log_buf, (2 * MIL), "%s lvl %d wismod %d savemod %d save total %d against level %d, %s ).",
-              victim->getName_(), victim->get_level("psuedo"),
+              victim->getName_(), victim->getLevel( true ),
               wis_app[get_curr_wis( victim )].spell_save,
               victim->saving_throw, save, level, ( saved ? "@@aSAVED@@N" : "@@eFAILED@@N" ) );
     monitor_chan( log_buf, MONITOR_MAGIC );
@@ -568,7 +568,7 @@ void cast( CHAR_DATA * ch, char *argument )
      */
     if ( IS_NPC( ch ) )
     {
-        best = UMIN( 90, ch->get_level("psuedo") );
+        best = UMIN( 90, ch->getLevel( true ) );
         if ( ( skill_table[sn].flag1 == REMORT )
                 && ( ( ( ch->act.test(ACT_PET ) ) || ( IS_AFFECTED( ch, AFF_CHARM ) ) ) && ( ch->rider == NULL ) ) )
             best = -1;
@@ -595,7 +595,7 @@ void cast( CHAR_DATA * ch, char *argument )
         if ( ( IS_VAMP( ch ) ) && ( skill_table[sn].flag2 == VAMP ) )
             best = ch->pcdata->super->level * 4;
     if ( IS_ADEPT(ch) && ( skill_table[sn].flag1 == ADEPT ) )
-        best = ch->get_level("adept") * 4;
+        best = ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) * 4;
     if ( IS_NPC( ch ) && ( skill_table[sn].flag1 == ADEPT ) )
         best = -1;
     if ( !IS_NPC( ch ) )
@@ -837,7 +837,7 @@ void cast( CHAR_DATA * ch, char *argument )
 
 
     if ( ( MAGIC_STANCE( ch ) )
-            && ( skill_table[sn].target == TAR_CHAR_OFFENSIVE ) && ( number_range( 0, 99 ) < ch->get_level("psuedo") - 50 ) )
+            && ( skill_table[sn].target == TAR_CHAR_OFFENSIVE ) && ( number_range( 0, 99 ) < ch->getLevel( true ) - 50 ) )
     {
         mana = mana * 2 / 3;
         multi_cast = TRUE;
@@ -909,7 +909,7 @@ void cast( CHAR_DATA * ch, char *argument )
         }
     }
     if ( ( ch->stance == STANCE_MAGI )
-            && ( skill_table[sn].target == TAR_CHAR_OFFENSIVE ) && ( number_range( 0, 99 ) < ch->get_level("psuedo") - 80 ) )
+            && ( skill_table[sn].target == TAR_CHAR_OFFENSIVE ) && ( number_range( 0, 99 ) < ch->getLevel( true ) - 80 ) )
     {
         bool still_here = TRUE;
         mana = mana * 1 / 2;
@@ -1097,7 +1097,7 @@ bool spell_armor( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
         return FALSE;
     af.type = sn;
     af.duration = 24;
-    af.modifier = 20 + ch->get_level("psuedo") / 10;
+    af.modifier = 20 + ch->getLevel( true ) / 10;
     af.location = APPLY_AC;
     af.bitvector = 0;
     affect_to_char( victim, &af );
@@ -1371,7 +1371,7 @@ bool spell_charm_person( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     act( "Isn't $n just so nice?", ch, NULL, victim, TO_VICT );
     if ( ch != victim )
         send_to_char( "Ok.\r\n", ch );
-    victim->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    victim->npcdata->extract_timer = ch->getLevel( true ) / 3;
     return TRUE;
 }
 
@@ -1802,7 +1802,7 @@ bool spell_dispel_magic( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
         if ( ch == victim )
             chance = 100;
 
-        chance += ( ( ch->get_level("psuedo") - victim->get_level("psuedo") ) );
+        chance += ( ( ch->getLevel( true ) - victim->getLevel( true ) ) );
         /*
          * Bonus/penalty for difference in levels.
          */
@@ -2217,7 +2217,7 @@ bool spell_encumber( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
     }
     af.type = sn;
     af.duration = 5 + ( level / 16 );
-    af.modifier = (40 + ch->get_level("psuedo") / 5) * -1;
+    af.modifier = (40 + ch->getLevel( true ) / 5) * -1;
     af.location = APPLY_AC;
     af.bitvector = 0;
     affect_to_char( victim, &af );
@@ -3027,7 +3027,7 @@ bool spell_shield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     af.type = sn;
     af.duration = 4 + ( level / 5 );
     af.location = APPLY_AC;
-    af.modifier = 20 + ch->get_level("psuedo") / 5;
+    af.modifier = 20 + ch->getLevel( true ) / 5;
     af.bitvector = 0;
     affect_to_char( victim, &af );
     act( "$n is surrounded by a force shield.", victim, NULL, NULL, TO_ROOM );
@@ -3105,7 +3105,7 @@ bool spell_stone_skin( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
     af.type = sn;
     af.duration = 5 + ( level / 12 );
     af.location = APPLY_AC;
-    af.modifier = 40 + ch->get_level("psuedo") / 10;
+    af.modifier = 40 + ch->getLevel( true ) / 10;
     af.bitvector = 0;
     affect_to_char( victim, &af );
     act( "$n's skin turns to stone.", victim, NULL, NULL, TO_ROOM );
@@ -3367,7 +3367,7 @@ bool spell_fire_breath( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
 
     if ( !IS_NPC( ch ) )
     {
-        dam = number_range( (int)(ch->get_level("psuedo") * 1.2), (int)(ch->get_level("psuedo") * 1.6) );
+        dam = number_range( (int)(ch->getLevel( true ) * 1.2), (int)(ch->getLevel( true ) * 1.6) );
         if ( saves_spell( level, victim ) )
             dam /= 2;
         damage( ch, victim, dam, sn );
@@ -3702,7 +3702,7 @@ bool spell_barrier( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
     af.type = sn;
     af.duration = 4 + ( level / 20 );
     af.location = APPLY_AC;
-    af.modifier = 20 + ch->get_level("psuedo") / 10;
+    af.modifier = 20 + ch->getLevel( true ) / 10;
     af.bitvector = 0;
     affect_to_char( victim, &af );
 
@@ -3831,7 +3831,7 @@ bool spell_mindflame( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
             {
                 act( "$n rolls on the floor, clutching $s head in pain!", vch, NULL, NULL, TO_ROOM );
                 send_to_char( "You roll on the floor, clutching your head in pain!\r\n", vch );
-                sp_damage( obj, ch, vch, ( ch->get_level("psuedo") / 2 ) + dice( 6, 12 ),
+                sp_damage( obj, ch, vch, ( ch->getLevel( true ) / 2 ) + dice( 6, 12 ),
                            REALM_MIND | NO_REFLECT | NO_ABSORB, sn, TRUE );
             }
             continue;
@@ -3855,7 +3855,7 @@ bool spell_chain_lightning( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DAT
     /*
      * Work out starting damage.
      */
-    dam = dice( 10, ( ch->get_level("psuedo") / 2 ) );
+    dam = dice( 10, ( ch->getLevel( true ) / 2 ) );
 
     if ( obj == NULL )
     {
@@ -4044,7 +4044,7 @@ bool spell_fighting_trance( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DAT
     af.type = sn;
     af.duration = 6 + ( level / 20 );
     af.location = APPLY_HITROLL;
-    af.modifier = ch->get_level("psuedo") / 10;
+    af.modifier = ch->getLevel( true ) / 10;
     af.bitvector = 0;
     affect_to_char( victim, &af );
 
@@ -4053,11 +4053,11 @@ bool spell_fighting_trance( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DAT
     affect_to_char( victim, &af );
 
     af.location = APPLY_DAMROLL;
-    af.modifier = ch->get_level("psuedo") / 10;
+    af.modifier = ch->getLevel( true ) / 10;
     affect_to_char( victim, &af );
 
     af.location = APPLY_AC;
-    af.modifier = 10 + ch->get_level("psuedo") / 10;
+    af.modifier = 10 + ch->getLevel( true ) / 10;
     affect_to_char( victim, &af );
     send_to_char( "You feel much stronger.\r\n", victim );
     act( "$n looks much stronger.", victim, NULL, NULL, TO_ROOM );
@@ -4077,7 +4077,7 @@ bool spell_phase( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
     af.type = sn;
     af.duration = 3 + ( level / 20 );
     af.location = APPLY_AC;
-    af.modifier = 10 + ch->get_level("psuedo") / 10;
+    af.modifier = 10 + ch->getLevel( true ) / 10;
     af.bitvector = AFF_PASS_DOOR;
     affect_to_char( victim, &af );
     send_to_char( "Your body switches phase.\r\n", victim );
@@ -4156,15 +4156,6 @@ bool spell_animate( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
         return FALSE;
     }
 
-    if ( ch->get_level("necromancer") < 70 )
-    {
-        send_to_char( " @@eDUE TO A ROLEPLAYING CHANGE, THIS SPELL IS NO LONGER AVAILABLE TO ANY CLASS\r\n", ch );
-        send_to_char( " BUT a high level @@dNECRMOANCER@@N.  THE SKILL HAS BEEN REMOVED FROM YOU CHARACTER, \r\n", ch );
-        send_to_char( " SORRY FOR THE INCONVIENENCE.  @@mTHANK YOU@@N :)\r\n", ch );
-        ch->pcdata->learned[sn] = 0;
-        return FALSE;
-    }
-
     if ( ob->item_type != ITEM_CORPSE_NPC )
     {
         send_to_char( "You can't animate that!\r\n", ch );
@@ -4207,7 +4198,7 @@ bool spell_animate( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj 
     do_wear( corpse, "all" );  /* FIXME: better to check items, then wear... */
     corpse->act.set(ACT_PET);
     SET_BIT( corpse->affected_by, AFF_CHARM );
-    corpse->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    corpse->npcdata->extract_timer = ch->getLevel( true ) / 3;
 
     add_follower( corpse, ch );
     return TRUE;
@@ -4401,7 +4392,7 @@ bool spell_hypnosis( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
     act( "Isn't $n just so nice?", ch, NULL, victim, TO_VICT );
     if ( ch != victim )
         send_to_char( "Ok.\r\n", ch );
-    victim->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    victim->npcdata->extract_timer = ch->getLevel( true ) / 3;
     return TRUE;
 }
 
@@ -4545,7 +4536,7 @@ bool spell_physic_crush( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
         return TRUE;
 
 
-    dam = ch->get_level("psuedo") / 2 + ( 30 * ( level > 20 ) + ( level >= 40 ) + ( level >= 60 ) + ( level >= 75 ) );
+    dam = ch->getLevel( true ) / 2 + ( 30 * ( level > 20 ) + ( level >= 40 ) + ( level >= 60 ) + ( level >= 75 ) );
 
     if ( saves_spell( level, victim ) )
         dam /= 2;
@@ -4676,7 +4667,7 @@ bool spell_mystic_armor( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     af.type = sn;
     af.duration = 4 + ( level / 3 );
     af.location = APPLY_AC;
-    af.modifier = 10 + ch->get_level("psuedo") / 8;
+    af.modifier = 10 + ch->getLevel( true ) / 8;
     af.bitvector = 0;
     affect_to_char( victim, &af );
 
@@ -4937,7 +4928,7 @@ bool spell_deflect_weapon( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
         return FALSE;
     af.type = sn;
     af.duration = (level + 2);
-    af.modifier = 40 + ch->get_level("psuedo") / 5;
+    af.modifier = 40 + ch->getLevel( true ) / 5;
     af.location = APPLY_AC;
     af.bitvector = 0;
     affect_to_char( victim, &af );
@@ -5026,7 +5017,7 @@ bool spell_morale( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj )
         af.type = sn;
         af.duration = 4 + ( level / 5 );
         af.location = APPLY_DAMROLL;
-        af.modifier = ch->get_level("psuedo") / 10;
+        af.modifier = ch->getLevel( true ) / 10;
         af.bitvector = 0;
         affect_to_char( gch, &af );
     }
@@ -5050,7 +5041,7 @@ bool spell_leadership( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
         af.type = sn;
         af.duration = 4 + ( level / 5 );
         af.location = APPLY_HITROLL;
-        af.modifier = ch->get_level("psuedo") / 10;
+        af.modifier = ch->getLevel( true ) / 10;
         af.bitvector = 0;
         affect_to_char( gch, &af );
     }
@@ -5100,7 +5091,7 @@ bool spell_waterelem( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -5131,7 +5122,7 @@ bool spell_skeleton( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
 
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -5198,7 +5189,7 @@ bool spell_fireshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
     }
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 10;
+    af.duration = ch->getLevel( true ) / 10;
     if ( char_login )
         af.duration /= 2;
     af.location = 0;
@@ -5211,8 +5202,8 @@ bool spell_fireshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
     shield->type = FLAME_SHIELD;
     shield->harmful = TRUE;
     shield->attack_dam = number_range( ( level * 3 ), ( level * 5 ) );
-    shield->percent = 10 + ( ch->get_level("psuedo") / 10 );
-    shield->hits = 5000 + ( ch->get_level("psuedo") * 10 );
+    shield->percent = 10 + ( ch->getLevel( true ) / 10 );
+    shield->hits = 5000 + ( ch->getLevel( true ) * 10 );
     shield->sn = sn;
     if ( char_login )
         shield->hits /= ( number_range( 2, 10 ) );
@@ -5252,7 +5243,7 @@ bool spell_iceshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
     }
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 15;
+    af.duration = ch->getLevel( true ) / 15;
     if ( char_login )
         af.duration /= 2;
     af.location = 0;
@@ -5265,8 +5256,8 @@ bool spell_iceshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
     shield->type = ICE_SHIELD;
     shield->harmful = FALSE;
     shield->attack_dam = 0;
-    shield->percent = 50 + ( ch->get_level("psuedo") / 6 );
-    shield->hits = 15000 + ( ch->get_level("psuedo") * 50 );
+    shield->percent = 50 + ( ch->getLevel( true ) / 6 );
+    shield->hits = 15000 + ( ch->getLevel( true ) * 50 );
     shield->sn = sn;
     if ( char_login )
         shield->hits /= ( number_range( 2, 10 ) );
@@ -5306,7 +5297,7 @@ bool spell_shockshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     }
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 7;
+    af.duration = ch->getLevel( true ) / 7;
     if ( char_login )
         af.duration /= 2;
     af.location = 0;
@@ -5319,8 +5310,8 @@ bool spell_shockshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     shield->type = SHOCK_SHIELD;
     shield->harmful = TRUE;
     shield->attack_dam = number_range( ( level * 2 ), ( level * 4 ) );
-    shield->percent = 25 + ch->get_level("psuedo") / 9;
-    shield->hits = 7000 + ch->get_level("psuedo") * 20;
+    shield->percent = 25 + ch->getLevel( true ) / 9;
+    shield->hits = 7000 + ch->getLevel( true ) * 20;
     shield->sn = sn;
     if ( char_login )
         shield->hits /= ( number_range( 2, 10 ) );
@@ -5360,7 +5351,7 @@ bool spell_shadowshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
     }
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 10;
+    af.duration = ch->getLevel( true ) / 10;
     if ( char_login )
         af.duration /= 2;
     af.location = 0;
@@ -5414,7 +5405,7 @@ bool spell_thoughtshield( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
     }
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 10;
+    af.duration = ch->getLevel( true ) / 10;
     if ( char_login )
         af.duration /= 2;
     af.location = 0;
@@ -5535,7 +5526,7 @@ bool spell_fireelem( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * obj
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -5902,7 +5893,7 @@ bool spell_cloak_adept( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
 
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 5;
+    af.duration = ch->getLevel( true ) / 5;
     af.location = 0;
     af.modifier = 0;
     af.bitvector = AFF_CLOAK_ADEPT;
@@ -5923,7 +5914,7 @@ bool spell_cloak_regen( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
 
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 10;
+    af.duration = ch->getLevel( true ) / 10;
     af.location = 0;
     af.modifier = 0;
     af.bitvector = AFF_CLOAK_REGEN;
@@ -6204,7 +6195,7 @@ bool spell_holy_armor( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
         return FALSE;
     af.type = sn;
     af.duration = 2 + ( level / 7 );
-    af.modifier = 80 + ch->get_level("psuedo") / 5;
+    af.modifier = 80 + ch->getLevel( true ) / 5;
     af.location = APPLY_AC;
     af.bitvector = 0;
     affect_to_char( victim, &af );
@@ -6253,7 +6244,7 @@ bool spell_earthelem( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6283,7 +6274,7 @@ bool spell_iron_golem( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6315,7 +6306,7 @@ bool spell_soul_thief( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6345,7 +6336,7 @@ bool spell_holy_avenger( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6375,7 +6366,7 @@ bool spell_diamond_golem( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6405,7 +6396,7 @@ bool spell_summon_pegasus( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6435,7 +6426,7 @@ bool spell_summon_nightmare( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DA
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6465,7 +6456,7 @@ bool spell_summon_beast( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6495,7 +6486,7 @@ bool spell_summon_devourer( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DAT
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6525,7 +6516,7 @@ bool spell_summon_shadow( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
      */
     summoned->act.set(ACT_PET );
     SET_BIT( summoned->affected_by, AFF_CHARM );
-    summoned->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+    summoned->npcdata->extract_timer = ch->getLevel( true ) / 3;
     add_follower( summoned, ch );
     return TRUE;
 }
@@ -6575,7 +6566,7 @@ bool spell_lava_burst( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
 
     }
 
-    dam = number_range( (int)(ch->get_level("psuedo") * 2), (int)(ch->get_level("psuedo") * 4));
+    dam = number_range( (int)(ch->getLevel( true ) * 2), (int)(ch->getLevel( true ) * 4));
     dam *= save_mod;
 
     sp_damage( obj, ch, ( CHAR_DATA * ) vo, (int)dam, REALM_FIRE, sn, TRUE );
@@ -6747,13 +6738,13 @@ bool spell_creature_bond( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
         return FALSE;
     }
     master = victim->master ? victim->master : victim;
-    if ( ( master != NULL ) && ( ch->get_level("psuedo") < ( master->get_level("psuedo") - 20 ) ) )
+    if ( ( master != NULL ) && ( ch->getLevel( true ) < ( master->getLevel( true ) - 20 ) ) )
     {
         send_to_char( "The current bond is too strong for you to overcome.\r\n", ch );
         return FALSE;
     }
 
-    if ( number_range( 0, 105 ) < ( level + ( ch->get_level("psuedo") - master->get_level("psuedo") ) ) )
+    if ( number_range( 0, 105 ) < ( level + ( ch->getLevel( true ) - master->getLevel( true ) ) ) )
     {
         if ( saves_spell( level, victim ) )
         {
@@ -6764,7 +6755,7 @@ bool spell_creature_bond( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA 
         stop_follower( victim );
         victim->act.set(ACT_PET );
         SET_BIT( victim->affected_by, AFF_CHARM );
-        victim->npcdata->extract_timer = ch->get_level("psuedo") / 3;
+        victim->npcdata->extract_timer = ch->getLevel( true ) / 3;
         add_follower( victim, ch );
     }
     else
@@ -6794,13 +6785,13 @@ bool spell_corrupt_bond( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
         return FALSE;
     }
     master = victim->master ? victim->master : victim;
-    if ( ( master != NULL ) && ( ch->get_level("psuedo") < ( master->get_level("psuedo") - 20 ) ) )
+    if ( ( master != NULL ) && ( ch->getLevel( true ) < ( master->getLevel( true ) - 20 ) ) )
     {
         send_to_char( "The current bond is too strong for you to corrupt.\r\n", ch );
         return FALSE;
     }
 
-    if ( number_range( 0, 105 ) < ( level + ( ch->get_level("psuedo") - master->get_level("psuedo") ) ) )
+    if ( number_range( 0, 105 ) < ( level + ( ch->getLevel( true ) - master->getLevel( true ) ) ) )
     {
         if ( saves_spell( level, victim ) )
         {
@@ -6844,9 +6835,9 @@ bool spell_fireblast( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
 
     if ( obj == NULL )
     {
-        dam = ( ch->get_level("psuedo") / 2 )
-              + dice( ( ch->get_level("psuedo") / 6 + ch->get_level("adept") / 2 ), 10 )
-              + dice( ( ch->get_level("psuedo") / 6 + ch->get_level("adept") / 2 ), 10 );
+        dam = ( ch->getLevel( true ) / 2 )
+              + dice( ( ch->getLevel( true ) / 6 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 ), 10 )
+              + dice( ( ch->getLevel( true ) / 6 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 ), 10 );
         act( "@@gA blast of @@efire@@g flies from $n's hands!@@N", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@gA blast of @@efire@@g flies from your hands!@@N\r\n", ch );
     }
@@ -6872,9 +6863,9 @@ bool spell_shockstorm( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
 
     if ( obj == NULL )
     {
-        dam = ( ch->get_level("psuedo") / 2 )
-              + dice( ( ch->get_level("psuedo") / 5 + ch->get_level("adept") / 2 ), 10 )
-              + dice( ( ch->get_level("psuedo") / 5 + ch->get_level("adept") / 2 ), 10 );
+        dam = ( ch->getLevel( true ) / 2 )
+              + dice( ( ch->getLevel( true ) / 5 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 ), 10 )
+              + dice( ( ch->getLevel( true ) / 5 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 ), 10 );
         act( "@@gA storm of @@lsparks@@g flies from $n's hands!@@N", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@gA storm of @@lsparks@@g flies from your hands!@@N\r\n", ch );
     }
@@ -6900,9 +6891,9 @@ bool spell_cone_cold( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * ob
 
     if ( obj == NULL )
     {
-        dam = ( ch->get_level("psuedo") / 2 )
-              + dice( ( ch->get_level("psuedo") / 5 + ch->get_level("adept") / 2 ), 10 )
-              + dice( ( ch->get_level("psuedo") / 5 + ch->get_level("adept") / 2 ), 10 );
+        dam = ( ch->getLevel( true ) / 2 )
+              + dice( ( ch->getLevel( true ) / 5 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 ), 10 )
+              + dice( ( ch->getLevel( true ) / 5 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 ), 10 );
         act( "@@gA cone of @@acold@@g bursts forth from $n's hands!@@N", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@gA cone of @@acold@@g bursts forth from your hands!@@N\r\n", ch );
     }
@@ -6928,9 +6919,9 @@ bool spell_holy_wrath( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
 
     if ( obj == NULL )
     {
-        dam = ( ch->get_level("psuedo") / 2 )
-              + dice( ( ch->get_level("psuedo") / 4 + ch->get_level("adept") ), 12 )
-              + dice( ( ch->get_level("psuedo") / 4 + ch->get_level("adept") ), 12 );
+        dam = ( ch->getLevel( true ) / 2 )
+              + dice( ( ch->getLevel( true ) / 4 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) ), 12 )
+              + dice( ( ch->getLevel( true ) / 4 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) ), 12 );
         act( "@@gA coruscating sphere of @@ylight@@g bursts forth from $n's hands!@@N", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@gA coruscating sphere of @@ylight@@g bursts forth from your hands!@@N\r\n", ch );
     }
@@ -6956,9 +6947,9 @@ bool spell_wraith_touch( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
 
     if ( obj == NULL )
     {
-        dam = ( ch->get_level("psuedo") / 3 )
-              + dice( ( ch->get_level("psuedo") / 6 + ch->get_level("adept") ), 8 )
-              + dice( ( ch->get_level("psuedo") / 6 + ch->get_level("adept") ), 8 );
+        dam = ( ch->getLevel( true ) / 3 )
+              + dice( ( ch->getLevel( true ) / 6 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) ), 8 )
+              + dice( ( ch->getLevel( true ) / 6 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) ), 8 );
         act( "@@RA @@dwraithlike hand @@Rleaps forth from $n!@@N", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@RA @@dwraithlike hand @@Rleaps forth from your hands!@@N\r\n", ch );
     }
@@ -6972,7 +6963,7 @@ bool spell_wraith_touch( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
         dam /= 2;
     act( "@@R$n is struck by the @@dwraithlike hand @@R!!@@N", victim, NULL, NULL, TO_ROOM );
     send_to_char( "@@RYou are struck by a @@dwraithlike hand @@R!!@@N\r\n", victim );
-    drain_mod = ch->get_level("psuedo") * dam / 130;
+    drain_mod = ch->getLevel( true ) * dam / 130;
     if ( sp_damage( obj, ch, victim, dam, REALM_DRAIN | NO_REFLECT | NO_ABSORB, sn, TRUE ) )
         ch->hit = UMIN( ch->max_hit, (int)( ch->hit + drain_mod ) );
     return TRUE;
@@ -6986,9 +6977,9 @@ bool spell_thought_vise( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
 
     if ( obj == NULL )
     {
-        dam = ( ch->get_level("psuedo") / 2 )
-              + dice( ( ch->get_level("psuedo") / 3 + ch->get_level("adept") ), 10 )
-              + dice( ( ch->get_level("psuedo") / 3 + ch->get_level("adept") ), 10 );
+        dam = ( ch->getLevel( true ) / 2 )
+              + dice( ( ch->getLevel( true ) / 3 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) ), 10 )
+              + dice( ( ch->getLevel( true ) / 3 + ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) ), 10 );
         act( "@@rA crushing weight brushes your mind, then is gone.@@N", ch, NULL, NULL, TO_ROOM );
         send_to_char( "@@rYou clench your mind, crushing the thoughts of your foe.\r\n@@N", ch );
     }
@@ -7016,12 +7007,12 @@ bool spell_black_curse( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     af.type = sn;
     af.duration = 2 * ( level / 8 );
     af.location = APPLY_HITROLL;
-    af.modifier = -1 * ch->get_level("psuedo") / 12 * victim->get_level("psuedo") / 10;
+    af.modifier = -1 * ch->getLevel( true ) / 12 * victim->getLevel( true ) / 10;
     af.bitvector = AFF_CURSE;
     affect_to_char( victim, &af );
 
     af.location = APPLY_AC;
-    af.modifier = -7 * ch->get_level("psuedo") / 12 * victim->get_level("psuedo") / 10;
+    af.modifier = -7 * ch->getLevel( true ) / 12 * victim->getLevel( true ) / 10;
     affect_to_char( victim, &af );
 
     send_to_char( "@@RA Cloud of @@dDespair@@R washes over you.@@N\r\n", victim );
@@ -7043,7 +7034,7 @@ bool spell_cloak_misery( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA *
 
 
     af.type = sn;
-    af.duration = ch->get_level("psuedo") / 8;
+    af.duration = ch->getLevel( true ) / 8;
     af.location = 0;
     af.modifier = 0;
     af.bitvector = 0;
@@ -7069,12 +7060,12 @@ bool spell_poison_quinine( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     af.type = sn;
     af.duration = 2 * ( level / 8 );
     af.location = APPLY_HITROLL;
-    af.modifier = -1 * ch->get_level("psuedo") / 20 * victim->get_level("psuedo") / 20;
+    af.modifier = -1 * ch->getLevel( true ) / 20 * victim->getLevel( true ) / 20;
     af.bitvector = AFF_POISON;
     affect_to_char( victim, &af );
 
     af.location = APPLY_AC;
-    af.modifier = -7 * ch->get_level("psuedo") / 20 * victim->get_level("psuedo") / 20;
+    af.modifier = -7 * ch->getLevel( true ) / 20 * victim->getLevel( true ) / 20;
     affect_to_char( victim, &af );
 
     send_to_char( "@@You feel a dart pierce your neck.@@N\r\n", victim );
@@ -7099,12 +7090,12 @@ bool spell_poison_arsenic( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
     af.type = sn;
     af.duration = 2 * ( level / 8 );
     af.location = APPLY_DAMROLL;
-    af.modifier = -1 * ch->get_level("psuedo") / 20 * victim->get_level("psuedo") / 20;
+    af.modifier = -1 * ch->getLevel( true ) / 20 * victim->getLevel( true ) / 20;
     af.bitvector = AFF_POISON;
     affect_to_char( victim, &af );
 
     af.location = APPLY_AC;
-    af.modifier = -5 * ch->get_level("psuedo") / 20 * victim->get_level("psuedo") / 20;
+    af.modifier = -5 * ch->getLevel( true ) / 20 * victim->getLevel( true ) / 20;
     affect_to_char( victim, &af );
 
     send_to_char( "@@You feel a dart pierce your neck.@@N\r\n", victim );
@@ -7118,7 +7109,7 @@ bool spell_sonic_blast( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
     CHAR_DATA *victim = ( CHAR_DATA * ) vo;
     AFFECT_DATA af;
     int dam;
-    dam = dice( ch->get_level("psuedo") / 2, 3 ) + dice( ch->get_level("psuedo") / 2, 3 );
+    dam = dice( ch->getLevel( true ) / 2, 3 ) + dice( ch->getLevel( true ) / 2, 3 );
     if ( saves_spell( level, victim ) )
         dam = dam * 2 / 3;
     if ( sp_damage( obj, ch, victim, dam, REALM_SOUND | NO_REFLECT | NO_ABSORB, sn, TRUE ) )
@@ -7128,14 +7119,14 @@ bool spell_sonic_blast( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * 
         af.type = sn;
         af.duration = ( level / 20 );
         af.location = APPLY_DAMROLL;
-        af.modifier = -1 * ch->get_level("psuedo") / 15 * victim->get_level("psuedo") / 15;
+        af.modifier = -1 * ch->getLevel( true ) / 15 * victim->getLevel( true ) / 15;
         af.bitvector = AFF_BLASTED;
         affect_to_char( victim, &af );
 
         af.type = sn;
         af.duration = ( level / 20 );
         af.location = APPLY_HITROLL;
-        af.modifier = -1 * ch->get_level("psuedo") / 15 * victim->get_level("psuedo") / 15;
+        af.modifier = -1 * ch->getLevel( true ) / 15 * victim->getLevel( true ) / 15;
         af.bitvector = AFF_BLASTED;
         affect_to_char( victim, &af );
 
@@ -7155,7 +7146,7 @@ bool spell_mystical_focus( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA
 
 
     af.type = sn;
-    af.duration = 1 + (ch->get_level("psuedo") / 7);
+    af.duration = 1 + (ch->getLevel( true ) / 7);
     af.location = 0;
     af.modifier = 0;
     af.bitvector = 0;

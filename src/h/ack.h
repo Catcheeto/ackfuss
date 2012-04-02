@@ -638,7 +638,6 @@ class pc_data
         short term_rows;
         char *title;
         char *whitelist[MAX_HOSTS]; /* Used to restrict login domains */
-        char *who_name;   /* To show on who name */
 };
 
 struct liq_type

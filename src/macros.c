@@ -109,7 +109,7 @@ void reset_gain_stats( CHAR_DATA * ch )
 
 
     if ( IS_ADEPT(ch) )
-        for ( index2 = 1; index2 <= ch->get_level("adept"); index2++ )
+        for ( index2 = 1; index2 <= ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ); index2++ )
         {
 
             add_hp = con_app[ch->pcdata->max_con].hitp + number_range( 10, 50 );
@@ -174,8 +174,8 @@ int exp_to_level_adept( CHAR_DATA * ch )
 {
     int exp;
 
-    exp = ( 30000 + ( ch->get_level("adept") * 5000 ) );
-    exp = UMAX( exp, exp * ch->get_level("adept") / 2 );
+    exp = ( 30000 + ( ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) * 5000 ) );
+    exp = UMAX( exp, exp * ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) / 2 );
     return exp;
 }
 

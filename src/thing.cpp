@@ -444,6 +444,79 @@ bool Thing::removeThing( const Thing* what )
 }
 
 // Name
+string Thing::getNameWho() const
+{
+    string output;
+
+    if ( isNPC() )
+        return output = "";
+    else if ( isImmortal() )
+    {
+        if ( m_name_who.compare( "off" ) != 0 )
+            return output = m_name_who;
+
+        switch ( getLevel() )
+        {
+            case MAX_LEVEL - 0: output = "@@l~* CREATOR *~@@N ";
+            case MAX_LEVEL - 1: output = "@@B-* SUPREME *-@@N ";
+            case MAX_LEVEL - 2: output = "@@a-=MAJOR GOD=-@@N ";
+            case MAX_LEVEL - 3: output = "@@a--MINOR GOD--@@N ";
+            case MAX_LEVEL - 4: output = "@@c - IMMORTAL -@@N ";
+        }
+
+        return output;
+    }
+    else if ( isAdept() )
+    {
+        if ( m_name_who.compare( "off" ) != 0 )
+            return output = m_name_who;
+
+        switch ( getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) )
+        {
+            case 1:  output = "@@W    Mystic    @@N";
+            case 2:  output = "@@a   Templar    @@N";
+            case 3:  output = "@@l Illusionist  @@N";
+            case 4:  output = "@@e   Crusader   @@N";
+            case 5:  output = "@@d   Warlock    @@N";
+            case 6:  output = "@@a   Paladin    @@N";
+            case 7:  output = "@@r    Ranger    @@N";
+            case 8:  output = "@@c  Gladiator   @@N";
+            case 9:  output = "@@l    Shogun    @@N";
+            case 10: output = "@@e    Shamen    @@N";
+            case 11: output = "@@r    Druid     @@N";
+            case 12: output = "@@b  Conjurer    @@N";
+            case 13: output = "@@l Elementalist @@N";
+            case 14: output = "@@m  Runemaster  @@N";
+            case 15: output = "@@d Shadowmaster @@N";
+            case 16: output = "@@b Beastmaster  @@N";
+            case 17: output = "@@R   Warlord    @@N";
+            case 18: output = "@@e  Dragonlord  @@N";
+            case 19: output = "@@d  Demonlord   @@N";
+            case 20: output = "@@m  Realm Lord  @@N";
+        }
+
+        return output;
+    }
+    else if ( isRemortal() )
+    {
+        return output = Utils::FormatString( "@@m%2lu %2lu %2lu %2lu %2lu@@N",
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_SORCERER ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_MONK ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_ASSASSIN ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_KNIGHT ),
+            getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_NECROMANCER ) );
+    }
+    else
+    {
+        return output = Utils::FormatString( "@@b%2lu %2lu %2lu %2lu %2lu@@N",
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_MAGE ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLERIC ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_THIEF ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_WARRIOR ),
+            getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_PSIONICIST ) );
+    }
+}
+
 /*
 bool Thing::IsWithinName( const char* word );
 {
@@ -519,6 +592,7 @@ Thing::Thing()
 
     // Name
     m_name.clear();
+    m_name_who.clear();
 
     // Owner
     m_owner = NULL;

@@ -104,6 +104,9 @@ class Thing {
         bool IsWithinName( const string word );*/
         string prefixName( const string name ) { return m_name.insert( 0, name ); }
         string setName( const string name ) { return m_name = name; }
+        string getNameWho() const;
+        #define getNameWho_( T ) getNameWho( T ).c_str()
+        string setNameWho( const string name ) { return m_name_who = name; }
 
         // 'Object' Manipulation
         bool dropThing( const Thing* what );
@@ -144,6 +147,7 @@ class Thing {
 
         // Name
         string m_name;
+        string m_name_who;
 
         // Owner
         Thing* m_owner;

@@ -262,8 +262,6 @@ void fwrite_char( CHAR_DATA * ch, FILE * fp )
         fprintf( fp, "%2d ", ch->lvl2[cnt] );
     fprintf( fp, "\n" );
 
-    if ( !IS_NPC(ch) )
-        fprintf( fp, "Adeptlevel     %d\n", ch->get_level("adept") );
     fprintf( fp, "Trust          %d\n", ch->trust );
     fprintf( fp, "Wizbit         %d\n", ch->wizbit );
     fprintf( fp, "Played         %d\n", ch->played + ( int )( current_time - ch->logon ) );
@@ -500,7 +498,7 @@ void fwrite_obj( CHAR_DATA * ch, OBJ_DATA * obj, FILE * fp, int iNest )
      * Also bypass no-save objects -S-
      */
 
-    if ( ch->get_level("psuedo") + 5 < ( obj->level )
+    if ( ch->getLevel( true ) + 5 < ( obj->level )
             || obj->item_type == ITEM_KEY || obj->item_type == ITEM_BEACON || IS_OBJ_STAT(obj, ITEM_EXTRA_NO_SAVE) )
         return;
 

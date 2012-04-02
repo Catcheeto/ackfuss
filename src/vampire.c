@@ -544,7 +544,7 @@ bool spell_blood_walk( int sn, int level, CHAR_DATA * ch, void *vo, OBJ_DATA * o
             || victim->in_room->room_flags.test(RFLAG_SAFE)
             || victim->act.test(ACT_NO_BLOOD)
             || victim->in_room->room_flags.test(RFLAG_NO_BLOODWALK)
-            || ( ( victim->get_level("psuedo") - ch->get_level("psuedo") ) > 20 ) )
+            || ( ( victim->getLevel( true ) - ch->getLevel( true ) ) > 20 ) )
     {
         send_to_char( "Your @@eblood@@N burns with rage, as your efforts are shaken off.\r\n", ch );
         return TRUE;

@@ -1788,7 +1788,7 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
             break;
 
         case 'L':
-            if ( !str_cmp(arg1, "level") && evaluate_tag(arg2, ch->get_level("psuedo"), value) ) { retval = true; break; }
+            if ( !str_cmp(arg1, "level") && evaluate_tag(arg2, ch->getLevel( true ), value) ) { retval = true; break; }
             break;
 
         case 'M':
@@ -1836,8 +1836,8 @@ bool check_tag( char *arg1, char *arg2, int value, CHAR_DATA *ch )
             if ( !str_cmp(arg1, "race") && !str_cmp(arg2, race_table[ch->race].race_title) ) { retval = true; break; }
             if ( !str_cmp(arg1, "remort") )
             {
-                for ( short i = 0; i < MAX_CLASS; i++ )
-                    if ( !str_cmp(arg2, remort_table[i].who_name) && ch->get_level("remortal") > 0 ) { retval = true; break; }
+                for ( short i = 0; i < MAX_THING_LEVEL_TIER2_CLASS; i++ )
+                    if ( !str_cmp(arg2, remort_table[i].who_name) && ch->isRemortal() ) { retval = true; break; }
                 break;
             }
             break;
@@ -1979,13 +1979,13 @@ const char *who( const char *what, CHAR_DATA *looker )
             d = *di;
             if ( !d->getConnectionState( CON_PLAYING ) || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                 continue;
-            if ( d->character->get_level() >= LEVEL_HERO )
+            if ( d->character->getLevel() >= LEVEL_HERO )
                 imm = true;
-            if ( d->character->get_level("adept") > 0 && d->character->get_level() < LEVEL_HERO )
+            if ( d->character->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) > 0 && d->character->getLevel() < LEVEL_HERO )
                 apt = true;
-            if ( d->character->get_level("maxremortal") > 0 && d->character->get_level("adept") < 1 && d->character->get_level() < LEVEL_HERO )
+            if ( d->character->isRemortal() && d->character->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) < 1 && d->character->getLevel() < LEVEL_HERO )
                 rmt = true;
-            if ( d->character->get_level("maxremortal") < 1 && d->character->get_level("adept") < 1 && d->character->get_level() < LEVEL_HERO )
+            if ( !d->character->isRemortal() && d->character->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) < 1 && d->character->getLevel() < LEVEL_HERO )
                 mrt = true;
             found++;
         }
@@ -1998,7 +1998,7 @@ const char *who( const char *what, CHAR_DATA *looker )
                 d = *di;
                 if ( !d->getConnectionState( CON_PLAYING ) || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
-                if ( d->character->get_level() < LEVEL_HERO )
+                if ( d->character->getLevel() < LEVEL_HERO )
                     continue;
                 pers = ( d->original != NULL ) ? d->original : d->character;
                 output += "@@R| "; output += who_pers( pers ); output += " @@R|@@N\r\n";
@@ -2013,7 +2013,7 @@ const char *who( const char *what, CHAR_DATA *looker )
                 d = *di;
                 if ( !d->getConnectionState( CON_PLAYING ) || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
-                if ( d->character->get_level("adept") < 1 || d->character->get_level() >= LEVEL_HERO )
+                if ( d->character->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) < 1 || d->character->getLevel() >= LEVEL_HERO )
                     continue;
                 pers = ( d->original != NULL ) ? d->original : d->character;
                 output += "@@R| "; output += who_pers( pers ); output += " @@R|@@N\r\n";
@@ -2028,7 +2028,7 @@ const char *who( const char *what, CHAR_DATA *looker )
                 d = *di;
                 if ( !d->getConnectionState( CON_PLAYING ) || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
-                if ( d->character->get_level("maxremortal") < 1 || d->character->get_level("adept") > 0 || d->character->get_level() >= LEVEL_HERO )
+                if ( !d->character->isRemortal() || d->character->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) > 0 || d->character->getLevel() >= LEVEL_HERO )
                     continue;
                 pers = ( d->original != NULL ) ? d->original : d->character;
                 output += "@@R| "; output += who_pers( pers ); output += " @@R|@@N\r\n";
@@ -2043,7 +2043,7 @@ const char *who( const char *what, CHAR_DATA *looker )
                 d = *di;
                 if ( !d->getConnectionState( CON_PLAYING ) || d->character->act.test(ACT_WIZINVIS) || d->character->stance == STANCE_AMBUSH )
                     continue;
-                if ( d->character->get_level("maxremortal") > 0 || d->character->get_level("adept") > 0 || d->character->get_level() >= LEVEL_HERO )
+                if ( d->character->isRemortal() || d->character->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) > 0 || d->character->getLevel() >= LEVEL_HERO )
                     continue;
                 pers = ( d->original != NULL ) ? d->original : d->character;
                 output += "@@R| "; output += who_pers( pers ); output += " @@R|@@N\r\n";
