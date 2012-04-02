@@ -984,6 +984,7 @@ void interpret( CHAR_DATA * ch, const string input )
     uint_t cmd;
     alias_call = FALSE;
     char *argument;
+    multimap<Brain*,Brain*>::iterator bi;
 
     argument = const_cast<char*>( input.c_str() );
 
@@ -1087,11 +1088,10 @@ void interpret( CHAR_DATA * ch, const string input )
 
     }
 
-    if ( ch->desc != NULL && ch->desc->snoop_by != NULL ) /* -S- Mod */
+    for ( bi = snoop_list.begin(); bi != snoop_list.end(); bi++ )
     {
-        char snp[MAX_STRING_LENGTH];
-        snprintf( snp, MSL, "[Snoop:%s] %s\r\n", ch->getName_(), logline );
-        ch->desc->snoop_by->Send( snp );
+        if ( ch->getBrain() == bi->second )
+            bi->first->Send( Utils::FormatString( 0, "[SNOOP:%s] %s\r\n ", ch->getName_(), logline ) );
     }
 
     if ( cmd_table[cmd].log != LOG_NEVER )

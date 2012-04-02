@@ -74,19 +74,24 @@ class Thing {
         bool setFlag( const uint_t flag_type, const uint_t flag_value, const bool flag_state );
 
         // Level
-        uint_t getExperience() const { return m_experience; }
         uint_t decrExperience( const uint_t amount );
+        uint_t getExperience() const { return m_experience; }
         uint_t incrExperience( const uint_t amount );
         uint_t setExperience( const uint_t amount );
-        uint_t getLevel() const;
+        uint_t decrLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const uint_t amount = 1 );
+        uint_t getLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const bool psuedo = false ) const;
+        uint_t incrLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const uint_t amount = 1 );
+        uint_t setLevel( const uint_t tier = THING_LEVEL_TIER1, const uint_t tclass = THING_LEVEL_TIER1_CLASS_MAGE, const uint_t amount = 1 );
         uint_t getTrust() const;
         uint_t setTrust( const uint_t level );
 
         // Misc
+        bool isAdept() const;
         bool isCBoss() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_CBOSS ); }
         bool isHero() const { return getTrust() >= LEVEL_HERO; }
         bool isImmortal() const { return getTrust() >= LEVEL_IMMORTAL; }
         bool isNPC() const { return !( getBrain() && getBrain()->getType() == BRAIN_TYPE_HUMAN ); }
+        bool isRemortal() const;
         bool isVampire() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_VAMPIRE ); }
         bool isWerewolf() const { return getFlag( THING_FLAG_ACT, THING_FLAG_ACT_WEREWOLF ); }
         const void Send( const string msg ) { if ( getBrain() ) getBrain()->Send( msg ); return; }
@@ -134,6 +139,7 @@ class Thing {
 
         // Level
         uint_t m_experience;
+        uint_t m_level[MAX_THING_LEVEL_TIER][MAX_THING_LEVEL_TIER3_CLASS];
         uint_t m_trust;
 
         // Name

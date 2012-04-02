@@ -631,7 +631,7 @@ DO_FUN(do_accept)
         return;
     }
 
-    if ( victim->level < 20 )
+    if ( victim->getLevel() < MIN_LEVEL_CLAN )
     {
         snprintf( buf, MSL, "%s must be at least 20th level to enter a clan.\r\n", victim->getName_() );
         send_to_char( buf, ch );
@@ -898,7 +898,7 @@ DO_FUN(do_make)
 
     if ( ch != target )
     {
-        obj = create_object( pObj, target->level );
+        obj = create_object( pObj, target->getLevel() );
         act( "$n creates $p, and hands it to $N.", ch, obj, target, TO_NOTVICT );
         act( "You create $p, and hand it to $N.", ch, obj, target, TO_CHAR );
         act( "$N creates $p, and hands it to you.", target, obj, ch, TO_CHAR );
@@ -907,7 +907,7 @@ DO_FUN(do_make)
     }
     else
     {
-        obj = create_object( pObj, ch->level );
+        obj = create_object( pObj, ch->getLevel() );
         act( "You create $p, and put it away.", ch, obj, NULL, TO_CHAR );
         act( "$n creates $p, and puts it away.", ch, obj, NULL, TO_ROOM );
         obj_to_char( obj, ch );

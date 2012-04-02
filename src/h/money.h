@@ -48,7 +48,7 @@ char *cost_to_money P_((int cost));
 int money_to_cost P_((char *money_list));
 MONEY_TYPE *round_money P_((int base, bool round_up));
 MONEY_TYPE *round_money_off P_((int base, short accuracy));
-int money_value P_((MONEY_TYPE *money));
+uint_t money_value P_((MONEY_TYPE *money));
 char *money_string P_((MONEY_TYPE *money));
 char *unit_string P_((MONEY_TYPE *money));
 bool give_money P_((CHAR_DATA *ch, CHAR_DATA *victim, char *argument));

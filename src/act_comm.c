@@ -692,17 +692,13 @@ void talk_channel( CHAR_DATA * ch, char *argument, int channel, const char *verb
                     continue;
                 if ( channel == CHANNEL_YELL && vch->in_room->area != ch->in_room->area )
                     continue;
-                if ( channel == CHANNEL_ZZZ && vch->position != POS_SLEEPING && och->level != 85 )
+                if ( channel == CHANNEL_ZZZ && vch->position != POS_SLEEPING && och->getLevel() < MAX_LEVEL )
                     continue;
-                if ( channel == CHANNEL_RACE && vch->race != ch->race
-                        && ( och->level != 85 || och->deaf.test(CHANNEL_ALLRACE) ) )
+                if ( channel == CHANNEL_RACE && vch->race != ch->race && ( och->getLevel() < MAX_LEVEL || och->deaf.test(CHANNEL_ALLRACE) ) )
                     continue;
-                if ( channel == CHANNEL_CLAN && och->getClan() != ch->getClan()
-                        && ( och->deaf.test(CHANNEL_ALLCLAN) || och->getTrust() < MAX_LEVEL ) )
+                if ( channel == CHANNEL_CLAN && och->getClan() != ch->getClan() && ( och->deaf.test(CHANNEL_ALLCLAN) || och->getTrust() < MAX_LEVEL ) )
                     continue;
-                if ( ( channel == CHANNEL_FAMILY )
-                        && ( ( !IS_VAMP( och ) || !IS_VAMP( ch ) )
-                             || ( och->pcdata->super->bloodline != ch->pcdata->super->bloodline ) ) )
+                if ( ( channel == CHANNEL_FAMILY ) && ( ( !IS_VAMP( och ) || !IS_VAMP( ch ) ) || ( och->pcdata->super->bloodline != ch->pcdata->super->bloodline ) ) )
                     continue;
                 if ( channel == CHANNEL_ADEPT && !IS_ADEPT(vch) )
                     continue;
@@ -930,28 +926,12 @@ DO_FUN(do_shout)
 
 DO_FUN(do_flame)
 {
-    if ( ch->level < 3 )
-    {
-        send_to_char( "You must be level 3 to use this channel.\r\n", ch );
-        return;
-    }
-
     talk_channel( ch, argument, CHANNEL_FLAME, "flame" );
     return;
 }
 
 DO_FUN(do_zzz)
 {
-    if ( ch->level < 3 )
-    {
-        send_to_char( "You must be level 3 to use this channel.\r\n", ch );
-        if ( !( ch->position == POS_SLEEPING ) )
-        {
-            send_to_char( "And you have to be asleep anyway!!!\r\n", ch );
-        }
-        return;
-    }
-
     /*
      * check is asleep, if not then say not when awake, and return
      */
@@ -1650,7 +1630,7 @@ DO_FUN(do_pose)
         return;
     }
 
-    level = UMIN( ch->level, ( (short)sizeof( pose_table ) / (short)sizeof( pose_table[0] ) - 1 ) );
+    level = UMIN( ch->getLevel(), ( (short)sizeof( pose_table ) / (short)sizeof( pose_table[0] ) - 1 ) );
     pose = number_range( 0, level );
 
     act( pose_table[pose].message[2 * ch->p_class + 0], ch, NULL, NULL, TO_CHAR );
@@ -1739,7 +1719,7 @@ DO_FUN(do_quit)
 
     act( "$n waves, and leaves the game.", ch, NULL, NULL, TO_ROOM );
     snprintf( log_buf, (2 * MIL), "%s quits ACK!", ch->getName_() );
-    if ( ch->level != 85 )
+    if ( ch->getLevel() < MAX_LEVEL )
         notify( log_buf, MAX_LEVEL - 2 );
     Utils::Logger( 0, log_buf );
 
@@ -1784,6 +1764,12 @@ DO_FUN(do_save)
     if ( IS_NPC( ch ) )
     {
         send_to_char( "NPCs are not able to save (at the moment?)\r\n", ch );
+        return;
+    }
+
+    if ( ch->getLevel() < sysdata.min_save_level )
+    {
+        ch->Send( Utils::FormatString( 0, "You need to be at least level %lu to save.\r\n", sysdata.min_save_level ) );
         return;
     }
 
@@ -2100,7 +2086,7 @@ DO_FUN(do_group)
         {
             victim = *li;
             if ( is_same_group(victim, ch) )
-                tot_level += victim->get_level("psuedo");
+                tot_level += victim->getLevel( true );
         }
 
         leader = ( ch->leader != NULL ) ? ch->leader : ch;
@@ -2112,7 +2098,7 @@ DO_FUN(do_group)
             victim = *li;
             if ( is_same_group( victim, ch ) )
             {
-                percent = ((victim->get_level("psuedo") * 100) / tot_level);
+                percent = ((victim->getLevel( true ) * 100) / tot_level);
 
                 if ( ch->act.test(ACT_BLIND_PLAYER) )
                 {
@@ -2124,8 +2110,8 @@ DO_FUN(do_group)
                 else
                 {
                     snprintf( buf, MSL,
-                              "[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5lu xp [%0.2f%%]\r\n",
-                              victim->level,
+                              "[%2lu %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5lu xp [%0.2f%%]\r\n",
+                              victim->getLevel(),
                               IS_NPC( victim ) ? "Mob" : class_table[victim->p_class].who_name,
                               capitalize( victim->get_name(ch) ),
                               victim->hit, victim->max_hit, victim->mana, victim->max_mana, victim->move, victim->max_move, victim->getExperience(), percent );
@@ -2375,7 +2361,7 @@ DO_FUN(do_pray)
 {
     char buf[MSL];
 
-    if ( ch->level > LEVEL_HERO )
+    if ( ch->getLevel() > LEVEL_HERO )
     {
         send_to_char( "Hey, try immtalk why don't you?\r\n", ch );
         return;
@@ -2510,7 +2496,7 @@ DO_FUN(do_tongue)
         }
 
         if ( rch != ch )
-            act( ( ch->race == rch->race || rch->level > LEVEL_IMMORTAL ) ? buf2 : buf3, ch, NULL, rch, TO_VICT );
+            act( ( ch->race == rch->race || rch->getLevel() > LEVEL_IMMORTAL ) ? buf2 : buf3, ch, NULL, rch, TO_VICT );
     }
 
     snprintf( buf2, MSL, "You tongue, '%s'.\r\n", buf );

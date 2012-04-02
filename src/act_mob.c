@@ -90,7 +90,7 @@ bool able_to_level( CHAR_DATA * ch )
 {
     bool in_need = FALSE;
 
-    if ( ch->getExperience() > ( 5 * exp_for_mobile( ch->level, ch ) ) )
+    if ( ch->getExperience() > ( 5 * exp_for_mobile( ch->getLevel(), ch ) ) )
         in_need = TRUE;
 
     return in_need;
@@ -101,12 +101,12 @@ void gain_level( CHAR_DATA * ch )
     uint_t cost;
     char buf[MAX_STRING_LENGTH];
 
-    cost = 5 * exp_for_mobile( ch->level, ch );
+    cost = 5 * exp_for_mobile( ch->getLevel(), ch );
     if ( ch->getExperience() < cost )
         return;
 
     ch->decrExperience( cost );
-    ch->level = UMIN( 140, ch->level++ );
+    ch->incrLevel( THING_LEVEL_TIER1, number_range( 0, MAX_THING_LEVEL_TIER1_CLASS ), 1 );
 
     snprintf( buf, MSL, "%s gains a level!", ch->getName_() );
     info( buf, 1 );
@@ -117,9 +117,7 @@ int find_spell( CHAR_DATA * ch, int type )
 {
     int sn;
     int bar;
-    int level;
-    int spell = -1;
-    int spell_level = -1;
+    uint_t level = 0, spell = 0, spell_level = 0;
 
     for ( sn = 0; sn < MAX_SKILL; sn++ )
     {
@@ -130,12 +128,11 @@ int find_spell( CHAR_DATA * ch, int type )
         if ( skill_table[sn].target != type )
             continue;
 
-        level = -1;
-        for ( bar = 0; bar < MAX_CLASS; bar++ )
-            if ( skill_table[sn].skill_level[bar] > level && ch->level >= skill_table[sn].skill_level[bar] )
+        for ( bar = 0; bar < MAX_THING_LEVEL_TIER1_CLASS; bar++ )
+            if ( skill_table[sn].skill_level[bar] > level && ch->getLevel() >= skill_table[sn].skill_level[bar] )
                 level = skill_table[sn].skill_level[bar];
 
-        if ( level == -1 ) /* not high enough to use */
+        if ( level == 0 ) /* not high enough to use */
             continue;
 
         if ( level > spell_level && mana_cost( ch, sn ) < ch->mana )
@@ -275,7 +272,7 @@ void get_mob_group( CHAR_DATA * ch, CHAR_DATA * target )
     /*
      * check to see which of the two is higher. the higher mob will lead
      */
-    if ( ch->get_level("psuedo") >= target->get_level("psuedo") )
+    if ( ch->getLevel( true ) >= target->getLevel( true ) )
         ch_is_higher = TRUE;
 
     /*
@@ -429,8 +426,8 @@ void need_to_stand( CHAR_DATA * ch )
                     && ( !is_same_group( vch, ch ) )
                     && ( AI_MOB(vch) )
                     && ( vch != ch )
-                    && ( ( vch->get_level("psuedo") - ch->get_level("psuedo") <= 20 )
-                         && ( vch->get_level("psuedo") - ch->get_level("psuedo") >= -20 ) ) )
+                    && ( ( vch->getLevel( true ) - ch->getLevel( true ) <= 20 )
+                         && ( vch->getLevel( true ) - ch->getLevel( true ) >= -20 ) ) )
             {
                 get_up( ch, current_state );
                 return;
@@ -676,10 +673,10 @@ void mob_is_standing( CHAR_DATA * ch )
                         && ( AI_MOB(vch) )
                         && ( !is_same_group( ch, vch ) )
                         && ( vch->position == POS_STANDING )
-                        && ( ( vch->get_level("psuedo") - ch->get_level("psuedo") <= 20
-                               && vch->get_level("psuedo") - ch->get_level("psuedo") >= -20 )
-                             || ( ch->get_level("psuedo") - vch->get_level("psuedo") <= 20
-                                  && ch->get_level("psuedo") - vch->get_level("psuedo") >= -20 ) )
+                        && ( ( vch->getLevel( true ) - ch->getLevel( true ) <= 20
+                               && vch->getLevel( true ) - ch->getLevel( true ) >= -20 )
+                             || ( ch->getLevel( true ) - vch->getLevel( true ) <= 20
+                                  && ch->getLevel( true ) - vch->getLevel( true ) >= -20 ) )
                         && ( can_see( vch, ch ) ) && ( can_see( ch, vch ) ) )
 
                 {
@@ -927,8 +924,8 @@ bool valid_target( CHAR_DATA * ch, CHAR_DATA * victim, int l )
     /*
      * Only kill victims of similar level
      */
-    if ( ( ( victim->get_level("psuedo") - ch->get_level("psuedo") ) > -7 )
-            || ( ( ch->get_level("psuedo") - victim->get_level("psuedo") ) > 12 ) )
+    if ( ( ( victim->getLevel( true ) - ch->getLevel( true ) ) > -7 )
+            || ( ( ch->getLevel( true ) - victim->getLevel( true ) ) > 12 ) )
         return FALSE;
 
 //   if ( ( IS_GOOD( ch )    && IS_GOOD( victim    ) )
@@ -1013,7 +1010,7 @@ void select_target( CHAR_DATA * ch )
         {
 // ZEN FIX set average level based on level of ngroup
             attempts++;
-            average_level = ch->get_level("psuedo");
+            average_level = ch->getLevel( true );
 
             force_index = number_range( 1, mob_index_list.size() );
 

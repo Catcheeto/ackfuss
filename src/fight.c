@@ -2203,7 +2203,7 @@ void make_corpse( CHAR_DATA * ch, char *argument )
     /*
      * Vampire bodies crumble to dust when really killed
      */
-    if ( IS_VAMP( ch ) && !IS_NPC( ch ) )
+    if ( ch->isVampire() && !IS_NPC( ch ) )
         return;
 
     if ( IS_NPC( ch ) )
@@ -2270,7 +2270,6 @@ void make_corpse( CHAR_DATA * ch, char *argument )
         name = ch->get_name();
         corpse = create_object( get_obj_index( OBJ_VNUM_CORPSE_PC ), 0 );
         corpse->timer = number_range( 20, 30 );
-
         corpse->setOwner( ch );
 
         if ( ( arg[0] != '\0' ) && ( !IS_NPC( ch ) ) )
@@ -2287,21 +2286,21 @@ void make_corpse( CHAR_DATA * ch, char *argument )
             }
             if ( ( target != NULL ) && !IS_NPC( target ) )
             {
-                if ( ( IS_WOLF( ch ) ) && ( IS_VAMP( target ) || IS_WOLF( target ) ) )
-                    corpse->value[0] = 1;
+                if ( ch->isWerewolf() && ( target->isVampire() || target->isWerewolf() ) )
+                    corpse->value[CORPSE_LOOTABLE] = 1;
                 if ( ch->act.test(ACT_PKOK ) )
-                    corpse->value[0] = 1;
+                    corpse->value[CORPSE_LOOTABLE] = 1;
                 if ( ch->getClan() > 0 )
                 {
                     if ( target->getClan() != ch->getClan() &&
                             ( politics_data.diplomacy[ch->getClan()][target->getClan()] < -450 ) )
                     {
-                        corpse->value[2] = target->getClan();
+                        corpse->value[CORPSE_CLAN] = target->getClan();
                     }
                 }
                 else
-                    corpse->value[2] = -1;
-                corpse->value[3] = number_range( 2, 5 );
+                    corpse->value[CORPSE_CLAN] = uintmin_t;
+                corpse->value[CORPSE_LOOTNUM] = number_range( 2, 5 );
             }
         }
     }  /* end of player only */
@@ -2312,8 +2311,8 @@ void make_corpse( CHAR_DATA * ch, char *argument )
                  && ( ( !IS_NPC( target ) ) || ( IS_NPC(target) && !str_cmp( rev_spec_lookup( target->npcdata->spec_fun ), "spec_executioner" ) ) ) ) )
 
     {
-        corpse->value[0] = 1;
-        corpse->value[3] = number_range( 3, 6 );
+        corpse->value[CORPSE_LOOTABLE] = 1;
+        corpse->value[CORPSE_LOOTNUM] = number_range( 3, 6 );
     }
     snprintf( buf, MSL, corpse->getDescrShort_(), name );
     corpse->setDescrShort( buf );

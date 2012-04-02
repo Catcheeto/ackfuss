@@ -12,5 +12,7 @@
  * Magic...Sparkly!
  */
 
-class Mage {
+class Mage : public BaseClass {
+    public:
+        string getName() const { return "Mage"; }
 };

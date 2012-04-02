@@ -13,4 +13,8 @@
  */
 
 class BaseClass {
+    public:
+        virtual string getName() const = 0;
+    private:
+        string m_name;
 };

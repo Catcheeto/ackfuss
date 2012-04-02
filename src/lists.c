@@ -68,6 +68,7 @@ list<RESET_DATA *> reset_list;
 list<ROOM_INDEX_DATA *> room_index_list;
 list<RULER_DATA *> ruler_list;
 list<SHOP_DATA *> shop_list;
+multimap<Brain*,Brain*> snoop_list;
 list<SOCIAL_DATA *> social_list;
 list<HELP_DATA *> help_list;
 list<World*> world_list;

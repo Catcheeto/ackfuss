@@ -152,7 +152,7 @@ time_t current_time; /* Time of this pulse           */
 OBJ_DATA *auction_item; /* Item being sold      */
 CHAR_DATA *auction_owner;  /* Item's owner         */
 CHAR_DATA *auction_bidder; /* Last bidder for item    */
-int *auction_bid; /* Latest price offered    */
+uint_t *auction_bid; /* Latest price offered    */
 int *auction_reserve;   /* Reserve Price     */
 int *auction_stage;  /* start, 1st, 2nd, gone   */
 bool auction_flop;   /* Update called externally?    */

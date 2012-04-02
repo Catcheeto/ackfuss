@@ -107,6 +107,9 @@
 #define MAX_SKILL                  300
 #define MAX_CLASS                    5
 #define MAX_LEVEL                   85
+#define MAX_TIER1_LEVEL           (MAX_LEVEL - 5)
+#define MAX_TIER2_LEVEL           MAX_TIER1_LEVEL
+#define MAX_TIER3_LEVEL             20
 #define MOUNT_COST                  10
 #define LEVEL_HERO                 (MAX_LEVEL - 4)
 #define LEVEL_IMMORTAL             (MAX_LEVEL - 3)
@@ -124,6 +127,7 @@
 #define MAX_PEDIT                    5
 #define MAX_COND                     3
 #define MAX_CMD_HISTORY             25
+#define MIN_LEVEL_CLAN              20 // minimum level to join a clan
 /*
  * total number of supernatural types in the game
  */
@@ -134,6 +138,9 @@
 
 #define MAX_TRADE        5
 
+#define CORPSE_LOOTABLE 0
+#define CORPSE_CLAN     1
+#define CORPSE_LOOTNUM  2
 /*
  * Liquids.
  */
@@ -405,10 +412,10 @@
 #define L_ANG           L_DEI - 1
 #define L_HER           L_ANG - 1
 
-#define CLAN_ONLY    -1
-#define BOSS_ONLY    -2
-#define VAMP_ONLY    -3
-#define WOLF_ONLY    -4
+#define CLAN_ONLY    1
+#define BOSS_ONLY    2
+#define VAMP_ONLY    3
+#define WOLF_ONLY    4
 
 /*
  * Time and weather stuff.

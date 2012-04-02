@@ -132,7 +132,7 @@ extern int ssm_recent_loops;
 extern OBJ_DATA *auction_item;
 extern CHAR_DATA *auction_owner;
 extern CHAR_DATA *auction_bidder;
-extern int auction_bid;
+extern uint_t auction_bid;
 extern int auction_reserve;
 extern int auction_stage;
 extern int saving_area;

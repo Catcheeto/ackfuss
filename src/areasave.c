@@ -303,7 +303,7 @@ void build_save_mobs(  )
     fprintf( SaveFile, "Desc       %s~\n", pMobIndex->description );
     fprintf( SaveFile, "DrMod      %ld\n", pMobIndex->getModDR() );
     fprintf( SaveFile, "HrMod      %ld\n", pMobIndex->getModHR() );
-    fprintf( SaveFile, "Level      %d\n", pMobIndex->level );
+    fprintf( SaveFile, "Level      %lu\n", pMobIndex->getLevel() );
     fprintf( SaveFile, "LongDesc   %s~\n", pMobIndex->getDescrLong_() );
     fprintf( SaveFile, "Name       %s~\n", pMobIndex->getName_() );
     fprintf( SaveFile, "Position   %d\n", pMobIndex->position );
@@ -364,7 +364,7 @@ void build_save_objects(  )
     fprintf( SaveFile, "%sEOL\n", outstr.c_str() );
 
     fprintf( SaveFile, "ItemApply  %d\n", pObjIndex->item_apply );
-    fprintf( SaveFile, "Level      %d\n", pObjIndex->level );
+    fprintf( SaveFile, "Level      %lu\n", pObjIndex->getLevel() );
     fprintf( SaveFile, "LongDesc   %s~\n", pObjIndex->getDescrLong_() );
     fprintf( SaveFile, "Name       %s~\n", pObjIndex->getName_() );
     fprintf( SaveFile, "ObjFun     %s\n", rev_obj_fun_lookup( pObjIndex->obj_fun ) );

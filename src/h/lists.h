@@ -64,6 +64,7 @@ extern list<RESET_DATA*> reset_list;
 extern list<ROOM_INDEX_DATA*> room_index_list;
 extern list<RULER_DATA*> ruler_list;
 extern list<SHOP_DATA*> shop_list;
+extern multimap<Brain*,Brain*> snoop_list;
 extern list<SOCIAL_DATA*> social_list;
 extern list<HELP_DATA*> help_list;
 extern list<World*> world_list;

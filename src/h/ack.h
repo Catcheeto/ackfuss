@@ -429,7 +429,6 @@ class mob_index_data : public Thing {
         int hunt_flags;
         short killed;
         short learned[MAX_SKILL];
-        short level;
         MOB_INDEX_DATA *next;
         short position;
         SHOP_DATA *pShop;
@@ -456,7 +455,6 @@ class char_data : public Thing {
         ~char_data();
         bool check_cooldown( const char *skill );
         bool check_cooldown( int pos );
-        short get_level( const char *what = '\0' );
         const char *get_name( CHAR_DATA *looker = NULL );
         const char *get_title( void );
         const char *get_whoname( void );
@@ -495,10 +493,7 @@ class char_data : public Thing {
         AFFECT_DATA *last_saved_aff;
         MAGIC_SHIELD *last_shield;
         CHAR_DATA *leader;
-        short level;  /* For m/c this = max of levels */
         time_t logon;
-        int lvl[MAX_CLASS];  /* Holds details for m/c levels */
-        int lvl2[MAX_CLASS]; /* for remort (if any) */
         int mana;
         CHAR_DATA *master;
         int max_hit;
@@ -574,7 +569,6 @@ class pc_data
     public:
         pc_data();
         ~pc_data();
-        short adept_level;
         char *alias[MAX_ALIASES];
         char *alias_name[MAX_ALIASES];
         char *assist_msg;
@@ -685,7 +679,6 @@ class obj_index_data : public Thing {
         int item_type;
         AFFECT_DATA *last_apply;
         TRIGGER_DATA *last_trigger;
-        short level;
         short max_durability;
         OBJ_INDEX_DATA *next;
         OBJ_FUN *obj_fun;
@@ -729,7 +722,6 @@ class obj_data : public Thing {
         int wear_loc;
         short weight;
         int cost;
-        short level;
         short timer;
         int value[MAX_OBJ_VALUE];
         short armor_type;
@@ -910,7 +902,7 @@ struct monitor_type
 {
     char *name;
     short channel;
-    short min_level;
+    uint_t min_level;
     char *col;
     char *id;
     char *on_name;
@@ -941,7 +933,7 @@ struct skill_type
     short flag2;  /* normal and/or vamp?     */
     short cooldown; /* what cooldown slot does it use? */
     char *name; /* Name of skill                */
-    short skill_level[MAX_CLASS];   /* Level needed by class        */
+    uint_t skill_level[MAX_CLASS];   /* Level needed by class        */
     SPELL_FUN *spell_fun;   /* Spell pointer (for spells)   */
     short target; /* Legal targets                */
     short minimum_position;   /* Position for caster / user   */
@@ -1100,6 +1092,7 @@ struct sysdata_type
     short killperlev;
     short max_move_disp;
     float max_pushback;
+    uint_t min_save_level;
     float mob_ac;
     float mob_dr;
     float mob_hp;

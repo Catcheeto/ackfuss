@@ -581,7 +581,7 @@ DO_FUN(do_at)
         return;
     }
 
-    if ( room_is_private( location ) && ( ch->level != 85 ) )
+    if ( room_is_private( location ) && ( ch->getLevel() < MAX_LEVEL ) )
     {
         send_to_char( "That room is private right now.\r\n", ch );
         return;
@@ -682,7 +682,7 @@ DO_FUN(do_rstat)
         return;
     }
 
-    if ( ch->in_room != location && room_is_private( location ) && ( ch->level != 85 ) )
+    if ( ch->in_room != location && room_is_private( location ) && ( ch->getLevel() < MAX_LEVEL ) )
     {
         send_to_char( "That room is private right now.\r\n", ch );
         return;
@@ -814,7 +814,7 @@ DO_FUN(do_ostat)
     snprintf( buf, MSL, "Number: %d/%d.  Weight: %d/%d.\r\n", 1, get_obj_number( obj ), obj->weight, get_obj_weight( obj ) );
     strncat( buf1, buf, MSL - 1 );
 
-    snprintf( buf, MSL, "Cost: %d.  Timer: %d.  Level: %d.\r\n", obj->cost, obj->timer, obj->level );
+    snprintf( buf, MSL, "Cost: %d.  Timer: %d.  Level: %lu.\r\n", obj->cost, obj->timer, obj->getLevel() );
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL, "Armor Type: %s.  Durability: %d/%d (%1.0f%%).\r\n", rev_table_lookup( tab_armor_type, obj->armor_type ), obj->durability, obj->max_durability, (float)(((float)obj->durability / (float)obj->max_durability) * 100) );
@@ -970,12 +970,20 @@ DO_FUN(do_mstat)
     if ( !IS_NPC( victim ) )
     {
         snprintf( buf, MSL,
-                  "Mag: %d Cle: %d Thi:%d War:%d Psi:%d\r\n",
-                  victim->get_level("mag"), victim->get_level("cle"), victim->get_level("thi"), victim->get_level("war"), victim->get_level("psi") );
+                  "Mag: %lu Cle: %lu Thi: %lu War: %lu Psi: %lu\r\n",
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_MAGE ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_CLERIC ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_THIEF ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_PSIONICIST ) );
         strncat( buf1, buf, MSL - 1 );
         snprintf( buf, MSL,
-                  "Sor: %d Mon: %d Ass:%d Kni:%d Nec:%d\r\n",
-                  victim->get_level("sor"), victim->get_level("mon"), victim->get_level("ass"), victim->get_level("kni"), victim->get_level("nec") );
+                  "Sor: %lu Mon: %lu Ass: %lu Kni: %lu Nec: %lu\r\n",
+                  victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_SORCERER ),
+                  victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ),
+                  victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ),
+                  victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ),
+                  victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_NECROMANCER ) );
         strncat( buf1, buf, MSL - 1 );
 
         snprintf( buf, MSL, "Age: " );
@@ -999,8 +1007,8 @@ DO_FUN(do_mstat)
     strncat( buf1, buf, MSL - 1 );
 
     snprintf( buf, MSL,
-              "Lv: %d.  Class: %d.  Align: %ld.  AC: %ld.  Exp: %lu.\r\n",
-              victim->get_level(), victim->p_class, victim->getAlignment(), GET_AC( victim ), victim->getExperience() );
+              "Lv: %lu.  Class: %d.  Align: %ld.  AC: %ld.  Exp: %lu.\r\n",
+              victim->getLevel(), victim->p_class, victim->getAlignment(), GET_AC( victim ), victim->getExperience() );
     strncat( buf1, buf, MSL - 1 );
 
     if ( !IS_NPC( victim ) )
@@ -1202,8 +1210,8 @@ DO_FUN(do_ofindlev)
     bool fAll;
     bool found;
     int objlev;
-    int level;
-    int level_top;
+    uint_t level;
+    uint_t level_top;
     bool mailme = FALSE;
     if ( is_name( "mailme", argument ) )
         mailme = TRUE;
@@ -1241,21 +1249,21 @@ DO_FUN(do_ofindlev)
         if ( ( pObjIndex = get_obj_index( vnum ) ) != NULL )
         {
             nMatch++;
-            if ( ( fAll ) || ( ( pObjIndex->level >= level ) && ( pObjIndex->level <= level_top ) ) )
+            if ( ( fAll ) || ( ( pObjIndex->getLevel() >= level ) && ( pObjIndex->getLevel() <= level_top ) ) )
 
             {
                 found = TRUE;
-                objlev = pObjIndex->level;
+                objlev = pObjIndex->getLevel();
 
                 if ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) )
                 {
-                    snprintf( buf, MSL, "\r\n(@@mREMORT@@N) [%3d] [%5d] %s", pObjIndex->level,
+                    snprintf( buf, MSL, "\r\n(@@mREMORT@@N) [%3lu] [%5d] %s", pObjIndex->getLevel(),
                               pObjIndex->vnum, pObjIndex->getDescrShort_() );
                     strncat( buf1, buf, MSL - 1 );
                 }
                 else
                 {
-                    snprintf( buf, MSL, "\r\n(@@aMORTAL@@N) [%3d] [%5d] %s", pObjIndex->level,
+                    snprintf( buf, MSL, "\r\n(@@aMORTAL@@N) [%3lu] [%5d] %s", pObjIndex->getLevel(),
                               pObjIndex->vnum, pObjIndex->getDescrShort_() );
                     strncat( buf1, buf, MSL - 1 );
                 }
@@ -1314,7 +1322,7 @@ DO_FUN(do_mfind)
             if ( fAll || is_name( arg, pMobIndex->getName() ) )
             {
                 found = TRUE;
-                snprintf( buf, MSL, "[%5d] [%3d] %s\r\n", pMobIndex->vnum, pMobIndex->level, capitalize( pMobIndex->getDescrShort_() ) );
+                snprintf( buf, MSL, "[%5d] [%3lu] %s\r\n", pMobIndex->vnum, pMobIndex->getLevel(), capitalize( pMobIndex->getDescrShort_() ) );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -1342,7 +1350,7 @@ DO_FUN(do_mfindlev)
     int nMatch;
     bool fAll;
     bool found;
-    int level, level_top;
+    uint_t level, level_top;
     int perkills, moblev;
     bool mailme = FALSE;
     if ( is_name( "mailme", argument ) )
@@ -1381,17 +1389,17 @@ DO_FUN(do_mfindlev)
         if ( ( pMobIndex = get_mob_index( vnum ) ) != NULL )
         {
             nMatch++;
-            if ( ( fAll ) || ( ( pMobIndex->level >= level ) && ( pMobIndex->level <= level_top ) ) )
+            if ( ( fAll ) || ( ( pMobIndex->getLevel() >= level ) && ( pMobIndex->getLevel() <= level_top ) ) )
             {
                 found = TRUE;
-                moblev = pMobIndex->level;
+                moblev = pMobIndex->getLevel();
                 if ( kill_table[moblev].killed == 0 )
                     perkills = 0;
                 else
                     perkills = ( pMobIndex->killed * 100 ) / ( kill_table[moblev].killed );
 
-                snprintf( buf, MSL, "(%3d) [%3d] [%5d] %s\r\n",
-                          perkills, pMobIndex->level, pMobIndex->vnum, capitalize( pMobIndex->getDescrShort_() ) );
+                snprintf( buf, MSL, "(%3d) [%3lu] [%5d] %s\r\n",
+                          perkills, pMobIndex->getLevel(), pMobIndex->vnum, capitalize( pMobIndex->getDescrShort_() ) );
                 strncat( buf1, buf, MSL - 1 );
             }
         }
@@ -1449,8 +1457,8 @@ DO_FUN(do_ofind)
             if ( fAll || is_name( arg, pObjIndex->getName() ) )
             {
                 found = TRUE;
-                snprintf( buf, MSL, "[%5d] [%3d] %s %s\r\n",
-                          pObjIndex->vnum, pObjIndex->level,
+                snprintf( buf, MSL, "[%5d] [%3lu] %s %s\r\n",
+                          pObjIndex->vnum, pObjIndex->getLevel(),
                           ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_REMORT) ?
                             "@@mRemort@@N" : "@@aMortal@@N" ), capitalize( pObjIndex->getDescrShort_() ) );
                 strncat( buf1, buf, MSL - 1 );
@@ -1589,8 +1597,7 @@ DO_FUN(do_shutdown)
 DO_FUN(do_snoop)
 {
     char arg[MSL];
-    DESCRIPTOR_DATA *d = NULL;
-    iterBrain di;
+    multimap<Brain*,Brain*>::iterator bi, bi_next;
     CHAR_DATA *victim;
 
     one_argument( argument, arg );
@@ -1616,40 +1623,33 @@ DO_FUN(do_snoop)
     if ( victim == ch )
     {
         send_to_char( "Cancelling all snoops.\r\n", ch );
-        for ( di = brain_list.begin(); di != brain_list.end(); di++ )
+        for ( bi = snoop_list.begin(); bi != snoop_list.end(); bi = bi_next )
         {
-            d = *di;
-            if ( d->snoop_by == ch->desc )
-                d->snoop_by = NULL;
+            bi_next = ++bi;
+            if ( ch->getBrain() == bi->first )
+                snoop_list.erase( bi );
         }
-        return;
-    }
-
-    if ( victim->desc->snoop_by != NULL )
-    {
-        send_to_char( "Busy already.\r\n", ch );
         return;
     }
 
     if ( victim->getTrust() >= ch->getTrust() )
     {
+Utils::Logger( 0, "v: %lu -- c: %lu", victim->getTrust(), ch->getTrust() );
         send_to_char( "You failed.\r\n", ch );
         return;
     }
 
-    if ( ch->desc != NULL )
+    for ( bi = snoop_list.begin(); bi != snoop_list.end(); bi = bi_next )
     {
-        for ( d = ch->desc->snoop_by; d != NULL; d = d->snoop_by )
+        bi_next = ++bi;
+        if ( victim->getBrain() == bi->first )
         {
-            if ( d->character == victim || d->original == victim )
-            {
-                send_to_char( "No snoop loops.\r\n", ch );
-                return;
-            }
+            ch->Send("No snoop loops.\r\n");
+            return;
         }
     }
 
-    victim->desc->snoop_by = ch->desc;
+    snoop_list.insert( pair<Brain*,Brain*>( ch->getBrain(), victim->getBrain() ) );
     send_to_char( "Ok.\r\n", ch );
     return;
 }
@@ -1810,7 +1810,7 @@ DO_FUN(do_oload)
         return;
     }
 
-    if ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_CLAN_EQ) && ( ch->level != MAX_LEVEL ) )
+    if ( IS_OBJ_STAT(pObjIndex, ITEM_EXTRA_CLAN_EQ) && ( ch->getLevel() < MAX_LEVEL ) )
     {
         send_to_char( "Only Creators can OLOAD clan equipment.\r\n", ch );
         return;
@@ -1897,7 +1897,7 @@ DO_FUN(do_trust)
     char arg2[MSL];
     char buf[MSL];
     CHAR_DATA *victim;
-    int level;
+    uint_t level;
 
     argument = one_argument( argument, arg1 );
     argument = one_argument( argument, arg2 );
@@ -2042,7 +2042,7 @@ DO_FUN(do_freeze)
         send_to_char( "Freeze set.\r\n", ch );
 
         snprintf( buf, MSL, "%s has been FROZEN by %s.\r\n", victim->getName_(), ch->getName_() );
-        notify( buf, ch->level + 1 );
+        notify( buf, ch->getLevel() + 1 );
     }
 
     save_char_obj( victim );
@@ -2580,7 +2580,7 @@ DO_FUN(do_sset)
 
     fAll = !str_cmp( arg2, "all" );
 
-    if ( fAll && ch->level != 85 )
+    if ( fAll && ch->getLevel() < MAX_LEVEL )
     {
         send_to_char( "Only Creators may SSET all.\r\n", ch );
         return;
@@ -2929,12 +2929,11 @@ DO_FUN(do_mset)
 
         CHAR_DATA *hunted = 0;
 
-        if ( ch->level < MAX_LEVEL - 1 )
+        if ( ch->getLevel() < MAX_LEVEL - 1 )
         {
             send_to_char( "Currently restricted to reduce abuses.\r\n", ch );
             return;
         }
-
 
         if ( !IS_NPC( victim ) )
         {
@@ -2980,7 +2979,7 @@ DO_FUN(do_mset)
             send_to_char( "Level range is 0 to 100.\r\n", ch );
             return;
         }
-        victim->level = value;
+        victim->setLevel( value );
         return;
     }
 
@@ -4555,38 +4554,22 @@ DO_FUN(do_setclass)
 
 DO_FUN(do_isnoop)
 {
-    /*
-     * Creator-only command.  Lists who (if anyone) is being snooped.
-     * * -S-
-     */
+    multimap<Brain*,Brain*>::iterator bi;
+    uint_t cnt = 0;
 
+    ch->Send( "Snoop List:\r\n-=-=-=-=-=-\r\n" );
 
-    DESCRIPTOR_DATA *d = NULL;
-    iterBrain di;
-    char buf[MSL];
-    int count = 0;
-
-
-    send_to_char( "Snoop List:\r\n-=-=-=-=-=-\r\n", ch );
-
-
-    for ( di = brain_list.begin(); di != brain_list.end(); di++ )
+    for ( bi = snoop_list.begin(); bi != snoop_list.end(); bi++ )
     {
-        d = *di;
-        if ( d->snoop_by != NULL )
-        {
-            count++;
-            snprintf( buf, MSL, "%s by %s.\r\n", d->character->getName_(), d->snoop_by->character->getName_() );
-            send_to_char( buf, ch );
-        }
+        ch->Send( Utils::FormatString( 0, "%s by %s\r\n", bi->second->getThing()->getName_(), bi->first->getThing()->getName_() ) );
+        cnt++;
     }
 
-    if ( count != 0 )
-        snprintf( buf, MSL, "%d snoops found.\r\n", count );
+    if ( cnt > 0 )
+        ch->Send( Utils::FormatString( 0, "%lu snoops found.\r\n", cnt ) );
     else
-        snprintf( buf, MSL, "No snoops found.\r\n" );
+        ch->Send( "No snoops found.\r\n" );
 
-    send_to_char( buf, ch );
     return;
 }
 

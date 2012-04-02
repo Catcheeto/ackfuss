@@ -11,4 +11,3 @@
 #ifndef DEC_BASECLASS_H
 #include "h/baseclass.h"
 #endif
-

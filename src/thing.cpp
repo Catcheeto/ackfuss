@@ -278,9 +278,96 @@ uint_t Thing::setExperience( const uint_t amount )
     return m_experience = amount;
 }
 
-uint_t Thing::getLevel() const
+uint_t Thing::decrLevel( const uint_t tier, const uint_t tclass, const uint_t amount )
 {
-    return MAX_LEVEL;
+    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+        return 0;
+
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+        return 0;
+
+    if ( amount <= uintmin_t || amount >= uintmax_t )
+        return 0;
+
+    if ( ( m_level[tier][tclass] - amount ) <= uintmin_t )
+        return m_level[tier][tclass] = uintmin_t;
+    else
+        return m_level[tier][tclass] -= amount;
+}
+
+uint_t Thing::getLevel( const uint_t tier, const uint_t tclass, const bool psuedo ) const
+{
+    uint_t i = 0, x = 0, value = 0;
+
+    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+        return value = getLevel();
+
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+        return value = getLevel();
+
+    if ( psuedo )
+    {
+        if ( isRemortal() )
+        {
+            for ( i = 0; i < MAX_THING_LEVEL_CLASS_REMORTAL; i++ )
+                value += m_level[THING_LEVEL_TIER_REMORTAL][i];
+            value /= 4;
+
+            return value += getLevel();
+        }
+        else
+            return value = getLevel();
+    }
+
+    if ( tier == MAX_THING_LEVEL_TIER && tclass == MAX_THING_LEVEL_CLASS_ADEPT && !psuedo ) // return the highest value of all classes
+    {
+        for ( i = 0; i < MAX_THING_LEVEL_TIER; i++ )
+        {
+            for ( x = 0; x < MAX_THING_LEVEL_CLASS_ADEPT; x++ )
+            {
+                if ( m_level[i][x] > value )
+                   value = m_level[i][x];
+            }
+        }
+
+        return value;
+    }
+
+    return value = m_level[tier][tclass];
+}
+
+uint_t Thing::incrLevel( const uint_t tier, const uint_t tclass, const uint_t amount )
+{
+    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+        return 0;
+
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+        return 0;
+
+    if ( amount <= uintmin_t || amount >= uintmax_t )
+        return 0;
+
+    if ( ( m_level[tier][tclass] + amount ) >= MAX_LEVEL )
+        return m_level[tier][tclass] = MAX_LEVEL;
+    else
+        return m_level[tier][tclass] += amount;
+}
+
+uint_t Thing::setLevel( const uint_t tier, const uint_t tclass, const uint_t amount )
+{
+    if ( tier <= uintmin_t || tier >= MAX_THING_LEVEL_TIER )
+        return 0;
+
+    if ( tclass < uintmin_t || tclass >= MAX_THING_LEVEL_CLASS_ADEPT )
+        return 0;
+
+    if ( amount <= uintmin_t || amount >= uintmax_t )
+        return 0;
+
+    if ( amount >= MAX_LEVEL )
+        return m_level[tier][tclass] = MAX_LEVEL;
+    else
+        return m_level[tier][tclass] = amount;
 }
 
 uint_t Thing::getTrust() const
@@ -303,6 +390,29 @@ uint_t Thing::setTrust( const uint_t level )
         return 0;
 
     return m_trust = level;
+}
+
+// Misc
+bool Thing::isAdept() const
+{
+    uint_t i = 0;
+
+    for ( i = 0; i < MAX_THING_LEVEL_CLASS_ADEPT; i++ )
+        if ( m_level[THING_LEVEL_TIER_ADEPT][i] > uintmin_t )
+            return true;
+
+    return false;
+}
+
+bool Thing::isRemortal() const
+{
+    uint_t i = 0;
+
+    for ( i = 0; i < MAX_THING_LEVEL_CLASS_REMORTAL; i++ )
+        if ( m_level[THING_LEVEL_TIER_REMORTAL][i] > uintmin_t )
+            return true;
+
+    return false;
 }
 
 // 'Object' Manipulation
@@ -402,6 +512,9 @@ Thing::Thing()
 
     // Level
     m_experience = uintmin_t;
+    for ( uint_t i = 0; i < MAX_THING_LEVEL_TIER; i++ )
+        for ( uint_t x = 0; x < MAX_THING_LEVEL_CLASS_ADEPT; x++ )
+            m_level[i][x] = uintmin_t;
     m_trust = uintmin_t;
 
     // Name

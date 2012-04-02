@@ -265,6 +265,7 @@ DO_FUN(build_interpret)
     char buffer[MSL];
     int cmd;
     bool found;
+    multimap<Brain*,Brain*>::iterator bi;
 
     /*
      * Strip leading spaces.
@@ -321,11 +322,10 @@ DO_FUN(build_interpret)
         monitor_chan( log_buf, MONITOR_BUILD );
     }
 
-    if ( ch->desc != NULL && ch->desc->snoop_by != NULL )
+    for ( bi = snoop_list.begin(); bi != snoop_list.end(); bi++ )
     {
-        ch->desc->snoop_by->Send( "% " );
-        ch->desc->snoop_by->Send( logline );
-        ch->desc->snoop_by->Send( "\r\n" );
+        if ( ch->getBrain() == bi->second )
+            bi->first->Send( Utils::FormatString( 0, "[SNOOP:%s] %s\r\n ", ch->getName_(), logline ) );
     }
 
     if ( !found )

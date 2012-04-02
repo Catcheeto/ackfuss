@@ -232,9 +232,9 @@ MONEY_TYPE *round_money_off( int base, short accuracy )
     return money;
 }
 
-int money_value( MONEY_TYPE * money )
+uint_t money_value( MONEY_TYPE * money )
 {
-    int base_val = 0;
+    uint_t base_val = 0;
     short looper;
     for ( looper = 0; looper < MAX_CURRENCY; looper++ )
     {

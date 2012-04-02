@@ -295,9 +295,9 @@ void move_char( CHAR_DATA * ch, int door, bool look )
 
 
     {
-        int iClass;
+        uint_t iClass;
         int iRace;
-        int iClan;
+        uint_t iClan;
         int move;
 
         /*
@@ -308,7 +308,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         {
             if ( to_room->vnum == class_table[iClass].guild )
             {
-                if ( ( IS_NPC( ch ) ) || ( !ch->isImmortal() && ( ch->lvl[iClass] == -1 ) ) )
+                if ( ch->isNPC() || ( !ch->isImmortal() && ( ch->getLevel( THING_LEVEL_TIER1, iClass ) == uintmin_t ) ) )
                 {
                     send_to_char( "You aren't allowed in there.\r\n", ch );
                     ch->using_named_door = FALSE;
@@ -339,7 +339,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         {
             if ( to_room->vnum == clan_table[iClan].clan_room )
             {
-                if ( ( IS_NPC( ch ) ) || ( !ch->isImmortal() && ( iClan != ch->getClan() ) ) )
+                if ( ch->isNPC() || ( !ch->isImmortal() && ( iClan != ch->getClan() ) ) )
                 {
                     send_to_char( "You aren't allowed in there.\r\n", ch );
                     ch->using_named_door = FALSE;
@@ -428,7 +428,7 @@ void move_char( CHAR_DATA * ch, int door, bool look )
         move = movement_loss[UMIN( SECT_MAX - 1, in_room->sector_type )]
                + movement_loss[UMIN( SECT_MAX - 1, to_room->sector_type )];
 
-        if ( IS_AFFECTED( ch, AFF_FLYING ) || item_has_apply( ch, ITEM_APPLY_FLY ) || ch->get_level() <= 5 || IS_RIDING(ch) )
+        if ( IS_AFFECTED( ch, AFF_FLYING ) || item_has_apply( ch, ITEM_APPLY_FLY ) || ch->getLevel() <= MIN_LEVEL_CLAN || IS_RIDING(ch) )
             move = 1;
         if ( IS_GHOST(ch) || ch->isImmortal() )
             move = 0;
@@ -1064,7 +1064,7 @@ DO_FUN(do_pick)
      */
     for ( gch = ch->in_room->first_person; gch; gch = gch->next_in_room )
     {
-        if ( IS_NPC( gch ) && IS_AWAKE( gch ) && ch->level + 5 < gch->level )
+        if ( IS_NPC( gch ) && IS_AWAKE( gch ) && ch->getLevel() + 5 < gch->getLevel() )
         {
             act( "$N is standing too close to the lock.", ch, NULL, gch, TO_CHAR );
             return;
@@ -1359,7 +1359,7 @@ DO_FUN(do_shadowform)
     if ( IS_NPC( ch ) || number_percent(  ) < ch->pcdata->learned[gsn_shadow] )
     {
         af.type = gsn_sneak;
-        af.duration = ch->level;
+        af.duration = ch->getLevel();
         af.location = APPLY_NONE;
         af.modifier = 0;
         af.bitvector = AFF_SNEAK;
@@ -1379,7 +1379,7 @@ DO_FUN(do_sneak)
     if ( IS_NPC( ch ) || number_percent(  ) < ch->pcdata->learned[gsn_sneak] )
     {
         af.type = gsn_sneak;
-        af.duration = ch->level;
+        af.duration = ch->getLevel();
         af.location = APPLY_NONE;
         af.modifier = 0;
         af.bitvector = AFF_SNEAK;
@@ -1424,14 +1424,14 @@ DO_FUN(do_warcry) /* Thanks Koron, saved me re-inventing the wheel :) --Kline */
     }
 
     af.type      = skill_lookup("warcry");
-    af.duration  = 4 + (ch->get_level("psuedo") * 6);
+    af.duration  = 4 + (ch->getLevel( true ) * 6);
     af.location  = APPLY_HITROLL;
-    af.modifier  = 10 + (ch->get_level("psuedo") / 12);
+    af.modifier  = 10 + (ch->getLevel( true ) / 12);
     af.bitvector = 0;
     affect_to_char(ch, &af);
 
     af.location  = APPLY_SAVING_SPELL;
-    af.modifier  = -1 - (ch->get_level("psuedo") / 12);
+    af.modifier  = -1 - (ch->getLevel( true ) / 12);
     affect_to_char(ch, &af);
 
     send_to_char("You feel ready for battle!\r\n", ch);
@@ -1600,14 +1600,14 @@ DO_FUN(do_recall)
         if ( number_bits( 1 ) == 0 )
         {
             ch->set_cooldown(COOLDOWN_DEF, 2.75);
-            lose = ( ch->level / 4 ) + 1;
+            lose = ( ch->getLevel() / 4 ) + 1;
             ch->decrExperience( lose );
             snprintf( buf, MSL, "You failed!  You lose %d exps.\r\n", ( lose * -1 ) );
             send_to_char( buf, ch );
             return;
         }
 
-        lose = ( ch->level / 4 ) + 25;
+        lose = ( ch->getLevel() / 4 ) + 25;
         ch->decrExperience( lose );
         snprintf( buf, MSL, "You recall from combat!  You lose %d exps.\r\n", ( lose * -1 ) );
         send_to_char( buf, ch );
@@ -1873,7 +1873,7 @@ DO_FUN(do_halls)
      * Remember to limit use of this command to immorts!
      */
 
-    if ( ch->level < 81 )
+    if ( ch->getLevel() < LEVEL_HERO )
     {
         send_to_char( "Huh?\r\n", ch );
         return;
@@ -1915,11 +1915,11 @@ DO_FUN(do_smash)
     best = -1;
     if ( !IS_NPC( ch ) )
     {
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ch->lvl[cnt] >= skill_table[gsn_smash].skill_level[cnt] )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[gsn_smash].skill_level[cnt] )
                 best = cnt;
             else
-                best = ch->level;
+                best = ch->getLevel();
     }
     if ( best == -1 )
     {

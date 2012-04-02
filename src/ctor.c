@@ -443,7 +443,6 @@ obj_index_data::obj_index_data()
 
 pc_data::pc_data()
 {
-    adept_level = -1;
     for ( short i = 0; i < MAX_ALIASES; i++ )
     {
         alias[i] = &str_empty[0];

@@ -114,7 +114,7 @@ extern OBJ_DATA *quest_object;
 extern OBJ_DATA *auction_item;
 extern CHAR_DATA *auction_owner;
 extern CHAR_DATA *auction_bidder;
-extern int auction_bid;
+extern uint_t auction_bid;
 extern int auction_stage;
 extern bool auction_flop;
 
@@ -298,8 +298,7 @@ DO_FUN(do_get)
                 if ( container->item_type == ITEM_CORPSE_PC )
                     save_corpses(  );
             }
-            if ( ch->level > 1 )
-                do_save( ch, "auto" );
+            do_save( ch, "auto" );
             return;
         }
         else
@@ -333,8 +332,7 @@ DO_FUN(do_get)
                     get_obj( ch, obj, container );
                 }
             }
-            if ( ch->level > 1 )
-                do_save( ch, "auto" );
+            do_save( ch, "auto" );
 
 
             return;
@@ -357,7 +355,7 @@ DO_FUN(do_get)
                     get_obj( ch, obj, NULL );
                 }
             }
-            if ( found && ch->level > 1 )
+            if ( found )
                 do_save( ch, "auto" );
 
             if ( !found && !get_ok )
@@ -436,17 +434,11 @@ DO_FUN(do_get)
                 send_to_char( "I don't see what your looking for in this room.\r\n", ch );
                 return;
             }
-            if ( ch->level > 1 )
-                do_save( ch, "auto" );
-
-
+            do_save( ch, "auto" );
             return;
         }
     }
-    if ( ch->level > 1 )
-        do_save( ch, "auto" );
-
-
+    do_save( ch, "auto" );
     return;
 }
 
@@ -597,11 +589,9 @@ DO_FUN(do_put)
                  */
             }
         }
-        if ( ch->level > 2 )
-            do_save( ch, "auto" );
+        do_save( ch, "auto" );
         return;
     }
-
     return;
 }
 
@@ -686,8 +676,7 @@ DO_FUN(do_drop)
                  */
             }
         }
-        if ( ch->level > 1 )
-            do_save( ch, "auto" );
+        do_save( ch, "auto" );
         return;
     }
 
@@ -717,7 +706,7 @@ DO_FUN(do_drop)
         act( "You are not carrying anything.", ch, NULL, arg, TO_CHAR );
     }
 
-    if ( found && ch->level > 1 )
+    if ( found )
         do_save( ch, "auto" );
     return;
 }
@@ -865,14 +854,9 @@ DO_FUN(do_give)
             }
         }
     }
-    if ( ch->level > 1 )
-        do_save( victim, "auto" );
-
-
+    do_save( victim, "auto" );
     return;
-
 }
-
 
 DO_FUN(do_fill)
 {
@@ -975,7 +959,7 @@ DO_FUN(do_drink)
         }
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
+    if ( ch->getLevel( true ) < obj->getLevel() && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to drink such a liquid.\n\r", ch );
         return;
@@ -1137,7 +1121,7 @@ DO_FUN(do_eat)
         return;
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
+    if ( ch->getLevel( true ) < obj->getLevel() && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to eat such a food.\n\r", ch );
         return;
@@ -1381,18 +1365,18 @@ void wear_obj( CHAR_DATA * ch, OBJ_DATA * obj, bool fReplace )
         return;
     }
 
-    if ( ch->get_level("psuedo") < obj->level )
+    if ( ch->getLevel( true ) < obj->getLevel() )
     {
-        snprintf( buf, MSL, "You must be level %d to use this object.\r\n", obj->level );
+        snprintf( buf, MSL, "You must be level %lu to use this object.\r\n", obj->getLevel() );
         send_to_char( buf, ch );
         act( "$n tries to use $p, but is too inexperienced.", ch, obj, NULL, TO_ROOM );
         return;
     }
 
-    if ( ( ch->get_level("psuedo") < obj->level )
+    if ( ( ch->getLevel( true ) < obj->getLevel() )
             && ( IS_OBJ_STAT( obj, ITEM_EXTRA_VAMP ) ) && ( IS_VAMP( ch ) ) && ( !IS_NPC( ch ) ) )
     {
-        snprintf( buf, MSL, "You must be level %d to use this object.\r\n", obj->level );
+        snprintf( buf, MSL, "You must be level %lu to use this object.\r\n", obj->getLevel() );
         send_to_char( buf, ch );
         act( "$n tries to use $p, but is too inexperienced.", ch, obj, NULL, TO_ROOM );
         return;
@@ -1406,9 +1390,9 @@ void wear_obj( CHAR_DATA * ch, OBJ_DATA * obj, bool fReplace )
         return;
     }
 
-    if ( ( ch->get_level("maxremortal") < obj->level ) && ( IS_OBJ_STAT( obj, ITEM_EXTRA_REMORT ) ) && ( !IS_NPC( ch ) ) )
+    if ( ( !ch->isRemortal() || ( ch->getLevel() < obj->getLevel() ) ) && ( IS_OBJ_STAT( obj, ITEM_EXTRA_REMORT ) ) && !ch->isNPC() )
     {
-        snprintf( buf, MSL, "You must be level %d in a remort class to use this object.\r\n", obj->level );
+        snprintf( buf, MSL, "You must be level %lu in a remort class to use this object.\r\n", obj->getLevel() );
         send_to_char( buf, ch );
         act( "$n tries to use $p, but is too inexperienced.", ch, obj, NULL, TO_ROOM );
         return;
@@ -1996,7 +1980,7 @@ DO_FUN(do_sacrifice)
             send_to_char("NPCs don't have fines.\r\n", ch);
             return;
         }
-        short plevel = ch->get_level("psuedo");
+        uint_t plevel = ch->getLevel( true );
 
         if ( ch->pcdata->sentence <= 0 )
         {
@@ -2004,7 +1988,7 @@ DO_FUN(do_sacrifice)
             send_to_char( "You have no fines outstanding.\r\n", ch );
             return;
         }
-        else if ( !CAN_WEAR( obj, ITEM_TAKE ) || plevel < obj->level || plevel > ( obj->level + 30 ) )
+        else if ( !CAN_WEAR( obj, ITEM_TAKE ) || plevel < obj->getLevel() || plevel > ( obj->getLevel() + 30 ) )
         {
 
             act( "The judge will not accept $p as payment.", ch, obj, 0, TO_CHAR );
@@ -2054,7 +2038,7 @@ DO_FUN(do_sacrifice)
 
     if ( obj->item_type == ITEM_CORPSE_NPC )
     {
-        gp = UMAX( 1, obj->level / 5 );
+        gp = UMAX( 1, obj->getLevel() / 5 );
         change_align = FALSE;
         paying_fine = FALSE;
     }
@@ -2066,7 +2050,7 @@ DO_FUN(do_sacrifice)
     if ( change_align )
     {
 
-        align_change = obj->level;
+        align_change = obj->getLevel();
         if (  IS_OBJ_STAT(obj, ITEM_EXTRA_REMORT) )
             align_change *= 1.5;
         if ( align_direction == 1 )
@@ -2159,7 +2143,7 @@ DO_FUN(do_quaff)
         return;
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
+    if ( ch->getLevel( true ) < obj->getLevel() && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to use such a potion.\n\r", ch );
         return;
@@ -2217,7 +2201,7 @@ DO_FUN(do_recite)
         }
     }
 
-    if ( ch->get_level("psuedo") < obj->level && !ch->isImmortal() )
+    if ( ch->getLevel( true ) < obj->getLevel() && !ch->isImmortal() )
     {
         send_to_char( "You are not knowledgeable enough to use such a scroll.\n\r", ch );
         return;
@@ -2448,14 +2432,14 @@ DO_FUN(do_steal)
     }
 
     ch->set_cooldown("steal");
-    chance = IS_NPC( ch ) ? ( ch->get_level("psuedo") / 4 )
+    chance = IS_NPC( ch ) ? ( ch->getLevel( true ) / 4 )
              : ( ch->pcdata->learned[gsn_steal] / 3 + ( get_curr_dex( ch ) / 2 ) );
-    chance = chance - ( ( victim->get_level("psuedo") - ch->get_level("psuedo") ) / 2 );
+    chance = chance - ( ( victim->getLevel( true ) - ch->getLevel( true ) ) / 2 );
     if ( IS_ADEPT(victim) && !IS_ADEPT(ch) )
         chance = chance - 25;
     if ( !IS_NPC( ch ) )
-        chance += ch->get_level("assassin") / 4;
-    if ( ch->get_level("psuedo") > ( victim->get_level("psuedo") + 30 ) )
+        chance += ch->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ) / 4;
+    if ( ch->getLevel( true ) > ( victim->getLevel( true ) + 30 ) )
     {
         send_to_char( "Coward!!! Trying to steal from the weak..\r\n", ch );
         return;
@@ -2483,7 +2467,7 @@ DO_FUN(do_steal)
             else
             {
                 int diff = 0;
-                diff = ( abs( ch->get_level("psuedo") - victim->get_level("psuedo") ) + 10 ) * 20;
+                diff = ( abs( ch->getLevel( true ) - victim->getLevel( true ) ) + 10 ) * 20;
                 ch->act.set(ACT_THIEF);
                 send_to_char( "*** You are now a THIEF!! ***\r\n", ch );
                 ch->pcdata->sentence += diff;
@@ -2500,8 +2484,7 @@ DO_FUN(do_steal)
         return;
     }
 
-    if ( !can_drop_obj( ch, obj )
-            ||  IS_OBJ_STAT(obj, ITEM_EXTRA_INVENTORY) || obj->level > ch->level || ( obj->wear_loc > -1 ) )
+    if ( !can_drop_obj( ch, obj ) ||  IS_OBJ_STAT(obj, ITEM_EXTRA_INVENTORY) || obj->getLevel() > ch->getLevel() || ( obj->wear_loc > -1 ) )
     {
         send_to_char( "You can't pry it away.\r\n", ch );
         return;
@@ -2669,10 +2652,10 @@ void check_guards( CHAR_DATA * ch )
 
 
 
-int get_cost( CHAR_DATA * keeper, OBJ_DATA * obj, bool fBuy )
+uint_t get_cost( CHAR_DATA * keeper, OBJ_DATA * obj, bool fBuy )
 {
     SHOP_DATA *pShop;
-    int cost;
+    uint_t cost;
     if ( obj == NULL || ( pShop = keeper->npcdata->pIndexData->pShop ) == NULL )
         return 0;
     if ( fBuy )
@@ -2681,7 +2664,7 @@ int get_cost( CHAR_DATA * keeper, OBJ_DATA * obj, bool fBuy )
         if ( obj->item_type == ITEM_CHARM )
         {
             cost += 1000;
-            cost += (obj->level * 100);
+            cost += (obj->getLevel() * 100);
         }
         cost *= pShop->profit_buy / 100;
     }
@@ -2773,18 +2756,18 @@ DO_FUN(do_buy)
             return;
         }
 
-        if ( money_value( ch->money ) < 10 * pet->level * pet->level )
+        if ( money_value( ch->money ) < 10 * pet->getLevel() * pet->getLevel() )
         {
             send_to_char( "You can't afford it.\r\n", ch );
             return;
         }
 
-        if ( ch->level < pet->level )
+        if ( ch->getLevel() < pet->getLevel() )
         {
             send_to_char( "You're not ready for this pet.\r\n", ch );
             return;
         }
-        cost_string = take_best_coins( ch->money, 10 * pet->level * pet->level );
+        cost_string = take_best_coins( ch->money, 10 * pet->getLevel() * pet->getLevel() );
         cost_string = one_argument( cost_string, changebuf );
         change = is_number( changebuf ) ? atoi( changebuf ) : 0;
         snprintf( givebuf, MSL, "%s to %s", cost_string, keeper->getName_() );
@@ -2828,7 +2811,7 @@ DO_FUN(do_buy)
     {
 
         OBJ_DATA *obj;
-        int cost;
+        uint_t cost;
         int change = 0;
         char givebuf[MSL], changebuf[MSL];
         char *cost_string;
@@ -2848,7 +2831,7 @@ DO_FUN(do_buy)
             return;
         }
 
-        if ( obj->level > ch->get_level("psuedo") )
+        if ( obj->getLevel() > ch->getLevel( true ) )
         {
             act( "$n tells you 'You can't use $p yet'.", keeper, obj, ch, TO_VICT );
             ch->reply = keeper;
@@ -2891,7 +2874,7 @@ DO_FUN(do_buy)
         }
 
         if (  IS_OBJ_STAT(obj, ITEM_EXTRA_INVENTORY) )
-            obj = create_object( obj->pIndexData, obj->level );
+            obj = create_object( obj->pIndexData, obj->getLevel() );
         else
             obj_from_char( obj );
         obj_to_char( obj, ch );
@@ -2955,9 +2938,9 @@ DO_FUN(do_list)
                              "\r\n@@g[@@yLevel@@g]       @@yPet@@g                           @@yPrice  ( Approximate )@@N \r\n", MSL );
                 }
                 stopcounter++;
-                rounded_cost = round_money_off( 10 * pet->level * pet->level, 1 );
+                rounded_cost = round_money_off( 10 * pet->getLevel() * pet->getLevel(), 1 );
                 snprintf( costbuf, MSL, "%s", money_string( rounded_cost ) );
-                snprintf( buf, MSL, "[ @@W%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", pet->level, ccode_len( pet->getDescrShort_(), 30 ),
+                snprintf( buf, MSL, "[ @@W%3lu@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", pet->getLevel(), ccode_len( pet->getDescrShort_(), 30 ),
                           capitalize( pet->getDescrShort_() ), ccode_len( costbuf, 35 ), costbuf );
                 delete rounded_cost;
                 strncat( buf1, buf, MSL - 1 );
@@ -2994,8 +2977,8 @@ DO_FUN(do_list)
                 stopcounter++;
                 rounded_cost = round_money_off( cost, 1 );
                 snprintf( costbuf, MSL, "%s", money_string( rounded_cost ) );
-                snprintf( buf, MSL, "@@g[%s%3d@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", ( IS_OBJ_STAT(obj, ITEM_EXTRA_REMORT) ? "@@m" : "@@a" ),
-                          obj->level, ccode_len( obj->getDescrShort_(), 30 ), capitalize( obj->getDescrShort_() ), ccode_len( costbuf, 30 ),
+                snprintf( buf, MSL, "@@g[%s%3lu@@g]  @@c%-*s@@g  @@W%-*s@@N \r\n", ( IS_OBJ_STAT(obj, ITEM_EXTRA_REMORT) ? "@@m" : "@@a" ),
+                          obj->getLevel(), ccode_len( obj->getDescrShort_(), 30 ), capitalize( obj->getDescrShort_() ), ccode_len( costbuf, 30 ),
                           costbuf );
                 delete rounded_cost;
                 strncat( buf1, buf, MSL - 1 );
@@ -3313,14 +3296,14 @@ DO_FUN(do_adapt)
     bool changed;  /* was the eq changed?? */
     long diff;  /* ratio to change stuff by */
     int pen; /* additional penalty */
-    int cost;
+    uint_t cost;
     if ( !IS_NPC( ch ) && IS_WOLF( ch ) && ( IS_SHIFTED( ch ) || IS_RAGED( ch ) ) )
     {
         send_to_char( "Your claws are too clumsy!!!@@N\r\n", ch );
         return;
     }
 
-    cost = ( ch->level * 250 );
+    cost = ( ch->getLevel() * 250 );
     argument = one_argument( argument, arg );
     /*
      * Check for mob with act->adapt
@@ -3339,7 +3322,7 @@ DO_FUN(do_adapt)
 
     if ( arg[0] == '\0' )
     {
-        snprintf( buf, MSL, "The cost for you to have a weapon adapted is: %d GP.\r\n", cost );
+        snprintf( buf, MSL, "The cost for you to have a weapon adapted is: %lu GP.\r\n", cost );
         send_to_char( buf, ch );
         send_to_char( "Usuage: ADAPT <weapon>.  The weapon must be in your inventory.\r\n", ch );
         return;
@@ -3363,8 +3346,8 @@ DO_FUN(do_adapt)
         return;
     }
 
-    diff = ( obj->level / ch->level );
-    pen = ( obj->level - ch->level );
+    diff = ( obj->getLevel() / ch->getLevel() );
+    pen = ( obj->getLevel() - ch->getLevel() );
     if ( diff < 1 || pen == 0 )
     {
         send_to_char( "It doesn't need adapting!\r\n", ch );
@@ -3447,7 +3430,7 @@ DO_FUN(do_adapt)
     }
     money_to_value(ch, mbuf);
 
-    obj->level = ch->level; /* Allow ch to use the eq... */
+    obj->setLevel( ch->getLevel() ); /* Allow ch to use the eq... */
     snprintf( buf, MSL, "%s <adapted>", obj->getDescrShort_() );
     obj->setDescrShort( buf );
     snprintf( buf, MSL, "<adapted> %s", obj->getDescrLong_() );
@@ -3758,7 +3741,7 @@ DO_FUN(do_appraise)
 
 DO_FUN(do_bid)
 {
-    int amount;
+    uint_t amount;
     if ( !IS_NPC( ch ) && IS_WOLF( ch ) && ( IS_SHIFTED( ch ) || IS_RAGED( ch ) ) )
     {
         send_to_char( "Your claws are too clumsy!!!@@N\r\n", ch );
@@ -4055,7 +4038,7 @@ DO_FUN(do_connect)
          * good connection
          */
     {
-        new_ob = create_object( get_obj_index( first_ob->value[2] ), ch->level );
+        new_ob = create_object( get_obj_index( first_ob->value[2] ), ch->getLevel() );
         extract_obj( first_ob );
         extract_obj( second_ob );
         obj_to_char( new_ob, ch );
@@ -4110,7 +4093,7 @@ DO_FUN(do_repair)
             if ( obj->durability < obj->max_durability )
             {
                 found = TRUE;
-                cost = static_cast<int>(((((obj->durability - obj->max_durability) * mod) * obj->level) * -1));
+                cost = static_cast<int>(((((obj->durability - obj->max_durability) * mod) * obj->getLevel()) * -1));
                 if ( money_value(ch->money) - cost < 0 )
                 {
                     act("You don't have enough money to repair $p.", ch, obj, NULL, TO_CHAR);
@@ -4146,7 +4129,7 @@ DO_FUN(do_repair)
         send_to_char("That item is not in need of repair.\r\n", ch);
         return;
     }
-    cost = static_cast<int>(((((obj->durability - obj->max_durability) * mod) * obj->level) * -1));
+    cost = static_cast<int>(((((obj->durability - obj->max_durability) * mod) * obj->getLevel()) * -1));
     if ( money_value(ch->money) - cost < 0 )
     {
         act("You don't have enough money to repair $p.", ch, obj, NULL, TO_CHAR);

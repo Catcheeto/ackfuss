@@ -16,7 +16,6 @@ class Brain {
     public:
         Brain();
         ~Brain();
-        Brain* snoop_by;
         CHAR_DATA *character;
         CHAR_DATA *original;
         char inbuf[4 * MAX_INPUT_LENGTH];

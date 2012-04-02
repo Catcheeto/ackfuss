@@ -30,18 +30,18 @@ void char_hunt (CHAR_DATA *ch);
 const void Brain::Disconnect()
 {
     char buf[MSL];
-    Brain* b = NULL;
-    iterBrain di;
+    iterBrain bi;
+    multimap<Brain*,Brain*>::iterator mi, mi_next;
     CHAR_DATA *ch;
 
-    if ( snoop_by != NULL )
-        snoop_by->Send( "Your victim has left the game.\r\n" );
-
-    for ( di = brain_list.begin(); di != brain_list.end(); di++)
+    for ( mi = snoop_list.begin(); mi != snoop_list.end(); mi = mi_next )
     {
-        b = *di;
-        if ( b->snoop_by == this )
-            b->snoop_by = NULL;
+        mi_next = ++mi;
+        if ( this == mi->second )
+        {
+            mi->first->Send( "Your victim has left the game.\r\n" );
+            snoop_list.erase( mi );
+        }
     }
 
     if ( original )
@@ -122,6 +122,8 @@ const void Brain::ProcessColors()
 
 const bool Brain::ProcessOutput( const bool prompt )
 {
+    multimap<Brain*,Brain*>::iterator bi;
+
     if ( m_output.empty() )
         return true;
 
@@ -145,15 +147,10 @@ const bool Brain::ProcessOutput( const bool prompt )
         }
     }
 
-    if ( snoop_by != NULL )
+    for ( bi = snoop_list.begin(); bi != snoop_list.end(); bi++ )
     {
-        char foo[MAX_STRING_LENGTH];
-        CHAR_DATA *snoop_ch;
-
-        snoop_ch = original ? original : character;
-        if ( snoop_ch != NULL )
-            snprintf( foo, MSL, "[SNOOP:%s] ", snoop_ch->getName_() );
-        snoop_by->Send( foo );
+        if ( this == bi->second )
+            bi->first->Send( Utils::FormatString( 0, "[SNOOP:%s] ", this->getThing()->getName_() ) );
     }
 
     ProcessColors();
@@ -307,7 +304,6 @@ uint_t Brain::setType( const uint_t type )
 
 Brain::Brain()
 {
-    snoop_by = NULL;
     character = NULL;
     original = NULL;
     showstr_head = NULL;

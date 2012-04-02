@@ -1361,32 +1361,32 @@ DO_FUN(do_score)
         send_to_char( buf, ch );
 
         buf2[0] = '\0';
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
         {
             snprintf( buf, MSL, "@@c%s", class_table[cnt].who_name );
             strncat( buf2, buf, MSL - 1 );
-            if ( ch->lvl[cnt] != -1 )
-                snprintf( buf, MSL, ":@@W%2d ", ch->lvl[cnt] );
+            if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) > uintmin_t )
+                snprintf( buf, MSL, ":@@W%2lu ", ch->getLevel( THING_LEVEL_TIER1, cnt ) );
             else
                 snprintf( buf, MSL, "@@c:@@W%s ", " 0" );
             strncat( buf2, buf, MSL - 1 );
         }
     }
     else
-        snprintf( buf2, MSL, " @@WLevel: @@y%d", ch->level );
+        snprintf( buf2, MSL, " @@WLevel: @@y%lu", ch->getLevel() );
 
     snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
     send_to_char( buf, ch );
     buf2[0] = '\0';
 
-    if ( IS_REMORT( ch ) )
+    if ( ch->isRemortal() )
     {
 
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
         {
-            if ( ch->lvl2[cnt] != -1 )
+            if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) > uintmin_t )
             {
-                snprintf( buf, MSL, "@@m%s:@@W%2d ", remort_table[cnt].who_name, ch->lvl2[cnt] );
+                snprintf( buf, MSL, "@@m%s:@@W%2lu ", remort_table[cnt].who_name, ch->getLevel( THING_LEVEL_TIER2, cnt ) );
                 strncat( buf2, buf, MSL - 1 );
 
             }
@@ -1395,7 +1395,7 @@ DO_FUN(do_score)
         send_to_char( buf, ch );
     }
 
-    if ( IS_ADEPT(ch) )
+    if ( ch->isAdept() )
     {
         snprintf( buf, MSL, "@@WADEPT@@N: %s ", ch->get_whoname() );
         buf2[0] = '\0';
@@ -1404,7 +1404,7 @@ DO_FUN(do_score)
         send_to_char( buf, ch );
     }
 
-    snprintf( buf2, MSL, "Psuedo Level: @@W%3d ", ch->get_level("psuedo") );
+    snprintf( buf2, MSL, "Psuedo Level: @@W%3lu ", ch->getLevel( true ) );
     snprintf( buf, MSL, "@@c|%s @@c|\r\n", center_text( buf2, 62 ) );
     send_to_char( buf, ch );
 
@@ -1412,7 +1412,7 @@ DO_FUN(do_score)
               "X========= @@WExps: @@y%9lu @@c========= @@aQuest Points: @@y%4d @@c========X\r\n", ch->getExperience(), ch->isNPC() ? 0 : ch->pcdata->quest_points );
     send_to_char( buf, ch );
 
-    if ( ch->getTrust() != ch->level )
+    if ( ch->getTrust() != ch->getLevel() )
     {
         snprintf( buf, MSL, "X================= @@WYou are trusted at level @@y%2lu @@c=================X\r\n", ch->getTrust() );
         send_to_char( buf, ch );
@@ -1640,19 +1640,11 @@ DO_FUN(do_affected)
             snprintf( buf, MSL, "Spell: '%s'", skill_table[paf->type].name );
             send_to_char( buf, ch );
 
-            if ( ch->level >= 16 )
-            {
-                if ( paf->location > APPLY_NONE )
-                {
-                    snprintf( buf, MSL,
-                              " modifies %s by %d for %d hours", affect_loc_name( paf->location ), paf->modifier, paf->duration );
-
-                }
-                else
-                    snprintf( buf, MSL, " lasts for %d hours", paf->duration );
-                send_to_char( buf, ch );
-            }
-
+            if ( paf->location > APPLY_NONE )
+                snprintf( buf, MSL, " modifies %s by %d for %d hours", affect_loc_name( paf->location ), paf->modifier, paf->duration );
+            else
+                snprintf( buf, MSL, " lasts for %d hours", paf->duration );
+            send_to_char( buf, ch );
             send_to_char( ".\r\n", ch );
         }
         /*
@@ -2081,7 +2073,7 @@ DO_FUN(do_consider)
      * Also, only look at modifiers if victim == NPC
      */
 
-    diff = ( victim->get_level("psuedo") - ch->get_level("psuedo") );
+    diff = ( victim->getLevel( true ) - ch->getLevel( true ) );
     /*
      * Additions for difficulty.
      */
@@ -2359,7 +2351,7 @@ DO_FUN(do_practice)
     CHAR_DATA *mob;
     int cnt;
     int sn;
-    int ack;
+    uint_t ack;
     int p_class;
 
     /*
@@ -2374,11 +2366,6 @@ DO_FUN(do_practice)
     if ( IS_NPC( ch ) )
         return;
 
-    if ( ch->level < 3 )
-    {
-        send_to_char( "You must be third level to practice.  Go train instead!\r\n", ch );
-        return;
-    }
     /*
      * moved check for mob here. -S-
      */
@@ -2405,11 +2392,11 @@ DO_FUN(do_practice)
 
 
             /*
-             * Check ch->lvl[]
+             * Check proper class level
              */
-            for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-                if ( ( ( ( ch->lvl[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == MORTAL ) )
-                        || ( ( ch->lvl2[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == REMORT ) ) )
+            for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
+                if ( ( ( ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == MORTAL ) )
+                        || ( ( ch->getLevel( THING_LEVEL_TIER2, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == REMORT ) ) )
                         && ( skill_table[sn].flag2 != VAMP ) && ( skill_table[sn].flag2 != WOLF ) )
                     ok = TRUE;
 
@@ -2480,7 +2467,7 @@ DO_FUN(do_practice)
             return;
         }
         p_class = 0;
-        ack = -1;
+        ack = 0;
         ok = FALSE;
 
 
@@ -2490,31 +2477,31 @@ DO_FUN(do_practice)
             send_to_char( "You can't practice that.\r\n", ch );
             return;
         }
-        if ( ( skill_table[sn].flag1 == ADEPT ) && IS_ADEPT(ch) && ( ch->get_level("adept") >= skill_table[sn].skill_level[0] ) )
+        if ( ( skill_table[sn].flag1 == ADEPT ) && IS_ADEPT(ch) && ( ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) >= skill_table[sn].skill_level[0] ) )
         {
             p_class = 0;
             ok = TRUE;
         }
         else
         {
-            for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+            for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
             {
-                if ( ( ch->lvl[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == MORTAL ) )
+                if ( ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == MORTAL ) )
                 {
-                    if ( ch->lvl[cnt] > ack )
+                    if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) > ack )
                     {
-                        ack = ch->lvl[cnt];
+                        ack = ch->getLevel( THING_LEVEL_TIER1, cnt );
                         p_class = cnt;
                     }
 
                     ok = TRUE;
                 }
 
-                else if ( ( ch->lvl2[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == REMORT ) )
+                else if ( ( ch->getLevel( THING_LEVEL_TIER2, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].flag1 == REMORT ) )
                 {
-                    if ( ch->lvl2[cnt] > ack )
+                    if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) > ack )
                     {
-                        ack = ch->lvl2[cnt];
+                        ack = ch->getLevel( THING_LEVEL_TIER2, cnt );
                         p_class = cnt;
                     }
                     ok = TRUE;
@@ -2789,7 +2776,7 @@ DO_FUN(do_commands)
                     continue;
                 if ( show == -1 && cmd_table[cmd].type != i )
                     continue;
-                if ( cmd_table[cmd].level == CLAN_ONLY && ch->getClan() == 0 )
+                if ( cmd_table[cmd].level == CLAN_ONLY && ch->getClan() == uintmin_t )
                     continue;
                 if ( cmd_table[cmd].level == BOSS_ONLY && !ch->act.test(ACT_CLEADER) )
                     continue;
@@ -2920,7 +2907,7 @@ DO_FUN(do_channels)
 {
     char arg[MSL];
     char buffer[MSL];
-    int a, trust;
+    uint_t a, trust;
 
     one_argument( argument, arg );
 
@@ -3331,8 +3318,9 @@ DO_FUN(do_spells)
 
         if ( skill_table[sn].name == NULL )
             break;
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ( ch->lvl[cnt] >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].skill_level[cnt] < LEVEL_HERO ) )
+
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= skill_table[sn].skill_level[cnt] ) && ( skill_table[sn].skill_level[cnt] < LEVEL_HERO ) )
                 ok = TRUE;
 
         if ( ch->pcdata->learned[sn] == 0 )
@@ -3341,6 +3329,8 @@ DO_FUN(do_spells)
         if ( skill_table[sn].slot == 0 )
             continue;
 
+        if ( !ok )
+            continue;
         /*
          * if ( skill_table[sn].skill_level[ch->p_class] > LEVEL_HERO )
          * continue;
@@ -3368,7 +3358,7 @@ DO_FUN(do_slist)
     int foo;
     int sn;
     int col;
-    int level;
+    uint_t level;
     bool pSpell;
     bool any;
     bool remort_class;
@@ -3463,7 +3453,7 @@ DO_FUN(do_slist)
                 if ( pSpell )
                 {
 
-                    snprintf( buf, MSL, "@@r%2d:@@N", level );
+                    snprintf( buf, MSL, "@@r%2lu:@@N", level );
                     strncat( buf1, buf, MSL - 1 );
                     pSpell = FALSE;
                 }
@@ -3476,7 +3466,7 @@ DO_FUN(do_slist)
                     strncat( buf1, buf, MSL - 1 );
                 }
                 else if ( skill_table[sn].skill_level[p_class] >
-                          ( adept_class ? ch->get_level("adept") : remort_class ? ch->lvl2[p_class] : ch->lvl[p_class] ) )
+                          ( adept_class ? ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) : remort_class ? ch->getLevel( THING_LEVEL_TIER2, p_class ) : ch->getLevel( THING_LEVEL_TIER1, p_class ) ) )
                 {
                     snprintf( buf, MSL, "@@d%18s@@N", skill_table[sn].name );
                     strncat( buf1, buf, MSL - 1 );
@@ -3495,7 +3485,7 @@ DO_FUN(do_slist)
                 if ( pSpell )
                 {
 
-                    snprintf( buf, MSL, "@@r%2d:@@N", level );
+                    snprintf( buf, MSL, "@@r%2lu:@@N", level );
                     strncat( buf1, buf, MSL - 1 );
                     pSpell = FALSE;
                 }
@@ -3508,7 +3498,7 @@ DO_FUN(do_slist)
                     strncat( buf1, buf, MSL - 1 );
                 }
                 else if ( skill_table[sn].skill_level[p_class] >
-                          ( adept_class ? ch->get_level("adept") : remort_class ? ch->lvl2[p_class] : ch->lvl[p_class] ) )
+                          ( adept_class ? ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) : remort_class ? ch->getLevel( THING_LEVEL_TIER2, p_class ) : ch->getLevel( THING_LEVEL_TIER1, p_class ) ) )
                 {
                     snprintf( buf, MSL, "@@d%18s@@N", skill_table[sn].name );
                     strncat( buf1, buf, MSL - 1 );
@@ -3525,7 +3515,7 @@ DO_FUN(do_slist)
             {
                 if ( pSpell )
                 {
-                    snprintf( buf, MSL, "@@r%2d:@@N", level );
+                    snprintf( buf, MSL, "@@r%2lu:@@N", level );
                     strncat( buf1, buf, MSL - 1 );
                     pSpell = FALSE;
                 }
@@ -3540,7 +3530,7 @@ DO_FUN(do_slist)
                     strncat( buf1, buf, MSL - 1 );
                 }
                 else if ( skill_table[sn].skill_level[p_class] >
-                          ( adept_class ? ch->get_level("adept") : remort_class ? ch->lvl2[p_class] : ch->lvl[p_class] ) )
+                          ( adept_class ? ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) : remort_class ? ch->getLevel( THING_LEVEL_TIER2, p_class ) : ch->getLevel( THING_LEVEL_TIER1, p_class ) ) )
                 {
                     snprintf( buf, MSL, "@@d%18s@@N", skill_table[sn].name );
                     strncat( buf1, buf, MSL - 1 );
@@ -3766,7 +3756,7 @@ DO_FUN(do_heal)
         return;
     }
 
-    mult = UMAX( 10, ch->get_level("psuedo") / 2 );
+    mult = UMAX( 10, ch->getLevel( true ) / 2 );
 
     if ( argument[0] == '\0' )
     {
@@ -3957,7 +3947,6 @@ DO_FUN(do_gain)
     char buf[MSL];
     uint_t cost = 0;
     int cnt;
-    int subpop;
     bool any;
     int c;   /* The class to gain in */
     int numclasses;   /* Current number of classes person has */
@@ -4000,17 +3989,17 @@ DO_FUN(do_gain)
         send_to_char( "You can't do that here.\r\n", ch );
         return;
     }
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+    for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
     {
-        if ( ch->lvl[cnt] >= 70 )
+        if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= 70 )
             morts_at_seventy++;
-        if ( ch->lvl[cnt] == 80 )
+        if ( ch->getLevel( THING_LEVEL_TIER1, cnt ) >= MAX_TIER1_LEVEL )
             morts_at_eighty++;
-        if ( ch->lvl2[cnt] >= 70 )
+        if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) >= 70 )
             remorts_at_seventy++;
-        if ( ch->lvl2[cnt] == 80 )
+        if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) >= MAX_TIER2_LEVEL )
             remorts_at_eighty++;
-        if ( ch->lvl2[cnt] > -1 )
+        if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) > uintmin_t )
             num_remorts++;
     }
     /* first case.. remort  */
@@ -4037,36 +4026,34 @@ DO_FUN(do_gain)
         send_to_char( "You can gain levels in:\r\n", ch );
         any = FALSE;
         numclasses = 0;
-        for ( a = 0; a < MAX_CLASS; a++ )
-            if ( ch->lvl[a] >= 1 )
+        for ( a = 0; a < MAX_THING_LEVEL_TIER1_CLASS; a++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, a ) > uintmin_t )
                 numclasses++;
 
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( numclasses >= race_table[ch->race].classes && ch->lvl[cnt] >= 1 && ch->lvl[cnt] < ( LEVEL_HERO -1 ) )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+            if ( numclasses >= race_table[ch->race].classes && ch->getLevel( THING_LEVEL_TIER1, cnt ) > uintmin_t && ch->getLevel( THING_LEVEL_TIER1, cnt ) < MAX_TIER1_LEVEL )
             {
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-                ch->send( "%s : %d Exp.\r\n", class_table[cnt].who_name, cost );
+                ch->Send( Utils::FormatString( 0, "%s : %lu Exp.\r\n", class_table[cnt].who_name, cost ) );
             }
-            else if ( numclasses < race_table[ch->race].classes && ch->lvl[cnt] != -1 && ch->lvl[cnt] < ( LEVEL_HERO - 1 ) )
+            else if ( numclasses < race_table[ch->race].classes && ch->getLevel( THING_LEVEL_TIER1, cnt ) > uintmin_t && ch->getLevel( THING_LEVEL_TIER1, cnt ) < MAX_TIER1_LEVEL )
             {
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
 
-                snprintf( buf, MSL, "%s : %lu Exp.\r\n", class_table[cnt].who_name, cost );
-                send_to_char( buf, ch );
+                ch->Send( Utils::FormatString( 0, "%s : %lu Exp.\r\n", class_table[cnt].who_name, cost ) );
             }
 
-        for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-            if ( ch->lvl2[cnt] != -1 && ch->lvl2[cnt] < ( LEVEL_HERO - 1 ) )
+        for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
+            if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) > uintmin_t && ch->getLevel( THING_LEVEL_TIER2, cnt ) < MAX_TIER2_LEVEL )
             {
                 any = TRUE;
                 cost = exp_to_level( ch, cnt, 5 );  /* 5 means remort */
-                snprintf( buf, MSL, "%s : %lu Exp.\r\n", remort_table[cnt].who_name, cost );
-                send_to_char( buf, ch );
+                ch->Send( Utils::FormatString( 0, "%s : %lu Exp.\r\n", remort_table[cnt].who_name, cost ) );
             }
-        if ( IS_ADEPT(ch) && ch->get_level("adept") < 20 )
+        if ( ch->isAdept() && ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) < MAX_TIER3_LEVEL )
         {
             any = TRUE;
             cost = exp_to_level_adept( ch );
@@ -4105,15 +4092,15 @@ DO_FUN(do_gain)
 
     any = FALSE;
     c = -1;
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
+    for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
         if ( !str_cmp( class_table[cnt].who_name, argument ) )
         {
             any = TRUE;
             c = cnt;
         }
 
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        if ( ( !str_cmp( remort_table[cnt].who_name, argument ) ) && ( ( ch->lvl2[cnt] > 0 ) || ( allow_remort ) ) )
+    for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
+        if ( ( !str_cmp( remort_table[cnt].who_name, argument ) ) && ( ( ch->getLevel( THING_LEVEL_TIER2, cnt ) > uintmin_t ) || ( allow_remort ) ) )
         {
             any = TRUE;
             remort = TRUE;
@@ -4121,7 +4108,7 @@ DO_FUN(do_gain)
         }
     if ( !str_prefix( "VAMPIRE", argument ) )
     {
-        if ( IS_VAMP( ch ) )
+        if ( ch->isVampire() )
         {
             any = TRUE;
             vamp = TRUE;
@@ -4130,7 +4117,7 @@ DO_FUN(do_gain)
 
     if ( !str_prefix( "WEREWOLF", argument ) )
     {
-        if ( IS_WOLF( ch ) )
+        if ( ch->isWerewolf() )
         {
             any = TRUE;
             wolf = TRUE;
@@ -4228,19 +4215,19 @@ DO_FUN(do_gain)
         send_to_char( "@@NYou have reached the epitome of Rank in the ways of the @@eKindred@@N.\r\n", ch );
         return;
     }
-    if ( ( adept ) && ( ch->get_level("adept") < 20 ) )
+    if ( ( adept ) && ( ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) < MAX_TIER3_LEVEL ) )
     {
         c = ADVANCE_ADEPT;
         send_to_char( "@@WYou have reached another step on the stairway to Wisdom!!!@@N\r\n", ch );
         ch->decrExperience( cost );
         advance_level( ch, c, TRUE, FALSE );
-        ch->pcdata->adept_level = UMAX( 1, ch->pcdata->adept_level + 1 );
+        ch->incrLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT, 1 );
         snprintf( buf, MSL, "%s @@W advances in the way of the Adept!!\r\n", ch->getName_() );
         info( buf, 1 );
         free_string( ch->pcdata->who_name );
         ch->pcdata->who_name = str_dup( ch->get_whoname() );
         do_save( ch, "auto" );
-        if ( ch->get_level("adept") == 1 )
+        if ( ch->getLevel( THING_LEVEL_TIER3, THING_LEVEL_TIER3_CLASS_ADEPT ) == 1 )
             ch->setExperience( ch->getExperience() / 1000 );
         return;
     }
@@ -4250,15 +4237,15 @@ DO_FUN(do_gain)
         return;
     }
 
-    if ( ch->lvl[c] < ( LEVEL_HERO - 1 ) )
+    if ( ch->getLevel( THING_LEVEL_TIER1, c ) < MAX_TIER1_LEVEL )
     {
         /*
          * Check to see if max. num of classes has been reached.
          */
         numclasses = 0;
 
-        for ( a = 0; a < MAX_CLASS; a++ )
-            if ( ch->lvl[a] >= 1 )
+        for ( a = 0; a < MAX_THING_LEVEL_TIER1_CLASS; a++ )
+            if ( ch->getLevel( THING_LEVEL_TIER1, a ) > uintmin_t )
                 numclasses++;
 
         if ( numclasses >= race_table[ch->race].classes )
@@ -4275,7 +4262,7 @@ DO_FUN(do_gain)
      * Ok,ok now we know ch has enough exps.  Do the advancement stuff
      */
 
-    if ( ( remort ? ch->lvl2[c] : ch->lvl[c] ) + 1 >= LEVEL_HERO )
+    if ( ( remort ? ch->getLevel( THING_LEVEL_TIER2, c ) : ch->getLevel( THING_LEVEL_TIER1, c ) ) + 1 >= MAX_TIER2_LEVEL )
     {
         send_to_char( "If you wish to advance this class, please ask an Immortal.\r\n", ch );
         return;
@@ -4303,21 +4290,10 @@ DO_FUN(do_gain)
 
     advance_level( ch, c, TRUE, remort );
     if ( remort )
-        ch->lvl2[c] = UMAX( 1, ch->lvl2[c] + 1 );
+        ch->incrLevel( THING_LEVEL_TIER2, c, 1 );
     else
-        ch->lvl[c] += 1;  /* Incr. the right class */
+        ch->incrLevel( THING_LEVEL_TIER1, c, 1 );  /* Incr. the right class */
 
-
-    /*
-     * Maintain ch->level as max level of the lot
-     */
-    for ( subpop = 0; subpop < MAX_CLASS; subpop++ )
-    {
-        if ( ch->lvl[subpop] > ch->level )
-            ch->level = ch->lvl[subpop];
-        if ( ch->lvl2[subpop] > ch->level )
-            ch->level = ch->lvl2[subpop];
-    }
     do_save( ch, "auto" );
     return;
 }
@@ -4355,7 +4331,7 @@ DO_FUN(do_assassinate)
         return;
     }
 
-    cost = ( mob->level * 10000 );
+    cost = ( mob->getLevel() * 10000 );
 
     if ( argument[0] == '\0' )
     {
@@ -4380,7 +4356,7 @@ DO_FUN(do_assassinate)
         return;
     }
 
-    if ( victim->level < 12 )
+    if ( victim->getLevel() < MIN_LEVEL_CLAN )
     {
         act( "$N tells you, 'I'm not interested in small fry.'", ch, NULL, mob, TO_CHAR );
         return;
@@ -4731,12 +4707,12 @@ DO_FUN(do_worth)
 
     any = FALSE;
     numclasses = 0;
-    for ( a = 0; a < MAX_CLASS; a++ )
-        if ( ch->lvl[a] >= 1 )
+    for ( a = 0; a < MAX_THING_LEVEL_TIER1_CLASS; a++ )
+        if ( ch->getLevel( THING_LEVEL_TIER1, a ) >= 1 )
             numclasses++;
 
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        if ( numclasses >= race_table[ch->race].classes && ch->lvl[cnt] >= 1 && ch->lvl[cnt] < LEVEL_HERO - 1 )
+    for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER1_CLASS; cnt++ )
+        if ( numclasses >= race_table[ch->race].classes && ch->getLevel( THING_LEVEL_TIER1, cnt ) > uintmin_t && ch->getLevel( THING_LEVEL_TIER1, cnt ) < MAX_TIER1_LEVEL )
         {
             any = TRUE;
             cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
@@ -4744,7 +4720,7 @@ DO_FUN(do_worth)
             snprintf( buf, MSL, "%-14s  %9d %9lu.\r\n", class_table[cnt].who_name, cost, UMAX( 0, cost - ch->getExperience() ) );
             send_to_char( buf, ch );
         }
-        else if ( numclasses < race_table[ch->race].classes && ch->lvl[cnt] != -1 && ch->lvl[cnt] < ( LEVEL_HERO - 1 ) )
+        else if ( numclasses < race_table[ch->race].classes && ch->getLevel( THING_LEVEL_TIER1, cnt ) > uintmin_t && ch->getLevel( THING_LEVEL_TIER1, cnt ) < MAX_TIER1_LEVEL )
         {
             any = TRUE;
             cost = exp_to_level( ch, cnt, ch->pcdata->order[cnt] );
@@ -4756,8 +4732,8 @@ DO_FUN(do_worth)
     /*
      * Check for remort classes
      */
-    for ( cnt = 0; cnt < MAX_CLASS; cnt++ )
-        if ( ch->lvl2[cnt] != -1 && ch->lvl2[cnt] < LEVEL_HERO - 1 )
+    for ( cnt = 0; cnt < MAX_THING_LEVEL_TIER2_CLASS; cnt++ )
+        if ( ch->getLevel( THING_LEVEL_TIER2, cnt ) > uintmin_t && ch->getLevel( THING_LEVEL_TIER2, cnt ) < MAX_TIER2_LEVEL )
         {
             any = TRUE;
             cost = exp_to_level( ch, cnt, 5 );  /* Pass 5 for remort */
@@ -4810,27 +4786,27 @@ DO_FUN(do_whois)
     {
         snprintf( buf + strlen( buf ), MSL, " [ %3s ]\r\n", victim->pcdata->who_name );
     }
-    else if ( IS_ADEPT(victim) )
+    else if ( victim->isAdept() )
     {
         snprintf( buf + strlen( buf ), MSL, " %s \r\n", victim->get_whoname() );
     }
     else
     {
-        snprintf( buf + strlen( buf ), MSL, "Levels: [ Mag:%2d  Cle:%2d  Thi:%2d  War:%2d  Psi:%2d ]\r\n",
-                  victim->get_level("mag") > 0 ? victim->get_level("mag") : 0,
-                  victim->get_level("cle") > 0 ? victim->get_level("cle") : 0,
-                  victim->get_level("thi") > 0 ? victim->get_level("thi") : 0,
-                  victim->get_level("war") > 0 ? victim->get_level("war") : 0,
-                  victim->get_level("psi") > 0 ? victim->get_level("psi") : 0 );
+        snprintf( buf + strlen( buf ), MSL, "Levels: [ Mag:%2lu  Cle:%2lu  Thi:%2lu  War:%2lu  Psi:%2lu ]\r\n",
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_MAGE ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_CLERIC ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_THIEF ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_WARRIOR ),
+                  victim->getLevel( THING_LEVEL_TIER1, THING_LEVEL_TIER1_CLASS_PSIONICIST ) );
 
-        if ( IS_REMORT( victim ) )
+        if ( victim->isRemortal() )
 
-            snprintf( buf + strlen( buf ), MSL, "Levels: [ Sor:%2d  Mon:%2d  Ass:%2d  Kni:%2d  Nec:%2d ]\r\n",
-                      victim->get_level("sor") > 0 ? victim->get_level("sor") : 0,
-                      victim->get_level("mon") > 0 ? victim->get_level("mon") : 0,
-                      victim->get_level("ass") > 0 ? victim->get_level("ass") : 0,
-                      victim->get_level("kni") > 0 ? victim->get_level("kni") : 0,
-                      victim->get_level("nec") > 0 ? victim->get_level("nec") : 0 );
+            snprintf( buf + strlen( buf ), MSL, "Levels: [ Sor:%2lu  Mon:%2lu  Ass:%2lu  Kni:%2lu  Nec:%2lu ]\r\n",
+                      victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_SORCERER ),
+                      victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_MONK ),
+                      victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_ASSASSIN ),
+                      victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_KNIGHT ),
+                      victim->getLevel( THING_LEVEL_TIER2, THING_LEVEL_TIER2_CLASS_NECROMANCER ) );
     }
     snprintf( buf + strlen( buf ), MSL, "Sex: %s.  Race: %s.  Clan: %s.\r\n",
               ( victim->sex == SEX_MALE ) ? "Male" :
@@ -4962,15 +4938,15 @@ DO_FUN(do_loot)
         return;
     }
 
-    if ( corpse->value[3] == 0 )
+    if ( corpse->value[CORPSE_LOOTNUM] == 0 )
     {
         send_to_char( "You cannot loot this corpse.\r\n", ch );
         return;
     }
 
-    if ( ( ch->getClan() == corpse->value[2] )
+    if ( ( ch->getClan() == corpse->value[CORPSE_CLAN] )
             || ( ( ch->act.test(ACT_PKOK) )
-                 && ( corpse->value[0] == 1 ) ) || ( ( IS_WOLF( ch ) || IS_VAMP( ch ) ) && ( corpse->value[0] == 1 ) ) )
+                 && ( corpse->value[CORPSE_LOOTABLE] == 1 ) ) || ( ( ch->isWerewolf() || ch->isVampire() ) && ( corpse->value[CORPSE_LOOTABLE] == 1 ) ) )
     {
         counter = number_range( 1, 100 );
 
@@ -5003,7 +4979,7 @@ DO_FUN(do_loot)
                 /*
                  * just incase...
                  */
-                if ( ch->level > 1 )
+                if ( ch->getLevel() > 1 )
                 {
                     do_save( ch, "auto" );
                 }
@@ -5014,7 +4990,7 @@ DO_FUN(do_loot)
                 return;
             }
 
-            corpse->value[3] = corpse->value[3] - 1;
+            corpse->value[CORPSE_LOOTNUM]--;
             return;
         }
         else

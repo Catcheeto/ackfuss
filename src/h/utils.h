@@ -104,8 +104,8 @@ namespace Utils {
  * Character macros.
  */
 #define IS_NPC(ch)              ( (ch)->isNPC() )
-#define IS_ADEPT(ch)            ( !IS_NPC(ch) && ch->get_level("adept") > 0 )
-#define IS_REMORT(ch)           ( !IS_NPC(ch) && ch->get_level("remort") > 0 )
+#define IS_ADEPT(ch)            ( (ch)->isAdept() )
+#define IS_REMORT(ch)           ( (ch)->isRemortal() )
 #define IS_AFFECTED(ch, sn)     ( IS_SET((ch)->affected_by, (sn)))
 #define IS_HUNGRY(ch)           ( !IS_NPC(ch) && ch->pcdata->condition[COND_FULL] <= 0 )
 #define IS_THIRSTY(ch)          ( !IS_NPC(ch) && ch->pcdata->condition[COND_THIRST] <= 0 )
@@ -121,8 +121,8 @@ namespace Utils {
 #define GET_AC(ch)              ( REAL_AC( ch ) + (ch)->getModAC() )
 #define REAL_AC(ch)             ((ch)->armor  + ( IS_AWAKE(ch) \
                                  ? ( IS_NPC( ch ) \
-                                     ? ( dex_app[get_curr_dex(ch)].defensive * ch->get_level("psuedo") / 20 ) \
-                                     : ( dex_app[get_curr_dex(ch)].defensive * ch->get_level("psuedo") / 10 ) ): 0 ))
+                                     ? ( dex_app[get_curr_dex(ch)].defensive * ch->getLevel( true ) / 20 ) \
+                                     : ( dex_app[get_curr_dex(ch)].defensive * ch->getLevel( true ) / 10 ) ): 0 ))
 /* Super macros */
 #define IS_VAMP(ch)    ( ch->act.test(ACT_VAMPIRE)  )
 #define IS_UNDEAD(ch)  ( ch->act.test(ACT_UNDEAD)   )
@@ -134,10 +134,10 @@ namespace Utils {
 /* Added bonus to hit and dam for higher levl players */
 /* High level naked players should still be able to fight ok */
 
-#define GET_HITROLL(ch)         ( REAL_HITROLL(ch) + ch->getModHR() + (ch->get_level("psuedo") / 4 ) )
-#define REAL_HITROLL(ch)        ((ch)->hitroll+ (str_app[get_curr_str(ch)].tohit * ch->get_level("psuedo") / 10) )
-#define GET_DAMROLL(ch)         ( REAL_DAMROLL(ch) + ch->getModDR() + (ch->get_level("psuedo") / 4 ) )
-#define REAL_DAMROLL(ch)        ((ch)->damroll+( str_app[get_curr_str(ch)].todam * ch->get_level("psuedo") / 10 ) )
+#define GET_HITROLL(ch)         ( REAL_HITROLL(ch) + ch->getModHR() + (ch->getLevel( true ) / 4 ) )
+#define REAL_HITROLL(ch)        ((ch)->hitroll+ (str_app[get_curr_str(ch)].tohit * ch->getLevel( true ) / 10) )
+#define GET_DAMROLL(ch)         ( REAL_DAMROLL(ch) + ch->getModDR() + (ch->getLevel( true ) / 4 ) )
+#define REAL_DAMROLL(ch)        ((ch)->damroll+( str_app[get_curr_str(ch)].todam * ch->getLevel( true ) / 10 ) )
 #define IS_OUTSIDE(ch)          (!(ch)->in_room->room_flags.test(RFLAG_INDOORS))
 #define WAIT_STATE(ch, npulse)  ((ch)->wait = UMAX((ch)->wait, (npulse)))
 #define MANA_COST(ch, sn)       (IS_NPC(ch) ? 0 : UMAX ( skill_table[sn].min_mana, 100 / (2 + ch->level - skill_table[sn].skill_level[ch->class] ) ) )
